@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{C385EE65-0749-4DB3-A7B7-DFBBF886B927}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="OpenHackathon.Server/appsettings.json">
+    <Files>
+      <File FileName="OpenHackathon.Server/appsettings.json" Line="10" Column="2" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.OpenHackathon.Server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
