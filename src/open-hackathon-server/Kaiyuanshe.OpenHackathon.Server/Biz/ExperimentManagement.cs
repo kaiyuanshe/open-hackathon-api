@@ -86,7 +86,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             };
             await StorageContext.ExperimentTable.InsertOrReplaceAsync(entity, cancellationToken);
 
-            // call k8s api
+            // TODO call k8s api
             entity = await StorageContext.ExperimentTable.RetrieveAsync(entity.PartitionKey, entity.RowKey, cancellationToken);
             var context = new ExperimentContext
             {
