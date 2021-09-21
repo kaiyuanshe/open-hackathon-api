@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: dotnet build, push and publish
+name: .NET 5 Build, Push and Publish
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
