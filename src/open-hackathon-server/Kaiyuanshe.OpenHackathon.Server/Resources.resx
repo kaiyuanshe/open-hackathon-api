@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Admin_CannotDeleteCreator" xml:space="preserve">
+    <value>The creator of a hackathon cannot be deleted.</value>
+  </data>
+  <data name="Admin_NotFound" xml:space="preserve">
+    <value>The specified user is not an admin of the hackathon</value>
+  </data>
+  <data name="Auth_Forbidden" xml:space="preserve">
+    <value>Forbidden. The user associated with the token doesn't have proper permission. Please contact the administrator for access.</value>
+  </data>
+  <data name="Auth_TokenExpired" xml:space="preserve">
+    <value>Token expired at {0}. Please re-login.</value>
+  </data>
+  <data name="Auth_Token_ValidateRemoteFailed" xml:space="preserve">
+    <value>The access token cannot be validated. Code:{0}, Message:{1}</value>
+  </data>
+  <data name="Auth_Unauthorized" xml:space="preserve">
+    <value>Token is either missing or invalid. Please add it to Http request headers: Headers["Authorization"]=token TOKEN. </value>
+  </data>
+  <data name="AwardAssignment_NotFound" xml:space="preserve">
+    <value>The assignment is not found.</value>
+  </data>
+  <data name="Award_CannotDeleteAssigned" xml:space="preserve">
+    <value>The award is assigned hence cannot delete. Please delete the assignments first.</value>
+  </data>
+  <data name="Award_CannotUpdateTarget" xml:space="preserve">
+    <value>`award.target` cannot be updated since the award is already assigned to a team or user. Please delete the assignment(s) first.</value>
+  </data>
+  <data name="Award_NotFound" xml:space="preserve">
+    <value>Award with specified id is not found.</value>
+  </data>
+  <data name="Award_TooMany" xml:space="preserve">
+    <value>A maximum of 100 awards are allowed.</value>
+  </data>
+  <data name="Award_TooManyAssignments" xml:space="preserve">
+    <value>Cannot assign the award to more than {0} assignees.</value>
+  </data>
+  <data name="Enrollment_Ended" xml:space="preserve">
+    <value>Enrollment already ended at {0}</value>
+  </data>
+  <data name="Enrollment_Full" xml:space="preserve">
+    <value>Enrollment cannot be fullfilled since it has reached the quota.</value>
+  </data>
+  <data name="Enrollment_NotApproved" xml:space="preserve">
+    <value>Enrollment not approved yet. Please contact the hackathon admistrators for approval.</value>
+  </data>
+  <data name="Enrollment_NotFound" xml:space="preserve">
+    <value>User {0} not enrolled in hackathon {1}</value>
+  </data>
+  <data name="Enrollment_NotStarted" xml:space="preserve">
+    <value>Enrollment not started. The enrollment will be accepted starting from {0}</value>
+  </data>
+  <data name="Enrollment_TooManyExtensions" xml:space="preserve">
+    <value>Count of extensions exceeds the allowed limit {0}.</value>
+  </data>
+  <data name="Hackathon_AlreadyOnline" xml:space="preserve">
+    <value>Hackathon {0} is already Online.</value>
+  </data>
+  <data name="Hackathon_CreateTooMany" xml:space="preserve">
+    <value>The user created too many hackathons, please try again at a later time or contact the administrator.</value>
+  </data>
+  <data name="Hackathon_Deleted" xml:space="preserve">
+    <value>Hackathon {0} is Offline. Cannot be updated.</value>
+  </data>
+  <data name="Hackathon_Ended" xml:space="preserve">
+    <value>The hackathon is already ended at {0}</value>
+  </data>
+  <data name="Hackathon_Name_Invalid" xml:space="preserve">
+    <value>The name is invalid. Must contain only letters and/or numbers, length between 1 and 100.</value>
+  </data>
+  <data name="Hackathon_Name_Taken" xml:space="preserve">
+    <value>The name is already used. Please try another name.</value>
+  </data>
+  <data name="Hackathon_NotAdmin" xml:space="preserve">
+    <value>Access denied. Only the admins of the hackathon are allowed. Please contact the admin to request access.</value>
+  </data>
+  <data name="Hackathon_NotFound" xml:space="preserve">
+    <value>Hackathon with name `{0}` not found. Try PUT to create a new one.</value>
+  </data>
+  <data name="Hackathon_NotJudge" xml:space="preserve">
+    <value>Access denied. Only the judges of the hackathon are allowed. Please contact the admin to request access.</value>
+  </data>
+  <data name="Hackathon_NotStarted" xml:space="preserve">
+    <value>The hackathon is not started yet. </value>
+  </data>
+  <data name="Hackathon_ReadOnly" xml:space="preserve">
+    <value>Hackathon is archived and is ReadOnly.</value>
+  </data>
+  <data name="Hackathon_UnhandledException" xml:space="preserve">
+    <value>An unexpected exception occurs. Please try again later or report an issue at https://github.com/kaiyuanshe/open-hackathon/issues</value>
+  </data>
+  <data name="Judge_NotFound" xml:space="preserve">
+    <value>The specified user is not judge of the hackathon.</value>
+  </data>
+  <data name="Judge_TooMany" xml:space="preserve">
+    <value>A maximum of 100 judges are allowed.</value>
+  </data>
+  <data name="Parameter_Required" xml:space="preserve">
+    <value>Required parameter {0} is null or empty.</value>
+  </data>
+  <data name="Rating_HasRating" xml:space="preserve">
+    <value>Cannot delete the {0}. Must delete related Rating first.</value>
+  </data>
+  <data name="Rating_KindNotFound" xml:space="preserve">
+    <value>The rating kind of specified Id doesn't exist.</value>
+  </data>
+  <data name="Rating_NotFound" xml:space="preserve">
+    <value>The rating is not found.</value>
+  </data>
+  <data name="Rating_OnlyCreator" xml:space="preserve">
+    <value>Access denied. The rating is created by another person.</value>
+  </data>
+  <data name="Rating_ScoreNotInRange" xml:space="preserve">
+    <value>The score must be not greater than {0}.</value>
+  </data>
+  <data name="Rating_TooManyKinds" xml:space="preserve">
+    <value>A maximum of 100 rating kinds are allowed.</value>
+  </data>
+  <data name="TeamMember_AccessDenied" xml:space="preserve">
+    <value>Member {0} is not allowed to perform this operation.</value>
+  </data>
+  <data name="TeamMember_LastAdmin" xml:space="preserve">
+    <value>The user cannot be removed since there are more than 1 members and the user is the only admin with admin access.</value>
+  </data>
+  <data name="TeamMember_NotFound" xml:space="preserve">
+    <value>Member {0} is not a member of team {1}</value>
+  </data>
+  <data name="TeamWork_NotFound" xml:space="preserve">
+    <value>The team work cannot be found.</value>
+  </data>
+  <data name="TeamWork_TooMany" xml:space="preserve">
+    <value>A maximum of 100 works are allowed.</value>
+  </data>
+  <data name="Team_CreateSecond" xml:space="preserve">
+    <value>Cannot create a new team since the user is already in a team.</value>
+  </data>
+  <data name="Team_HasAward" xml:space="preserve">
+    <value>Cannot delete the team for awards are assigned to this team. Please delete the award assignments first.</value>
+  </data>
+  <data name="Team_NameTaken" xml:space="preserve">
+    <value>The team name '{0}' is already taken. Please try a different name.</value>
+  </data>
+  <data name="Team_NotAdmin" xml:space="preserve">
+    <value>Access denied. Please contact admins of the team.</value>
+  </data>
+  <data name="Team_NotEnrolled" xml:space="preserve">
+    <value>Cannot create a new team. must enroll first.</value>
+  </data>
+  <data name="Team_NotFound" xml:space="preserve">
+    <value>Team with specified id is not found.</value>
+  </data>
+  <data name="User_NotFound" xml:space="preserve">
+    <value>The specified user is not found.</value>
+  </data>
+</root>
