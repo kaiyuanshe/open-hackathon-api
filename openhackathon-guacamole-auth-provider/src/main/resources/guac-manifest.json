@@ -1,9 +1,0 @@
-{
-    "guacamoleVersion" : "1.0.0",
-    "name"      : "Open Hackathon Authentication Extension",
-    "namespace" : "com.openhackathon.guacamole",
-    "authProviders" : [
-        "com.openhackathon.guacamole.OpenHackathonAuthenticationProvider"
-    ]
-
-}
