@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var entity = new TemplateEntity
             {
                 PartitionKey = template.hackathonName,
-                RowKey = template.name,
+                RowKey = template.name.ToLower(),
                 Commands = template.commands,
                 CreatedAt = DateTime.UtcNow,
                 EnvironmentVariables = template.environmentVariables,
