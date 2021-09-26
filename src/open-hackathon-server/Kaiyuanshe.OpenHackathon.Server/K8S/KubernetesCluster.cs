@@ -14,6 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task CreateOrUpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
+        Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -138,5 +139,41 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 return null;
             }
         }
+
+        #region Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
+        public async Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken)
+        {
+            await CreateExperimentAsync(context, cancellationToken);
+        }
+
+        private async Task CreateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
+        {
+            // create if not found
+            var customResource = context.BuildCustomResource();
+            try
+            {
+                //var resp = await kubeClient.CreateNamespacedCustomObjectWithHttpMessagesAsync(
+                //    customResource,
+                //    TemplateResource.Group,
+                //    TemplateResource.Version,
+                //    customResource.Metadata.NamespaceProperty ?? "default",
+                //    TemplateResource.Plural,
+                //    cancellationToken: cancellationToken);
+                //logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
+                //context.Status = new k8s.Models.V1Status
+                //{
+                //    Code = (int)resp.Response.StatusCode,
+                //    Reason = resp.Response.ReasonPhrase,
+                //};
+            }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response?.Content == null)
+                    throw;
+
+                //context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+            }
+        }
+        #endregion
     }
 }

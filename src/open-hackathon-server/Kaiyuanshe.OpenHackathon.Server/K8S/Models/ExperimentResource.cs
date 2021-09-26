@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         public bool Pause { get; set; }
 
         [JsonProperty(PropertyName = "template")]
-        public string TemplateName { get; set; }
+        public string Template { get; set; }
 
         [JsonProperty(PropertyName = "clusterName")]
         public string ClusterName { get; set; }
