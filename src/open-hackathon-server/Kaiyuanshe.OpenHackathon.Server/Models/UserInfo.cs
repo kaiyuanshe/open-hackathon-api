@@ -179,7 +179,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Browser infomation of last login
         /// </summary>
         /// <example>Chrome</example>
-        [MaxLength(128)]
+        [MaxLength(256)]
         [JsonProperty("browser")]
         public string Browser { get; set; }
 
