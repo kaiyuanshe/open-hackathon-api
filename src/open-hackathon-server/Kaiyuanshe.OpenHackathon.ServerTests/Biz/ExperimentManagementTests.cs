@@ -148,7 +148,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         #region CreateExperimentAsync
         [Test]
-        public async Task CreateExperimentAsync()
+        public async Task CreateExperimentAsync_Exception()
         {
             var experiment = new Experiment
             {
@@ -169,19 +169,76 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default))
+                .Throws(new Microsoft.Rest.HttpOperationException("message"));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
             var logger = new Mock<ILogger<ExperimentManagement>>();
             var management = new ExperimentManagement(logger.Object)
             {
                 StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
             };
 
             var result = await management.CreateExperimentAsync(experiment, default);
 
-            Mock.VerifyAll(experimentTable, storageContext);
+            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
             experimentTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
 
-            Assert.AreEqual("pk", result.ExperimentEntity.HackathonName);
+            Assert.AreEqual("pk", result.ExperimentEntity.PartitionKey);
+            Assert.AreEqual(500, result.Status.Code);
+            Assert.AreEqual("Internal Server Error", result.Status.Reason);
+            Assert.AreEqual("message", result.Status.Message);
+        }
+
+        [Test]
+        public async Task CreateExperimentAsync_Success()
+        {
+            var experiment = new Experiment
+            {
+                hackathonName = "hack",
+                templateName = "tn",
+                userId = "uid",
+            };
+            var entity = new ExperimentEntity { PartitionKey = "pk" };
+
+            var experimentTable = new Mock<IExperimentTable>();
+            experimentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<ExperimentEntity>(e =>
+                e.HackathonName == "hack" &&
+                e.RowKey == "c282b009-b95e-b81a-dcf6-fe4d678105f4" &&
+                e.Paused == false &&
+                e.UserId == "uid" &&
+                e.TemplateName == "tn"), default));
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
+
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+
+            var result = await management.CreateExperimentAsync(experiment, default);
+
+            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
+            experimentTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+
+            Assert.AreEqual("pk", result.ExperimentEntity.PartitionKey);
         }
         #endregion
     }

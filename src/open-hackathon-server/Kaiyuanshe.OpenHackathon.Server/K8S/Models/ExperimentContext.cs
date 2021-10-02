@@ -9,7 +9,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         public ExperimentEntity ExperimentEntity { get; set; }
         public ExperimentStatus Status { get; set; }
 
-
         public ExperimentResource BuildCustomResource()
         {
             return new ExperimentResource

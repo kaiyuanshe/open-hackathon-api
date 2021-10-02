@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task CreateOrUpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
-        Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
+        Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -115,8 +115,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             try
             {
                 var cr = await kubeClient.GetNamespacedCustomObjectWithHttpMessagesAsync(
-                    TemplateResource.Group,
-                    TemplateResource.Version,
+                    CustomResource.Group,
+                    CustomResource.Version,
                     context.GetNamespace(),
                     TemplateResource.Plural,
                     context.GetTemplateResourceName(),
@@ -141,7 +141,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         }
 
         #region Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
-        public async Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken)
+        public async Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
         {
             await CreateExperimentAsync(context, cancellationToken);
         }
@@ -152,26 +152,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             var customResource = context.BuildCustomResource();
             try
             {
-                //var resp = await kubeClient.CreateNamespacedCustomObjectWithHttpMessagesAsync(
-                //    customResource,
-                //    TemplateResource.Group,
-                //    TemplateResource.Version,
-                //    customResource.Metadata.NamespaceProperty ?? "default",
-                //    TemplateResource.Plural,
-                //    cancellationToken: cancellationToken);
-                //logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
-                //context.Status = new k8s.Models.V1Status
-                //{
-                //    Code = (int)resp.Response.StatusCode,
-                //    Reason = resp.Response.ReasonPhrase,
-                //};
+                var resp = await kubeClient.CreateNamespacedCustomObjectWithHttpMessagesAsync(
+                    customResource,
+                    CustomResource.Group,
+                    CustomResource.Version,
+                    customResource.Metadata.NamespaceProperty ?? "default",
+                    ExperimentResource.Plural,
+                    cancellationToken: cancellationToken);
+                logger.TraceInformation($"CreateExperimentAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
+                context.Status = new ExperimentStatus
+                {
+                    Reason = resp.Response.ReasonPhrase,
+                    Status = resp.Response.ReasonPhrase,
+                    Code = (int)resp.Response.StatusCode,
+                };
             }
             catch (HttpOperationException exception)
             {
                 if (exception.Response?.Content == null)
                     throw;
 
-                //context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
             }
         }
         #endregion
