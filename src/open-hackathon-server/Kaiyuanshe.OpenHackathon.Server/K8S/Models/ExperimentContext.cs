@@ -37,7 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public string GetExperimentResourceName()
         {
-            return $"{ExperimentEntity.TemplateName}-{ExperimentEntity.UserId}";
+            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateName}-{ExperimentEntity.UserId}";
         }
 
         public string GetTemplateResourceName()

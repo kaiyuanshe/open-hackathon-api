@@ -14,32 +14,74 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
     class KubernetesClusterTests
     {
         #region CreateOrUpdateExperimentAsync
-        //[Test]
-        //public async Task CreateOrUpdateExperimentAsync_OtherError()
-        //{
-        //    var logger = new Mock<ILogger<KubernetesCluster>>();
+        [Test]
+        public async Task CreateOrUpdateExperimentAsync_OtherError()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
 
-        //    string content = "{\"code\": 422}";
-        //    var kubernetes = new Mock<IKubernetes>();
-        //    kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
-        //       "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-        //       "pk-rk",
-        //       null, default))
-        //       .Throws(new HttpOperationException
-        //       {
-        //           Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
-        //       });
-        //    var context = new TemplateContext
-        //    {
-        //        TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
-        //    };
+            string content = "{\"code\": 422}";
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+               "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+               "pk-tpl-uid",
+               null, default))
+               .Throws(new HttpOperationException
+               {
+                   Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
+               });
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    PartitionKey = "pk",
+                    RowKey = "rk",
+                    TemplateName = "tpl",
+                    UserId = "uid",
+                }
+            };
 
-        //    var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
-        //    await kubernetesCluster.CreateOrUpdateTemplateAsync(context, default);
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
 
-        //    Mock.VerifyAll(kubernetes);
-        //    kubernetes.VerifyNoOtherCalls();
-        //}
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task CreateOrUpdateExperimentAsync_Get()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+               "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+               "pk-tpl-uid",
+               null, default))
+               .ReturnsAsync(new Microsoft.Rest.HttpOperationResponse<object>
+               {
+                   Body = "{\"kind\":\"Experiment\",\"status\":{\"cluster\":\"meta-cluster\",\"protocol\":\"vnc\"}}"
+               });
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    PartitionKey = "pk",
+                    RowKey = "rk",
+                    TemplateName = "tpl",
+                    UserId = "uid",
+                }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(200, context.Status.Code);
+            Assert.AreEqual("vnc", context.Status.IngressProtocol);
+            Assert.AreEqual("meta-cluster", context.Status.ClusterName);
+        }
 
         [Test]
         public async Task CreateOrUpdateExperimentAsync_Create()
@@ -48,14 +90,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 
             string content = "{\"code\": 404}";
             var kubernetes = new Mock<IKubernetes>();
-            //kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
-            //   "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-            //   "pk-rk",
-            //   null, default))
-            //   .Throws(new HttpOperationException
-            //   {
-            //       Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
-            //   });
+            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+               "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+               "pk-tpl-uid",
+               null, default))
+               .Throws(new HttpOperationException
+               {
+                   Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
+               });
             kubernetes.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<ExperimentResource>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
@@ -70,7 +112,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                });
             var context = new ExperimentContext
             {
-                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+                ExperimentEntity = new ExperimentEntity
+                {
+                    PartitionKey = "pk",
+                    RowKey = "rk",
+                    TemplateName = "tpl",
+                    UserId = "uid",
+                }
             };
 
             var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
