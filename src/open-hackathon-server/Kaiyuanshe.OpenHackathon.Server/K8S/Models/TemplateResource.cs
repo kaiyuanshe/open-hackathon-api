@@ -11,10 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
     {
         // Properties of CustomResourceDefinition
         // See also: https://github.com/kaiyuanshe/cloudengine/blob/master/config/crd/bases/hackathon.kaiyuanshe.cn_templates.yaml
-        public static readonly string Group = "hackathon.kaiyuanshe.cn";
-        public static readonly string Version = "v1";
         public static readonly string Plural = "templates";
-        public static readonly string API_VERSION = "hackathon.kaiyuanshe.cn/v1";
 
         [JsonProperty(PropertyName = "data")]
         public TemplateData Data { get; set; }

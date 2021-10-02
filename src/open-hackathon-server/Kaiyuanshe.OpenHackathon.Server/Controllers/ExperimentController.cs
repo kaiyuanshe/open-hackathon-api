@@ -1,5 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -50,7 +51,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.name = "default";
             var context = await ExperimentManagement.CreateTemplateAsync(parameter, cancellationToken);
-            return Ok(ResponseBuilder.BuildTemplate(context));
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: context.TemplateEntity.DisplayName);
+            }
+            else
+            {
+                return Ok(ResponseBuilder.BuildTemplate(context));
+            }
         }
         #endregion
 
@@ -107,7 +119,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // build resp
             var userInfo = await GetCurrentUserInfo(cancellationToken);
-            return Ok(ResponseBuilder.BuildExperiment(context, userInfo));
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: context.ExperimentEntity.Id);
+            }
+            else
+            {
+                return Ok(ResponseBuilder.BuildExperiment(context, userInfo));
+            }
         }
         #endregion
     }

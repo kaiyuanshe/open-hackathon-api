@@ -92,6 +92,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             {
                 ExperimentEntity = entity,
             };
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            try
+            {
+                await kubernetesCluster.CreateOrUpdateExperimentAsync(context, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.TraceError($"Internal error: {e.Message}", e);
+                context.Status = new ExperimentStatus
+                {
+                    Code = 500,
+                    Reason = "Internal Server Error",
+                    Message = e.Message,
+                };
+            }
             return context;
         }
         #endregion

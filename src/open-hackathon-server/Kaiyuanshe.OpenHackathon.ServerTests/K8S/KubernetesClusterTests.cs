@@ -13,6 +13,77 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 {
     class KubernetesClusterTests
     {
+        #region CreateOrUpdateExperimentAsync
+        //[Test]
+        //public async Task CreateOrUpdateExperimentAsync_OtherError()
+        //{
+        //    var logger = new Mock<ILogger<KubernetesCluster>>();
+
+        //    string content = "{\"code\": 422}";
+        //    var kubernetes = new Mock<IKubernetes>();
+        //    kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+        //       "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
+        //       "pk-rk",
+        //       null, default))
+        //       .Throws(new HttpOperationException
+        //       {
+        //           Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
+        //       });
+        //    var context = new TemplateContext
+        //    {
+        //        TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
+        //    };
+
+        //    var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+        //    await kubernetesCluster.CreateOrUpdateTemplateAsync(context, default);
+
+        //    Mock.VerifyAll(kubernetes);
+        //    kubernetes.VerifyNoOtherCalls();
+        //}
+
+        [Test]
+        public async Task CreateOrUpdateExperimentAsync_Create()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+
+            string content = "{\"code\": 404}";
+            var kubernetes = new Mock<IKubernetes>();
+            //kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            //   "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
+            //   "pk-rk",
+            //   null, default))
+            //   .Throws(new HttpOperationException
+            //   {
+            //       Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
+            //   });
+            kubernetes.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
+                It.IsAny<ExperimentResource>(),
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                null, null, null, null, default))
+               .ReturnsAsync(new HttpOperationResponse<object>
+               {
+                   Response = new System.Net.Http.HttpResponseMessage
+                   {
+                       StatusCode = System.Net.HttpStatusCode.Created,
+                       ReasonPhrase = "success"
+                   },
+               });
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(201, context.Status.Code);
+            Assert.AreEqual("success", context.Status.Reason);
+        }
+        #endregion
+
         #region CreateOrUpdateTemplateAsync
         [Test]
         public async Task CreateOrUpdateTemplateAsync_OtherError()

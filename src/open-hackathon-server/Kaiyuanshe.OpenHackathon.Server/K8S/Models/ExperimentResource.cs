@@ -9,6 +9,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
     /// </summary>
     public class ExperimentResource : CustomResource<ExperimentSpec, ExperimentStatus>
     {
+        // Properties of CustomResourceDefinition
+        // See also: https://github.com/kaiyuanshe/cloudengine/blob/master/config/crd/bases/hackathon.kaiyuanshe.cn_experiments.yaml
+        public static readonly string Plural = "experiments";
     }
 
     public class ExperimentSpec

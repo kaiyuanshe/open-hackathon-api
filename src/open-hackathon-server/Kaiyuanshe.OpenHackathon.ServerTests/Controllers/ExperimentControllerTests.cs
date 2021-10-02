@@ -18,7 +18,50 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
     {
         #region CreateTemplate
         [Test]
-        public async Task CreateTemplate()
+        public async Task CreateTemplate_K8SFailure()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+            var entity = new TemplateEntity { PartitionKey = "pk" };
+            var context = new TemplateContext
+            {
+                TemplateEntity = entity,
+                Status = new k8s.Models.V1Status
+                {
+                    Code = 409,
+                    Message = "msg",
+                }
+            };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var authorizationService = new Mock<IAuthorizationService>();
+            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(j => j.CreateTemplateAsync(It.Is<Template>(j =>
+                j.name == "default" &&
+                j.hackathonName == "hack"), default)).ReturnsAsync(context);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                AuthorizationService = authorizationService.Object,
+                ExperimentManagement = experimentManagement.Object,
+                ResponseBuilder = new DefaultResponseBuilder(),
+            };
+            var result = await controller.CreateTemplate("Hack", parameter, default);
+
+            Mock.VerifyAll(hackathonManagement, authorizationService, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            authorizationService.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 409, "msg");
+        }
+
+        [Test]
+        public async Task CreateTemplate_Success()
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
@@ -122,6 +165,50 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             enrollmentManagement.VerifyNoOtherCalls();
 
             AssertHelper.AssertObjectResult(result, 412, Resources.Enrollment_NotApproved);
+        }
+
+        [Test]
+        public async Task CreateExperiment_K8SFailure()
+        {
+            var parameter = new Experiment();
+            var hackathon = new HackathonEntity();
+            var experiment = new ExperimentEntity { RowKey = "rk" };
+            EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = experiment,
+                Status = new ExperimentStatus
+                {
+                    Code = 500,
+                    Message = "msg"
+                }
+            };
+            UserInfo userInfo = new UserInfo { Region = "region" };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var enrollmentManagement = new Mock<IEnrollmentManagement>();
+            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(j => j.CreateExperimentAsync(It.Is<Experiment>(j =>
+                j.templateName == "default" &&
+                j.hackathonName == "hack"), default)).ReturnsAsync(context);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                EnrollmentManagement = enrollmentManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+                ResponseBuilder = new DefaultResponseBuilder(),
+            };
+            var result = await controller.CreateExperiment("Hack", parameter, default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement, enrollmentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            enrollmentManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 500, "msg");
         }
 
         [Test]
