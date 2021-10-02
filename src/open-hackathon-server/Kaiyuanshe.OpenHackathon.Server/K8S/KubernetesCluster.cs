@@ -15,6 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
+        Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -143,7 +144,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         #region Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
         public async Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
         {
-            await CreateExperimentAsync(context, cancellationToken);
+            var cr = await GetExperimentAsync(context, cancellationToken);
+            if (cr == null)
+            {
+                if (context.Status.Code != 404)
+                {
+                    // in case of other errors, return status directly for manual fix.
+                    return;
+                }
+
+                // create new
+                await CreateExperimentAsync(context, cancellationToken);
+            }
+            else
+            {
+                context.Status = cr.Status;
+                context.Status.Code = cr.Status.Code.GetValueOrDefault(200);
+            }
         }
 
         private async Task CreateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
@@ -173,6 +190,36 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+            }
+        }
+        #endregion
+
+        #region GetExperimentAsync
+        public async Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var cr = await kubeClient.GetNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResource.Group,
+                    CustomResource.Version,
+                    context.GetNamespace(),
+                    ExperimentResource.Plural,
+                    context.GetExperimentResourceName(),
+                    null,
+                    cancellationToken);
+                var exp = SafeJsonConvert.DeserializeObject<ExperimentResource>(cr.Body.ToString());
+                context.Status = exp.Status;
+                context.Status.Code = exp.Status.Code.GetValueOrDefault(200);
+                return exp;
+            }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response?.Content == null)
+                    throw;
+
+                logger.TraceInformation(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                return null;
             }
         }
         #endregion
