@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             }
 
             // creator
-            if(resource.CreatorId == userId)
+            if (resource.CreatorId == userId)
             {
                 context.Succeed(requirement);
                 return;
