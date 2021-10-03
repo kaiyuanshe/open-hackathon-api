@@ -13,6 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<TemplateContext> CreateTemplateAsync(Template template, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
+        Task<ExperimentContext> GetExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -96,6 +97,37 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             try
             {
                 await kubernetesCluster.CreateOrUpdateExperimentAsync(context, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.TraceError($"Internal error: {e.Message}", e);
+                context.Status = new ExperimentStatus
+                {
+                    Code = 500,
+                    Reason = "Internal Server Error",
+                    Message = e.Message,
+                };
+            }
+            return context;
+        }
+        #endregion
+
+        #region GetExperimentAsync
+        public async Task<ExperimentContext> GetExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
+        {
+            if (experiment == null)
+                return null;
+
+            var rk = GetExperimentRowKey(experiment.userId, experiment.templateName);
+            var entity = await StorageContext.ExperimentTable.RetrieveAsync(experiment.hackathonName, rk, cancellationToken);
+            if (entity == null)
+                return null;
+
+            var context = new ExperimentContext { ExperimentEntity = entity };
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            try
+            {
+                await kubernetesCluster.GetExperimentAsync(context, cancellationToken);
             }
             catch (Exception e)
             {
