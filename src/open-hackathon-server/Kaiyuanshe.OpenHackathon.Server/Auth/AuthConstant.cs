@@ -60,6 +60,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             /// Member of a team.
             /// </summary>
             public const string TeamMember = "TeamMemberReal";
+
+            /// <summary>
+            /// Trusted app only.
+            /// </summary>
+            public const string TrustedApp = "TrustedApp";
         }
 
         /// <summary>

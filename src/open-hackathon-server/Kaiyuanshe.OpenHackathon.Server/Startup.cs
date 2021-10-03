@@ -56,6 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             {
                 options.AllowSynchronousIO = true;
             });
+            services.AddHttpContextAccessor();
 
             // Razor pages
             services.AddRazorPages(options =>
@@ -145,6 +146,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             services.AddSingleton<IAuthorizationHandler, HackathonJudgeHandler>();
             services.AddSingleton<IAuthorizationHandler, TeamAdministratorHandler>();
             services.AddSingleton<IAuthorizationHandler, TeamMemberHandler>();
+            services.AddSingleton<IAuthorizationHandler, TrustedAppHandler>();
             services.AddSingleton<IAuthorizationHandler, NoRequirementHandler>();
 
             services.AddAuthentication(options =>
@@ -180,6 +182,10 @@ namespace Kaiyuanshe.OpenHackathon.Server
                 options.AddPolicy(AuthConstant.Policy.TeamMember, policy =>
                 {
                     policy.Requirements.Add(new TeamMemberRequirement());
+                });
+                options.AddPolicy(AuthConstant.Policy.TrustedApp, policy =>
+                {
+                    policy.Requirements.Add(new TrustedAppRequirement());
                 });
 
                 // empty policies to make swagger UI happy
