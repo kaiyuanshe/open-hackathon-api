@@ -60,7 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
                         EnvironmentVariables = BuildEnvironmentVariables(),
                         Command = TemplateEntity.Commands,
                     },
-                    VncConnection = TemplateEntity.Vnc == null ? null : new VncConnection
+                    VncConnection = TemplateEntity.Vnc == null ? null : new Vnc
                     {
                         Username = TemplateEntity.Vnc.userName,
                         Password = TemplateEntity.Vnc.password,

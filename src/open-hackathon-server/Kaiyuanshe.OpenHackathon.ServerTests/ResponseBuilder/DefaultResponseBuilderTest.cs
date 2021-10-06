@@ -151,6 +151,38 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
+        #region BuildGuacamoleConnection
+        [Test]
+        public void BuildGuacamoleConnection_Vnc()
+        {
+            var template = new TemplateEntity { DisplayName = "dn", RowKey = "name" };
+            var status = new ExperimentStatus
+            {
+                IngressIPs = new string[] { "10.0.0.1", "10.0.0.2" },
+                IngressPort = 15901,
+                IngressProtocol = IngressProtocol.vnc,
+                VncConnection = new Vnc
+                {
+                    Username = "un",
+                    Password = "pwd"
+                },
+            };
+            var context = new ExperimentContext { Status = status };
+
+            var respBuilder = new DefaultResponseBuilder();
+            var conn = respBuilder.BuildGuacamoleConnection(context, template);
+
+            Assert.IsTrue(conn is VncConnection);
+            Assert.AreEqual(IngressProtocol.vnc, conn.protocol);
+            Assert.AreEqual("dn", conn.name);
+            VncConnection vnc = conn as VncConnection;
+            Assert.AreEqual("10.0.0.1", vnc.hostname);
+            Assert.AreEqual(15901, vnc.port);
+            Assert.AreEqual("un", vnc.username);
+            Assert.AreEqual("pwd", vnc.password);
+        }
+        #endregion
+
         #region BuildTeamTest
         [Test]
         public void BuildTeamTest()
@@ -271,7 +303,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 Image = "image",
                 IngressPort = 22,
                 IngressProtocol = IngressProtocol.ssh,
-                Vnc = new Vnc { userName = "un", password = "pw" },
+                Vnc = new VncSettings { userName = "un", password = "pw" },
                 CreatedAt = DateTime.UtcNow,
                 Timestamp = DateTime.UtcNow
             };

@@ -71,6 +71,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// vnc settings.
         /// </summary>
         [ConvertableEntityProperty]
-        public Vnc Vnc { get; set; }
+        public VncSettings Vnc { get; set; }
     }
 }

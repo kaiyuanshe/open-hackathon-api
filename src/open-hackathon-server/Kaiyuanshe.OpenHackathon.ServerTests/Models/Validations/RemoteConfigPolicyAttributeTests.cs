@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             Template c = new Template
             {
                 ingressProtocol = IngressProtocol.vnc,
-                vnc = new Vnc
+                vnc = new VncSettings
                 {
                     password = "pw"
                 }
@@ -40,7 +40,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             Template d = new Template
             {
                 ingressProtocol = IngressProtocol.vnc,
-                vnc = new Vnc
+                vnc = new VncSettings
                 {
                     userName = "un"
                 }
@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             Template e = new Template
             {
                 ingressProtocol = IngressProtocol.vnc,
-                vnc = new Vnc
+                vnc = new VncSettings
                 {
                     password = "pw",
                     userName = "un"

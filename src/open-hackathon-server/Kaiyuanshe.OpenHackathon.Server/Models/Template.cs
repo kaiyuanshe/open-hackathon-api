@@ -71,13 +71,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// vnc settings. Required ingressProtocol is vnc.
         /// </summary>
-        public Vnc vnc { get; set; }
+        public VncSettings vnc { get; set; }
     }
 
     /// <summary>
     /// vnc configurations.
     /// </summary>
-    public class Vnc
+    public class VncSettings
     {
         /// <summary>
         /// login user name for remote connection. lowercase chars and numbers only: ^[a-z][a-z0-9]{1,63}$

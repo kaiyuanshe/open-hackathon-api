@@ -29,11 +29,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
                 }
                 if (template.vnc.userName == null)
                 {
-                    invalidMembers.Add(nameof(Vnc.userName));
+                    invalidMembers.Add(nameof(VncSettings.userName));
                 }
                 if (template.vnc.password == null)
                 {
-                    invalidMembers.Add(nameof(Vnc.password));
+                    invalidMembers.Add(nameof(VncSettings.password));
                 }
                 if (invalidMembers.Count > 0)
                 {

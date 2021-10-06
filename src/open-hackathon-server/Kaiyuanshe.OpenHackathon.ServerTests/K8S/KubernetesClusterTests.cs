@@ -2,6 +2,7 @@
 using k8s.Models;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
@@ -79,7 +80,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             kubernetes.VerifyNoOtherCalls();
 
             Assert.AreEqual(200, context.Status.Code);
-            Assert.AreEqual("vnc", context.Status.IngressProtocol);
+            Assert.AreEqual(IngressProtocol.vnc, context.Status.IngressProtocol);
             Assert.AreEqual("meta-cluster", context.Status.ClusterName);
         }
 

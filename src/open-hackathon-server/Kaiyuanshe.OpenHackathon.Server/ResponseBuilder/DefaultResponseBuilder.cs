@@ -19,6 +19,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
         Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
 
+        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateEntity template);
+
         Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
 
         TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
@@ -107,6 +109,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 p.user = userInfo;
                 p.status = Status.FromV1Status(context.Status);
             });
+        }
+
+        public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateEntity template)
+        {
+            GuacamoleConnection conn = null;
+            switch (context.Status.IngressProtocol)
+            {
+                case IngressProtocol.vnc:
+                    conn = new VncConnection
+                    {
+                        name = template.DisplayName,
+                        protocol = IngressProtocol.vnc,
+                        hostname = context.Status.IngressIPs.First(),
+                        port = context.Status.IngressPort,
+                        username = context.Status.VncConnection.Username,
+                        password = context.Status.VncConnection.Password,
+                    };
+                    break;
+                default:
+                    break;
+            }
+
+            return conn;
         }
 
         public Team BuildTeam(TeamEntity teamEntity, UserInfo creator)
