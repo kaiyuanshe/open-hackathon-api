@@ -32,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         public int IngressPort { get; set; }
 
         [JsonProperty(PropertyName = "vnc")]
-        public VncConnection VncConnection { get; set; }
+        public Vnc VncConnection { get; set; }
     }
 
     public class PodTemplate
@@ -47,7 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         public IDictionary<string, string> EnvironmentVariables { get; set; }
     }
 
-    public class VncConnection
+    public class Vnc
     {
         [JsonProperty(PropertyName = "username")]
         public string Username { get; set; }

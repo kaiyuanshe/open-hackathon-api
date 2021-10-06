@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 image = "image",
                 ingressPort = 22,
                 ingressProtocol = IngressProtocol.vnc,
-                vnc = new Vnc { userName = "un", password = "pw" },
+                vnc = new VncSettings { userName = "un", password = "pw" },
             };
             TemplateEntity entity = new TemplateEntity { PartitionKey = "pk" };
 
@@ -101,7 +101,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 image = "image",
                 ingressPort = 22,
                 ingressProtocol = IngressProtocol.vnc,
-                vnc = new Vnc { userName = "un", password = "pw" },
+                vnc = new VncSettings { userName = "un", password = "pw" },
             };
             TemplateEntity entity = new TemplateEntity { PartitionKey = "pk" };
 

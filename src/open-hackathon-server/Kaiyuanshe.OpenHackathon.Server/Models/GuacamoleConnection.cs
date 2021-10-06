@@ -36,7 +36,7 @@
         /// <summary>
         /// The port the VNC server is listening on, usually 5900 or 5900 + display number. For example, if your VNC server is serving display number 1 (sometimes written as :1), your port number here would be 5901.
         /// </summary>
-        public string port { get; internal set; }
+        public int port { get; internal set; }
 
         /// <summary>
         /// The username to use when attempting authentication, if any. This parameter is optional.

@@ -25,7 +25,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                         { "key", "value" }
                     },
                     Commands = new string[] { "a" },
-                    Vnc = new Vnc
+                    Vnc = new VncSettings
                     {
                         userName = "un",
                         password = "pwd"

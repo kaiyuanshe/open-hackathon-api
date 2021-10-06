@@ -1,4 +1,5 @@
 ﻿using k8s.Models;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Newtonsoft.Json;
 
 namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
@@ -35,12 +36,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         public string[] IngressIPs { get; set; }
 
         [JsonProperty(PropertyName = "ingressPort")]
-        public int ingressPort { get; set; }
+        public int IngressPort { get; set; }
 
         [JsonProperty(PropertyName = "protocol")]
-        public string IngressProtocol { get; set; }
+        public IngressProtocol IngressProtocol { get; set; }
 
         [JsonProperty(PropertyName = "vnc")]
-        public VncConnection VncConnection { get; set; }
+        public Vnc VncConnection { get; set; }
     }
 }
