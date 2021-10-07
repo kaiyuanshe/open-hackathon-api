@@ -248,15 +248,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task GetExperimentAsync_EntityNotFound()
         {
             ExperimentEntity entity = null;
-            var experiment = new Experiment
-            {
-                hackathonName = "hack",
-                templateName = "tn",
-                userId = "uid",
-            };
 
             var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 
@@ -266,7 +260,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 StorageContext = storageContext.Object,
             };
 
-            var result = await management.GetExperimentAsync(experiment, default);
+            var result = await management.GetExperimentAsync("hack", "expId", default);
 
             Mock.VerifyAll(experimentTable, storageContext);
             experimentTable.VerifyNoOtherCalls();
@@ -279,15 +273,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task GetExperimentAsync_Exception()
         {
             ExperimentEntity entity = new ExperimentEntity { };
-            var experiment = new Experiment
-            {
-                hackathonName = "hack",
-                templateName = "tn",
-                userId = "uid",
-            };
 
             var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 
@@ -304,7 +292,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 KubernetesClusterFactory = k8sfactory.Object,
             };
 
-            var result = await management.GetExperimentAsync(experiment, default);
+            var result = await management.GetExperimentAsync("hack", "expId", default);
 
             Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
             experimentTable.VerifyNoOtherCalls();
@@ -323,15 +311,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task GetExperimentAsync_Success()
         {
             ExperimentEntity entity = new ExperimentEntity { };
-            var experiment = new Experiment
-            {
-                hackathonName = "hack",
-                templateName = "tn",
-                userId = "uid",
-            };
 
             var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 
@@ -351,7 +333,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 KubernetesClusterFactory = k8sfactory.Object,
             };
 
-            var result = await management.GetExperimentAsync(experiment, default);
+            var result = await management.GetExperimentAsync("hack", "expId", default);
 
             Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
             experimentTable.VerifyNoOtherCalls();

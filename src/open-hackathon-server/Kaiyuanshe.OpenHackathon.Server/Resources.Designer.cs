@@ -223,6 +223,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The experiment is not found..
+        /// </summary>
+        internal static string Experiment_NotFound {
+            get {
+                return ResourceManager.GetString("Experiment_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forbidden. The experiment is owned by another user..
+        /// </summary>
+        internal static string Experiment_UserNotMatch {
+            get {
+                return ResourceManager.GetString("Experiment_UserNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hackathon {0} is already Online..
         /// </summary>
         internal static string Hackathon_AlreadyOnline {

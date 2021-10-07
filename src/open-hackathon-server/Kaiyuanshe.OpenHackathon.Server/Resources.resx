@@ -171,6 +171,12 @@
   <data name="Enrollment_TooManyExtensions" xml:space="preserve">
     <value>Count of extensions exceeds the allowed limit {0}.</value>
   </data>
+  <data name="Experiment_NotFound" xml:space="preserve">
+    <value>The experiment is not found.</value>
+  </data>
+  <data name="Experiment_UserNotMatch" xml:space="preserve">
+    <value>Forbidden. The experiment is owned by another user.</value>
+  </data>
   <data name="Hackathon_AlreadyOnline" xml:space="preserve">
     <value>Hackathon {0} is already Online.</value>
   </data>

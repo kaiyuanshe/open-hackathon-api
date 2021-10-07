@@ -18,6 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         string[] _trustedApps = new string[0];
 
         static readonly string HeaderNameAppId = "x-openhackathon-app";
+        // Add to env variable "Guacamole__TrustedApps" to set the value.
         static readonly string configNameTrustedApps = "Guacamole:TrustedApps";
 
         public TrustedAppHandler(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
