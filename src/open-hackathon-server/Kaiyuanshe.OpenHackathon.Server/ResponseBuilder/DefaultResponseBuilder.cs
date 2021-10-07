@@ -119,7 +119,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 case IngressProtocol.vnc:
                     conn = new VncConnection
                     {
-                        name = template.DisplayName,
+                        name = template?.DisplayName ?? context.ExperimentEntity.TemplateName,
                         protocol = IngressProtocol.vnc,
                         hostname = context.Status.IngressIPs.First(),
                         port = context.Status.IngressPort,

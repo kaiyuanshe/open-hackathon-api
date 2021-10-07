@@ -13,7 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<TemplateContext> CreateTemplateAsync(Template template, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
-        Task<ExperimentContext> GetExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
+        Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -113,13 +113,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetExperimentAsync
-        public async Task<ExperimentContext> GetExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
+        public async Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
         {
-            if (experiment == null)
+            if (hackathonName == null || experimentId == null)
                 return null;
 
-            var rk = GetExperimentRowKey(experiment.userId, experiment.templateName);
-            var entity = await StorageContext.ExperimentTable.RetrieveAsync(experiment.hackathonName, rk, cancellationToken);
+            var entity = await StorageContext.ExperimentTable.RetrieveAsync(hackathonName, experimentId, cancellationToken);
             if (entity == null)
                 return null;
 

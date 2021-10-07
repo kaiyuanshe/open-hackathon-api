@@ -14,12 +14,12 @@
         public IngressProtocol protocol { get; internal set; }
     }
 
-    public class GuacamoleConnectionList : ResourceList<GuacamoleConnection>
+    public class GuacamoleConnectionList : ResourceList<object>
     {
         /// <summary>
         /// a list of connection info.
         /// </summary>
-        public override GuacamoleConnection[] value { get; set; }
+        public override object[] value { get; set; }
     }
 
     /// <summary>
