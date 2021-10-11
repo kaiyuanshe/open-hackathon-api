@@ -12,6 +12,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public interface IExperimentManagement
     {
         Task<TemplateContext> CreateTemplateAsync(Template template, CancellationToken cancellationToken);
+        Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
@@ -60,6 +61,39 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             {
                 logger.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new k8s.Models.V1Status
+                {
+                    Code = 500,
+                    Reason = "Internal Server Error",
+                    Message = e.Message,
+                };
+            }
+            return context;
+        }
+        #endregion
+
+        #region GetTemplateAsync
+        public async Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken)
+        {
+            if (hackathonName == null || templateName == null)
+                return null;
+
+            var entity = await StorageContext.TemplateTable.RetrieveAsync(hackathonName, templateName.ToLower(), cancellationToken);
+            if (entity == null)
+                return null;
+
+            var context = new TemplateContext
+            {
+                TemplateEntity = entity,
+            };
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            try
+            {
+                await kubernetesCluster.GetTemplateAsync(context, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.TraceError($"Internal error: {e.Message}", e);
+                context.Status = new ExperimentStatus
                 {
                     Code = 500,
                     Reason = "Internal Server Error",
