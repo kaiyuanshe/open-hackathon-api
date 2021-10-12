@@ -1,9 +1,9 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
+using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -189,7 +189,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             else
             {
-                TemplateEntity template = null;// await ExperimentManagement.get(cancellationToken);
+                TemplateContext template = await ExperimentManagement.GetTemplateAsync(
+                    hackathonName.ToLower(),
+                    context.ExperimentEntity.TemplateName,
+                    cancellationToken);
                 var conn = ResponseBuilder.BuildGuacamoleConnection(context, template);
                 var list = new GuacamoleConnectionList
                 {

@@ -155,7 +155,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         [Test]
         public void BuildGuacamoleConnection_Vnc()
         {
-            var template = new TemplateEntity { DisplayName = "dn", RowKey = "name" };
+            var template = new TemplateContext
+            {
+                TemplateEntity =
+                new TemplateEntity { DisplayName = "dn", RowKey = "name" }
+            };
             var status = new ExperimentStatus
             {
                 IngressIPs = new string[] { "10.0.0.1", "10.0.0.2" },
