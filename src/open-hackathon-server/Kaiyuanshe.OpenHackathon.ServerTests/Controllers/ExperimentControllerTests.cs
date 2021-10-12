@@ -253,5 +253,181 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("reason", resp.status.reason);
         }
         #endregion
+
+        #region GetConnections
+        [Test]
+        public async Task GetConnections_ExpNotFound()
+        {
+            var hackathon = new HackathonEntity { };
+            var experiment = new ExperimentContext { };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(e => e.GetExperimentAsync("hack", "eid", default)).ReturnsAsync(experiment);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+            };
+            var result = await controller.GetConnections("hack", "eid", default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 404, Resources.Experiment_NotFound);
+        }
+
+        [Test]
+        public async Task GetConnections_UserNotMatch()
+        {
+            var hackathon = new HackathonEntity { };
+            var experiment = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    UserId = "other"
+                }
+            };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(e => e.GetExperimentAsync("hack", "eid", default)).ReturnsAsync(experiment);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+            };
+            var result = await controller.GetConnections("hack", "eid", default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 403, Resources.Experiment_UserNotMatch);
+        }
+
+        [Test]
+        public async Task GetConnections_ExpFailed()
+        {
+            var hackathon = new HackathonEntity { };
+            var experiment = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { UserId = "" },
+                Status = new ExperimentStatus { Code = 400, Message = "msg" }
+            };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(e => e.GetExperimentAsync("hack", "eid", default)).ReturnsAsync(experiment);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+            };
+            var result = await controller.GetConnections("hack", "eid", default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 400, "msg");
+        }
+
+        [Test]
+        public async Task GetConnections_SucceedWithoutTemplate()
+        {
+            var hackathon = new HackathonEntity { };
+            var experiment = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateName = "tn" },
+                Status = new ExperimentStatus
+                {
+                    IngressProtocol = IngressProtocol.vnc,
+                    IngressPort = 5902
+                }
+            };
+            var template = new TemplateContext
+            {
+            };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(e => e.GetExperimentAsync("hack", "eid", default)).ReturnsAsync(experiment);
+            experimentManagement.Setup(e => e.GetTemplateAsync("hack", "tn", default)).ReturnsAsync(template);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+                ResponseBuilder = new DefaultResponseBuilder(),
+            };
+            var result = await controller.GetConnections("hack", "eid", default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            var list = AssertHelper.AssertOKResult<GuacamoleConnectionList>(result);
+            Assert.AreEqual(1, list.value.Length);
+            VncConnection vncConnection = list.value[0] as VncConnection;
+            Assert.IsNotNull(vncConnection);
+            Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
+            Assert.AreEqual(5902, vncConnection.port);
+            Assert.AreEqual("tn", vncConnection.name);
+        }
+
+        [Test]
+        public async Task GetConnections_SucceedWithTemplate()
+        {
+            var hackathon = new HackathonEntity { };
+            var experiment = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateName = "tn" },
+                Status = new ExperimentStatus
+                {
+                    IngressProtocol = IngressProtocol.vnc,
+                    IngressPort = 5902
+                }
+            };
+            var template = new TemplateContext
+            {
+                TemplateEntity = new TemplateEntity { DisplayName = "display" }
+            };
+
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var experimentManagement = new Mock<IExperimentManagement>();
+            experimentManagement.Setup(e => e.GetExperimentAsync("hack", "eid", default)).ReturnsAsync(experiment);
+            experimentManagement.Setup(e => e.GetTemplateAsync("hack", "tn", default)).ReturnsAsync(template);
+
+            var controller = new ExperimentController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                ExperimentManagement = experimentManagement.Object,
+                ResponseBuilder = new DefaultResponseBuilder(),
+            };
+            var result = await controller.GetConnections("hack", "eid", default);
+
+            Mock.VerifyAll(hackathonManagement, experimentManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            experimentManagement.VerifyNoOtherCalls();
+
+            var list = AssertHelper.AssertOKResult<GuacamoleConnectionList>(result);
+            Assert.AreEqual(1, list.value.Length);
+            VncConnection vncConnection = list.value[0] as VncConnection;
+            Assert.IsNotNull(vncConnection);
+            Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
+            Assert.AreEqual(5902, vncConnection.port);
+            Assert.AreEqual("display", vncConnection.name);
+        }
+        #endregion
     }
 }

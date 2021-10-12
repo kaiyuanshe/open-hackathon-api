@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
         Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
 
-        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateEntity template);
+        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template);
 
         Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
 
@@ -111,7 +111,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateEntity template)
+        public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template)
         {
             GuacamoleConnection conn = null;
             switch (context.Status.IngressProtocol)
@@ -119,12 +119,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 case IngressProtocol.vnc:
                     conn = new VncConnection
                     {
-                        name = template?.DisplayName ?? context.ExperimentEntity.TemplateName,
+                        name = template?.TemplateEntity?.DisplayName ?? context.ExperimentEntity.TemplateName,
                         protocol = IngressProtocol.vnc,
-                        hostname = context.Status.IngressIPs.First(),
+                        hostname = context.Status.IngressIPs?.FirstOrDefault(),
                         port = context.Status.IngressPort,
-                        username = context.Status.VncConnection.Username,
-                        password = context.Status.VncConnection.Password,
+                        username = context.Status.VncConnection?.Username,
+                        password = context.Status.VncConnection?.Password,
                     };
                     break;
                 default:
