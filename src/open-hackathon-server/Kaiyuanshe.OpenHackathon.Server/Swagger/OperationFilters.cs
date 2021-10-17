@@ -83,7 +83,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
 
             var errorRespSchema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails), context.SchemaRepository);
             var authorizeAttrs = context.MethodInfo.GetCustomAttributes<AuthorizeAttribute>();
-            if (authorizeAttrs.SingleOrDefault() != null)
+            if (authorizeAttrs.Count() > 0)
             {
                 // Add 401 response to Swagger
                 operation.Responses.Add("401", new OpenApiResponse
