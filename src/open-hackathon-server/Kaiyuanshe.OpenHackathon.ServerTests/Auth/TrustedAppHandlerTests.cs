@@ -50,7 +50,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             config.SetupGet(p => p["Guacamole:TrustedApps"]).Returns("aa,bb;cc");
 
             var headers = new HeaderDictionary();
-            headers.Add("x-openhackathon-app", "dd");
+            headers.Add("x-openhackathon-app-id", "dd");
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
 
@@ -85,7 +85,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             config.SetupGet(p => p["Guacamole:TrustedApps"]).Returns("aa,bb;cc");
 
             var headers = new HeaderDictionary();
-            headers.Add("x-openhackathon-app", appId);
+            headers.Add("x-openhackathon-app-id", appId);
             var request = new Mock<HttpRequest>();
             request.SetupGet(r => r.Headers).Returns(headers);
 
