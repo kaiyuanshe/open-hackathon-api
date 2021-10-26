@@ -138,7 +138,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region GetConnections
         /// <summary>
-        /// Get connection infos for Guacamole. 
+        /// Get connection infos for Guacamole. Trusted app only. The connection infos contain username, password etc.
+        /// They are required for remote connections. Clients like guacamole can connect to the experiments via these connections.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -148,7 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(GuacamoleConnectionList), StatusCodes.Status200OK)]
         [SwaggerErrorResponse(400, 404)]
-        [Route("hackathon/{hackathonName}/experiment/{experimentId}")]
+        [Route("hackathon/{hackathonName}/experiment/{experimentId}/connections")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
         [Authorize(Policy = AuthConstant.Policy.TrustedApp)]
         public async Task<object> GetConnections(
