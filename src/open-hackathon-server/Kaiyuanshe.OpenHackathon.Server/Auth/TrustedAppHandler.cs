@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         IHttpContextAccessor _httpContextAccessor = null;
         string[] _trustedApps = new string[0];
 
-        static readonly string HeaderNameAppId = "x-openhackathon-app";
+        static readonly string HeaderNameAppId = "x-openhackathon-app-id";
         // Add to env variable "Guacamole__TrustedApps" to set the value.
         static readonly string configNameTrustedApps = "Guacamole:TrustedApps";
 
@@ -37,7 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             var request = _httpContextAccessor.HttpContext.Request;
             if (!request.Headers.ContainsKey(HeaderNameAppId))
             {
-                // No "x-openhackathon-app" header
+                // No "x-openhackathon-app-id" header
                 return Task.CompletedTask;
             }
 
