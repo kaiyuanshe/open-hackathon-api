@@ -16,6 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
         {
             // Storage
             builder.RegisterType<DefaultStorageAccountProvider>().As<IStorageAccountProvider>().PropertiesAutowired().SingleInstance();
+            builder.RegisterType<StorageCredentialProvider>().As<IStorageCredentialProvider>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<StorageContext>().As<IStorageContext>().PropertiesAutowired().SingleInstance();
 
             //Biz
