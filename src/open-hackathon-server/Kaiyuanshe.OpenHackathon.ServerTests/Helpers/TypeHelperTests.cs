@@ -114,5 +114,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
             Assert.AreEqual("openid", user.Identities.First().Openid);
             Assert.IsNull(user.City);
         }
+
+        public interface IInheritTest { }
+        public abstract class InheritTest : IInheritTest { }
+        public interface IInheritTestA: IInheritTest { }
+        public abstract class InheritTestA : IInheritTestA { }
+        public abstract class InheritTestB : IInheritTest { }
+
+        [Test]
+        public void InheritsOrImplements()
+        {
+            Assert.IsTrue(typeof(InheritTest).InheritsOrImplements(typeof(IInheritTest)));
+            Assert.IsTrue(typeof(IInheritTestA).InheritsOrImplements(typeof(IInheritTest)));
+            Assert.IsTrue(typeof(InheritTestA).InheritsOrImplements(typeof(IInheritTest)));
+            Assert.IsTrue(typeof(InheritTestB).InheritsOrImplements(typeof(IInheritTest)));
+
+            Assert.IsTrue(typeof(InheritTestA).InheritsOrImplements(typeof(IInheritTestA)));
+            Assert.IsFalse(typeof(InheritTestB).InheritsOrImplements(typeof(IInheritTestA)));
+        }
     }
 }

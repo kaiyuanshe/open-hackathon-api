@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Kaiyuanshe.OpenHackathon.Server
 {
@@ -18,6 +18,51 @@ namespace Kaiyuanshe.OpenHackathon.Server
         {
             Type[] theTypes = abstractType.Assembly.GetTypes();
             return theTypes.Where(t => (!t.IsAbstract) && abstractType.IsAssignableFrom(t)).ToArray();
+        }
+
+        /// <summary>
+        /// Get all instantiable sub types of a generic type in the declaring assembly and specified assembly
+        /// </summary>
+        public static Type[] GenericSubTypes(this Type abstractType, params Assembly[] assemblies)
+        {
+            var parentType = ResolveGenericTypeDefinition(abstractType);
+
+            IEnumerable<Assembly> searchingAssemblies = new List<Assembly> { abstractType.Assembly };
+            if (assemblies != null)
+            {
+                searchingAssemblies = searchingAssemblies.Concat(assemblies.Where(a => a != abstractType.Assembly));
+            }
+            IEnumerable<Type> theTypes = searchingAssemblies.SelectMany(a => a.GetTypes());
+
+            return theTypes.Where(t => (!t.IsAbstract) && t.InheritsOrImplements(parentType)).ToArray();
+        }
+
+        public static IEnumerable<Type> GetInterfaces(this Type type, bool includeInherited)
+        {
+            if (includeInherited || type.BaseType == null)
+                return type.GetInterfaces();
+            else
+                return type.GetInterfaces().Except(type.BaseType.GetInterfaces());
+        }
+
+        public static bool InheritsOrImplements(this Type child, Type parent)
+        {
+            parent = ResolveGenericTypeDefinition(parent);
+
+            var currentChild = child.IsGenericType ? child.GetGenericTypeDefinition() : child;
+            while (currentChild != typeof(object))
+            {
+                if (parent == currentChild || HasAnyInterfaces(parent, currentChild))
+                    return true;
+
+                currentChild = currentChild.BaseType != null && currentChild.BaseType.IsGenericType
+                                   ? currentChild.BaseType.GetGenericTypeDefinition()
+                                   : currentChild.BaseType;
+
+                if (currentChild == null)
+                    return false;
+            }
+            return false;
         }
 
         public static TDestination As<TDestination>(this object src, Action<TDestination> configure = null)
@@ -272,6 +317,26 @@ namespace Kaiyuanshe.OpenHackathon.Server
             }
 
             return null;
+        }
+
+        private static Type ResolveGenericTypeDefinition(Type parent)
+        {
+            if (parent.IsGenericType && parent.GetGenericTypeDefinition() == parent)
+            {
+                return parent.GetGenericTypeDefinition();
+            }
+
+            return parent;
+        }
+
+        private static bool HasAnyInterfaces(Type parent, Type child)
+        {
+            return child.GetInterfaces()
+                .Any(childInterface =>
+                {
+                    var currentInterface = childInterface.IsGenericType ? childInterface.GetGenericTypeDefinition() : childInterface;
+                    return currentInterface == parent;
+                });
         }
     }
 }
