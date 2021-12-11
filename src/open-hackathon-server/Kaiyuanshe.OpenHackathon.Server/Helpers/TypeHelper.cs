@@ -21,6 +21,24 @@ namespace Kaiyuanshe.OpenHackathon.Server
         }
 
         /// <summary>
+        /// Get all instantiable sub types in the declaring assembly and specified assembly
+        /// </summary>
+        /// <param name="abstractType"></param>
+        /// <param name="assemblies"></param>
+        /// <returns></returns>
+        public static Type[] SubTypes(this Type abstractType, params Assembly[] assemblies)
+        {
+            IEnumerable<Assembly> searchingAssemblies = new List<Assembly> { abstractType.Assembly };
+            if (assemblies != null)
+            {
+                searchingAssemblies = searchingAssemblies.Concat(assemblies.Where(a => a != abstractType.Assembly));
+            }
+
+            IEnumerable<Type> theTypes = searchingAssemblies.SelectMany(a => a.GetTypes());
+            return theTypes.Where(t => (!t.IsAbstract) && abstractType.IsAssignableFrom(t)).ToArray();
+        }
+
+        /// <summary>
         /// Get all instantiable sub types of a generic type in the declaring assembly and specified assembly
         /// </summary>
         public static Type[] GenericSubTypes(this Type abstractType, params Assembly[] assemblies)
