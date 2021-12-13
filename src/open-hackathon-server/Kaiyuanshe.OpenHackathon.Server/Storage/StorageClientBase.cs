@@ -7,6 +7,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
     {
         public IStorageCredentialProvider StorageCredentialProvider { get; set; }
 
+        public ITraceIdHttpPipelinePolicyFactory TraceIdHttpPipelinePolicyFactory { get; set; }
+
         public abstract string StorageName { get; }
 
         protected IDictionary<string, object> GetMessageProperties()
