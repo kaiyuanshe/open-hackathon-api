@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IUserTable : IAzureTable<DynamicTableEntity>
+    public interface IUserTable : IAzureTable<Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity>
     {
         Task<UserInfo> GetUserByIdAsync(string id, CancellationToken cancellationToken = default);
-        Task<DynamicTableEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default);
+        Task<Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default);
     }
 
-    public class UserTable : AzureTable<DynamicTableEntity>, IUserTable
+    public class UserTable : AzureTable<Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity>, IUserTable
     {
         public UserTable(CloudStorageAccount storageAccount, string tableName) : base(storageAccount, tableName)
         {
@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             });
         }
 
-        public async Task<DynamicTableEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
+        public async Task<Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {
             var entity = userInfo.ToTableEntity(userInfo.Id.ToLower(), string.Empty);
             await InsertOrReplaceAsync(entity);

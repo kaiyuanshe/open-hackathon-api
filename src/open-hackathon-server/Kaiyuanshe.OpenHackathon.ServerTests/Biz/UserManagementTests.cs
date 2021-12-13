@@ -32,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Token = "token",
             };
             var cancellationToken = new CancellationTokenSource().Token;
-            var dynamicEntity = new DynamicTableEntity();
+            var dynamicEntity = new Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity();
 
             // moc
             var storage = new Mock<IStorageContext>();
