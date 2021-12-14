@@ -2,6 +2,7 @@
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Data.Tables;
+using Kaiyuanshe.OpenHackathon.Server.Extensions;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -13,7 +14,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public interface IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
     {
         Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
-
     }
 
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
@@ -36,7 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var query = client.QueryAsync<TableEntity>(filter, null, select, cancellationToken);
-                    // await query.ForEach(entity => entities.Add(entity.ToSignalRTableEntity<TEntity>()), null, cancellationToken);
+                    await query.ForEach(entity => entities.Add(entity.ToBaseTableEntity<TEntity>()), null, cancellationToken);
                 }
                 catch (RequestFailedException ex)
                 {
