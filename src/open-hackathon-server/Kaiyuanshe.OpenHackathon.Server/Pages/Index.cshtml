@@ -49,8 +49,8 @@
 <h3>Error Response</h3>
 <div>
     Http response with a code >= 400 is considered Error. A <a href="https://tools.ietf.org/html/rfc7807" target="_blank">RFC7807</a>-compliant standard
-    response body is retured. The response is of type <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails?view=aspnetcore-5.0" target="_blank">ProblemDetails</a>(code other than 400)
-    or <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.validationproblemdetails?view=aspnetcore-5.0" target="_blank">ValidationProblemDetails</a>(http code 400). Example:
+    response body is retured. The response is of type <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails" target="_blank">ProblemDetails</a>(code other than 400)
+    or <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.validationproblemdetails" target="_blank">ValidationProblemDetails</a>(http code 400). Example:
        <pre>
 {
     "type": "https://httpstatuses.com/400",

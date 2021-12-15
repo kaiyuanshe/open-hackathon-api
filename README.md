@@ -1,7 +1,7 @@
 Open Hackathon Platform
 ======
 
-[![.NET 5 Build, Push and Publish](https://github.com/kaiyuanshe/open-hackathon-api/actions/workflows/dotnet.yml/badge.svg)](https://github.com/kaiyuanshe/open-hackathon-api/actions/workflows/dotnet.yml)
+[![.NET 6 Build, Push and Publish](https://github.com/kaiyuanshe/open-hackathon-api/actions/workflows/dotnet.yml/badge.svg)](https://github.com/kaiyuanshe/open-hackathon-api/actions/workflows/dotnet.yml)
 
 # Introduction
 Open Hackathon Platform
