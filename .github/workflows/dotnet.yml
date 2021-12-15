@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: .NET 5 Build, Push and Publish
+name: .NET 6 Build, Push and Publish
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -29,11 +29,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Setup .Net Core
-    - name: Setup .NET Core
+    # Setup .Net
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.*
+        dotnet-version: 6.0.*
 
     # restore dependencies
     - name: Install dependencies

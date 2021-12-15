@@ -1,4 +1,4 @@
-name: .NET Core Build - Pull Request
+name: .NET Build - Pull Request
 
 on:
   pull_request:
@@ -20,10 +20,10 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.*
+        dotnet-version: 6.0.*
       
       # restore dependencies  
     - name: Install dependencies

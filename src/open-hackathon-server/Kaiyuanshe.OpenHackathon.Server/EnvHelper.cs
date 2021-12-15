@@ -7,7 +7,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
     {
         public static bool IsDevelopment()
         {
-            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/environments?view=aspnetcore-5.0#environments
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#environment-variables
             var envName = "ASPNETCORE_ENVIRONMENT";
             if (Environment.GetEnvironmentVariable(envName, EnvironmentVariableTarget.Process) == "Development"
                 || Environment.GetEnvironmentVariable(envName, EnvironmentVariableTarget.User) == "Development"
