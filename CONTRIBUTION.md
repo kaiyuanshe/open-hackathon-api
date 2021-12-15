@@ -28,4 +28,4 @@ Third-party patches are essential for keeping open hackathon great. We want to k
 # Additional Resources
 
 * [General GitHub documentation](https://help.github.com/)
-* [GitHub pull request documentation](https://help.github.com/send-pull-requests/)
+* [GitHub pull request documentation](https://docs.github.com/pull-requests)

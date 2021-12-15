@@ -3,8 +3,8 @@ The next generation of backend server for Open Hackathon Platform.
 
 ## Develop
 
-#### Install dotnet core
-Install dotnet core if you haven't: https://docs.microsoft.com/en-us/dotnet/core/install/
+#### Install Visual Studio and .Net 6
+Install Visual Studio 2022 you haven't: https://visualstudio.microsoft.com/
 
 #### Get a ConnectionString of Azure Storage Account. 
 Any storage account will do. If you don't have one, contact [Kaiyuanshe Infrastructure Group](mailto:infra@kaiyuanshe.org) to get one for free(for 6 months).
