@@ -63,6 +63,7 @@ docs/_build/
 # certificates
 *.cer
 *.pem
+*.pfx
 
 #*guacamole.properties
 *.rb~
