@@ -1,5 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,43 +7,29 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IAwardTable : IAzureTable<AwardEntity>
+    public interface IAwardTable : IAzureTableV2<AwardEntity>
     {
         Task<IEnumerable<AwardEntity>> ListAllAwardsAsync(string hackathonName, CancellationToken cancellationToken = default);
     }
 
-    public class AwardTable : AzureTable<AwardEntity>, IAwardTable
+    public class AwardTable : AzureTableV2<AwardEntity>, IAwardTable
     {
-        /// <summary>
-        /// Test only constructor
-        /// </summary>
-        internal AwardTable()
+        protected override string TableName => TableNames.Award;
+
+        public AwardTable(ILogger<AwardTable> logger) : base(logger)
         {
 
-        }
-
-        public AwardTable(CloudStorageAccount storageAccount, string tableName)
-            : base(storageAccount, tableName)
-        {
         }
 
         #region ListAllAwardsAsync
         public async Task<IEnumerable<AwardEntity>> ListAllAwardsAsync(string hackathonName, CancellationToken cancellationToken = default)
         {
-            List<AwardEntity> list = new List<AwardEntity>();
-
             var filter = TableQuery.GenerateFilterCondition(
                            nameof(AwardEntity.PartitionKey),
                            QueryComparisons.Equal,
                            hackathonName);
 
-            TableQuery<AwardEntity> query = new TableQuery<AwardEntity>().Where(filter);
-            await ExecuteQuerySegmentedAsync(query, (segment) =>
-            {
-                list.AddRange(segment);
-            }, cancellationToken);
-
-            return list;
+            return await QueryEntitiesAsync(filter, null, cancellationToken);
         }
         #endregion
     }

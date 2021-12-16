@@ -5,49 +5,49 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 {
     public interface IStorageContext
     {
-        IStorageAccountProvider StorageAccountProvider { get; }
+        IStorageAccountProvider StorageAccountProvider { get; set; }
 
-        IAwardTable AwardTable { get; }
-        IAwardAssignmentTable AwardAssignmentTable { get; }
-        IEnrollmentTable EnrollmentTable { get; }
-        IExperimentTable ExperimentTable { get; }
-        IHackathonTable HackathonTable { get; }
-        IHackathonAdminTable HackathonAdminTable { get; }
-        IJudgeTable JudgeTable { get; }
-        IRatingTable RatingTable { get; }
-        IRatingKindTable RatingKindTable { get; }
-        ITeamTable TeamTable { get; }
-        ITeamMemberTable TeamMemberTable { get; }
-        ITemplateTable TemplateTable { get; }
-        ITeamWorkTable TeamWorkTable { get; }
-        IUserTable UserTable { get; }
-        IUserTokenTable UserTokenTable { get; }
-        IUserBlobContainer UserBlobContainer { get; }
-        IKubernetesBlobContainer KubernetesBlobContainer { get; }
+        IAwardTable AwardTable { get; set; }
+        IAwardAssignmentTable AwardAssignmentTable { get; set; }
+        IEnrollmentTable EnrollmentTable { get; set; }
+        IExperimentTable ExperimentTable { get; set; }
+        IHackathonTable HackathonTable { get; set; }
+        IHackathonAdminTable HackathonAdminTable { get; set; }
+        IJudgeTable JudgeTable { get; set; }
+        IRatingTable RatingTable { get; set; }
+        IRatingKindTable RatingKindTable { get; set; }
+        ITeamTable TeamTable { get; set; }
+        ITeamMemberTable TeamMemberTable { get; set; }
+        ITemplateTable TemplateTable { get; set; }
+        ITeamWorkTable TeamWorkTable { get; set; }
+        IUserTable UserTable { get; set; }
+        IUserTokenTable UserTokenTable { get; set; }
+        IUserBlobContainer UserBlobContainer { get; set; }
+        IKubernetesBlobContainer KubernetesBlobContainer { get; set; }
     }
 
 
     public class StorageContext : IStorageContext
     {
-        public IStorageAccountProvider StorageAccountProvider { get; }
+        public IStorageAccountProvider StorageAccountProvider { get; set; }
 
-        public IAwardTable AwardTable { get; }
-        public IAwardAssignmentTable AwardAssignmentTable { get; }
-        public IEnrollmentTable EnrollmentTable { get; }
-        public IExperimentTable ExperimentTable { get; }
-        public IHackathonAdminTable HackathonAdminTable { get; }
-        public IHackathonTable HackathonTable { get; }
-        public IJudgeTable JudgeTable { get; }
-        public IRatingTable RatingTable { get; }
-        public IRatingKindTable RatingKindTable { get; }
-        public ITeamTable TeamTable { get; }
-        public ITeamMemberTable TeamMemberTable { get; }
-        public ITeamWorkTable TeamWorkTable { get; }
-        public ITemplateTable TemplateTable { get; }
-        public IUserTable UserTable { get; }
-        public IUserTokenTable UserTokenTable { get; }
-        public IUserBlobContainer UserBlobContainer { get; }
-        public IKubernetesBlobContainer KubernetesBlobContainer { get; }
+        public IAwardTable AwardTable { get; set; }
+        public IAwardAssignmentTable AwardAssignmentTable { get; set; }
+        public IEnrollmentTable EnrollmentTable { get; set; }
+        public IExperimentTable ExperimentTable { get; set; }
+        public IHackathonAdminTable HackathonAdminTable { get; set; }
+        public IHackathonTable HackathonTable { get; set; }
+        public IJudgeTable JudgeTable { get; set; }
+        public IRatingTable RatingTable { get; set; }
+        public IRatingKindTable RatingKindTable { get; set; }
+        public ITeamTable TeamTable { get; set; }
+        public ITeamMemberTable TeamMemberTable { get; set; }
+        public ITeamWorkTable TeamWorkTable { get; set; }
+        public ITemplateTable TemplateTable { get; set; }
+        public IUserTable UserTable { get; set; }
+        public IUserTokenTable UserTokenTable { get; set; }
+        public IUserBlobContainer UserBlobContainer { get; set; }
+        public IKubernetesBlobContainer KubernetesBlobContainer { get; set; }
 
         public StorageContext(IStorageAccountProvider storageAccountProvider)
         {
@@ -55,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
             // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
-            AwardTable = new AwardTable(storageAccount, TableNames.Award);
             AwardAssignmentTable = new AwardAssignmentTable(storageAccount, TableNames.AwardAssignment);
             EnrollmentTable = new EnrollmentTable(storageAccount, TableNames.Enrollment);
             ExperimentTable = new ExperimentTable(storageAccount, TableNames.Experiment);

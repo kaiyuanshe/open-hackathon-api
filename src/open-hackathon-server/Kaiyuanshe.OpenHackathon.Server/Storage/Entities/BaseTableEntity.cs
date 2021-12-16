@@ -36,6 +36,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// </summary>
         /// <value>A string containing the ETag value for the entity.</value>
         public string ETag { get; set; }
+
+        /// <summary>
+        /// datetime when the entity is created
+        /// </summary>
+        public DateTime CreatedAt { get; set; }
     }
 
     public sealed class DynamicTableEntity : BaseTableEntity
