@@ -11,9 +11,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     public abstract class BaseTableEntity
     {
         /// <summary>
-     /// The partition key is a unique identifier for the partition within a given table and forms the first part of an entity's primary key.
-     /// </summary>
-     /// <value>A string containing the partition key for the entity.</value>
+        /// The partition key is a unique identifier for the partition within a given table and forms the first part of an entity's primary key.
+        /// </summary>
+        /// <value>A string containing the partition key for the entity.</value>
         public string PartitionKey { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// This property should not be set on insert or update operations (the value will be ignored).
         /// </summary>
         /// <value>A <see cref="T:System.DateTimeOffset" /> containing the timestamp of the entity.</value>
-        public DateTimeOffset? Timestamp { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the entity's ETag.
@@ -120,7 +120,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return tableEntity;
         }
 
-        public static TEntity ToBaseTableEntity<TEntity>(this TableEntity tableEntity) 
+        public static TEntity ToBaseTableEntity<TEntity>(this TableEntity tableEntity)
             where TEntity : BaseTableEntity, new()
         {
             if (tableEntity == null)
@@ -207,7 +207,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                 PartitionKey = tableEntity.PartitionKey,
                 RowKey = tableEntity.RowKey,
                 ETag = tableEntity.ETag.ToString(),
-                Timestamp = tableEntity.Timestamp,
+                Timestamp = tableEntity.Timestamp.GetValueOrDefault(),
             };
             return entity;
         }
