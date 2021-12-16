@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,11 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         #region ListByHackathonAsync
         public async Task<IEnumerable<AwardAssignmentEntity>> ListByHackathonAsync(string hackathonName, CancellationToken cancellationToken = default)
         {
-            var filter = TableQuery.GenerateFilterCondition(
-                nameof(AwardAssignmentEntity.PartitionKey),
-                QueryComparisons.Equal,
-                hackathonName);
-
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
             return await QueryEntitiesAsync(filter, null, cancellationToken);
         }
         #endregion
@@ -42,13 +37,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         #region ListByAwardAsync
         public async Task<IEnumerable<AwardAssignmentEntity>> ListByAwardAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default)
         {
-            var hackathonNameFilter = TableQuery.GenerateFilterCondition(
-                nameof(AwardAssignmentEntity.PartitionKey),
-                QueryComparisons.Equal,
-                hackathonName);
-            var awardIdFilter = TableQuery.GenerateFilterCondition(
-                nameof(AwardAssignmentEntity.AwardId),
-                QueryComparisons.Equal,
+            var hackathonNameFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            var awardIdFilter = TableQueryHelper.FilterForString(
+                nameof(AwardAssignmentEntity.AwardId), 
+                ComparisonOperator.Equal,
                 awardId);
             var filter = TableQueryHelper.And(hackathonNameFilter, awardIdFilter);
 
@@ -59,13 +51,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         #region ListByAssigneeAsync
         public async Task<IEnumerable<AwardAssignmentEntity>> ListByAssigneeAsync(string hackathonName, string assigneeId, CancellationToken cancellationToken = default)
         {
-            var hackathonNameFilter = TableQuery.GenerateFilterCondition(
-                nameof(AwardAssignmentEntity.PartitionKey),
-                QueryComparisons.Equal,
-                hackathonName);
-            var assigneeIdFilter = TableQuery.GenerateFilterCondition(
+            var hackathonNameFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            var assigneeIdFilter = TableQueryHelper.FilterForString(
                 nameof(AwardAssignmentEntity.AssigneeId),
-                QueryComparisons.Equal,
+                ComparisonOperator.Equal,
                 assigneeId);
             var filter = TableQueryHelper.And(hackathonNameFilter, assigneeIdFilter);
 
