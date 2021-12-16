@@ -6,9 +6,9 @@ namespace Kaiyuanshe.OpenHackathon.Server
 {
     public static class DigestHelper
     {
-        [ThreadStatic] private static SHA512Managed _sha512;
+        [ThreadStatic] private static SHA512 _sha512;
 
-        private static SHA512Managed SHA512 => _sha512 ?? (_sha512 = new SHA512Managed());
+        private static SHA512 SHA512 => _sha512 ?? (_sha512 = SHA512.Create());
 
         public static string SHA512Digest(byte[] bytes)
         {
