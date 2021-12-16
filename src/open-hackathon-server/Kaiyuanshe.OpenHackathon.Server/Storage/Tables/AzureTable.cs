@@ -19,24 +19,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
         Task<TableResult> InsertOrReplaceAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-        Task<TableResult> ReplaceAsync(TEntity entity, CancellationToken cancellationToken = default);
-
         Task<TableResult> DeleteAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
 
         Task<TEntity> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<TEntity>> ExecuteQueryAsync(
-            TableQuery<TEntity> query, CancellationToken cancellationToken = default);
 
         Task<TableQuerySegment<TEntity>> ExecuteQuerySegmentedAsync(
             TableQuery<TEntity> query, TableContinuationToken continuationToken, CancellationToken cancellationToken = default);
 
         Task ExecuteQuerySegmentedAsync(TableQuery<TEntity> query,
             Action<TableQuerySegment<TEntity>> action,
-            CancellationToken cancellationToken = default);
-
-        Task ExecuteQuerySegmentedAsync(TableQuery<TEntity> query,
-            Func<TableQuerySegment<TEntity>, Task> asyncAction,
             CancellationToken cancellationToken = default);
     }
 
@@ -140,16 +131,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         }
 
         /// <summary>
-        /// Asynchronously replace an existing entity in the given table.
-        /// </summary>
-        /// <param name="entity">The entity to replace.</param>
-        public virtual async Task<TableResult> ReplaceAsync(TEntity entity, CancellationToken cancellationToken = default)
-        {
-            TableOperation update = TableOperation.Replace(entity);
-            return await ExecuteAsync(update, cancellationToken);
-        }
-
-        /// <summary>
         /// Asynchronously delete an entity identified by the given keys from the given table.
         /// </summary>
         /// <param name="partitionKey">The partitionkey.</param>
@@ -171,18 +152,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             TableOperation retrieveOperation = TableOperation.Retrieve<TEntity>(partitionKey, rowKey);
             TableResult retrieveResult = await ExecuteAsync(retrieveOperation, cancellationToken);
             return (TEntity)retrieveResult.Result;
-        }
-
-        public virtual async Task<IEnumerable<TEntity>> ExecuteQueryAsync(
-            TableQuery<TEntity> query, CancellationToken cancellationToken = default)
-        {
-            List<TEntity> list = new List<TEntity>();
-            await ExecuteQuerySegmentedAsync(query, (segment) =>
-            {
-                list.AddRange(segment);
-            }, cancellationToken);
-
-            return list;
         }
 
         /// <summary>
@@ -224,25 +193,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             {
                 var queryResult = await table.ExecuteQuerySegmentedAsync(query, continuationToken, null, null, cancellationToken);
                 action?.Invoke(queryResult);
-                continuationToken = queryResult.ContinuationToken;
-            } while (continuationToken != null);
-        }
-
-        public virtual async Task ExecuteQuerySegmentedAsync(TableQuery<TEntity> query,
-            Func<TableQuerySegment<TEntity>, Task> asyncAction,
-            CancellationToken cancellationToken = default)
-        {
-            CloudTable table = UnderlyingCloudTable;
-            TableContinuationToken continuationToken = null;
-            query = query ?? new TableQuery<TEntity>();
-            do
-            {
-                var queryResult = await table.ExecuteQuerySegmentedAsync(query, continuationToken, null, null, cancellationToken);
-                cancellationToken.ThrowIfCancellationRequested();
-                if (asyncAction != null)
-                {
-                    await asyncAction.Invoke(queryResult);
-                }
                 continuationToken = queryResult.ContinuationToken;
             } while (continuationToken != null);
         }

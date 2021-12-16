@@ -34,6 +34,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         ILogger logger;
         protected abstract string TableName { get; }
 
+        public override string StorageName => tableClient?.AccountName;
+
         protected AzureTableV2(ILogger logger)
         {
             this.logger = logger;
@@ -169,7 +171,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
         {
             List<TEntity> entities = new List<TEntity>();
             var client = await GetTableClientAsync(cancellationToken);
@@ -248,8 +250,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 var operationIdPolicy = TraceIdHttpPipelinePolicyFactory.GetPipelinePolicy();
                 clientOptions.AddPolicy(operationIdPolicy, HttpPipelinePosition.PerRetry);
 
-                logger.TraceInformation($"Building TableClient for {StorageName}.{TableName}.");
                 tableClient = new TableClient(conn, TableName, clientOptions);
+                logger.TraceInformation($"Building TableClient for {StorageName}.{TableName}.");
                 using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
                 {
                     try

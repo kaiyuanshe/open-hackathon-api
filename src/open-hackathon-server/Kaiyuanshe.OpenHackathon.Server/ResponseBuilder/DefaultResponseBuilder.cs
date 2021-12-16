@@ -173,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         {
             return awardEntity.As<Award>(p =>
             {
-                p.updatedAt = awardEntity.Timestamp.UtcDateTime;
+                p.updatedAt = awardEntity.Timestamp.GetValueOrDefault().UtcDateTime;
             });
         }
 

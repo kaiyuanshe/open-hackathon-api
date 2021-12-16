@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -35,6 +36,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
                     builder.RegisterType(subType).AsSelf().SingleInstance().PropertiesAutowired().As(directInterfaces.ToArray());
                 }
             }
+        }
+
+        public static void RegisterAzureTablesV2(this ContainerBuilder builder)
+        {
+            builder.RegisterSubTypesAsDirectInterfaces(typeof(IAzureTableV2<>));
         }
     }
 }
