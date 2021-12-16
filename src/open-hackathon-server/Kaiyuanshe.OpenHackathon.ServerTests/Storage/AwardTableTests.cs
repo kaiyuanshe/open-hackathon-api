@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
@@ -14,15 +15,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         public async Task ListAllAwardsAsync()
         {
             string hackathonName = "hack";
+            var list = new List<AwardEntity> { new AwardEntity() };
 
             var logger = new Mock<ILogger<AwardTable>>();
             var awardTable = new Mock<AwardTable>(logger.Object);
-            awardTable.Setup(a => a.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default)).ReturnsAsync(new List<AwardEntity>());
+            awardTable.Setup(a => a.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default)).ReturnsAsync(list);
 
-            await awardTable.Object.ListAllAwardsAsync(hackathonName, default);
+            var resp = await awardTable.Object.ListAllAwardsAsync(hackathonName, default);
 
             awardTable.Verify(t => t.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default), Times.Once);
             awardTable.VerifyNoOtherCalls();
+            Assert.AreEqual(1, resp.Count());
         }
     }
 }

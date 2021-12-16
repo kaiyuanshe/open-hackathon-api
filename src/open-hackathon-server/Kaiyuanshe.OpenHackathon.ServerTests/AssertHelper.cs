@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {

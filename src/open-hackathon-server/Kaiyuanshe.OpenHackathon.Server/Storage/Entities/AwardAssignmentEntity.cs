@@ -1,10 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// entity for assignment info for an award
@@ -12,12 +6,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// PK: Hackathon name
     /// RK: assignment id. Auto-generated GUID.
     /// </summary>
-    public class AwardAssignmentEntity : AdvancedTableEntity
+    public class AwardAssignmentEntity : BaseTableEntity
     {
         /// <summary>
         /// name of hackathon. PK.
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -29,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// Auto-generated GUID, RK
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string AssignmentId
         {
             get
