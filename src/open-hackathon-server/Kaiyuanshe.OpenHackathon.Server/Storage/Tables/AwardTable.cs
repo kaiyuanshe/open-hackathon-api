@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,11 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         #region ListAllAwardsAsync
         public async Task<IEnumerable<AwardEntity>> ListAllAwardsAsync(string hackathonName, CancellationToken cancellationToken = default)
         {
-            var filter = TableQuery.GenerateFilterCondition(
-                           nameof(AwardEntity.PartitionKey),
-                           QueryComparisons.Equal,
-                           hackathonName);
-
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
             return await QueryEntitiesAsync(filter, null, cancellationToken);
         }
         #endregion
