@@ -230,7 +230,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var teamQueryOptions = new TeamQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top
             };
             var segment = await TeamManagement.ListPaginatedTeamsAsync(hackName, teamQueryOptions, cancellationToken);
@@ -839,7 +839,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // list
             var qureyOptions = new TeamMemberQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Status = status,
                 Role = role,
                 Top = pagination.top
@@ -918,7 +918,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
                 TeamId = teamId,
                 QueryType = AwardAssignmentQueryType.Team,
@@ -929,7 +929,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
 
             // build resp
             var creator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
@@ -1165,7 +1165,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var teamWorkQueryOptions = new TeamWorkQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
             };
             var assignments = await WorkManagement.ListPaginatedWorksAsync(hackathonName.ToLower(), teamId.ToLower(), teamWorkQueryOptions, cancellationToken);
@@ -1174,7 +1174,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, teamWorkQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, teamWorkQueryOptions.NextLegacy);
 
             // build resp
             var resp = ResponseBuilder.BuildResourceList<TeamWorkEntity, TeamWork, TeamWorkList>(

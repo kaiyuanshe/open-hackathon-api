@@ -1,9 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
@@ -34,7 +31,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         [Range(1, 1000)]
         public int? top { get; set; }
 
-        public TableContinuationToken ToContinuationToken()
+        [Obsolete]
+        public TableContinuationToken ToContinuationTokenLegacy()
         {
             // np/nr in nextLink shouldn't be null or empty.
             if (string.IsNullOrWhiteSpace(np) || string.IsNullOrWhiteSpace(nr))
@@ -48,6 +46,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
                 NextPartitionKey = np,
                 NextRowKey = nr,
             };
+        }
+
+        public (string, string) ToContinuationToken()
+        {
+            return (np, nr);
         }
     }
 }

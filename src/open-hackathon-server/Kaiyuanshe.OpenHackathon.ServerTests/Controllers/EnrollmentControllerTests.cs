@@ -7,7 +7,6 @@ using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -770,11 +769,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new EnrollmentQueryOptions
                     {
                         Top = 10,
-                        TableContinuationToken = new TableContinuationToken
-                        {
-                            NextPartitionKey = "np",
-                            NextRowKey = "nr"
-                        },
+                        TableContinuationToken = ("np", "nr"),
                         Status = EnrollmentStatus.rejected
                     },
                     null
@@ -784,11 +779,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             yield return new TestCaseData(
                     new Pagination { },
                     null,
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    ("np", "nr"),
                     new EnrollmentQueryOptions { },
                     "&np=np&nr=nr"
                 );
@@ -798,7 +789,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task ListEnrollmentsTest_Succeed(
             Pagination pagination,
             EnrollmentStatus? status,
-            TableContinuationToken continuationToken,
+            (string NextPartitionKey, string NextRowKey) continuationToken,
             EnrollmentQueryOptions expectedOptions,
             string expectedLink)
         {
@@ -815,7 +806,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     Status = EnrollmentStatus.approved,
                 }
             };
-            var segment = MockHelper.CreateTableQuerySegment(enrollments, continuationToken);
+            var segment = MockHelper.CreatePage(enrollments, continuationToken);
             UserInfo userInfo = new UserInfo();
 
             // mock and capture
@@ -856,9 +847,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(EnrollmentStatus.approved, list.value[0].status);
             Assert.AreEqual(expectedOptions.Status, optionsCaptured.Status);
             Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextPartitionKey, optionsCaptured.TableContinuationToken?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextRowKey, optionsCaptured.TableContinuationToken?.NextRowKey);
-        } 
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
+        }
         #endregion
     }
 }

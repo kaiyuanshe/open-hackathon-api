@@ -118,15 +118,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             IEnumerable<JudgeEntity> allJudges = await GetCachedJudges(hackathonName, cancellationToken);
 
             // paging
-            int.TryParse(options.TableContinuationToken?.NextPartitionKey, out int np);
+            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out int np);
             int top = options.Top.GetValueOrDefault(100);
             var judges = allJudges.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
 
             // next paging
-            options.Next = null;
+            options.NextLegacy = null;
             if (np + top < allJudges.Count())
             {
-                options.Next = new TableContinuationToken
+                options.NextLegacy = new TableContinuationToken
                 {
                     NextPartitionKey = (np + top).ToString(),
                     NextRowKey = (np + top).ToString(),

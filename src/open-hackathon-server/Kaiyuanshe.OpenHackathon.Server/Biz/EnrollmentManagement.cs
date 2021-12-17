@@ -1,9 +1,9 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="options">options for query</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TableQuerySegment<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default);
+        Task<Page<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get an enrollment.
@@ -85,11 +85,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 TimeSpan.FromHours(4),
                 async (ct) =>
                 {
-                    var filter = TableQuery.GenerateFilterCondition(nameof(EnrollmentEntity.PartitionKey), QueryComparisons.Equal, hackathon.Name);
-                    TableQuery<EnrollmentEntity> query = new TableQuery<EnrollmentEntity>().Where(filter);
-                    TableContinuationToken continuationToken = null;
-                    var segment = await StorageContext.EnrollmentTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
-                    return (IEnumerable<EnrollmentEntity>)segment;
+                    var filter = TableQueryHelper.PartitionKeyFilter(hackathon.Name);
+                    return await StorageContext.EnrollmentTable.QueryEntitiesAsync(filter, null, cancellationToken);
                 },
                 true,
                 cancellationToken);
@@ -176,18 +173,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListPaginatedEnrollmentsAsync
-        public async Task<TableQuerySegment<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<Page<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default)
         {
-            var filter = TableQuery.GenerateFilterCondition(
-                           nameof(EnrollmentEntity.PartitionKey),
-                           QueryComparisons.Equal,
-                           hackathonName);
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
 
             if (options != null && options.Status.HasValue)
             {
-                var statusFilter = TableQuery.GenerateFilterConditionForInt(
+                var statusFilter = TableQueryHelper.FilterForInt(
                     nameof(EnrollmentEntity.Status),
-                    QueryComparisons.Equal,
+                     ComparisonOperator.Equal,
                     (int)options.Status.Value);
                 filter = TableQueryHelper.And(filter, statusFilter);
             }
@@ -197,12 +191,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             {
                 top = options.Top.Value;
             }
-            TableQuery<EnrollmentEntity> query = new TableQuery<EnrollmentEntity>()
-                .Where(filter)
-                .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationToken;
-            return await StorageContext.EnrollmentTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
+            var continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
+            var page = await StorageContext.EnrollmentTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
+            return page;
         }
         #endregion
 

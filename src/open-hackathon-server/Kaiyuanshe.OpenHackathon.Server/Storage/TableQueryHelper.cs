@@ -7,6 +7,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 {
     public static class TableQueryHelper
     {
+        private static readonly char[] ContinuationTokenSplit = new char[1] { ' ' };
+
         public static string PartitionKeyFilter(string partitionKey)
         {
             return FilterForString(nameof(ITableEntity.PartitionKey), ComparisonOperator.Equal, partitionKey);
@@ -99,6 +101,30 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public static string Or(params string[] filters)
         {
             return CombineFilters("or", filters);
+        }
+
+        public static (string NextPartitionKey, string NextRowKey) ParseContinuationToken(string continuationToken)
+        {
+            if (continuationToken == null || continuationToken.Length <= 1)
+            {
+                return (null, null);
+            }
+            string[] array = continuationToken.Split(ContinuationTokenSplit, 2);
+            return (array[0], (array.Length > 1 && array[1].Length > 0) ? array[1] : null);
+        }
+
+        public static string ToContinuationToken((string NextPartitionKey, string NextRowKey)? continuationToken)
+        {
+            if (!continuationToken.HasValue)
+                return null;
+
+            var tuple = continuationToken.Value;
+            if (tuple.NextPartitionKey == null || tuple.NextRowKey == null)
+            {
+                return null;
+            }
+
+            return tuple.NextPartitionKey + " " + tuple.NextRowKey;
         }
 
         static string CombineFilters(string operatorString, params string[] filters)

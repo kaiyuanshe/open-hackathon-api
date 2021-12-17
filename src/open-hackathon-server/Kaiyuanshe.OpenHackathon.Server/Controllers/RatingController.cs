@@ -179,7 +179,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var ratingKindQueryOptions = new RatingKindQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top
             };
 
@@ -189,7 +189,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, ratingKindQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, ratingKindQueryOptions.NextLegacy);
             return Ok(ResponseBuilder.BuildResourceList<RatingKindEntity, RatingKind, RatingKindList>(
                     ratingKinds,
                     ResponseBuilder.BuildRatingKind,
@@ -447,7 +447,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 RatingKindId = ratingKindId,
                 JudgeId = judgeId,
                 TeamId = teamId,
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
             };
             var ratings = await RatingManagement.ListPaginatedRatingsAsync(hackathonName.ToLower(), ratingQueryOptions, cancellationToken);

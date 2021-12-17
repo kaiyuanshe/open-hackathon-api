@@ -324,7 +324,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "foo";
             TeamQueryOptions options = new TeamQueryOptions
             {
-                TableContinuationToken = new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" },
+                TableContinuationTokenLegacy = new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" },
                 Top = topInPara,
             };
             CancellationToken cancellationToken = CancellationToken.None;

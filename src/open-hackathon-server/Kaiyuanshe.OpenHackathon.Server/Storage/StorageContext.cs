@@ -55,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
             // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
-            EnrollmentTable = new EnrollmentTable(storageAccount, TableNames.Enrollment);
             ExperimentTable = new ExperimentTable(storageAccount, TableNames.Experiment);
             HackathonAdminTable = new HackathonAdminTable(storageAccount, TableNames.HackathonAdmin);
             HackathonTable = new HackathonTable(storageAccount, TableNames.Hackathon);

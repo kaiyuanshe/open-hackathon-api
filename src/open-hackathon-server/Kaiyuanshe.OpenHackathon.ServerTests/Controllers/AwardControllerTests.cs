@@ -379,7 +379,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             awardManagement.Setup(p => p.ListPaginatedAwardsAsync("hack", It.IsAny<AwardQueryOptions>(), cancellationToken))
                 .Callback<string, AwardQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(awards);
 
@@ -972,7 +972,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             awardManagement.Setup(p => p.ListPaginatedAssignmentsAsync("hack", It.Is<AwardAssignmentQueryOptions>(o => o.QueryType == AwardAssignmentQueryType.Award), default))
                 .Callback<string, AwardAssignmentQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(assignments);
 
@@ -1088,7 +1088,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             awardManagement.Setup(p => p.ListPaginatedAssignmentsAsync("hack", It.Is<AwardAssignmentQueryOptions>(o => o.QueryType == AwardAssignmentQueryType.Hackathon), default))
                 .Callback<string, AwardAssignmentQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(assignments);
 

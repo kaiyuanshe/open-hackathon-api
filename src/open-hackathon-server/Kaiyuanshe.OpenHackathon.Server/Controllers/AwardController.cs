@@ -188,7 +188,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var awardQueryOptions = new AwardQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top
             };
             var awards = await AwardManagement.ListPaginatedAwardsAsync(hackathonName.ToLower(), awardQueryOptions, cancellationToken);
@@ -197,7 +197,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, awardQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, awardQueryOptions.NextLegacy);
             return Ok(ResponseBuilder.BuildResourceList<AwardEntity, Award, AwardList>(
                     awards,
                     ResponseBuilder.BuildAward,
@@ -479,7 +479,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
                 AwardId = awardId,
                 QueryType = AwardAssignmentQueryType.Award,
@@ -490,7 +490,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
 
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(
                 assignments,
@@ -533,7 +533,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
                 QueryType = AwardAssignmentQueryType.Hackathon,
             };
@@ -543,7 +543,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
 
             var awards = await AwardManagement.ListAwardsAsync(hackathonName.ToLower(), cancellationToken);
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(

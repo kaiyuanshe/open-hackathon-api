@@ -352,7 +352,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             var judgeManagement = new Mock<IJudgeManagement>();
             judgeManagement.Setup(j => j.ListPaginatedJudgesAsync("hack", It.Is<JudgeQueryOptions>(o => o.Top == pagination.top), default))
-                .Callback<string, JudgeQueryOptions, CancellationToken>((h, opt, c) => { opt.Next = next; })
+                .Callback<string, JudgeQueryOptions, CancellationToken>((h, opt, c) => { opt.NextLegacy = next; })
                 .ReturnsAsync(judges);
             var userManagement = new Mock<IUserManagement>();
             userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);

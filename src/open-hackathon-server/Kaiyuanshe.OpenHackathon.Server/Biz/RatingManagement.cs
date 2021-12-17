@@ -135,17 +135,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // paging
             int np = 0;
-            int.TryParse(options.TableContinuationToken?.NextPartitionKey, out np);
+            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out np);
             int top = options.Top.GetValueOrDefault(100);
             var kinds = allKinds.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
                 .Take(top);
 
             // next paging
-            options.Next = null;
+            options.NextLegacy = null;
             if (np + top < allKinds.Count())
             {
-                options.Next = new TableContinuationToken
+                options.NextLegacy = new TableContinuationToken
                 {
                     NextPartitionKey = (np + top).ToString(),
                     NextRowKey = (np + top).ToString(),
@@ -285,7 +285,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 .Where(filter)
                 .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationToken;
+            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
             return await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
         }
         #endregion

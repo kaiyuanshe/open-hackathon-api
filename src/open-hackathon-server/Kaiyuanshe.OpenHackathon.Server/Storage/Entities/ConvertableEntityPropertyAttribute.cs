@@ -15,6 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         {
 
         }
+
         public ConvertableEntityPropertyAttribute(Type convertToType)
         {
             ConvertToType = convertToType;

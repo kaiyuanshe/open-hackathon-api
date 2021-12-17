@@ -154,7 +154,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             var adminManagement = new Mock<IHackathonAdminManagement>();
             adminManagement.Setup(j => j.ListPaginatedHackathonAdminAsync("hack", It.Is<AdminQueryOptions>(o => o.Top == pagination.top), default))
-                .Callback<string, AdminQueryOptions, CancellationToken>((h, opt, c) => { opt.Next = next; })
+                .Callback<string, AdminQueryOptions, CancellationToken>((h, opt, c) => { opt.NextLegacy = next; })
                 .ReturnsAsync(admins);
             var userManagement = new Mock<IUserManagement>();
             userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);

@@ -409,7 +409,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationToken = new TableContinuationToken
+                    TableContinuationTokenLegacy = new TableContinuationToken
                     {
                         NextPartitionKey = "3"
                     }
@@ -433,7 +433,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationToken = new TableContinuationToken
+                    TableContinuationTokenLegacy = new TableContinuationToken
                     {
                         NextPartitionKey = "not an int"
                     }
@@ -482,7 +482,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationToken = new TableContinuationToken
+                    TableContinuationTokenLegacy = new TableContinuationToken
                     {
                         NextPartitionKey = "1"
                     },
@@ -524,11 +524,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             cache.VerifyNoOtherCalls();
 
             if (expectedNext == null)
-                Assert.IsNull(options.Next);
+                Assert.IsNull(options.NextLegacy);
             else
             {
-                Assert.AreEqual(options.Next.NextPartitionKey, expectedNext.NextPartitionKey);
-                Assert.AreEqual(options.Next.NextRowKey, expectedNext.NextRowKey);
+                Assert.AreEqual(options.NextLegacy.NextPartitionKey, expectedNext.NextPartitionKey);
+                Assert.AreEqual(options.NextLegacy.NextRowKey, expectedNext.NextRowKey);
             }
             Assert.AreEqual(result.Count(), expectedResult.Count());
             for (int i = 0; i < result.Count(); i++)

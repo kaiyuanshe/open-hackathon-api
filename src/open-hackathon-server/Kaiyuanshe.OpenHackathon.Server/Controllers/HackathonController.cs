@@ -54,7 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var hackathonQueryOptions = new HackathonQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 OrderBy = orderby,
                 Search = search,
                 ListType = listType,
@@ -77,7 +77,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(listType), listType.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, hackathonQueryOptions.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, hackathonQueryOptions.NextLegacy);
 
             return Ok(ResponseBuilder.BuildResourceList<HackathonEntity, HackathonRoles, Hackathon, HackathonList>(
                     entityWithRoles, ResponseBuilder.BuildHackathon, nextLink));

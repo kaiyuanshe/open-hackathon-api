@@ -1,17 +1,19 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public class TableQueryOptions
     {
-        public TableContinuationToken TableContinuationToken { get; set; }
+        [Obsolete]
+        public TableContinuationToken TableContinuationTokenLegacy { get; set; }
+        [Obsolete]
+        public TableContinuationToken NextLegacy { get; set; }
         public int? Top { get; set; }
-        public TableContinuationToken Next { get; set; }
+
+        public (string, string) TableContinuationToken { get; set; }
+        public (string, string) NextTableContinuationToken { get; set; }
     }
 
     public class HackathonQueryOptions : TableQueryOptions

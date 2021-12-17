@@ -70,9 +70,47 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
         /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
         /// <returns></returns>
+        [Obsolete]
         protected string BuildNextLinkUrl(RouteValueDictionary routeValues, TableContinuationToken continuationToken)
         {
             if (continuationToken == null)
+                return null;
+
+            if (routeValues == null)
+            {
+                routeValues = new RouteValueDictionary();
+            }
+            routeValues.Add(nameof(Pagination.np), continuationToken.NextPartitionKey);
+            routeValues.Add(nameof(Pagination.nr), continuationToken.NextRowKey);
+
+            if (EnvHelper.IsRunningInTests())
+            {
+                // Unit Test
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (var key in routeValues.Keys)
+                {
+                    stringBuilder.Append($"&{key}={routeValues[key]}");
+                }
+                return stringBuilder.ToString();
+            }
+
+            return Url.Action(
+               ControllerContext.ActionDescriptor.ActionName,
+               ControllerContext.ActionDescriptor.ControllerName,
+               routeValues,
+               "https", // Request.Scheme doesn't work well on App Service containers. TLS terminates on front end, the traffic to containers are always http.
+               Request.Host.Value);
+        }
+
+        /// <summary>
+        /// Get nextLink url for paginated results
+        /// </summary>
+        /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
+        /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
+        /// <returns></returns>
+        protected string BuildNextLinkUrl(RouteValueDictionary routeValues, (string NextPartitionKey, string NextRowKey) continuationToken)
+        {
+            if (continuationToken.NextPartitionKey == null || continuationToken.NextRowKey == null)
                 return null;
 
             if (routeValues == null)
