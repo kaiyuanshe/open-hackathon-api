@@ -1,16 +1,17 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IExperimentTable : IAzureTable<ExperimentEntity>
+    public interface IExperimentTable : IAzureTableV2<ExperimentEntity>
     {
     }
 
-    public class ExperimentTable : AzureTable<ExperimentEntity>, IExperimentTable
+    public class ExperimentTable : AzureTableV2<ExperimentEntity>, IExperimentTable
     {
-        public ExperimentTable(CloudStorageAccount storageAccount, string tableName)
-           : base(storageAccount, tableName)
+        protected override string TableName => TableNames.Experiment;
+
+        public ExperimentTable(ILogger<ExperimentTable> logger) : base(logger)
         {
         }
     }
