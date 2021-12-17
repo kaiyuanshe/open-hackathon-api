@@ -309,7 +309,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             ratingManagement.Setup(p => p.ListPaginatedRatingKindsAsync("hack", It.IsAny<RatingKindQueryOptions>(), default))
                 .Callback<string, RatingKindQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(awards);
 
@@ -831,7 +831,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new RatingQueryOptions
                     {
                         Top = 10,
-                        TableContinuationToken = new TableContinuationToken
+                        TableContinuationTokenLegacy = new TableContinuationToken
                         {
                             NextPartitionKey = "np",
                             NextRowKey = "nr"
@@ -914,7 +914,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new RatingQueryOptions
                     {
                         Top = 10,
-                        TableContinuationToken = new TableContinuationToken
+                        TableContinuationTokenLegacy = new TableContinuationToken
                         {
                             NextPartitionKey = "np",
                             NextRowKey = "nr"
@@ -1008,8 +1008,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("openid", list.value[0].judge.OpenId);
             Assert.AreEqual(5, list.value[0].ratingKind.maximumScore);
             Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextPartitionKey, optionsCaptured.TableContinuationToken?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextRowKey, optionsCaptured.TableContinuationToken?.NextRowKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
         }
 
         #endregion

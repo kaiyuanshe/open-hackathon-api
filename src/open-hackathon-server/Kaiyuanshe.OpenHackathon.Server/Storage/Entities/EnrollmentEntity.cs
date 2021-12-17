@@ -1,6 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
@@ -12,9 +10,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// 
     /// PK might be string.Empty for PlatformAdministrator.
     /// </summary>
-    public class EnrollmentEntity : AdvancedTableEntity
+    public class EnrollmentEntity : BaseTableEntity
     {
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -23,7 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             }
         }
 
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string UserId
         {
             get

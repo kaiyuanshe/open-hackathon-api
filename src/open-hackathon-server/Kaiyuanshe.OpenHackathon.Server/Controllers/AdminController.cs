@@ -98,7 +98,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var queryOptioins = new AdminQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
                 Top = pagination.top,
             };
             var admins = await HackathonAdminManagement.ListPaginatedHackathonAdminAsync(hackathonName.ToLower(), queryOptioins, cancellationToken);
@@ -107,7 +107,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, queryOptioins.Next);
+            var nextLink = BuildNextLinkUrl(routeValues, queryOptioins.NextLegacy);
 
             // build resp
             var resp = await ResponseBuilder.BuildResourceListAsync<HackathonAdminEntity, HackathonAdmin, HackathonAdminList>(

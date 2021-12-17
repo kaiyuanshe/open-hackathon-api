@@ -662,7 +662,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new TeamQueryOptions
                     {
                         Top = 10,
-                        TableContinuationToken = new TableContinuationToken
+                        TableContinuationTokenLegacy = new TableContinuationToken
                         {
                             NextPartitionKey = "np",
                             NextRowKey = "nr"
@@ -745,8 +745,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].id);
             Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextPartitionKey, optionsCaptured.TableContinuationToken?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextRowKey, optionsCaptured.TableContinuationToken?.NextRowKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
         }
 
         #endregion
@@ -1867,7 +1867,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new TeamMemberQueryOptions
                     {
                         Top = 10,
-                        TableContinuationToken = new TableContinuationToken
+                        TableContinuationTokenLegacy = new TableContinuationToken
                         {
                             NextPartitionKey = "np",
                             NextRowKey = "nr"
@@ -1968,8 +1968,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(expectedOptions.Status, optionsCaptured.Status);
             Assert.AreEqual(expectedOptions.Role, optionsCaptured.Role);
             Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextPartitionKey, optionsCaptured.TableContinuationToken?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken?.NextRowKey, optionsCaptured.TableContinuationToken?.NextRowKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
+            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
         }
         #endregion
 
@@ -2047,7 +2047,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             awardManagement.Setup(p => p.ListPaginatedAssignmentsAsync("hack", It.Is<AwardAssignmentQueryOptions>(o => o.QueryType == AwardAssignmentQueryType.Team), default))
                 .Callback<string, AwardAssignmentQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(assignments);
 
@@ -2429,7 +2429,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             workManagement.Setup(p => p.ListPaginatedWorksAsync("hack", "tid", It.IsAny<TeamWorkQueryOptions>(), default))
                 .Callback<string, string, TeamWorkQueryOptions, CancellationToken>((h, t, o, c) =>
                 {
-                    o.Next = next;
+                    o.NextLegacy = next;
                 })
                 .ReturnsAsync(teamWorks);
 

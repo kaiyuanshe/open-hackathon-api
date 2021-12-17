@@ -1,11 +1,11 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System.Collections;
@@ -204,26 +204,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "foo";
             EnrollmentQueryOptions options = null;
-            CancellationToken cancellationToken = CancellationToken.None;
-            var entities = MockHelper.CreateTableQuerySegment<EnrollmentEntity>(
+            var entities = Page<EnrollmentEntity>.FromValues(
                  new List<EnrollmentEntity>
                  {
                      new EnrollmentEntity{  PartitionKey="pk" }
-                 },
-                 new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" }
-                );
-
-            TableQuery<EnrollmentEntity> tableQueryCaptured = null;
-            TableContinuationToken tableContinuationTokenCapatured = null;
+                 }, "np nr", null);
 
             var logger = new Mock<ILogger<EnrollmentManagement>>();
             var enrollmentTable = new Mock<IEnrollmentTable>();
-            enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync(It.IsAny<TableQuery<EnrollmentEntity>>(), It.IsAny<TableContinuationToken>(), cancellationToken))
-                .Callback<TableQuery<EnrollmentEntity>, TableContinuationToken, CancellationToken>((query, c, _) =>
-                {
-                    tableQueryCaptured = query;
-                    tableContinuationTokenCapatured = c;
-                })
+            enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", null, 100, null, default))
                 .ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
@@ -232,19 +221,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object
             };
-            var segment = await enrollmentManagement.ListPaginatedEnrollmentsAsync(hackName, options, cancellationToken);
+            var page = await enrollmentManagement.ListPaginatedEnrollmentsAsync(hackName, options, default);
 
             Mock.VerifyAll(enrollmentTable, storageContext);
             enrollmentTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual(1, segment.Count());
-            Assert.AreEqual("pk", segment.First().HackathonName);
-            Assert.AreEqual("np", segment.ContinuationToken.NextPartitionKey);
-            Assert.AreEqual("nr", segment.ContinuationToken.NextRowKey);
-            Assert.IsNull(tableContinuationTokenCapatured);
-            Assert.AreEqual("PartitionKey eq 'foo'", tableQueryCaptured.FilterString);
-            Assert.AreEqual(100, tableQueryCaptured.TakeCount.Value);
+            Assert.AreEqual(1, page.Values.Count());
+            Assert.AreEqual("pk", page.Values.First().HackathonName);
+            var continuationToken = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np", continuationToken.NextPartitionKey);
+            Assert.AreEqual("nr", continuationToken.NextRowKey);
         }
 
         [TestCase(5, 5)]
@@ -254,31 +241,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "foo";
             EnrollmentQueryOptions options = new EnrollmentQueryOptions
             {
-                TableContinuationToken = new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" },
+                TableContinuationToken = ("np", "nr"),
                 Top = topInPara,
                 Status = EnrollmentStatus.approved
             };
-            CancellationToken cancellationToken = CancellationToken.None;
-            var entities = MockHelper.CreateTableQuerySegment<EnrollmentEntity>(
-                 new List<EnrollmentEntity>
-                 {
-                     new EnrollmentEntity{  PartitionKey="pk" }
-                 },
-                 new TableContinuationToken { NextPartitionKey = "np2", NextRowKey = "nr2" }
-                );
 
-            TableQuery<EnrollmentEntity> tableQueryCaptured = null;
-            TableContinuationToken tableContinuationTokenCapatured = null;
+            var entities = Page<EnrollmentEntity>.FromValues(
+                new List<EnrollmentEntity>
+                {
+                    new EnrollmentEntity{  PartitionKey="pk" }
+                }, "np2 nr2", null);
 
             var logger = new Mock<ILogger<EnrollmentManagement>>();
+
             var enrollmentTable = new Mock<IEnrollmentTable>();
-            enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync(It.IsAny<TableQuery<EnrollmentEntity>>(), It.IsAny<TableContinuationToken>(), cancellationToken))
-                .Callback<TableQuery<EnrollmentEntity>, TableContinuationToken, CancellationToken>((query, c, _) =>
-                {
-                    tableQueryCaptured = query;
-                    tableContinuationTokenCapatured = c;
-                })
+            enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync("(PartitionKey eq 'foo') and (Status eq 2)", "np nr", expectedTop, null, default))
                 .ReturnsAsync(entities);
+
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
 
@@ -286,20 +265,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object
             };
-            var segment = await enrollmentManagement.ListPaginatedEnrollmentsAsync(hackName, options, cancellationToken);
+            var page = await enrollmentManagement.ListPaginatedEnrollmentsAsync(hackName, options, default);
 
             Mock.VerifyAll(enrollmentTable, storageContext);
             enrollmentTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual(1, segment.Count());
-            Assert.AreEqual("pk", segment.First().HackathonName);
-            Assert.AreEqual("np2", segment.ContinuationToken.NextPartitionKey);
-            Assert.AreEqual("nr2", segment.ContinuationToken.NextRowKey);
-            Assert.AreEqual("np", tableContinuationTokenCapatured.NextPartitionKey);
-            Assert.AreEqual("nr", tableContinuationTokenCapatured.NextRowKey);
-            Assert.AreEqual("(PartitionKey eq 'foo') and (Status eq 2)", tableQueryCaptured.FilterString);
-            Assert.AreEqual(expectedTop, tableQueryCaptured.TakeCount.Value);
+            Assert.AreEqual(1, page.Values.Count());
+            Assert.AreEqual("pk", page.Values.First().HackathonName);
+            var continuationToken = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np2", continuationToken.NextPartitionKey);
+            Assert.AreEqual("nr2", continuationToken.NextRowKey);
         }
         #endregion
 

@@ -193,17 +193,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // paging
             int np = 0;
-            int.TryParse(options.TableContinuationToken?.NextPartitionKey, out np);
+            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out np);
             int top = options.Top.GetValueOrDefault(100);
             var awards = allAwards.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
                 .Take(top);
 
             // next paging
-            options.Next = null;
+            options.NextLegacy = null;
             if (np + top < allAwards.Count())
             {
-                options.Next = new TableContinuationToken
+                options.NextLegacy = new TableContinuationToken
                 {
                     NextPartitionKey = (np + top).ToString(),
                     NextRowKey = (np + top).ToString(),
@@ -308,17 +308,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
 
             // paging
-            int.TryParse(options.TableContinuationToken?.NextPartitionKey, out int np);
+            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out int np);
             int top = options.Top.GetValueOrDefault(100);
             var assignments = awardAssignments.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
                 .Take(top);
 
             // next paging
-            options.Next = null;
+            options.NextLegacy = null;
             if (np + top < awardAssignments.Count())
             {
-                options.Next = new TableContinuationToken
+                options.NextLegacy = new TableContinuationToken
                 {
                     NextPartitionKey = (np + top).ToString(),
                     NextRowKey = (np + top).ToString(),

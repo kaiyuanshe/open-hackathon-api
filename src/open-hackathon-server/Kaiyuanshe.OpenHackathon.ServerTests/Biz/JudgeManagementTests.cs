@@ -271,7 +271,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new JudgeQueryOptions
                 {
                     Top = 2,
-                    TableContinuationToken = new TableContinuationToken
+                    TableContinuationTokenLegacy = new TableContinuationToken
                     {
                         NextPartitionKey = "1",
                         NextRowKey = "1"
@@ -312,13 +312,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
             if (expectedNext == null)
             {
-                Assert.IsNull(options.Next);
+                Assert.IsNull(options.NextLegacy);
             }
             else
             {
-                Assert.IsNotNull(options.Next);
-                Assert.AreEqual(expectedNext.NextPartitionKey, options.Next.NextPartitionKey);
-                Assert.AreEqual(expectedNext.NextRowKey, options.Next.NextRowKey);
+                Assert.IsNotNull(options.NextLegacy);
+                Assert.AreEqual(expectedNext.NextPartitionKey, options.NextLegacy.NextPartitionKey);
+                Assert.AreEqual(expectedNext.NextRowKey, options.NextLegacy.NextRowKey);
             }
         }
         #endregion

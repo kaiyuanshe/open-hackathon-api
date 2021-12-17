@@ -257,15 +257,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // paging
             int np = 0;
-            int.TryParse(options.TableContinuationToken?.NextPartitionKey, out np);
+            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out np);
             int top = options.Top.GetValueOrDefault(100);
             hackathons = hackathons.Skip(np).Take(top);
 
             // next paging
-            options.Next = null;
+            options.NextLegacy = null;
             if (np + top < candidtes.Count())
             {
-                options.Next = new TableContinuationToken
+                options.NextLegacy = new TableContinuationToken
                 {
                     NextPartitionKey = (np + top).ToString(),
                     NextRowKey = (np + top).ToString(),

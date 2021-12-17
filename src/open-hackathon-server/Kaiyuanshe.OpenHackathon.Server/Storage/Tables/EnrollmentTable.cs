@@ -1,17 +1,19 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IEnrollmentTable : IAzureTable<EnrollmentEntity>
+    public interface IEnrollmentTable : IAzureTableV2<EnrollmentEntity>
     {
     }
 
-    public class EnrollmentTable : AzureTable<EnrollmentEntity>, IEnrollmentTable
+    public class EnrollmentTable : AzureTableV2<EnrollmentEntity>, IEnrollmentTable
     {
-        public EnrollmentTable(CloudStorageAccount storageAccount, string tableName)
-            : base(storageAccount, tableName)
+        protected override string TableName => TableNames.Enrollment;
+
+        public EnrollmentTable(ILogger<EnrollmentTable> logger) : base(logger)
         {
+
         }
     }
 }

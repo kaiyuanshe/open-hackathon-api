@@ -559,7 +559,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .Callback<ClaimsPrincipal, HackathonQueryOptions, CancellationToken>((u, o, t) =>
                  {
                      optionsCaptured = o;
-                     optionsCaptured.Next = next;
+                     optionsCaptured.NextLegacy = next;
                  })
                 .ReturnsAsync(hackathons);
             hackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, user, default))
@@ -593,8 +593,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(pagination.top, optionsCaptured.Top);
             Assert.AreEqual(orderBy, optionsCaptured.OrderBy);
             Assert.AreEqual(listType, optionsCaptured.ListType);
-            Assert.AreEqual(pagination.np, optionsCaptured.TableContinuationToken?.NextPartitionKey);
-            Assert.AreEqual(pagination.nr, optionsCaptured.TableContinuationToken?.NextRowKey);
+            Assert.AreEqual(pagination.np, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
+            Assert.AreEqual(pagination.nr, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
         }
         #endregion
 

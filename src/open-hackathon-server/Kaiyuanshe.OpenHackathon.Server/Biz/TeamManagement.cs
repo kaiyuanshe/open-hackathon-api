@@ -250,7 +250,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 .Where(filter)
                 .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationToken;
+            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
             return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
         }
         #endregion
@@ -413,7 +413,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 .Where(filter)
                 .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationToken;
+            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
             return await StorageContext.TeamMemberTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
 
         }

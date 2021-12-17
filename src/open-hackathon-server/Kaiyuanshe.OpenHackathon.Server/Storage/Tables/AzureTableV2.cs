@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
+        Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
     }
 
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
@@ -233,6 +235,33 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 {
                     var query = client.QueryAsync<TableEntity>(filter, limit, select, cancellationToken);
                     await query.ParallelForEachAsync(entity => asyncAction(entity.ToBaseTableEntity<TEntity>()), maxParallelism, limit, cancellationToken);
+                }
+                catch (RequestFailedException ex)
+                {
+                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
+                }
+            }
+        }
+
+        public virtual async Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        {
+            var client = await GetTableClientAsync(cancellationToken);
+            using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
+            {
+                try
+                {
+                    var query = client.QueryAsync<TableEntity>(filter, maxPerPage, select, cancellationToken);
+                    var page = query.AsPages(continuationToken, maxPerPage);
+                    var enumerator = page.GetAsyncEnumerator(cancellationToken);
+                    if (await enumerator.MoveNextAsync())
+                    {
+                        var current = enumerator.Current;
+                        return Page<TEntity>.FromValues(
+                            current.Values.ToBaseTableEntities<TEntity>().ToList().AsReadOnly(),
+                            current.ContinuationToken,
+                            current.GetRawResponse());
+                    }
+                    return Page<TEntity>.FromValues(new List<TEntity>(), null, null);
                 }
                 catch (RequestFailedException ex)
                 {
