@@ -1,18 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-
-namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// Entity for Experiment. 
     /// PK: hackathonName.
     /// RK: auto-generated Guid.
     /// </summary>
-    public class ExperimentEntity : AdvancedTableEntity
+    public class ExperimentEntity : BaseTableEntity
     {
         /// <summary>
         /// name of Hackathon. PartitionKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -24,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// id of experiment. RowKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string Id
         {
             get

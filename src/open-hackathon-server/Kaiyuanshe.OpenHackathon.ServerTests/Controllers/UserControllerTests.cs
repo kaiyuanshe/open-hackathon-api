@@ -7,7 +7,6 @@ using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Moq;
 using NUnit.Framework;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
@@ -21,12 +20,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             var parameter = new UserInfo { Token = "token", UserPoolId = "pool" };
-            var cancellationToken = CancellationToken.None;
             var jwtTokenStatus = new JWTTokenStatus { Status = false, Code = 400, Message = "Some Message" };
 
             // Moq
             var loginManagerMoq = new Mock<IUserManagement>();
-            loginManagerMoq.Setup(p => p.ValidateTokenRemotelyAsync("pool", "token", cancellationToken)).ReturnsAsync(jwtTokenStatus);
+            loginManagerMoq.Setup(p => p.ValidateTokenRemotelyAsync("pool", "token", default)).ReturnsAsync(jwtTokenStatus);
 
             // test
             var controller = new UserController
@@ -34,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 UserManagement = loginManagerMoq.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var resp = await controller.Authing(parameter, cancellationToken);
+            var resp = await controller.Authing(parameter, default);
 
             // Verify
             Mock.VerifyAll(loginManagerMoq);
@@ -52,12 +50,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetUserById_NotFound()
         {
             string userId = "uid";
-            CancellationToken cancellationToken = CancellationToken.None;
             UserInfo userInfo = null;
 
             // mock
             var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync(userId, cancellationToken))
+            userManagement.Setup(u => u.GetUserByIdAsync(userId, default))
                 .ReturnsAsync(userInfo);
 
             // test
@@ -66,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 UserManagement = userManagement.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var result = await controller.GetUserById(userId, cancellationToken);
+            var result = await controller.GetUserById(userId, default);
 
             // verify
             Mock.VerifyAll(userManagement);
@@ -79,12 +76,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetUserById()
         {
             string userId = "uid";
-            CancellationToken cancellationToken = CancellationToken.None;
             UserInfo userInfo = new UserInfo { };
 
             // mock
             var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync(userId, cancellationToken))
+            userManagement.Setup(u => u.GetUserByIdAsync(userId, default))
                 .ReturnsAsync(userInfo);
 
             // test
@@ -92,7 +88,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             {
                 UserManagement = userManagement.Object,
             };
-            var result = await controller.GetUserById(userId, cancellationToken);
+            var result = await controller.GetUserById(userId, default);
 
             // verify
             Mock.VerifyAll(userManagement);
