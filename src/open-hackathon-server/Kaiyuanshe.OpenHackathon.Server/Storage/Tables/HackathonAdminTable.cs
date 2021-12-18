@@ -1,15 +1,12 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IHackathonAdminTable : IAzureTable<HackathonAdminEntity>
+    public interface IHackathonAdminTable : IAzureTableV2<HackathonAdminEntity>
     {
         /// <summary>
         /// Get platform-wide role of current user
@@ -28,18 +25,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task<IEnumerable<HackathonAdminEntity>> ListByHackathonAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
-    public class HackathonAdminTable : AzureTable<HackathonAdminEntity>, IHackathonAdminTable
+    public class HackathonAdminTable : AzureTableV2<HackathonAdminEntity>, IHackathonAdminTable
     {
-        /// <summary>
-        /// Test only constructor
-        /// </summary>
-        internal HackathonAdminTable()
-        {
+        protected override string TableName => TableNames.HackathonAdmin;
 
-        }
-
-        public HackathonAdminTable(CloudStorageAccount storageAccount, string tableName)
-            : base(storageAccount, tableName)
+        public HackathonAdminTable(ILogger<HackathonAdminTable> logger) : base(logger)
         {
         }
 
@@ -50,17 +40,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
         public async Task<IEnumerable<HackathonAdminEntity>> ListByHackathonAsync(string name, CancellationToken cancellationToken)
         {
-            var filter = TableQuery.GenerateFilterCondition(
-                nameof(HackathonAdminEntity.PartitionKey),
-                QueryComparisons.Equal,
-                name);
-            TableQuery<HackathonAdminEntity> query = new TableQuery<HackathonAdminEntity>().Where(filter);
-            List<HackathonAdminEntity> results = new List<HackathonAdminEntity>();
-            await ExecuteQuerySegmentedAsync(query, segment =>
-            {
-                results.AddRange(segment);
-            }, cancellationToken);
-            return results;
+            var filter = TableQueryHelper.PartitionKeyFilter(name);
+            return await QueryEntitiesAsync(filter, null, cancellationToken);
         }
     }
 }

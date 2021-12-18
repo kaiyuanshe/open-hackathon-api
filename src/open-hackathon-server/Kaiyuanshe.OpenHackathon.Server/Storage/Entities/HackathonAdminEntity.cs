@@ -1,10 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// Represents a hackathon administrator.
@@ -14,9 +8,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// 
     /// PK might be string.Empty for PlatformAdministrator.
     /// </summary>
-    public class HackathonAdminEntity : AdvancedTableEntity
+    public class HackathonAdminEntity : BaseTableEntity
     {
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -25,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             }
         }
 
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string UserId
         {
             get
