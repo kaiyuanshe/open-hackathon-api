@@ -19,6 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
         public string[] ComplexObject { get; set; }
 
         public DateTime Date { get; set; }
+        public DateTime DateEmpty { get; set; }
         public byte[] Binary { get; set; }
         public bool Bool { get; set; }
         public Guid Guid { get; set; }
@@ -58,6 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.IsFalse(tableEntity.ContainsKey("IgnoredProperty"));
             Assert.AreEqual("[\"a\",\"b\",\"c\"]", tableEntity.GetString("ComplexObject"));
             Assert.AreEqual(entity.Date, tableEntity.GetDateTime("Date"));
+            Assert.IsFalse(tableEntity.ContainsKey("DateEmpty"));
             Assert.AreEqual(entity.Binary, tableEntity.GetBinary("Binary"));
             Assert.AreEqual(true, tableEntity.GetBoolean("Bool"));
             Assert.AreEqual(entity.Guid, tableEntity.GetGuid("Guid"));

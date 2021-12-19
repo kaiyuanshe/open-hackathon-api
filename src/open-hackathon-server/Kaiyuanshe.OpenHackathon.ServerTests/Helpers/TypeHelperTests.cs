@@ -132,5 +132,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
             Assert.IsTrue(typeof(InheritTestA).InheritsOrImplements(typeof(IInheritTestA)));
             Assert.IsFalse(typeof(InheritTestB).InheritsOrImplements(typeof(IInheritTestA)));
         }
+
+        [Test]
+        public void IsDateTime()
+        {
+            Assert.IsTrue(DateTime.Now.GetType().IsDateTime());
+            DateTime? d = DateTime.Now;
+            Assert.IsTrue(d.GetType().IsDateTime());
+        }
     }
 }

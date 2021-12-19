@@ -83,6 +83,17 @@ namespace Kaiyuanshe.OpenHackathon.Server
             return false;
         }
 
+        public static bool IsDateTime(this Type type)
+        {
+            if (type == typeof(DateTime))
+                return true;
+
+            if (Nullable.GetUnderlyingType(type) == typeof(DateTime))
+                return true;
+
+            return false;
+        }
+
         public static TDestination As<TDestination>(this object src, Action<TDestination> configure = null)
             where TDestination : new()
         {

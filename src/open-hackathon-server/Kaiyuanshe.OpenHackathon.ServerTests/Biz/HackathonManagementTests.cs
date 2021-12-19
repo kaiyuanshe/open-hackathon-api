@@ -986,8 +986,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
 
             var hackathonTable = new Mock<IHackathonTable>();
-            hackathonTable.Setup(p => p.RetrieveAndMergeAsync(name, string.Empty, It.IsAny<Action<HackathonEntity>>(), CancellationToken.None))
-                .ReturnsAsync(default(TableResult));
+            hackathonTable.Setup(p => p.RetrieveAndMergeAsync(name, string.Empty, It.IsAny<Action<HackathonEntity>>(), default));
             hackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, CancellationToken.None))
                 .ReturnsAsync(entity);
 

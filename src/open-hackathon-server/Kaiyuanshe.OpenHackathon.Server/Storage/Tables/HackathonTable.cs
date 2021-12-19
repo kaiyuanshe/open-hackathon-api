@@ -1,39 +1,29 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IHackathonTable : IAzureTable<HackathonEntity>
+    public interface IHackathonTable : IAzureTableV2<HackathonEntity>
     {
         Task<Dictionary<string, HackathonEntity>> ListAllHackathonsAsync(CancellationToken cancellationToken);
     }
 
-    public class HackathonTable : AzureTable<HackathonEntity>, IHackathonTable
+    public class HackathonTable : AzureTableV2<HackathonEntity>, IHackathonTable
     {
-        public HackathonTable(CloudStorageAccount storageAccount, string tableName)
-            : base(storageAccount, tableName)
+        protected override string TableName => TableNames.Hackathon;
+
+        public HackathonTable(ILogger<HackathonTable> logger) : base(logger)
         {
 
         }
 
         public async Task<Dictionary<string, HackathonEntity>> ListAllHackathonsAsync(CancellationToken cancellationToken)
         {
-            List<HackathonEntity> list = new List<HackathonEntity>();
-
-            TableQuery<HackathonEntity> query = new TableQuery<HackathonEntity>();
-            TableContinuationToken tableContinuationToken = null;
-            do
-            {
-                var segment = await ExecuteQuerySegmentedAsync(query, tableContinuationToken, cancellationToken);
-                list.AddRange(segment);
-                tableContinuationToken = segment.ContinuationToken;
-            } while (tableContinuationToken != null);
-
+            var list = await QueryEntitiesAsync(null, null, cancellationToken);
             return list.ToDictionary(h => h.Name, h => h);
         }
     }

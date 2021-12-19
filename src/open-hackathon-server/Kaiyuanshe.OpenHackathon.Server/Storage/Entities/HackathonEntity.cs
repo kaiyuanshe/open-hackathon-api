@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
@@ -9,12 +8,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// PartitionKey: auto-generated string. 
     /// RowKey: string.Empty
     /// </summary>
-    public class HackathonEntity : AdvancedTableEntity
+    public class HackathonEntity : BaseTableEntity
     {
         /// <summary>
         /// name of Hackathon. the same as PartitionKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string Name
         {
             get
