@@ -85,6 +85,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 
                 Type nullableType = Nullable.GetUnderlyingType(property.PropertyType);
                 var propertyValue = property.GetValue(entity);
+                if (propertyValue == null)
+                {
+                    continue;
+                }
+
                 var convertableAttribute = (ConvertableEntityPropertyAttribute)Attribute.GetCustomAttribute(property, typeof(ConvertableEntityPropertyAttribute));
                 if (convertableAttribute != null)
                 {
@@ -95,6 +100,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                     values.Add(property.Name, (int)propertyValue);
                 }
                 else if (property.Name == nameof(ITableEntity.ETag))
+                {
+                    continue;
+                }
+                else if (property.PropertyType.IsDateTime() && ((DateTime)propertyValue).Year < 1700)
                 {
                     continue;
                 }
