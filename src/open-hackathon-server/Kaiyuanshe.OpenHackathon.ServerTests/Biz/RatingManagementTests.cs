@@ -506,17 +506,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task IsRatingCountGreaterThanZero(RatingQueryOptions options, string expectedFilter)
         {
             string hackName = "hack";
-            var entities = MockHelper.CreateTableQuerySegment<RatingEntity>(
-                 new List<RatingEntity>
-                 {
-                     new RatingEntity{  RowKey="rk" }
-                 }, null);
+            var entities = new List<RatingEntity>
+            {
+                new RatingEntity{  RowKey="rk" }
+            };
 
             var logger = new Mock<ILogger<RatingManagement>>();
             var ratingTable = new Mock<IRatingTable>();
-            ratingTable.Setup(p => p.ExecuteQuerySegmentedAsync(It.Is<TableQuery<RatingEntity>>(r =>
-               r.FilterString == expectedFilter && r.TakeCount == 1
-                ), default(TableContinuationToken), default)).ReturnsAsync(entities);
+            ratingTable.Setup(p => p.QueryEntitiesAsync(expectedFilter, It.IsAny<IEnumerable<string>>(), default)).ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.RatingTable).Returns(ratingTable.Object);
 
@@ -584,7 +581,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                new RatingQueryOptions { JudgeId = "uid", TeamId = "tid", RatingKindId = "kid" },
                100,
-               "(((PartitionKey eq 'hack') and (JudgeId eq 'uid')) and (RatingKindId eq 'kid')) and (TeamId eq 'tid')"
+               "(PartitionKey eq 'hack') and (JudgeId eq 'uid') and (RatingKindId eq 'kid') and (TeamId eq 'tid')"
                );
         }
 
@@ -592,19 +589,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task ListPaginatedRatingsAsync(RatingQueryOptions options, int expectedTop, string expectedFilter)
         {
             string hackName = "hack";
-            var entities = MockHelper.CreateTableQuerySegment<RatingEntity>(
+            var entities = MockHelper.CreatePage(
                  new List<RatingEntity>
                  {
                      new RatingEntity{  RowKey="rk" }
                  },
-                 new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" }
-                );
+                 ("np", "nr")
+            );
 
             var logger = new Mock<ILogger<RatingManagement>>();
             var ratingTable = new Mock<IRatingTable>();
-            ratingTable.Setup(p => p.ExecuteQuerySegmentedAsync(It.Is<TableQuery<RatingEntity>>(r =>
-               r.FilterString == expectedFilter && r.TakeCount == expectedTop
-                ), default(TableContinuationToken), default)).ReturnsAsync(entities);
+            ratingTable.Setup(p => p.ExecuteQuerySegmentedAsync(
+                expectedFilter, null, expectedTop, null, default)).ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.RatingTable).Returns(ratingTable.Object);
 
@@ -612,16 +608,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object
             };
-            var segment = await ratingManagement.ListPaginatedRatingsAsync(hackName, options, default);
+            var page = await ratingManagement.ListPaginatedRatingsAsync(hackName, options, default);
 
             Mock.VerifyAll(ratingTable, storageContext);
             ratingTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual(1, segment.Count());
-            Assert.AreEqual("rk", segment.First().Id);
-            Assert.AreEqual("np", segment.ContinuationToken.NextPartitionKey);
-            Assert.AreEqual("nr", segment.ContinuationToken.NextRowKey);
+            Assert.AreEqual(1, page.Values.Count());
+            Assert.AreEqual("rk", page.Values.First().Id);
+            var ct = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np", ct.NextPartitionKey);
+            Assert.AreEqual("nr", ct.NextRowKey);
         }
         #endregion
 

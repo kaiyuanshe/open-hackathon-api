@@ -55,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
             // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
-            RatingTable = new RatingTable(storageAccount, TableNames.Rating);
             RatingKindTable = new RatingKindTable(storageAccount, TableNames.RatingKind);
             TeamTable = new TeamTable(storageAccount, TableNames.Team);
             TeamMemberTable = new TeamMemberTable(storageAccount, TableNames.TeamMember);

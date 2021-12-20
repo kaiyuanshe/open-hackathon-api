@@ -1,16 +1,17 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface IRatingTable : IAzureTable<RatingEntity>
+    public interface IRatingTable : IAzureTableV2<RatingEntity>
     {
     }
 
-    public class RatingTable : AzureTable<RatingEntity>, IRatingTable
+    public class RatingTable : AzureTableV2<RatingEntity>, IRatingTable
     {
-        public RatingTable(CloudStorageAccount storageAccount, string tableName)
-           : base(storageAccount, tableName)
+        protected override string TableName => TableNames.Rating;
+
+        public RatingTable(ILogger<RatingTable> logger) : base(logger)
         {
         }
     }
