@@ -1,10 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// Entity of a hackathon judge.
@@ -12,12 +6,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// PK: hackathon name.
     /// RK: userId.
     /// </summary>
-    public class JudgeEntity : AdvancedTableEntity
+    public class JudgeEntity : BaseTableEntity
     {
         /// <summary>
         /// name of Hackathon, PartitionKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -29,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// id of User. RowKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string UserId
         {
             get

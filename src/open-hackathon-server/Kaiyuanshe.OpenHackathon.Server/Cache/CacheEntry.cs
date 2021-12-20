@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
                 throw new ArgumentNullException(nameof(cacheKey));
             if (slidingExpiration == TimeSpan.MinValue)
                 throw new ArgumentNullException(nameof(slidingExpiration));
-            if (supplyValue == null && !EnvHelper.IsRunningInTests())
+            if (supplyValue == null && !EnvironmentHelper.IsRunningInTests())
                 throw new ArgumentNullException(nameof(supplyValue));
 
             CacheKey = cacheKey;

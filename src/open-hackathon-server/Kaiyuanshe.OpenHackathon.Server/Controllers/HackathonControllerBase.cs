@@ -83,7 +83,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             routeValues.Add(nameof(Pagination.np), continuationToken.NextPartitionKey);
             routeValues.Add(nameof(Pagination.nr), continuationToken.NextRowKey);
 
-            if (EnvHelper.IsRunningInTests())
+            if (EnvironmentHelper.IsRunningInTests())
             {
                 // Unit Test
                 StringBuilder stringBuilder = new StringBuilder();
@@ -120,7 +120,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             routeValues.Add(nameof(Pagination.np), continuationToken.NextPartitionKey);
             routeValues.Add(nameof(Pagination.nr), continuationToken.NextRowKey);
 
-            if (EnvHelper.IsRunningInTests())
+            if (EnvironmentHelper.IsRunningInTests())
             {
                 // Unit Test
                 StringBuilder stringBuilder = new StringBuilder();

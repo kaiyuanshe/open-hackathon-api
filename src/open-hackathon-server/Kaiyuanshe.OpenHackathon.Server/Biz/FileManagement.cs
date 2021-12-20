@@ -82,7 +82,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // read Url base
             string readUrlBase = HackathonApiStaticSite;
-            if (EnvHelper.IsDevelopment() && !EnvHelper.IsRunningInTests())
+            if (EnvironmentHelper.IsDevelopment() && !EnvironmentHelper.IsRunningInTests())
             {
                 // return Static WebSite url. Make sure it's enabled.
                 // blob endpoint: https://accountName.blob.core.chinacloudapi.cn/
