@@ -77,7 +77,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         {
             problemDetails.Status ??= statusCode;
 
-            if (!EnvHelper.IsRunningInTests() && _options.ClientErrorMapping.TryGetValue(statusCode, out var clientErrorData))
+            if (!EnvironmentHelper.IsRunningInTests() && _options.ClientErrorMapping.TryGetValue(statusCode, out var clientErrorData))
             {
                 problemDetails.Title ??= clientErrorData.Title;
             }

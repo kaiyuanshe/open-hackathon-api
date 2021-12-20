@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.Server
 {
-    public static class EnvHelper
+    public static class EnvironmentHelper
     {
         public static bool IsDevelopment()
         {

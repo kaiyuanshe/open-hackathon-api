@@ -59,7 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
             cacheEntries[cacheEntry.CacheKey] = cacheEntry;
 
             // disable cache in Dev or Unit Tests
-            if (EnvHelper.IsDevelopment() || EnvHelper.IsRunningInTests())
+            if (EnvironmentHelper.IsDevelopment() || EnvironmentHelper.IsRunningInTests())
             {
                 return (TValue)await cacheEntry.SupplyValueAsync(cancellationToken);
             }

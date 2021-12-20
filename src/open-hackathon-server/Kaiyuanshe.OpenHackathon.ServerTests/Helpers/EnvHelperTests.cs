@@ -11,13 +11,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
         public void IsDevelopmentTestTrue()
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development", EnvironmentVariableTarget.Process);
-            Assert.IsTrue(EnvHelper.IsDevelopment());
+            Assert.IsTrue(EnvironmentHelper.IsDevelopment());
         }
 
         [Test]
         public void IsRunningInTestsTest()
         {
-            Assert.IsTrue(EnvHelper.IsRunningInTests());
+            Assert.IsTrue(EnvironmentHelper.IsRunningInTests());
         }
     }
 }
