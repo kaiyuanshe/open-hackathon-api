@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -26,7 +27,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<RatingEntity> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken);
         Task<RatingEntity> GetRatingAsync(string hackathonName, string ratingId, CancellationToken cancellationToken);
         Task<bool> IsRatingCountGreaterThanZero(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken);
-        Task<TableQuerySegment<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default);
+        Task<Page<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default);
         Task DeleteRatingAsync(string hackathonName, string ratingId, CancellationToken cancellationToken);
     }
 
@@ -228,65 +229,57 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region Task<bool> IsRatingCountGreaterThanZero(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken);
         public async Task<bool> IsRatingCountGreaterThanZero(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken)
         {
-            var filter = TableQuery.GenerateFilterCondition(nameof(RatingEntity.PartitionKey), QueryComparisons.Equal, hackathonName);
+            var filters = new List<string>();
+            filters.Add(TableQueryHelper.PartitionKeyFilter(hackathonName));
             if (!string.IsNullOrWhiteSpace(options.JudgeId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.JudgeId), QueryComparisons.Equal, options.JudgeId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.JudgeId), ComparisonOperator.Equal, options.JudgeId));
             }
             if (!string.IsNullOrWhiteSpace(options.RatingKindId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.RatingKindId), QueryComparisons.Equal, options.RatingKindId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.RatingKindId), ComparisonOperator.Equal, options.RatingKindId));
             }
             if (!string.IsNullOrWhiteSpace(options.TeamId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.TeamId), QueryComparisons.Equal, options.TeamId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.TeamId), ComparisonOperator.Equal, options.TeamId));
             }
 
-            TableQuery<RatingEntity> query = new TableQuery<RatingEntity>()
-                .Where(filter)
-                .Select(new[] { nameof(RatingEntity.RowKey) })
-                .Take(1);
+            var filter = TableQueryHelper.And(filters.ToArray());
+            var select = new[] { nameof(RatingEntity.RowKey) };
+            var list = await StorageContext.RatingTable.QueryEntitiesAsync(filter, select, cancellationToken);
 
-            TableContinuationToken continuationToken = null;
-            var segment = await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
-            return segment.Count() > 0;
+            return list.Count() > 0;
         }
         #endregion
 
         #region Task<TableQuerySegment<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default)
-        public async Task<TableQuerySegment<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<Page<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default)
         {
-            var filter = TableQuery.GenerateFilterCondition(nameof(RatingEntity.PartitionKey), QueryComparisons.Equal, hackathonName);
+            var filters = new List<string>();
+            filters.Add(TableQueryHelper.PartitionKeyFilter(hackathonName));
             if (!string.IsNullOrWhiteSpace(options.JudgeId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.JudgeId), QueryComparisons.Equal, options.JudgeId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.JudgeId), ComparisonOperator.Equal, options.JudgeId));
             }
             if (!string.IsNullOrWhiteSpace(options.RatingKindId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.RatingKindId), QueryComparisons.Equal, options.RatingKindId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.RatingKindId), ComparisonOperator.Equal, options.RatingKindId));
             }
             if (!string.IsNullOrWhiteSpace(options.TeamId))
             {
-                filter = TableQueryHelper.And(filter,
-                    TableQuery.GenerateFilterCondition(nameof(RatingEntity.TeamId), QueryComparisons.Equal, options.TeamId));
+                filters.Add(TableQueryHelper.FilterForString(nameof(RatingEntity.TeamId), ComparisonOperator.Equal, options.TeamId));
             }
+            var filter = TableQueryHelper.And(filters.ToArray());
 
             int top = 100;
             if (options != null && options.Top.HasValue && options.Top.Value > 0)
             {
                 top = options.Top.Value;
             }
-            TableQuery<RatingEntity> query = new TableQuery<RatingEntity>()
-                .Where(filter)
-                .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
-            return await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
+            string continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
+            var page = await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
+            return page;
         }
         #endregion
 

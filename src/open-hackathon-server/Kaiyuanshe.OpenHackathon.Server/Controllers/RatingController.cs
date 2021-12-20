@@ -2,6 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -447,7 +448,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 RatingKindId = ratingKindId,
                 JudgeId = judgeId,
                 TeamId = teamId,
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
+                TableContinuationToken = pagination.ToContinuationToken(),
                 Top = pagination.top,
             };
             var ratings = await RatingManagement.ListPaginatedRatingsAsync(hackathonName.ToLower(), ratingQueryOptions, cancellationToken);
@@ -470,10 +471,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(judgeId), judgeId);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, ratings.ContinuationToken);
+            var nextLink = BuildNextLinkUrl(routeValues, TableQueryHelper.ParseContinuationToken(ratings.ContinuationToken));
 
             var list = await ResponseBuilder.BuildResourceListAsync<RatingEntity, Rating, RatingList>(
-                ratings,
+                ratings.Values,
                 (ratingEntity, ct) => BuildRatingResp(ratingEntity, cancellationToken: ct),
                 nextLink,
                 cancellationToken);

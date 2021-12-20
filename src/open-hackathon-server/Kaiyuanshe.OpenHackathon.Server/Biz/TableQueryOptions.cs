@@ -12,8 +12,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public TableContinuationToken NextLegacy { get; set; }
         public int? Top { get; set; }
 
-        public (string, string) TableContinuationToken { get; set; }
-        public (string, string) NextTableContinuationToken { get; set; }
+        public (string NextPartitionKey, string NextRowKey) TableContinuationToken { get; set; }
+        public (string NextPartitionKey, string NextRowKey) NextTableContinuationToken { get; set; }
     }
 
     public class HackathonQueryOptions : TableQueryOptions
