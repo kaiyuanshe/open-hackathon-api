@@ -1,9 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
