@@ -1,18 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-
-namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// Entity for rating kinds. 
     /// PK: hackathonName.
     /// RK: Auto-generated Guid.
     /// </summary>
-    public class RatingKindEntity : AdvancedTableEntity
+    public class RatingKindEntity : BaseTableEntity
     {
         /// <summary>
         /// name of Hackathon, PartitionKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -24,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// auto-generated Guid of kind. RowKey.
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string Id
         {
             get
