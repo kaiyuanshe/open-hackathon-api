@@ -1,16 +1,17 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface ITeamTable : IAzureTable<TeamEntity>
+    public interface ITeamTable : IAzureTableV2<TeamEntity>
     {
     }
 
-    public class TeamTable : AzureTable<TeamEntity>, ITeamTable
+    public class TeamTable : AzureTableV2<TeamEntity>, ITeamTable
     {
-        public TeamTable(CloudStorageAccount storageAccount, string tableName)
-           : base(storageAccount, tableName)
+        protected override string TableName => TableNames.Team;
+
+        public TeamTable(ILogger<TeamTable> logger) : base(logger)
         {
         }
     }

@@ -472,7 +472,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 AuthorizationService = authorizationService.Object,
             };
             var result = await controller.UpdateTeam(hackName, teamId, parameter, default);
-          
+
             // verify
             Mock.VerifyAll(hackathonManagement, teamManagement);
             hackathonManagement.VerifyNoOtherCalls();
@@ -662,11 +662,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new TeamQueryOptions
                     {
                         Top = 10,
-                        TableContinuationTokenLegacy = new TableContinuationToken
-                        {
-                            NextPartitionKey = "np",
-                            NextRowKey = "nr"
-                        },
+                        TableContinuationToken = ("np", "nr"),
                     },
                     null
                 );
@@ -674,11 +670,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    ("np", "nr"),
                     new TeamQueryOptions { },
                     "&np=np&nr=nr"
                 );
@@ -687,7 +679,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListTeamsTestData))]
         public async Task ListTeams(
             Pagination pagination,
-            TableContinuationToken continuationToken,
+            (string NextPartitionKey, string NextRowKey) continuationToken,
             TeamQueryOptions expectedOptions,
             string expectedLink)
         {
@@ -705,7 +697,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 }
             };
             UserInfo user = new UserInfo();
-            var segment = MockHelper.CreateTableQuerySegment(teams, continuationToken);
+            var segment = MockHelper.CreatePage(teams, continuationToken);
 
             // mock and capture
             var hackathonManagement = new Mock<IHackathonManagement>();
@@ -745,8 +737,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].id);
             Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
+            Assert.AreEqual(expectedOptions.TableContinuationToken.NextPartitionKey, optionsCaptured.TableContinuationToken.NextPartitionKey);
+            Assert.AreEqual(expectedOptions.TableContinuationToken.NextRowKey, optionsCaptured.TableContinuationToken.NextRowKey);
         }
 
         #endregion

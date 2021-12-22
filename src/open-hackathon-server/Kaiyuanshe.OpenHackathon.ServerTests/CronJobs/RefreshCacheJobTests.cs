@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             var job = new RefreshCacheJob
             {
                 CacheProvider = cacheProvider.Object,
-                LoggerFactory = LoggerFactory.Create((c) => { }),
+                LoggerFactory = LoggerFactory.Create(c => { }),
             };
             await job.ExecuteNow(jobContext);
 
