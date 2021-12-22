@@ -231,7 +231,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var teamQueryOptions = new TeamQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationToken = pagination.ToContinuationTokenLegacy2(),
                 Top = pagination.top
             };
             var page = await TeamManagement.ListPaginatedTeamsAsync(hackName, teamQueryOptions, cancellationToken);
@@ -840,12 +840,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // list
             var qureyOptions = new TeamMemberQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
+                Pagination = pagination,
                 Status = status,
                 Role = role,
-                Top = pagination.top
             };
-            var segment = await TeamManagement.ListPaginatedTeamMembersAsync(hackathonName.ToLower(), teamId, qureyOptions, cancellationToken);
+            var page = await TeamManagement.ListPaginatedTeamMembersAsync(hackathonName.ToLower(), teamId, qureyOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
             if (pagination.top.HasValue)
             {
@@ -859,10 +858,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(role), role.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, segment.ContinuationToken);
+            var nextLink = BuildNextLinkUrl(routeValues, page.ContinuationToken);
 
             List<Tuple<TeamMemberEntity, UserInfo>> tuples = new List<Tuple<TeamMemberEntity, UserInfo>>();
-            foreach (var member in segment)
+            foreach (var member in page.Values)
             {
                 var user = await UserManagement.GetUserByIdAsync(member.UserId, cancellationToken);
                 tuples.Add(Tuple.Create(member, user));

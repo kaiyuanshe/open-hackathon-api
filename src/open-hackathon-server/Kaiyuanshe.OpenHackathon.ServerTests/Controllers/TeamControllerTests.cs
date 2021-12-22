@@ -1858,12 +1858,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null,
                     new TeamMemberQueryOptions
                     {
-                        Top = 10,
-                        TableContinuationTokenLegacy = new TableContinuationToken
-                        {
-                            NextPartitionKey = "np",
-                            NextRowKey = "nr"
-                        },
+                        Pagination= new Pagination { top = 10, np = "np", nr = "nr" },
                         Status = TeamMemberStatus.approved,
                         Role = TeamMemberRole.Admin
                     },
@@ -1875,11 +1870,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     new Pagination { },
                     null,
                     null,
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    "np nr",
                     new TeamMemberQueryOptions { },
                     "&np=np&nr=nr"
                 );
@@ -1890,7 +1881,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Pagination pagination,
             TeamMemberStatus? status,
             TeamMemberRole? role,
-            TableContinuationToken continuationToken,
+            string continuationToken,
             TeamMemberQueryOptions expectedOptions,
             string expectedLink)
         {
@@ -1911,7 +1902,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     Role = TeamMemberRole.Admin,
                 }
             };
-            var segment = MockHelper.CreateTableQuerySegment(members, continuationToken);
+            var segment = MockHelper.CreatePage(members, continuationToken);
             UserInfo user = new UserInfo { Company = "company" };
 
             // mock and capture

@@ -448,7 +448,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 RatingKindId = ratingKindId,
                 JudgeId = judgeId,
                 TeamId = teamId,
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationToken = pagination.ToContinuationTokenLegacy2(),
                 Top = pagination.top,
             };
             var ratings = await RatingManagement.ListPaginatedRatingsAsync(hackathonName.ToLower(), ratingQueryOptions, cancellationToken);

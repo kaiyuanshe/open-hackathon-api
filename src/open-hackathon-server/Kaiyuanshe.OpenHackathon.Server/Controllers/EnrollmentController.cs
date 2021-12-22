@@ -301,7 +301,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var enrollmentOptions = new EnrollmentQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationToken(),
+                TableContinuationToken = pagination.ToContinuationTokenLegacy2(),
                 Status = status,
                 Top = pagination.top
             };

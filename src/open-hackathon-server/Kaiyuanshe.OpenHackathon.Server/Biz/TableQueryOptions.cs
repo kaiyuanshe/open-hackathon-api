@@ -10,10 +10,33 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public TableContinuationToken TableContinuationTokenLegacy { get; set; }
         [Obsolete]
         public TableContinuationToken NextLegacy { get; set; }
+        [Obsolete]
         public int? Top { get; set; }
-
+        [Obsolete]
         public (string NextPartitionKey, string NextRowKey) TableContinuationToken { get; set; }
-        public (string NextPartitionKey, string NextRowKey) NextTableContinuationToken { get; set; }
+
+        public Pagination Pagination { get; set; }
+    }
+
+    public static class TableQueryOptionsExtension
+    {
+        public static int Top(this TableQueryOptions options, int defaultValue = 100)
+        {
+            if (options?.Pagination?.top != null && options.Pagination.top.Value > 0)
+            {
+                return options.Pagination.top.Value;
+            }
+
+            return defaultValue;
+        }
+
+        public static string ContinuationToken(this TableQueryOptions options)
+        {
+            if (options?.Pagination != null)
+                return options.Pagination.ToContinuationToken();
+
+            return null;
+        }
     }
 
     public class HackathonQueryOptions : TableQueryOptions
