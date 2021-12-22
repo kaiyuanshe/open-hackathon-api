@@ -1,11 +1,8 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
@@ -18,14 +15,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string hackathonName = "hack";
             string teamId = "tid";
 
-            var awardTable = new Mock<TeamMemberTable> { };
+            var logger = new Mock<ILogger<TeamMemberTable>>();
+
+            var awardTable = new Mock<TeamMemberTable>(logger.Object) { };
             await awardTable.Object.GetMemberCountAsync(hackathonName, teamId, default);
 
-            awardTable.Verify(t => t.ExecuteQuerySegmentedAsync(
-                It.Is<TableQuery<TeamMemberEntity>>(q => q.FilterString == "(PartitionKey eq 'hack') and (TeamId eq 'tid')"
-                    && q.SelectColumns.Count == 1
-                    && q.SelectColumns.Contains("RowKey")),
-                It.IsAny<Action<TableQuerySegment<TeamMemberEntity>>>(),
+            awardTable.Verify(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')",
+                It.IsAny<IEnumerable<string>>(),
                 default), Times.Once);
             awardTable.VerifyNoOtherCalls();
         }

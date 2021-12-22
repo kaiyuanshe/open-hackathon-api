@@ -48,9 +48,38 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             };
         }
 
-        public (string, string) ToContinuationToken()
+        [Obsolete]
+        public (string, string) ToContinuationTokenLegacy2()
         {
             return (np, nr);
+        }
+
+        public string ToContinuationToken()
+        {
+            // np/nr in nextLink shouldn't be null or empty.
+            if (string.IsNullOrWhiteSpace(np) || string.IsNullOrWhiteSpace(nr))
+            {
+                return null;
+            }
+
+            return np + " " + nr;
+        }
+
+        private static readonly char[] ContinuationTokenSplit = new char[1] { ' ' };
+        public static Pagination FromContinuationToken(string continuationToken, int? top = null)
+        {
+            if (continuationToken == null || continuationToken.Length <= 1)
+            {
+                return new Pagination { top = top };
+            }
+
+            string[] array = continuationToken.Split(ContinuationTokenSplit, 2);
+            return new Pagination
+            {
+                np = array[0],
+                nr = (array.Length > 1 && array[1].Length > 0) ? array[1] : null,
+                top = top
+            };
         }
     }
 }

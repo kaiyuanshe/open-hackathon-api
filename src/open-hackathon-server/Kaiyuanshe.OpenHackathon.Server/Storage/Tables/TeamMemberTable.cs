@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface ITeamMemberTable : IAzureTable<TeamMemberEntity>
+    public interface ITeamMemberTable : IAzureTableV2<TeamMemberEntity>
     {
         /// <summary>
         /// Get count of all team members including pendingApproval ones.
@@ -16,15 +15,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task<int> GetMemberCountAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
     }
 
-    public class TeamMemberTable : AzureTable<TeamMemberEntity>, ITeamMemberTable
+    public class TeamMemberTable : AzureTableV2<TeamMemberEntity>, ITeamMemberTable
     {
-        internal TeamMemberTable()
-        {
-            // UT only
-        }
+        protected override string TableName => TableNames.TeamMember;
 
-        public TeamMemberTable(CloudStorageAccount storageAccount, string tableName)
-              : base(storageAccount, tableName)
+        public TeamMemberTable(ILogger<TeamMemberTable> logger) : base(logger)
         {
         }
 
@@ -32,20 +27,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         public async Task<int> GetMemberCountAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)
         {
             var pkFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-            var teamIdFilter = TableQuery.GenerateFilterCondition(nameof(TeamMemberEntity.TeamId), QueryComparisons.Equal, teamId);
+            var teamIdFilter = TableQueryHelper.FilterForString(nameof(TeamMemberEntity.TeamId), ComparisonOperator.Equal, teamId);
             var filter = TableQueryHelper.And(pkFilter, teamIdFilter);
 
-            TableQuery<TeamMemberEntity> query = new TableQuery<TeamMemberEntity>()
-                .Where(filter)
-                .Select(new List<string> { nameof(TeamMemberEntity.RowKey) });
-
-            int count = 0;
-            await ExecuteQuerySegmentedAsync(query, (segment) =>
-            {
-                count += segment.Count();
-            }, cancellationToken);
-
-            return count;
+            var select = new List<string> { nameof(TeamMemberEntity.RowKey) };
+            var entities = await QueryEntitiesAsync(filter, select, cancellationToken);
+            return entities.Count();
         }
         #endregion
     }

@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -70,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// List paginated team members with optional filters
         /// </summary>
-        Task<TableQuerySegment<TeamMemberEntity>> ListPaginatedTeamMembersAsync(string hackathonName, string teamId, TeamMemberQueryOptions options, CancellationToken cancellationToken = default);
+        Task<Page<TeamMemberEntity>> ListPaginatedTeamMembersAsync(string hackathonName, string teamId, TeamMemberQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a team member by userId
@@ -344,19 +343,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             Func<CancellationToken, Task<IEnumerable<TeamMemberEntity>>> supplyValue = async (ct) =>
             {
                 var pkFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-                var teamIdFilter = TableQuery.GenerateFilterCondition(nameof(TeamMemberEntity.TeamId), QueryComparisons.Equal, teamId);
+                var teamIdFilter = TableQueryHelper.FilterForString(nameof(TeamMemberEntity.TeamId), ComparisonOperator.Equal, teamId);
                 var filter = TableQueryHelper.And(pkFilter, teamIdFilter);
-
-                TableQuery<TeamMemberEntity> query = new TableQuery<TeamMemberEntity>().Where(filter);
-
-                List<TeamMemberEntity> members = new List<TeamMemberEntity>();
-                TableContinuationToken continuationToken = null;
-                do
-                {
-                    var segment = await StorageContext.TeamMemberTable.ExecuteQuerySegmentedAsync(query, continuationToken, ct);
-                    members.AddRange(segment);
-                } while (continuationToken != null);
-                return members;
+                return await StorageContext.TeamMemberTable.QueryEntitiesAsync(filter, null, cancellationToken);
             };
 
             string cacheKey = $"team_members_{teamId}";
@@ -365,43 +354,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListPaginatedTeamMembersAsync
-        public async Task<TableQuerySegment<TeamMemberEntity>> ListPaginatedTeamMembersAsync(string hackathonName, string teamId, TeamMemberQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<Page<TeamMemberEntity>> ListPaginatedTeamMembersAsync(string hackathonName, string teamId, TeamMemberQueryOptions options, CancellationToken cancellationToken = default)
         {
-            var pkFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-            var teamIdFilter = TableQuery.GenerateFilterCondition(nameof(TeamMemberEntity.TeamId), QueryComparisons.Equal, teamId);
-            var filter = TableQueryHelper.And(pkFilter, teamIdFilter);
+            List<string> filters = new List<string>
+            {
+                TableQueryHelper.PartitionKeyFilter(hackathonName),
+                TableQueryHelper.FilterForString(nameof(TeamMemberEntity.TeamId), ComparisonOperator.Equal, teamId),
+            };
 
             if (options != null)
             {
                 if (options.Status.HasValue)
                 {
-                    var statusFilter = TableQuery.GenerateFilterConditionForInt(
-                        nameof(TeamMemberEntity.Status),
-                        QueryComparisons.Equal,
-                        (int)options.Status.Value);
-                    filter = TableQueryHelper.And(filter, statusFilter);
+                    filters.Add(
+                        TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Status), ComparisonOperator.Equal, (int)options.Status.Value));
                 }
                 if (options.Role.HasValue)
                 {
-                    var roleFilter = TableQuery.GenerateFilterConditionForInt(
-                        nameof(TeamMemberEntity.Role),
-                        QueryComparisons.Equal,
-                        (int)options.Role.Value);
-                    filter = TableQueryHelper.And(filter, roleFilter);
+                    filters.Add(
+                        TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Role), ComparisonOperator.Equal, (int)options.Role.Value));
                 }
             }
-
-            int top = 100;
-            if (options != null && options.Top.HasValue && options.Top.Value > 0)
-            {
-                top = options.Top.Value;
-            }
-            TableQuery<TeamMemberEntity> query = new TableQuery<TeamMemberEntity>()
-                .Where(filter)
-                .Take(top);
-
-            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
-            return await StorageContext.TeamMemberTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
+            var filter = TableQueryHelper.And(filters.ToArray());
+            return await StorageContext.TeamMemberTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
 
         }
         #endregion
