@@ -195,7 +195,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                 {
                     // TryGetValue always returns DateTimeOffset.
                     var date = tableEntity.GetDateTimeOffset(property.Name);
-                    property.SetValue(entity, date.GetValueOrDefault().UtcDateTime);
+                    if (date.HasValue)
+                    {
+                        property.SetValue(entity, date.GetValueOrDefault().UtcDateTime);
+                    }
                 }
                 else if (tableEntity.TryGetValue(property.Name, out object value) && value != null)
                 {

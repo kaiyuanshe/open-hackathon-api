@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -59,7 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="options">options for query</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TableQuerySegment<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default);
+        Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List all team members
@@ -217,41 +218,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public async Task<IEnumerable<TeamEntity>> GetTeamByNameAsync(string hackathonName, string teamName, CancellationToken cancellationToken = default)
         {
             var filter = TableQueryHelper.And(
-                TableQuery.GenerateFilterCondition(nameof(TeamEntity.PartitionKey), QueryComparisons.Equal, hackathonName),
-                TableQuery.GenerateFilterCondition(nameof(TeamEntity.DisplayName), QueryComparisons.Equal, teamName)
+                TableQueryHelper.PartitionKeyFilter(hackathonName),
+                TableQueryHelper.FilterForString(nameof(TeamEntity.DisplayName), ComparisonOperator.Equal, teamName)
                 );
 
-            TableQuery<TeamEntity> query = new TableQuery<TeamEntity>().Where(filter);
-
-            List<TeamEntity> list = new List<TeamEntity>();
-            await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(query, (segment) =>
-            {
-                list.AddRange(segment);
-            }, cancellationToken);
-
-            return list;
+            return await StorageContext.TeamTable.QueryEntitiesAsync(filter, null, cancellationToken);
         }
         #endregion
 
         #region ListPaginatedTeamsAsync
-        public async Task<TableQuerySegment<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default)
         {
-            var filter = TableQuery.GenerateFilterCondition(
-                           nameof(TeamEntity.PartitionKey),
-                           QueryComparisons.Equal,
-                           hackathonName);
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
 
             int top = 100;
             if (options != null && options.Top.HasValue && options.Top.Value > 0)
             {
                 top = options.Top.Value;
             }
-            TableQuery<TeamEntity> query = new TableQuery<TeamEntity>()
-                .Where(filter)
-                .Take(top);
 
-            TableContinuationToken continuationToken = options?.TableContinuationTokenLegacy;
-            return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(query, continuationToken, cancellationToken);
+            var continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
+            return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
         }
         #endregion
 

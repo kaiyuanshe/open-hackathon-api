@@ -2,6 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -230,19 +231,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var teamQueryOptions = new TeamQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
+                TableContinuationToken = pagination.ToContinuationToken(),
                 Top = pagination.top
             };
-            var segment = await TeamManagement.ListPaginatedTeamsAsync(hackName, teamQueryOptions, cancellationToken);
+            var page = await TeamManagement.ListPaginatedTeamsAsync(hackName, teamQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
             if (pagination.top.HasValue)
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, segment.ContinuationToken);
+            var nextLink = BuildNextLinkUrl(routeValues, TableQueryHelper.ParseContinuationToken(page.ContinuationToken));
 
             List<Tuple<TeamEntity, UserInfo>> tuples = new List<Tuple<TeamEntity, UserInfo>>();
-            foreach (var team in segment)
+            foreach (var team in page.Values)
             {
                 var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
                 tuples.Add(Tuple.Create(team, creator));
