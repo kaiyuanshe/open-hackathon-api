@@ -830,8 +830,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null,
                     new RatingQueryOptions
                     {
-                        Top = 10,
-                        TableContinuationToken = ("np", "nr"),
+                        Pagination = new Pagination { top = 10, np = "np", nr = "nr" },
                     },
                     null
                 );
@@ -839,7 +838,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next page
             yield return new TestCaseData(
                     new Pagination { },
-                    ("np", "nr"),
+                    "np nr",
                     null,
                     null,
                     null,
@@ -850,7 +849,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // filter: kindId
             yield return new TestCaseData(
                     new Pagination { },
-                    ("np", "nr"),
+                    "np nr",
                     "kid",
                     null,
                     null,
@@ -861,7 +860,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // filter: teamId
             yield return new TestCaseData(
                     new Pagination { },
-                    ("np", "nr"),
+                    "np nr",
                     null,
                     "tid",
                     null,
@@ -872,7 +871,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // filter: judgeId
             yield return new TestCaseData(
                     new Pagination { },
-                    ("np", "nr"),
+                    "np nr",
                     null,
                     null,
                     "jid",
@@ -883,14 +882,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // all
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
-                    ("np", "nr"),
+                    "np nr",
                     "kid",
                     "tid",
                     "jid",
                     new RatingQueryOptions
                     {
-                        Top = 10,
-                        TableContinuationToken = ("np", "nr"),
+                        Pagination = new Pagination { top = 10, np = "np", nr = "nr" },
                         JudgeId = "jid",
                         TeamId = "tid",
                         RatingKindId = "kid",
@@ -902,7 +900,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListPaginatedRatingsTestData))]
         public async Task ListPaginatedRatings(
             Pagination pagination,
-            (string NextPartitionKey, string NextRowKey) continuationToken,
+            string continuationToken,
             string kindId,
             string teamId,
             string judgeId,
@@ -979,9 +977,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("unionid", list.value[0].team.creator.Unionid);
             Assert.AreEqual("openid", list.value[0].judge.OpenId);
             Assert.AreEqual(5, list.value[0].ratingKind.maximumScore);
-            Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken.NextPartitionKey, optionsCaptured.TableContinuationToken.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken.NextRowKey, optionsCaptured.TableContinuationToken.NextRowKey);
+            Assert.AreEqual(expectedOptions.Top(), optionsCaptured.Top());
+            Assert.AreEqual(expectedOptions.ContinuationToken(), optionsCaptured.ContinuationToken());
         }
 
         #endregion

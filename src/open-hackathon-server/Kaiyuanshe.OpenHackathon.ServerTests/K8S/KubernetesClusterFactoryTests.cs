@@ -46,6 +46,7 @@ users:
                 LoggerFactory = new Mock<ILoggerFactory>().Object,
             };
             var cluster = await factory.GetDefaultKubernetes(default);
+
             Assert.AreEqual(typeof(KubernetesCluster), cluster.GetType());
 
             var cluster2 = await factory.GetDefaultKubernetes(default);

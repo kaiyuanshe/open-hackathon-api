@@ -271,14 +271,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             var filter = TableQueryHelper.And(filters.ToArray());
 
-            int top = 100;
-            if (options != null && options.Top.HasValue && options.Top.Value > 0)
-            {
-                top = options.Top.Value;
-            }
-
-            string continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
-            var page = await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
+            var page = await StorageContext.RatingTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
             return page;
         }
         #endregion
