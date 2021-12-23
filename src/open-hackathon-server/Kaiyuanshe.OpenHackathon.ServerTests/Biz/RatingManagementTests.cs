@@ -546,12 +546,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // top
             yield return new TestCaseData(
-                new RatingQueryOptions { Top = 5 },
+                new RatingQueryOptions { Pagination = new Pagination { top = 5 } },
                 5,
                 "PartitionKey eq 'hack'"
                 );
             yield return new TestCaseData(
-                new RatingQueryOptions { Top = -1 },
+                new RatingQueryOptions { Pagination = new Pagination { top = -1 } },
                 100,
                 "PartitionKey eq 'hack'"
                 );
@@ -594,7 +594,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  {
                      new RatingEntity{  RowKey="rk" }
                  },
-                 ("np", "nr")
+                 "np nr"
             );
 
             var logger = new Mock<ILogger<RatingManagement>>();
