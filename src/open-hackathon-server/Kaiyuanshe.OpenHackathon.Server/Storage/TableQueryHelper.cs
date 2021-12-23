@@ -103,16 +103,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
             return CombineFilters("or", filters);
         }
 
-        public static (string NextPartitionKey, string NextRowKey) ParseContinuationToken(string continuationToken)
-        {
-            if (continuationToken == null || continuationToken.Length <= 1)
-            {
-                return (null, null);
-            }
-            string[] array = continuationToken.Split(ContinuationTokenSplit, 2);
-            return (array[0], (array.Length > 1 && array[1].Length > 0) ? array[1] : null);
-        }
-
         static string CombineFilters(string operatorString, params string[] filters)
         {
             if (filters?.Length == 0)

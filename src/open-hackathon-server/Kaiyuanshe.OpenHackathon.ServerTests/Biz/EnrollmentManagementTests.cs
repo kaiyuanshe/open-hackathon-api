@@ -229,9 +229,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             Assert.AreEqual(1, page.Values.Count());
             Assert.AreEqual("pk", page.Values.First().HackathonName);
-            var continuationToken = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
-            Assert.AreEqual("np", continuationToken.NextPartitionKey);
-            Assert.AreEqual("nr", continuationToken.NextRowKey);
+            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np", pagination.np);
+            Assert.AreEqual("nr", pagination.nr);
         }
 
         [TestCase(5, 5)]
@@ -272,9 +272,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             Assert.AreEqual(1, page.Values.Count());
             Assert.AreEqual("pk", page.Values.First().HackathonName);
-            var continuationToken = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
-            Assert.AreEqual("np2", continuationToken.NextPartitionKey);
-            Assert.AreEqual("nr2", continuationToken.NextRowKey);
+            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np2", pagination.np);
+            Assert.AreEqual("nr2", pagination.nr);
         }
         #endregion
 

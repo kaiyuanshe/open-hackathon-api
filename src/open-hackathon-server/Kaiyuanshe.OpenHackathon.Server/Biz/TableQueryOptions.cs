@@ -12,10 +12,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public TableContinuationToken NextLegacy { get; set; }
         [Obsolete]
         public int? Top { get; set; }
-        [Obsolete]
-        public (string NextPartitionKey, string NextRowKey) TableContinuationToken { get; set; }
 
         public Pagination Pagination { get; set; }
+
+        public Pagination NextPage { get; set; }
     }
 
     public static class TableQueryOptionsExtension

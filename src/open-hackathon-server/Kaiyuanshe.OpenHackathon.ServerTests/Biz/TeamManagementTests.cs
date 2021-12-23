@@ -286,17 +286,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object
             };
-            var segment = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
+            var page = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
 
             Mock.VerifyAll(teamTable, storageContext);
             teamTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual(1, segment.Values.Count());
-            Assert.AreEqual("pk", segment.Values.First().HackathonName);
-            var ct = TableQueryHelper.ParseContinuationToken(segment.ContinuationToken);
-            Assert.AreEqual("np", ct.NextPartitionKey);
-            Assert.AreEqual("nr", ct.NextRowKey);
+            Assert.AreEqual(1, page.Values.Count());
+            Assert.AreEqual("pk", page.Values.First().HackathonName);
+            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np", pagination.np);
+            Assert.AreEqual("nr", pagination.nr);
             Assert.IsNull(tableContinuationTokenCapatured);
         }
 
@@ -327,17 +327,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object
             };
-            var segment = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
+            var page = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
 
             Mock.VerifyAll(teamTable, storageContext);
             teamTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual(1, segment.Values.Count());
-            Assert.AreEqual("pk", segment.Values.First().HackathonName);
-            var ct = TableQueryHelper.ParseContinuationToken(segment.ContinuationToken);
-            Assert.AreEqual("np2", ct.NextPartitionKey);
-            Assert.AreEqual("nr2", ct.NextRowKey);
+            Assert.AreEqual(1, page.Values.Count());
+            Assert.AreEqual("pk", page.Values.First().HackathonName);
+            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np2", pagination.np);
+            Assert.AreEqual("nr2", pagination.nr);
         }
         #endregion
 

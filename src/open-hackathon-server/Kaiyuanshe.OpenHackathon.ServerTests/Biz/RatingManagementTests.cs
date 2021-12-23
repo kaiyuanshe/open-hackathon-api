@@ -616,9 +616,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             Assert.AreEqual(1, page.Values.Count());
             Assert.AreEqual("rk", page.Values.First().Id);
-            var ct = TableQueryHelper.ParseContinuationToken(page.ContinuationToken);
-            Assert.AreEqual("np", ct.NextPartitionKey);
-            Assert.AreEqual("nr", ct.NextRowKey);
+            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
+            Assert.AreEqual("np", pagination.np);
+            Assert.AreEqual("nr", pagination.nr);
         }
         #endregion
 
