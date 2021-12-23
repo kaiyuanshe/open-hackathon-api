@@ -48,12 +48,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             };
         }
 
-        [Obsolete]
-        public (string, string) ToContinuationTokenLegacy2()
-        {
-            return (np, nr);
-        }
-
         public string ToContinuationToken()
         {
             // np/nr in nextLink shouldn't be null or empty.

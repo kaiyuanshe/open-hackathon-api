@@ -307,8 +307,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "foo";
             TeamQueryOptions options = new TeamQueryOptions
             {
-                TableContinuationToken = ("np", "nr"),
-                Top = topInPara,
+                Pagination = new Pagination { nr = "nr", np = "np", top = topInPara },
             };
             var entities = MockHelper.CreatePage<TeamEntity>(
                  new List<TeamEntity>

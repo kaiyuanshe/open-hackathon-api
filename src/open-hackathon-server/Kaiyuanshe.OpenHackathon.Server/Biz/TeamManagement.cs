@@ -229,15 +229,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public async Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default)
         {
             var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-
-            int top = 100;
-            if (options != null && options.Top.HasValue && options.Top.Value > 0)
-            {
-                top = options.Top.Value;
-            }
-
-            var continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
-            return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
+            return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
         }
         #endregion
 
