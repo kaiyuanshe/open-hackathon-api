@@ -661,8 +661,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null,
                     new TeamQueryOptions
                     {
-                        Top = 10,
-                        TableContinuationToken = ("np", "nr"),
+                        Pagination = new Pagination { top = 10, np = "np", nr = "nr" },
                     },
                     null
                 );
@@ -670,7 +669,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    ("np", "nr"),
+                    "np nr",
                     new TeamQueryOptions { },
                     "&np=np&nr=nr"
                 );
@@ -679,7 +678,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListTeamsTestData))]
         public async Task ListTeams(
             Pagination pagination,
-            (string NextPartitionKey, string NextRowKey) continuationToken,
+            string continuationToken,
             TeamQueryOptions expectedOptions,
             string expectedLink)
         {
@@ -736,9 +735,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].id);
-            Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationToken.NextPartitionKey, optionsCaptured.TableContinuationToken.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationToken.NextRowKey, optionsCaptured.TableContinuationToken.NextRowKey);
+            Assert.AreEqual(expectedOptions.Top(), optionsCaptured.Top());
+            Assert.AreEqual(expectedOptions.ContinuationToken(), optionsCaptured.ContinuationToken());
         }
 
         #endregion
@@ -1858,7 +1856,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null,
                     new TeamMemberQueryOptions
                     {
-                        Pagination= new Pagination { top = 10, np = "np", nr = "nr" },
+                        Pagination = new Pagination { top = 10, np = "np", nr = "nr" },
                         Status = TeamMemberStatus.approved,
                         Role = TeamMemberRole.Admin
                     },

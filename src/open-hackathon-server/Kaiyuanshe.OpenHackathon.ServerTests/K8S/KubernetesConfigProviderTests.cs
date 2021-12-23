@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 {
-    class KubernetesConfigProviderTests
+    internal class KubernetesConfigProviderTests
     {
         #region GetDefaultConfigObjectAsync
         [Test]
