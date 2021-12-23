@@ -14,6 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
     public class KubernetesConfigProvider : IKubernetesConfigProvider
     {
         static readonly string DefaultConfigBlob = "default/kubeconfig.yaml";
+
         public IStorageContext StorageContext { get; set; }
 
         public async Task<KubernetesClientConfiguration> GetDefaultConfigAsync(CancellationToken cancellationToken)

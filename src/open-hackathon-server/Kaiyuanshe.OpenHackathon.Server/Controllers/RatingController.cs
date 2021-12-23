@@ -470,7 +470,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(judgeId), judgeId);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, TableQueryHelper.ParseContinuationToken(ratings.ContinuationToken));
+            var nextLink = BuildNextLinkUrl(routeValues, ratings.ContinuationToken);
 
             var list = await ResponseBuilder.BuildResourceListAsync<RatingEntity, Rating, RatingList>(
                 ratings.Values,
