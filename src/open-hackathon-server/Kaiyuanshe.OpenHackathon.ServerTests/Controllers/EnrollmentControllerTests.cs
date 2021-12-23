@@ -768,8 +768,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null,
                     new EnrollmentQueryOptions
                     {
-                        Top = 10,
-                        TableContinuationToken = ("np", "nr"),
+                        Pagination = new Pagination { top = 10, np = "np", nr = "nr" },
                         Status = EnrollmentStatus.rejected
                     },
                     null
@@ -779,7 +778,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             yield return new TestCaseData(
                     new Pagination { },
                     null,
-                    ("np", "nr"),
+                    "np nr",
                     new EnrollmentQueryOptions { },
                     "&np=np&nr=nr"
                 );
@@ -789,7 +788,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task ListEnrollmentsTest_Succeed(
             Pagination pagination,
             EnrollmentStatus? status,
-            (string NextPartitionKey, string NextRowKey) continuationToken,
+            string continuationToken,
             EnrollmentQueryOptions expectedOptions,
             string expectedLink)
         {
@@ -846,9 +845,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("rk", list.value[0].userId);
             Assert.AreEqual(EnrollmentStatus.approved, list.value[0].status);
             Assert.AreEqual(expectedOptions.Status, optionsCaptured.Status);
-            Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
+            Assert.AreEqual(expectedOptions.Top(), optionsCaptured.Top());
+            Assert.AreEqual(expectedOptions.ContinuationToken(), optionsCaptured.ContinuationToken());
         }
         #endregion
     }

@@ -241,8 +241,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "foo";
             EnrollmentQueryOptions options = new EnrollmentQueryOptions
             {
-                TableContinuationToken = ("np", "nr"),
-                Top = topInPara,
+                Pagination = new Pagination { np = "np", nr = "nr", top = topInPara },
                 Status = EnrollmentStatus.approved
             };
 

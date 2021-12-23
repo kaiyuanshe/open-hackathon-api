@@ -1,7 +1,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -301,9 +300,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var enrollmentOptions = new EnrollmentQueryOptions
             {
-                TableContinuationToken = pagination.ToContinuationTokenLegacy2(),
                 Status = status,
-                Top = pagination.top
+                Pagination = pagination,
             };
             var page = await EnrollmentManagement.ListPaginatedEnrollmentsAsync(hackName, enrollmentOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
@@ -315,7 +313,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(status), status.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, TableQueryHelper.ParseContinuationToken(page.ContinuationToken));
+            var nextLink = BuildNextLinkUrl(routeValues, page.ContinuationToken);
 
             List<Tuple<EnrollmentEntity, UserInfo>> list = new List<Tuple<EnrollmentEntity, UserInfo>>();
             foreach (var enrollment in page.Values)

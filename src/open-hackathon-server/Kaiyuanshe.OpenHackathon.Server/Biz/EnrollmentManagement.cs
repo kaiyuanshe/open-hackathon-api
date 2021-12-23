@@ -176,7 +176,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public async Task<Page<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default)
         {
             var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-
             if (options != null && options.Status.HasValue)
             {
                 var statusFilter = TableQueryHelper.FilterForInt(
@@ -186,14 +185,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 filter = TableQueryHelper.And(filter, statusFilter);
             }
 
-            int top = 100;
-            if (options != null && options.Top.HasValue && options.Top.Value > 0)
-            {
-                top = options.Top.Value;
-            }
-
-            var continuationToken = TableQueryHelper.ToContinuationToken(options?.TableContinuationToken);
-            var page = await StorageContext.EnrollmentTable.ExecuteQuerySegmentedAsync(filter, continuationToken, top, null, cancellationToken);
+            var page = await StorageContext.EnrollmentTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
             return page;
         }
         #endregion
