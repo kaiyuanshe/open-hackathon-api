@@ -113,20 +113,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
             return (array[0], (array.Length > 1 && array[1].Length > 0) ? array[1] : null);
         }
 
-        public static string ToContinuationToken((string NextPartitionKey, string NextRowKey)? continuationToken)
-        {
-            if (!continuationToken.HasValue)
-                return null;
-
-            var tuple = continuationToken.Value;
-            if (tuple.NextPartitionKey == null || tuple.NextRowKey == null)
-            {
-                return null;
-            }
-
-            return tuple.NextPartitionKey + " " + tuple.NextRowKey;
-        }
-
         static string CombineFilters(string operatorString, params string[] filters)
         {
             if (filters?.Length == 0)

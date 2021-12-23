@@ -271,7 +271,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  new List<TeamEntity>
                  {
                      new TeamEntity{  PartitionKey="pk" }
-                 }, ("np", "nr")
+                 }, "np nr"
                 );
 
             TableContinuationToken tableContinuationTokenCapatured = null;
@@ -313,7 +313,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  new List<TeamEntity>
                  {
                      new TeamEntity{  PartitionKey="pk" }
-                 }, ("np2", "nr2")
+                 }, "np2 nr2"
                 );
 
             var logger = new Mock<ILogger<TeamManagement>>();

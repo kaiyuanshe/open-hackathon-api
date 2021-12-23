@@ -7,7 +7,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
 {
     public interface IKubernetesClusterFactory
     {
-        Task<IKubernetesCluster> GetDefaultKubernetes(CancellationToken cancellationToken);
+        Task<IKubernetesCluster> GetDefaultKubernetes(CancellationToken cancellationToken = default);
     }
 
     public class KubernetesClusterFactory : IKubernetesClusterFactory
@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
 
         public ILoggerFactory LoggerFactory { get; set; }
 
-        public async Task<IKubernetesCluster> GetDefaultKubernetes(CancellationToken cancellationToken)
+        public async Task<IKubernetesCluster> GetDefaultKubernetes(CancellationToken cancellationToken = default)
         {
             if (_default != null)
             {
