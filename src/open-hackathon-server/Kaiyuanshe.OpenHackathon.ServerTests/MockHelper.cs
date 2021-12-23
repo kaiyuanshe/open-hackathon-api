@@ -22,12 +22,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             return querySegment;
         }
 
-        public static Page<T> CreatePage<T>(List<T> result, (string NextPartitionKey, string NextRowKey) continuationToken)
-        {
-            var ct = TableQueryHelper.ToContinuationToken(continuationToken);
-            return CreatePage<T>(result, ct);
-        }
-
         public static Page<T> CreatePage<T>(List<T> result, string continuationToken)
         {
             return Page<T>.FromValues(result, continuationToken, null);
