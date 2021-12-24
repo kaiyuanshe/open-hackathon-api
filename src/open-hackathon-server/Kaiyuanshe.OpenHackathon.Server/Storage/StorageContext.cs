@@ -55,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
             // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
-            TeamWorkTable = new TeamWorkTable(storageAccount, TableNames.TeamWork);
             TemplateTable = new TemplateTable(storageAccount, TableNames.Template);
             UserTable = new UserTable(storageAccount, TableNames.User);
             UserTokenTable = new UserTokenTable(storageAccount, TableNames.UserToken);

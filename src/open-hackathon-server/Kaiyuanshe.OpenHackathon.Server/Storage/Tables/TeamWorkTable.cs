@@ -1,46 +1,30 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
-    public interface ITeamWorkTable : IAzureTable<TeamWorkEntity>
+    public interface ITeamWorkTable : IAzureTableV2<TeamWorkEntity>
     {
         Task<IEnumerable<TeamWorkEntity>> ListByTeamAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
     }
 
-    public class TeamWorkTable : AzureTable<TeamWorkEntity>, ITeamWorkTable
+    public class TeamWorkTable : AzureTableV2<TeamWorkEntity>, ITeamWorkTable
     {
-        public TeamWorkTable()
-        {
-            // UT only
-        }
+        protected override string TableName => TableNames.TeamWork;
 
-        public TeamWorkTable(CloudStorageAccount storageAccount, string tableName)
-              : base(storageAccount, tableName)
+        public TeamWorkTable(ILogger<TeamWorkTable> logger) : base(logger)
         {
         }
 
         public async Task<IEnumerable<TeamWorkEntity>> ListByTeamAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)
         {
-            List<TeamWorkEntity> list = new List<TeamWorkEntity>();
-
             var pkFilter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-            var teamIdFilter=TableQuery.GenerateFilterCondition(nameof(TeamWorkEntity.TeamId),
-                           QueryComparisons.Equal,
-                           teamId);
+            var teamIdFilter = TableQueryHelper.FilterForString(nameof(TeamWorkEntity.TeamId), ComparisonOperator.Equal, teamId);
             var filter = TableQueryHelper.And(pkFilter, teamIdFilter);
-
-            TableQuery<TeamWorkEntity> query = new TableQuery<TeamWorkEntity>().Where(filter);
-            await ExecuteQuerySegmentedAsync(query, (segment) =>
-            {
-                list.AddRange(segment);
-            }, cancellationToken);
-
-            return list;
+            return await QueryEntitiesAsync(filter, null, cancellationToken);
         }
     }
 }
