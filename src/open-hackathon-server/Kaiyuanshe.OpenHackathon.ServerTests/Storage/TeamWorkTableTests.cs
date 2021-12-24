@@ -1,9 +1,9 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
@@ -13,13 +13,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         [Test]
         public async Task ListByTeamAsync()
         {
-            var teamWorkTable = new Mock<TeamWorkTable> { };
+            var entities = new List<TeamWorkEntity>
+            {
+                new TeamWorkEntity{ },
+            };
+
+            var logger = new Mock<ILogger<TeamWorkTable>>();
+            var teamWorkTable = new Mock<TeamWorkTable>(logger.Object) { };
+            teamWorkTable.Setup(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')", null, default)).ReturnsAsync(entities);
+
             await teamWorkTable.Object.ListByTeamAsync("hack", "tid", default);
 
-            teamWorkTable.Verify(t => t.ExecuteQuerySegmentedAsync(
-                It.Is<TableQuery<TeamWorkEntity>>(q => q.FilterString == "(PartitionKey eq 'hack') and (TeamId eq 'tid')"),
-                It.IsAny<Action<TableQuerySegment<TeamWorkEntity>>>(),
-                default), Times.Once);
+            Mock.VerifyAll(teamWorkTable);
             teamWorkTable.VerifyNoOtherCalls();
         }
     }
