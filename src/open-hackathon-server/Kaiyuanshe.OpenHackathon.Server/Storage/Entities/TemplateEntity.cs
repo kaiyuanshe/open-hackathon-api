@@ -1,6 +1,4 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
-using Kaiyuanshe.OpenHackathon.Server.Models;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Kaiyuanshe.OpenHackathon.Server.Models;
 using System.Collections.Generic;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
@@ -10,12 +8,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// PK: hackathon
     /// RK: template name
     /// </summary>
-    public class TemplateEntity : AdvancedTableEntity
+    public class TemplateEntity : BaseTableEntity
     {
         /// <summary>
         /// name of Hackathon. PartitionKey
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string HackathonName
         {
             get
@@ -27,7 +25,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// name of template. RowKey.
         /// </summary>
-        [IgnoreProperty]
+        [IgnoreEntityProperty]
         public string Name
         {
             get
