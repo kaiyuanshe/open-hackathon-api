@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
@@ -11,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// PartitionKey: SHA512 hash of Token. Max length of PK/RK is 1K. Length of Token is usually >1K
     /// RowKey: string.Empty
     /// </summary>
-    public class UserTokenEntity : AdvancedTableEntity
+    public class UserTokenEntity : BaseTableEntity
     {
         public string UserId { get; set; }
 

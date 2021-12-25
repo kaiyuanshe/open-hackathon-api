@@ -56,7 +56,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
             // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
             UserTable = new UserTable(storageAccount, TableNames.User);
-            UserTokenTable = new UserTokenTable(storageAccount, TableNames.UserToken);
 
             // blob containers
             UserBlobContainer = new UserBlobContainer(storageAccount, BlobContainerNames.StaticWebsite);
