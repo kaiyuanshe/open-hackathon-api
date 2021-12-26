@@ -25,8 +25,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase(5, 5)]
         public void GetSASExpirationMinitues(int? requestedExpiration, int expectedExpiration)
         {
+            var logger = new Mock<ILogger<FileManagement>>();
             var request = new FileUpload { expiration = requestedExpiration };
-            var fileManagement = new FileManagement(null);
+            var fileManagement = new FileManagement(logger.Object);
             Assert.AreEqual(expectedExpiration, fileManagement.GetSASExpirationMinitues(request));
         }
         #endregion
