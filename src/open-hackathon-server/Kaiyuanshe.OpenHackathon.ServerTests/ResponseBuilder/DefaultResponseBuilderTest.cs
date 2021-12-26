@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
+﻿using Authing.ApiClient.Types;
+using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -466,6 +467,138 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual(5, result.score);
             Assert.AreEqual(entity.CreatedAt, result.createdAt);
             Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
+        #region BuildUser
+        [Test]
+        public void BuildUser()
+        {
+            UserEntity entity = new UserEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Address = "address",
+                Arn = "arn",
+                Birthdate = "birthdate",
+                Blocked = true,
+                Browser = "browser",
+                City = "city",
+                Company = "company",
+                Country = "country",
+                Device = "device",
+                Email = "email",
+                EmailVerified = true,
+                ETag = "etag",
+                FamilyName = "familyname",
+                Formatted = "formatted",
+                Gender = "gender",
+                GivenName = "givenname",
+                Identities = new List<Identity> {
+                    new Identity
+                    {
+                        ConnectionId="connectionId",
+                        IsSocial=true,
+                        Openid="openid",
+                        Provider="provider",
+                        UserId="userid",
+                        UserIdInIdp="useridinidp",
+                        UserPoolId="userpoolid"
+                    }
+                },
+                IsDeleted = true,
+                LastIp = "lastip",
+                LastLogin = "lastlogin",
+                Locale = "locale",
+                Locality = "locality",
+                LoginsCount = 10,
+                MiddleName = "middlename",
+                Name = "name",
+                Nickname = "nickname",
+                OAuth = "oauth",
+                OpenId = "openid",
+                Password = "password",
+                Phone = "phone",
+                PhoneVerified = true,
+                Photo = "photo",
+                PostalCode = "postalcode",
+                PreferredUsername = "preferredusername",
+                Profile = "profile",
+                Province = "province",
+                Region = "region",
+                RegisterSource = new string[] { "registersource" },
+                SignedUp = "signedup",
+                StreetAddress = "streetaddress",
+                Token = "token",
+                TokenExpiredAt = DateTime.UtcNow,
+                Unionid = "unionid",
+                Username = "username",
+                UserPoolId = "userpoolid",
+                Website = "website",
+                Zoneinfo = "zoneinfo",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildUser(entity);
+
+            Assert.AreEqual("pk", result.Id);
+            Assert.AreEqual("address", result.Address);
+            Assert.AreEqual("arn", result.Arn);
+            Assert.AreEqual("birthdate", result.Birthdate);
+            Assert.AreEqual(true, result.Blocked);
+            Assert.AreEqual("browser", result.Browser);
+            Assert.AreEqual("city", result.City);
+            Assert.AreEqual("company", result.Company);
+            Assert.AreEqual("country", result.Country);
+            Assert.AreEqual("device", result.Device);
+            Assert.AreEqual("email", result.Email);
+            Assert.AreEqual(true, result.EmailVerified);
+            Assert.AreEqual("familyname", result.FamilyName);
+            Assert.AreEqual("formatted", result.Formatted);
+            Assert.AreEqual("gender", result.Gender);
+            Assert.AreEqual("givenname", result.GivenName);
+            Assert.AreEqual(1, result.Identities.Count());
+            Assert.AreEqual("connectionId", result.Identities.First().ConnectionId);
+            Assert.AreEqual(true, result.Identities.First().IsSocial);
+            Assert.AreEqual("openid", result.Identities.First().Openid);
+            Assert.AreEqual("provider", result.Identities.First().Provider);
+            Assert.AreEqual("userid", result.Identities.First().UserId);
+            Assert.AreEqual("useridinidp", result.Identities.First().UserIdInIdp);
+            Assert.AreEqual("userpoolid", result.Identities.First().UserPoolId);
+            Assert.AreEqual(true, result.IsDeleted);
+            Assert.AreEqual("lastip", result.LastIp);
+            Assert.AreEqual("lastlogin", result.LastLogin);
+            Assert.AreEqual("locale", result.Locale);
+            Assert.AreEqual("locality", result.Locality);
+            Assert.AreEqual(10, result.LoginsCount);
+            Assert.AreEqual("middlename", result.MiddleName);
+            Assert.AreEqual("name", result.Name);
+            Assert.AreEqual("nickname", result.Nickname);
+            Assert.AreEqual("oauth", result.OAuth);
+            Assert.AreEqual("openid", result.OpenId);
+            Assert.AreEqual(null, result.Password); // should be filtered
+            Assert.AreEqual("phone", result.Phone);
+            Assert.AreEqual(true, result.PhoneVerified);
+            Assert.AreEqual("photo", result.Photo);
+            Assert.AreEqual("postalcode", result.PostalCode);
+            Assert.AreEqual("preferredusername", result.PreferredUsername);
+            Assert.AreEqual("profile", result.Profile);
+            Assert.AreEqual("province", result.Province);
+            Assert.AreEqual("region", result.Region);
+            Assert.AreEqual(1, result.RegisterSource.Count());
+            Assert.AreEqual("registersource", result.RegisterSource.First());
+            Assert.AreEqual("signedup", result.SignedUp);
+            Assert.AreEqual("streetaddress", result.StreetAddress);
+            Assert.AreEqual(null, result.Token); // should be filtered
+            Assert.AreEqual(entity.TokenExpiredAt, result.TokenExpiredAt);
+            Assert.AreEqual("unionid", result.Unionid);
+            Assert.AreEqual("username", result.Username);
+            Assert.AreEqual("userpoolid", result.UserPoolId);
+            Assert.AreEqual("website", result.Website);
+            Assert.AreEqual("zoneinfo", result.Zoneinfo);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.UtcDateTime, result.updatedAt);
         }
         #endregion
 

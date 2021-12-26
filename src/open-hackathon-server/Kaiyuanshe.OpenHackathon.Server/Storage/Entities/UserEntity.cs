@@ -59,7 +59,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 
         public bool IsDeleted { get; set; }
 
-        public string Id { get; set; }
+        [IgnoreEntityProperty]
+        public string UserId
+        {
+            get
+            {
+                return PartitionKey;
+            }
+        }
 
         public string Arn { get; set; }
 
