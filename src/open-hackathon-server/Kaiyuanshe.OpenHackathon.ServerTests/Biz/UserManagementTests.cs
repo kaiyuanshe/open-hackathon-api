@@ -6,8 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -32,7 +30,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Token = "token",
             };
             var cancellationToken = new CancellationTokenSource().Token;
-            var dynamicEntity = new Microsoft.WindowsAzure.Storage.Table.DynamicTableEntity();
 
             // moc
             var storage = new Mock<IStorageContext>();
@@ -40,7 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var tokenTable = new Mock<IUserTokenTable>();
             storage.SetupGet(s => s.UserTable).Returns(usertable.Object);
             storage.SetupGet(s => s.UserTokenTable).Returns(tokenTable.Object);
-            usertable.Setup(u => u.SaveUserAsync(userInfo, cancellationToken)).ReturnsAsync(dynamicEntity);
+            usertable.Setup(u => u.SaveUserAsync(userInfo, cancellationToken));
             tokenTable.Setup(t => t.InsertOrReplaceAsync(It.IsAny<UserTokenEntity>(), cancellationToken));
             var cache = new DefaultCacheProvider(null);
 

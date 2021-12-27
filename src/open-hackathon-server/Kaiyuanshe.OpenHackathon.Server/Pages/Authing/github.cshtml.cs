@@ -41,8 +41,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Pages.Authing
 
             var data = Request.Query["data"];
             var loginUrl = $"https://{Request.Host}/v2/login";
-            if (Request.Host.Host.Contains("localhost"))
+            if (Request.Host.Host.Contains("localhost") && Request.Host.Port == 5001)
             {
+                // Mac OS workaround
                 loginUrl = $"http://localhost:5000/v2/login";
             }
             Console.WriteLine(loginUrl);
