@@ -21,10 +21,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
         public void ActionWithRouteNameMetadata()
         { }
 
-        [Obsolete]
-        public void ActionWithObsoleteAttribute()
-        { }
-
         [Authorize]
         public void ActionWithTokenRequired()
         { }
