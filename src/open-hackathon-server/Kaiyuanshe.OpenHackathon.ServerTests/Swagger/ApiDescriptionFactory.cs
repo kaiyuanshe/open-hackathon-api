@@ -40,7 +40,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
             IEnumerable<ApiResponseType> supportedResponseTypes = null)
         {
             var actionDescriptor = CreateActionDescriptor(methodInfo);
-
             var apiDescription = new ApiDescription
             {
                 ActionDescriptor = actionDescriptor,

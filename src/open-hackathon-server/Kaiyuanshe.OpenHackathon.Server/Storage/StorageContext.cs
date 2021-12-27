@@ -53,11 +53,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         {
             StorageAccountProvider = storageAccountProvider;
 
-            // tables
             var storageAccount = storageAccountProvider.HackathonServerStorage;
-            UserTable = new UserTable(storageAccount, TableNames.User);
-
-            // blob containers
             UserBlobContainer = new UserBlobContainer(storageAccount, BlobContainerNames.StaticWebsite);
             KubernetesBlobContainer = new KubernetesBlobContainer(storageAccount, BlobContainerNames.Kubernetes);
         }

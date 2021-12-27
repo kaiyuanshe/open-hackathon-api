@@ -62,7 +62,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>https://contoso.com</example>
         [MaxLength(1024)]
-        [Url]
         [JsonProperty("website")]
         public string Website { get; set; }
 
@@ -230,7 +229,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Email address.
         /// </summary>
         /// <example>zhangsan@contoso.com</example>
-        [EmailAddress]
         [MaxLength(256)]
         [JsonProperty("email")]
         public string Email { get; set; }
@@ -247,7 +245,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>021-12345678</example>
         [JsonProperty("phone")]
-        [Phone]
         [MaxLength(128)]
         public string Phone { get; set; }
 
@@ -284,7 +281,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>San Zhang</example>
         [MaxLength(128)]
-        //[Required]
         [JsonProperty("nickName")]
         public string Nickname { get; set; }
 
@@ -300,7 +296,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>https://contoso.com/images/avatar/zhangsan.jpg</example>
         [JsonProperty("photo")]
-        [Url]
         [MaxLength(1024)]
         public string Photo { get; set; }
 
