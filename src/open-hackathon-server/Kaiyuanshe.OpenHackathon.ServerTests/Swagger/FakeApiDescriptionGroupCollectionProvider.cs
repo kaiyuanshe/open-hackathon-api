@@ -21,7 +21,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
                     .GroupBy(item => item.GroupName)
                     .Select(grouping => new ApiDescriptionGroup(grouping.Key, grouping.ToList()))
                     .ToList();
-
                 return new ApiDescriptionGroupCollection(apiDescriptionGroups, 1);
             }
         }
