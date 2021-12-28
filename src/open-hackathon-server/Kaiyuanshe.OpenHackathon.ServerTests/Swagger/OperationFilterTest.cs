@@ -1,14 +1,8 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Swagger;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using NUnit.Framework;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Kaiyuanshe.OpenHackathon.Server.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
 {
