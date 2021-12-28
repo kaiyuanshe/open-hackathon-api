@@ -276,8 +276,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             {
                 var conn = StorageCredentialProvider.HackathonServerStorageConnectionString;
                 var clientOptions = new TableClientOptions();
-                var operationIdPolicy = TraceIdHttpPipelinePolicyFactory.GetPipelinePolicy();
-                clientOptions.AddPolicy(operationIdPolicy, HttpPipelinePosition.PerRetry);
+                var traceIdPolicy = TraceIdHttpPipelinePolicyFactory.GetPipelinePolicy();
+                clientOptions.AddPolicy(traceIdPolicy, HttpPipelinePosition.PerRetry);
 
                 tableClient = new TableClient(conn, TableName, clientOptions);
                 logger.TraceInformation($"Building TableClient for {StorageName}.{TableName}.");
