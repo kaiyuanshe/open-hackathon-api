@@ -1,8 +1,8 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+﻿using Azure.Storage.Sas;
+using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Security.Claims;
 using System.Threading;
@@ -61,22 +61,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return expirationInMinutes;
         }
 
-
-        private SharedAccessBlobPolicy GetSasPolicyForExternal(int expiration)
-        {
-            // get shared access policy for external users, with least privilege
-            var leadingTime = BlobContainerMinSasExpiration; // avoid inconsistent timestamp between client and server
-            var sasPolicy =
-                new SharedAccessBlobPolicy
-                {
-                    SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(expiration + leadingTime),
-                    SharedAccessStartTime = DateTime.UtcNow.Subtract(new TimeSpan(0, leadingTime, 0)),
-                    Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write
-                };
-            return sasPolicy;
-        }
-
-        private Tuple<string, string> GetBlobStorageBaseUrls()
+        private (string readUrlBase, string writeUrlBase) GetBlobStorageBaseUrls()
         {
             var account = StorageContext.StorageAccountProvider.HackathonServerStorage;
 
@@ -94,27 +79,30 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // write url base
             string writeUrlBase = account.BlobEndpoint.AbsoluteUri.TrimEnd('/');
 
-            return Tuple.Create(readUrlBase, writeUrlBase);
+            return (readUrlBase, writeUrlBase);
         }
 
-        public Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload request, CancellationToken cancellationToken = default)
+        public async Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload fileUpload, CancellationToken cancellationToken = default)
         {
-            var expiration = GetSASExpirationMinitues(request);
-            var accessPolicy = GetSasPolicyForExternal(expiration);
+            var expiration = GetSASExpirationMinitues(fileUpload);
+            var leadingTime = BlobContainerMinSasExpiration; // avoid inconsistent timestamp between client and server
+            var expiresOn = DateTimeOffset.UtcNow.AddMinutes(expiration + leadingTime);
+
+            var permissions = BlobSasPermissions.Read | BlobSasPermissions.Write;
 
             // TOTO save upload history and apply throttling rules
             // TODO check file exitance
 
             string userId = ClaimsHelper.GetUserId(user);
-            string blobName = $"{userId}/{DateTime.UtcNow.ToString("yyyy/MM/dd")}/{request.filename}";
-            var sasToken = StorageContext.UserBlobContainer.CreateBlobSasToken(blobName, accessPolicy);
+            string blobName = $"{userId}/{DateTime.UtcNow.ToString("yyyy/MM/dd")}/{fileUpload.filename}";
+            var sasToken = await StorageContext.UserBlobContainer.CreateBlobSasToken(blobName, permissions, expiresOn);
 
             // generate URLs
             var baseUrls = GetBlobStorageBaseUrls();
-            request.expiration = expiration;
-            request.url = $"{baseUrls.Item1}/{blobName}";
-            request.uploadUrl = $"{baseUrls.Item2}/{BlobContainerNames.StaticWebsite}/{blobName}{sasToken}";
-            return Task.FromResult(request);
+            fileUpload.expiration = expiration;
+            fileUpload.url = $"{baseUrls.readUrlBase}/{blobName}";
+            fileUpload.uploadUrl = $"{baseUrls.writeUrlBase}/{BlobContainerNames.StaticWebsite}/{blobName}{sasToken}";
+            return fileUpload;
         }
         #endregion
     }

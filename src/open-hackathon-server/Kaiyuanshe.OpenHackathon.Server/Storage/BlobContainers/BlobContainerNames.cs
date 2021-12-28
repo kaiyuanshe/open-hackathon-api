@@ -2,7 +2,7 @@
 {
     public static class BlobContainerNames
     {
-        public static readonly string StaticWebsite = "$web";
-        public static readonly string Kubernetes = "kubernetes";
+        public const string StaticWebsite = "$web";
+        public const string Kubernetes = "kubernetes";
     }
 }

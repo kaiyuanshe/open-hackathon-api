@@ -18,6 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             builder.RegisterType<DefaultStorageAccountProvider>().As<IStorageAccountProvider>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<StorageCredentialProvider>().As<IStorageCredentialProvider>().PropertiesAutowired().SingleInstance();
             builder.RegisterAzureTablesV2();
+            builder.RegisterAzureBlobContainersV2();
             builder.RegisterType<StorageContext>().As<IStorageContext>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<TraceIdHttpPipelinePolicyFactory>().As<ITraceIdHttpPipelinePolicyFactory>().PropertiesAutowired().SingleInstance();
 
