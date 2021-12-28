@@ -1,9 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
 using NUnit.Framework;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
 {

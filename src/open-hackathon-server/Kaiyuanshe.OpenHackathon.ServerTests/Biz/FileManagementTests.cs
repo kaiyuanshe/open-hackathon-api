@@ -1,11 +1,11 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+﻿using Azure.Storage.Sas;
+using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -50,8 +50,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userBlobContainer = new Mock<IUserBlobContainer>();
             userBlobContainer.Setup(c => c.CreateBlobSasToken(
                 blobName,
-                It.Is<SharedAccessBlobPolicy>(p => p.Permissions == (SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write))))
-                .Returns(sas);
+                BlobSasPermissions.Read | BlobSasPermissions.Write
+                , It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync(sas);
             var storageAccountProvider = new Mock<IStorageAccountProvider>();
             storageAccountProvider.Setup(p => p.HackathonServerStorage).Returns(storageAccount);
             var storageContext = new Mock<IStorageContext>();
