@@ -13,7 +13,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
 {
     public interface IAzureBlobContainerV2
     {
-        Task<string> CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn);
+        string BlobContainerUri { get; }
+        string CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn);
         Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken);
     }
 
@@ -30,9 +31,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
             this.logger = logger;
         }
 
-        public async Task<string> CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn)
+        public string BlobContainerUri
         {
-            var blobContainerClient = await GetBlobContainerClient(default);
+            get
+            {
+                var client = GetBlobContainerClient();
+                return client.GetParentBlobServiceClient().Uri.ToString().TrimEnd('/');
+            }
+        }
+
+        public string CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn)
+        {
+            var blobContainerClient = GetBlobContainerClient();
             var blobClient = blobContainerClient.GetBlobClient(blobName);
             var uri = blobClient.GenerateSasUri(permissions, expiresOn);
             return uri.Query;
@@ -40,7 +50,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
 
         public async Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken)
         {
-            var blobContainerClient = await GetBlobContainerClient(default);
+            var blobContainerClient = GetBlobContainerClient();
             var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
             {
@@ -56,12 +66,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
             }
         }
 
-        private Task<BlobContainerClient> GetBlobContainerClient(CancellationToken cancellationToken)
+        private BlobContainerClient GetBlobContainerClient()
         {
-            return GetBlobContainerClientInternal(null, cancellationToken);
+            return GetBlobContainerClientInternal(null);
         }
 
-        private async Task<BlobContainerClient> GetBlobContainerClientInternal(BlobClientOptions options, CancellationToken cancellationToken)
+        private BlobContainerClient GetBlobContainerClientInternal(BlobClientOptions options)
         {
             if (blobContainerClient == null)
             {
@@ -80,7 +90,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
                 {
                     try
                     {
-                        await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+                        blobContainerClient.CreateIfNotExists();
                     }
                     catch (RequestFailedException ex)
                     {

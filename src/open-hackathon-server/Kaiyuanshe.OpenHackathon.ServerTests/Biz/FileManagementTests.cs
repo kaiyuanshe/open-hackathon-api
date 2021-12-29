@@ -42,7 +42,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     new Claim(AuthConstant.ClaimType.UserId, "userId")
                }));
             var request = new FileUpload { filename = "dir/abc.png" };
-            var storageAccount = CloudStorageAccount.DevelopmentStorageAccount;
             var sas = "?sas";
             string blobName = $"userId/{DateTime.UtcNow.ToString("yyyy/MM/dd")}/dir/abc.png";
 
@@ -52,12 +51,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 blobName,
                 BlobSasPermissions.Read | BlobSasPermissions.Write
                 , It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync(sas);
-            var storageAccountProvider = new Mock<IStorageAccountProvider>();
-            storageAccountProvider.Setup(p => p.HackathonServerStorage).Returns(storageAccount);
+                .Returns(sas);
+            userBlobContainer.SetupGet(u => u.BlobContainerUri).Returns("https://contoso.com");
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.UserBlobContainer).Returns(userBlobContainer.Object);
-            storageContext.SetupGet(s => s.StorageAccountProvider).Returns(storageAccountProvider.Object);
             var logger = new Mock<ILogger<FileManagement>>();
 
             // test
@@ -68,15 +65,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var result = await fileManagement.GetUploadUrlAsync(user, request, default);
 
             // verify
-            Mock.VerifyAll(userBlobContainer, storageContext, storageAccountProvider);
+            Mock.VerifyAll(userBlobContainer, storageContext);
             userBlobContainer.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
-            storageAccountProvider.VerifyNoOtherCalls();
 
             Assert.AreEqual(5, result.expiration);
             Assert.AreEqual("dir/abc.png", result.filename);
             Assert.AreEqual($"{FileManagement.HackathonApiStaticSite}/{blobName}", result.url);
-            Assert.AreEqual($"http://127.0.0.1:10000/devstoreaccount1/$web/{blobName}?sas", result.uploadUrl);
+            Assert.AreEqual($"https://contoso.com/$web/{blobName}?sas", result.uploadUrl);
         }
         #endregion
     }
