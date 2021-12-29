@@ -15,7 +15,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
         protected override void Load(ContainerBuilder builder)
         {
             // Storage
-            builder.RegisterType<DefaultStorageAccountProvider>().As<IStorageAccountProvider>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<StorageCredentialProvider>().As<IStorageCredentialProvider>().PropertiesAutowired().SingleInstance();
             builder.RegisterAzureTablesV2();
             builder.RegisterAzureBlobContainersV2();
