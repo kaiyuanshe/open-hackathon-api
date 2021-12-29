@@ -403,26 +403,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // top
             yield return new TestCaseData(
-                new AwardQueryOptions { Top = 2 },
+                new AwardQueryOptions { Pagination = new Pagination { top = 2 } },
                 new List<AwardEntity> { a1, a2, a3, a4 },
                 new List<AwardEntity> { a4, a2, },
-                new TableContinuationToken { NextPartitionKey = "2", NextRowKey = "2" }
+                new Pagination { np = "2", nr = "2" }
                 );
 
             // paging
             yield return new TestCaseData(
                 new AwardQueryOptions
                 {
-                    Top = 2,
-                    TableContinuationTokenLegacy = new TableContinuationToken
+                    Pagination = new Pagination
                     {
-                        NextPartitionKey = "1",
-                        NextRowKey = "1"
-                    }
+                        top = 2,
+                        np = "1",
+                        nr = "1",
+                    },
                 },
                 new List<AwardEntity> { a1, a2, a3, a4 },
                 new List<AwardEntity> { a2, a3, },
-                new TableContinuationToken { NextPartitionKey = "3", NextRowKey = "3" }
+                new Pagination { np = "3", nr = "3" }
                 );
         }
 
@@ -431,7 +431,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             AwardQueryOptions options,
             IEnumerable<AwardEntity> allAwards,
             IEnumerable<AwardEntity> expectedResult,
-            TableContinuationToken expectedNext)
+            Pagination expectedNext)
         {
             string hackName = "foo";
 
@@ -456,13 +456,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
             if (expectedNext == null)
             {
-                Assert.IsNull(options.NextLegacy);
+                Assert.IsNull(options.NextPage);
             }
             else
             {
-                Assert.IsNotNull(options.NextLegacy);
-                Assert.AreEqual(expectedNext.NextPartitionKey, options.NextLegacy.NextPartitionKey);
-                Assert.AreEqual(expectedNext.NextRowKey, options.NextLegacy.NextRowKey);
+                Assert.IsNotNull(options.NextPage);
+                Assert.AreEqual(expectedNext.np, options.NextPage.np);
+                Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
             }
         }
         #endregion

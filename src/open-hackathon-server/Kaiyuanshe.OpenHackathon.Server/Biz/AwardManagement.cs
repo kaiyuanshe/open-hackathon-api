@@ -193,20 +193,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // paging
             int np = 0;
-            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out np);
-            int top = options.Top.GetValueOrDefault(100);
+            int.TryParse(options?.Pagination?.np, out np);
+            int top = options.Top();
+
             var awards = allAwards.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
                 .Take(top);
 
             // next paging
-            options.NextLegacy = null;
+            options.NextPage = null;
             if (np + top < allAwards.Count())
             {
-                options.NextLegacy = new TableContinuationToken
+                options.NextPage = new Pagination
                 {
-                    NextPartitionKey = (np + top).ToString(),
-                    NextRowKey = (np + top).ToString(),
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
                 };
             }
 
