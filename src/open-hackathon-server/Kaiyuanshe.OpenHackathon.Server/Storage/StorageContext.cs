@@ -52,9 +52,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public StorageContext(IStorageAccountProvider storageAccountProvider)
         {
             StorageAccountProvider = storageAccountProvider;
-
-            var storageAccount = storageAccountProvider.HackathonServerStorage;
-            KubernetesBlobContainer = new KubernetesBlobContainer(storageAccount, BlobContainerNames.Kubernetes);
         }
     }
 }

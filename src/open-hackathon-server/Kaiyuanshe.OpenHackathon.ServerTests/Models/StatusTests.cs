@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
 {
-    class StatusTests
+    internal class StatusTests
     {
         [Test]
         public void Convert()
