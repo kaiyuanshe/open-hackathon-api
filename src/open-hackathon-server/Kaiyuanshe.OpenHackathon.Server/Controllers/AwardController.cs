@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
@@ -188,8 +187,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var awardQueryOptions = new AwardQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top
+                Pagination = pagination,
             };
             var awards = await AwardManagement.ListPaginatedAwardsAsync(hackathonName.ToLower(), awardQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
@@ -197,7 +195,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, awardQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, awardQueryOptions.NextPage);
             return Ok(ResponseBuilder.BuildResourceList<AwardEntity, Award, AwardList>(
                     awards,
                     ResponseBuilder.BuildAward,

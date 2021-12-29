@@ -1,8 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
 {

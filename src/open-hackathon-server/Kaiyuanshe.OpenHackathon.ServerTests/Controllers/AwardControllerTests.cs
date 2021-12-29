@@ -9,11 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -332,22 +330,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    new Pagination { np = "np", nr = "nr" },
                     "&np=np&nr=nr"
                 );
 
             // next link with top
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np2",
-                        NextRowKey = "nr2"
-                    },
+                    new Pagination { np = "np2", nr = "nr2" },
                     "&top=10&np=np2&nr=nr2"
                 );
         }
@@ -355,7 +345,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListAwardsTestData))]
         public async Task ListAwards(
             Pagination pagination,
-            TableContinuationToken next,
+            Pagination next,
             string expectedLink)
         {
             // input
@@ -379,7 +369,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             awardManagement.Setup(p => p.ListPaginatedAwardsAsync("hack", It.IsAny<AwardQueryOptions>(), cancellationToken))
                 .Callback<string, AwardQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.NextLegacy = next;
+                    o.NextPage = next;
                 })
                 .ReturnsAsync(awards);
 
