@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
 {
-    class EnvironmentVariablesAttributeTests
+    internal class EnvironmentVariablesAttributeTests
     {
         [Test]
         public void IsValidTest()
