@@ -63,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         private (string readUrlBase, string writeUrlBase) GetBlobStorageBaseUrls()
         {
-            var account = StorageContext.StorageAccountProvider.HackathonServerStorage;
+            var blobEndpoint = StorageContext.UserBlobContainer.BlobContainerUri;
 
             // read Url base
             string readUrlBase = HackathonApiStaticSite;
@@ -72,12 +72,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 // return Static WebSite url. Make sure it's enabled.
                 // blob endpoint: https://accountName.blob.core.chinacloudapi.cn/
                 // static website: https://accountName.z4.web.core.chinacloudapi.cn/
-                string blobEndpoint = account.BlobEndpoint.AbsoluteUri.TrimEnd('/');
                 readUrlBase = blobEndpoint.Replace(".blob.", ".z4.web.");
             }
 
             // write url base
-            string writeUrlBase = account.BlobEndpoint.AbsoluteUri.TrimEnd('/');
+            string writeUrlBase = blobEndpoint;
 
             return (readUrlBase, writeUrlBase);
         }
@@ -95,7 +94,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             string userId = ClaimsHelper.GetUserId(user);
             string blobName = $"{userId}/{DateTime.UtcNow.ToString("yyyy/MM/dd")}/{fileUpload.filename}";
-            var sasToken = await StorageContext.UserBlobContainer.CreateBlobSasToken(blobName, permissions, expiresOn);
+            var sasToken = StorageContext.UserBlobContainer.CreateBlobSasToken(blobName, permissions, expiresOn);
 
             // generate URLs
             var baseUrls = GetBlobStorageBaseUrls();
