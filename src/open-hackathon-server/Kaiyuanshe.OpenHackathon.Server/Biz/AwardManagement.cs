@@ -2,7 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -309,20 +308,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
 
             // paging
-            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out int np);
-            int top = options.Top.GetValueOrDefault(100);
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
             var assignments = awardAssignments.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
                 .Take(top);
 
             // next paging
-            options.NextLegacy = null;
+            options.NextPage = null;
             if (np + top < awardAssignments.Count())
             {
-                options.NextLegacy = new TableContinuationToken
+                options.NextPage = new Pagination
                 {
-                    NextPartitionKey = (np + top).ToString(),
-                    NextRowKey = (np + top).ToString(),
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
                 };
             }
 
