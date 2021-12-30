@@ -477,8 +477,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
                 AwardId = awardId,
                 QueryType = AwardAssignmentQueryType.Award,
             };
@@ -488,7 +487,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextPage);
 
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(
                 assignments,
@@ -531,8 +530,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
                 QueryType = AwardAssignmentQueryType.Hackathon,
             };
             var assignments = await AwardManagement.ListPaginatedAssignmentsAsync(hackathonName.ToLower(), assignmentQueryOptions, cancellationToken);
@@ -541,7 +539,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextPage);
 
             var awards = await AwardManagement.ListAwardsAsync(hackathonName.ToLower(), cancellationToken);
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(

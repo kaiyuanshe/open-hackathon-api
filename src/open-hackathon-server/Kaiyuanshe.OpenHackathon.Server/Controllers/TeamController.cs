@@ -917,8 +917,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
                 TeamId = teamId,
                 QueryType = AwardAssignmentQueryType.Team,
             };
@@ -928,7 +927,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, assignmentQueryOptions.NextPage);
 
             // build resp
             var creator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
