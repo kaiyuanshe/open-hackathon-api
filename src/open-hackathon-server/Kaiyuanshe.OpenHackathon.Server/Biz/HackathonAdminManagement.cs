@@ -3,7 +3,6 @@ using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,18 +89,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             IEnumerable<HackathonAdminEntity> allAdmins = await ListHackathonAdminAsync(hackathonName, cancellationToken);
 
             // paging
-            int.TryParse(options.TableContinuationTokenLegacy?.NextPartitionKey, out int np);
-            int top = options.Top.GetValueOrDefault(100);
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
             var admins = allAdmins.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
 
             // next paging
-            options.NextLegacy = null;
+            options.NextPage = null;
             if (np + top < allAdmins.Count())
             {
-                options.NextLegacy = new TableContinuationToken
+                options.NextPage = new Pagination
                 {
-                    NextPartitionKey = (np + top).ToString(),
-                    NextRowKey = (np + top).ToString(),
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
                 };
             }
 

@@ -42,6 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             {
                 var context = new ValidationContext(value);
                 var result = attr.GetValidationResult(value, context);
+
                 Assert.AreEqual(missingMembers.Count(), result.MemberNames.Count());
                 Assert.AreEqual(missingMembers.Count(), missingMembers.Intersect(result.MemberNames).Count());
             }
