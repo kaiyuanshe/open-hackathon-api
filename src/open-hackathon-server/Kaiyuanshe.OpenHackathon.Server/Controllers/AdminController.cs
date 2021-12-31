@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,8 +97,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var queryOptioins = new AdminQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
             };
             var admins = await HackathonAdminManagement.ListPaginatedHackathonAdminAsync(hackathonName.ToLower(), queryOptioins, cancellationToken);
             var routeValues = new RouteValueDictionary();
@@ -107,7 +105,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, queryOptioins.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, queryOptioins.NextPage);
 
             // build resp
             var resp = await ResponseBuilder.BuildResourceListAsync<HackathonAdminEntity, HackathonAdmin, HackathonAdminList>(
