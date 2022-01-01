@@ -485,7 +485,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // arg1: search
             // arg2: order by
             // arg3: listType
-            // arg4: next token
+            // arg4: next pagination
             // arg5: expected nextlink
 
             // no pagination, no filter, no top
@@ -514,7 +514,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     "search",
                     HackathonOrderBy.updatedAt,
                     HackathonListType.admin,
-                    new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" },
+                    new Pagination { np = "np", nr = "nr" },
                     "&top=10&search=search&orderby=updatedAt&listType=admin&np=np&nr=nr"
                 );
             yield return new TestCaseData(
@@ -522,7 +522,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     "search",
                     HackathonOrderBy.updatedAt,
                     HackathonListType.online,
-                    new TableContinuationToken { NextPartitionKey = "np", NextRowKey = "nr" },
+                    new Pagination { np = "np", nr = "nr" },
                     "&top=10&search=search&orderby=updatedAt&listType=online&np=np&nr=nr"
                 );
         }
@@ -533,7 +533,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string search,
             HackathonOrderBy? orderBy,
             HackathonListType? listType,
-            TableContinuationToken next,
+            Pagination next,
             string expectedLink)
         {
             // input
@@ -559,7 +559,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .Callback<ClaimsPrincipal, HackathonQueryOptions, CancellationToken>((u, o, t) =>
                  {
                      optionsCaptured = o;
-                     optionsCaptured.NextLegacy = next;
+                     optionsCaptured.NextPage = next;
                  })
                 .ReturnsAsync(hackathons);
             hackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, user, default))
@@ -590,11 +590,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(expectedLink, list.nextLink);
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].name);
-            Assert.AreEqual(pagination.top, optionsCaptured.Top);
+            Assert.AreEqual(pagination.top, optionsCaptured.Pagination?.top);
             Assert.AreEqual(orderBy, optionsCaptured.OrderBy);
             Assert.AreEqual(listType, optionsCaptured.ListType);
-            Assert.AreEqual(pagination.np, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
-            Assert.AreEqual(pagination.nr, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
+            Assert.AreEqual(pagination.np, optionsCaptured.Pagination?.np);
+            Assert.AreEqual(pagination.nr, optionsCaptured.Pagination?.nr);
         }
         #endregion
 
