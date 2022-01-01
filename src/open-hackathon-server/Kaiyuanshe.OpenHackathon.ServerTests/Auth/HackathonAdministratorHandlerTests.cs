@@ -35,6 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var handler = new HackathonAdministratorHandler(hackathonAdminManagement.Object);
             await handler.HandleAsync(context);
 
+            // verify
             Assert.IsTrue(context.HasSucceeded);
             Mock.VerifyAll(hackathonAdminManagement);
             hackathonAdminManagement.VerifyNoOtherCalls();

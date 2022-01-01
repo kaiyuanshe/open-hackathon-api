@@ -1,7 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -54,11 +53,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             var hackathonQueryOptions = new HackathonQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
+                Pagination = pagination,
                 OrderBy = orderby,
                 Search = search,
                 ListType = listType,
-                Top = pagination.top
             };
             var entities = await HackathonManagement.ListPaginatedHackathonsAsync(User, hackathonQueryOptions, cancellationToken);
             var entityWithRoles = await HackathonManagement.ListHackathonRolesAsync(entities, User, cancellationToken);
@@ -77,7 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(listType), listType.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, hackathonQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, hackathonQueryOptions.NextPage);
 
             return Ok(ResponseBuilder.BuildResourceList<HackathonEntity, HackathonRoles, Hackathon, HackathonList>(
                     entityWithRoles, ResponseBuilder.BuildHackathon, nextLink));

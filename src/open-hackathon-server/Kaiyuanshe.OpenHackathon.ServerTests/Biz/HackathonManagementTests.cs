@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -409,10 +408,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationTokenLegacy = new TableContinuationToken
-                    {
-                        NextPartitionKey = "3"
-                    }
+                    Pagination = new Pagination { np = "3", nr = "3" },
                 },
                 new List<HackathonEntity>
                 {
@@ -433,10 +429,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationTokenLegacy = new TableContinuationToken
-                    {
-                        NextPartitionKey = "not an int"
-                    }
+                    Pagination = new Pagination { np = "not an int", nr = "not an int" },
                 },
                 new List<HackathonEntity>
                 {
@@ -457,16 +450,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    Top = 3
+                    Pagination = new Pagination { top = 3 },
                 },
                 new List<HackathonEntity>
                 {
                     h4, h3, h2
                 },
-                new TableContinuationToken
+                new Pagination
                 {
-                    NextPartitionKey = "3",
-                    NextRowKey = "3"
+                    np = "3",
+                    nr = "3"
                 }
                 );
 
@@ -482,20 +475,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
                 new HackathonQueryOptions
                 {
-                    TableContinuationTokenLegacy = new TableContinuationToken
+                    Pagination = new Pagination
                     {
-                        NextPartitionKey = "1"
+                        np = "1",
+                        nr = "1",
+                        top = 2,
                     },
-                    Top = 2
                 },
                 new List<HackathonEntity>
                 {
                     h3, h2
                 },
-                new TableContinuationToken
+                new Pagination
                 {
-                    NextPartitionKey = "3",
-                    NextRowKey = "3"
+                    np = "3",
+                    nr = "3"
                 }
                 );
         }
@@ -505,7 +499,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Dictionary<string, HackathonEntity> allHackathons,
             HackathonQueryOptions options,
             List<HackathonEntity> expectedResult,
-            TableContinuationToken expectedNext)
+            Pagination expectedNext)
         {
             CancellationToken cancellationToken = CancellationToken.None;
 
@@ -524,11 +518,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             cache.VerifyNoOtherCalls();
 
             if (expectedNext == null)
-                Assert.IsNull(options.NextLegacy);
+                Assert.IsNull(options.NextPage);
             else
             {
-                Assert.AreEqual(options.NextLegacy.NextPartitionKey, expectedNext.NextPartitionKey);
-                Assert.AreEqual(options.NextLegacy.NextRowKey, expectedNext.NextRowKey);
+                Assert.AreEqual(options.NextPage.np, expectedNext.np);
+                Assert.AreEqual(options.NextPage.nr, expectedNext.nr);
             }
             Assert.AreEqual(result.Count(), expectedResult.Count());
             for (int i = 0; i < result.Count(); i++)
