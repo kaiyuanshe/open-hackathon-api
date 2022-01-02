@@ -199,8 +199,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var judgeQueryOptions = new JudgeQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
             };
             var judges = await JudgeManagement.ListPaginatedJudgesAsync(hackathonName.ToLower(), judgeQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
@@ -208,7 +207,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, judgeQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, judgeQueryOptions.NextPage);
 
             // build resp
             var resp = await ResponseBuilder.BuildResourceListAsync<JudgeEntity, Judge, JudgeList>(

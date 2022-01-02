@@ -28,7 +28,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             // test
             var handler = new PlatformAdministratorHandler();
             await handler.HandleAsync(context);
-
             Assert.IsTrue(context.HasSucceeded);
         }
 
@@ -47,7 +46,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             // test
             var handler = new PlatformAdministratorHandler();
             await handler.HandleAsync(context);
-
             Assert.IsFalse(context.HasSucceeded);
         }
     }

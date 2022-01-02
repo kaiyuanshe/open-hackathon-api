@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System.Collections;
@@ -294,7 +293,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         private static IEnumerable ListJudgesByHackathonTestData()
         {
             // arg0: pagination
-            // arg1: next TableCotinuationToken
+            // arg1: next pagination
             // arg2: expected nextlink
 
             // no pagination, no filter, no top
@@ -314,22 +313,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    new Pagination { np = "np", nr = "nr" },
                     "&np=np&nr=nr"
                 );
 
             // next link with top
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np2",
-                        NextRowKey = "nr2"
-                    },
+                    new Pagination { np = "np2", nr = "nr2" },
                     "&top=10&np=np2&nr=nr2"
                 );
         }
@@ -337,7 +328,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListJudgesByHackathonTestData))]
         public async Task ListJudgesByHackathon(
             Pagination pagination,
-            TableContinuationToken next,
+            Pagination next,
             string expectedLink)
         {
             // input
@@ -351,8 +342,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathonManagement = new Mock<IHackathonManagement>();
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.ListPaginatedJudgesAsync("hack", It.Is<JudgeQueryOptions>(o => o.Top == pagination.top), default))
-                .Callback<string, JudgeQueryOptions, CancellationToken>((h, opt, c) => { opt.NextLegacy = next; })
+            judgeManagement.Setup(j => j.ListPaginatedJudgesAsync("hack", It.IsAny<JudgeQueryOptions>(), default))
+                .Callback<string, JudgeQueryOptions, CancellationToken>((h, opt, c) => { opt.NextPage = next; })
                 .ReturnsAsync(judges);
             var userManagement = new Mock<IUserManagement>();
             userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
