@@ -2,7 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -180,8 +179,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var ratingKindQueryOptions = new RatingKindQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top
+                Pagination = pagination,
             };
 
             var ratingKinds = await RatingManagement.ListPaginatedRatingKindsAsync(hackathonName.ToLower(), ratingKindQueryOptions, cancellationToken);
@@ -190,7 +188,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, ratingKindQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, ratingKindQueryOptions.NextPage);
             return Ok(ResponseBuilder.BuildResourceList<RatingKindEntity, RatingKind, RatingKindList>(
                     ratingKinds,
                     ResponseBuilder.BuildRatingKind,
