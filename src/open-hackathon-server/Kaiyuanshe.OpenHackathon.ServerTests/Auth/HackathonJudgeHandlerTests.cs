@@ -4,11 +4,8 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth

@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System.Collections;
@@ -243,7 +242,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         private static IEnumerable ListRatingKindsTestData()
         {
             // arg0: pagination
-            // arg1: next TableCotinuationToken
+            // arg1: next pagination
             // arg2: expected nextlink
 
             // no pagination, no filter, no top
@@ -263,22 +262,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    new Pagination { np = "np", nr = "nr" },
                     "&np=np&nr=nr"
                 );
 
             // next link with top
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np2",
-                        NextRowKey = "nr2"
-                    },
+                    new Pagination { np = "np2", nr = "nr2" },
                     "&top=10&np=np2&nr=nr2"
                 );
         }
@@ -286,7 +277,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListRatingKindsTestData))]
         public async Task ListRatingKinds(
             Pagination pagination,
-            TableContinuationToken next,
+            Pagination next,
             string expectedLink)
         {
             // input
@@ -309,7 +300,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             ratingManagement.Setup(p => p.ListPaginatedRatingKindsAsync("hack", It.IsAny<RatingKindQueryOptions>(), default))
                 .Callback<string, RatingKindQueryOptions, CancellationToken>((n, o, t) =>
                 {
-                    o.NextLegacy = next;
+                    o.NextPage = next;
                 })
                 .ReturnsAsync(awards);
 
