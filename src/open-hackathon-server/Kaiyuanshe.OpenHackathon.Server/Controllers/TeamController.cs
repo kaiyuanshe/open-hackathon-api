@@ -2,7 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
@@ -1163,8 +1162,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // query
             var teamWorkQueryOptions = new TeamWorkQueryOptions
             {
-                TableContinuationTokenLegacy = pagination.ToContinuationTokenLegacy(),
-                Top = pagination.top,
+                Pagination = pagination,
             };
             var assignments = await WorkManagement.ListPaginatedWorksAsync(hackathonName.ToLower(), teamId.ToLower(), teamWorkQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
@@ -1172,7 +1170,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, teamWorkQueryOptions.NextLegacy);
+            var nextLink = BuildNextLinkUrl(routeValues, teamWorkQueryOptions.NextPage);
 
             // build resp
             var resp = ResponseBuilder.BuildResourceList<TeamWorkEntity, TeamWork, TeamWorkList>(

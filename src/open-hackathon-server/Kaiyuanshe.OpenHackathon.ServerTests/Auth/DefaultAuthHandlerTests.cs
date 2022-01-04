@@ -128,7 +128,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
         }
 
         [Test]
-        public async Task AuthenticateAsyncTestPassed()
+        public async Task AuthenticateAsync_Passed()
         {
             string token = "TOKENVALUE";
             CancellationToken cancellationToken = CancellationToken.None;

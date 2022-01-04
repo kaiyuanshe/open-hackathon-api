@@ -5,7 +5,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -233,26 +232,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // top
             yield return new TestCaseData(
-                new TeamWorkQueryOptions { Top = 2 },
+                new TeamWorkQueryOptions { Pagination = new Pagination { top = 2 } },
                 new List<TeamWorkEntity> { a1, a2, a3, a4 },
                 new List<TeamWorkEntity> { a4, a2, },
-                new TableContinuationToken { NextPartitionKey = "2", NextRowKey = "2" }
+                new Pagination { np = "2", nr = "2" }
                 );
 
             // paging
             yield return new TestCaseData(
                 new TeamWorkQueryOptions
                 {
-                    Top = 2,
-                    TableContinuationTokenLegacy = new TableContinuationToken
+                    Pagination = new Pagination
                     {
-                        NextPartitionKey = "1",
-                        NextRowKey = "1"
+                        top = 2,
+                        np = "1",
+                        nr = "1"
                     },
                 },
                 new List<TeamWorkEntity> { a1, a2, a3, a4 },
                 new List<TeamWorkEntity> { a2, a3, },
-                new TableContinuationToken { NextPartitionKey = "3", NextRowKey = "3" }
+                new Pagination { np = "3", nr = "3" }
                 );
         }
 
@@ -261,7 +260,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamWorkQueryOptions options,
             IEnumerable<TeamWorkEntity> allWorks,
             IEnumerable<TeamWorkEntity> expectedResult,
-            TableContinuationToken expectedNext)
+            Pagination expectedNext)
         {
             string teamId = "teamId";
 
@@ -286,13 +285,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
             if (expectedNext == null)
             {
-                Assert.IsNull(options.NextLegacy);
+                Assert.IsNull(options.NextPage);
             }
             else
             {
-                Assert.IsNotNull(options.NextLegacy);
-                Assert.AreEqual(expectedNext.NextPartitionKey, options.NextLegacy.NextPartitionKey);
-                Assert.AreEqual(expectedNext.NextRowKey, options.NextLegacy.NextRowKey);
+                Assert.IsNotNull(options.NextPage);
+                Assert.AreEqual(expectedNext.np, options.NextPage.np);
+                Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
             }
         }
         #endregion
