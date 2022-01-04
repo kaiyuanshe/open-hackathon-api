@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -1948,9 +1947,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             Assert.AreEqual(expectedOptions.Status, optionsCaptured.Status);
             Assert.AreEqual(expectedOptions.Role, optionsCaptured.Role);
-            Assert.AreEqual(expectedOptions.Top, optionsCaptured.Top);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextPartitionKey, optionsCaptured.TableContinuationTokenLegacy?.NextPartitionKey);
-            Assert.AreEqual(expectedOptions.TableContinuationTokenLegacy?.NextRowKey, optionsCaptured.TableContinuationTokenLegacy?.NextRowKey);
+            Assert.AreEqual(expectedOptions.Pagination?.top, optionsCaptured.Pagination?.top);
+            Assert.AreEqual(expectedOptions.Pagination?.np, optionsCaptured.Pagination?.np);
+            Assert.AreEqual(expectedOptions.Pagination?.nr, optionsCaptured.Pagination?.nr);
         }
         #endregion
 
@@ -2333,7 +2332,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         private static IEnumerable ListWorksByTeamTestData()
         {
             // arg0: pagination
-            // arg1: next TableCotinuationToken
+            // arg1: next pagination
             // arg2: expected nextlink
 
             // no pagination, no filter, no top
@@ -2353,22 +2352,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // next link
             yield return new TestCaseData(
                     new Pagination { },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np",
-                        NextRowKey = "nr"
-                    },
+                    new Pagination { np = "np", nr = "nr" },
                     "&np=np&nr=nr"
                 );
 
             // next link with top
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
-                    new TableContinuationToken
-                    {
-                        NextPartitionKey = "np2",
-                        NextRowKey = "nr2"
-                    },
+                    new Pagination { np = "np2", nr = "nr2" },
                     "&top=10&np=np2&nr=nr2"
                 );
         }
@@ -2376,7 +2367,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(ListWorksByTeamTestData))]
         public async Task ListWorksByTeam(
             Pagination pagination,
-            TableContinuationToken next,
+            Pagination next,
             string expectedLink)
         {
             // input
@@ -2402,7 +2393,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             workManagement.Setup(p => p.ListPaginatedWorksAsync("hack", "tid", It.IsAny<TeamWorkQueryOptions>(), default))
                 .Callback<string, string, TeamWorkQueryOptions, CancellationToken>((h, t, o, c) =>
                 {
-                    o.NextLegacy = next;
+                    o.NextPage = next;
                 })
                 .ReturnsAsync(teamWorks);
 

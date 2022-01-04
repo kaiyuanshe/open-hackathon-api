@@ -1,18 +1,9 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public class TableQueryOptions
     {
-        [Obsolete]
-        public TableContinuationToken TableContinuationTokenLegacy { get; set; }
-        [Obsolete]
-        public TableContinuationToken NextLegacy { get; set; }
-        [Obsolete]
-        public int? Top { get; set; }
-
         public Pagination Pagination { get; set; }
 
         public Pagination NextPage { get; set; }
