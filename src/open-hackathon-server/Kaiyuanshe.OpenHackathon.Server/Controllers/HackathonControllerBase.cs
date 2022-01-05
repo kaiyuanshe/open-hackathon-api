@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Linq;
 using System.Net.Mime;
@@ -62,44 +61,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return null;
 
             return await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
-        }
-
-        /// <summary>
-        /// Get nextLink url for paginated results
-        /// </summary>
-        /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
-        /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
-        /// <returns></returns>
-        [Obsolete]
-        protected string BuildNextLinkUrl(RouteValueDictionary routeValues, TableContinuationToken continuationToken)
-        {
-            if (continuationToken == null)
-                return null;
-
-            if (routeValues == null)
-            {
-                routeValues = new RouteValueDictionary();
-            }
-            routeValues.Add(nameof(Pagination.np), continuationToken.NextPartitionKey);
-            routeValues.Add(nameof(Pagination.nr), continuationToken.NextRowKey);
-
-            if (EnvironmentHelper.IsRunningInTests())
-            {
-                // Unit Test
-                StringBuilder stringBuilder = new StringBuilder();
-                foreach (var key in routeValues.Keys)
-                {
-                    stringBuilder.Append($"&{key}={routeValues[key]}");
-                }
-                return stringBuilder.ToString();
-            }
-
-            return Url.Action(
-               ControllerContext.ActionDescriptor.ActionName,
-               ControllerContext.ActionDescriptor.ControllerName,
-               routeValues,
-               "https", // Request.Scheme doesn't work well on App Service containers. TLS terminates on front end, the traffic to containers are always http.
-               Request.Host.Value);
         }
 
         /// <summary>

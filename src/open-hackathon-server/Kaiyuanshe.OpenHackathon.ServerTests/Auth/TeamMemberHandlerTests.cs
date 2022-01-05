@@ -88,6 +88,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             };
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
             TeamEntity teamEntity = new TeamEntity { PartitionKey = "hack" };
+
+            // mock
             var hackathonAdminManagement = new Mock<IHackathonAdminManagement>();
             hackathonAdminManagement.Setup(h => h.ListHackathonAdminAsync("hack", CancellationToken.None))
                 .ReturnsAsync(admins);
