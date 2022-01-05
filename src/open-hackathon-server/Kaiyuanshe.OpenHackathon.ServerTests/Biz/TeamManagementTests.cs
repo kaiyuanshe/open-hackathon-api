@@ -5,7 +5,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using NUnit.Framework;
 using System.Collections;
@@ -274,8 +273,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  }, "np nr"
                 );
 
-            TableContinuationToken tableContinuationTokenCapatured = null;
-
             var logger = new Mock<ILogger<TeamManagement>>();
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", null, 100, null, default)).ReturnsAsync(entities);
@@ -297,7 +294,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
             Assert.AreEqual("np", pagination.np);
             Assert.AreEqual("nr", pagination.nr);
-            Assert.IsNull(tableContinuationTokenCapatured);
         }
 
         [TestCase(5, 5)]

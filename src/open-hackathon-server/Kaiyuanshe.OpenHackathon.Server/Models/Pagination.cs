@@ -1,5 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
@@ -30,23 +29,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <example>20</example>
         [Range(1, 1000)]
         public int? top { get; set; }
-
-        [Obsolete]
-        public TableContinuationToken ToContinuationTokenLegacy()
-        {
-            // np/nr in nextLink shouldn't be null or empty.
-            if (string.IsNullOrWhiteSpace(np) || string.IsNullOrWhiteSpace(nr))
-            {
-                return null;
-            }
-
-            return new TableContinuationToken
-            {
-                // partitionKey takes precedence over np from parameter.
-                NextPartitionKey = np,
-                NextRowKey = nr,
-            };
-        }
 
         public string ToContinuationToken()
         {
