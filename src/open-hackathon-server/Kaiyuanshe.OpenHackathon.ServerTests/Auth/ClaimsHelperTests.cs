@@ -1,9 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
 {
