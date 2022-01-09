@@ -14,6 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
     public class HackathonAdministratorHandler : AuthorizationHandler<HackathonAdministratorRequirement, HackathonEntity>
     {
         IHackathonAdminManagement HackathonAdminManagement { get; set; }
+
         public HackathonAdministratorHandler(IHackathonAdminManagement hackathonAdminManagement)
         {
             HackathonAdminManagement = hackathonAdminManagement;
