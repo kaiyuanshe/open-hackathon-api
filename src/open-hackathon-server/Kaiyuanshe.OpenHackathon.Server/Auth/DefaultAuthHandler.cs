@@ -75,7 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             }
 
             // get Claims
-            string cacheKey = CacheKeys.GetCacheKey(CacheEntryType.Token, DigestHelper.SHA512Digest(token));
+            string cacheKey = CacheKeys.GetCacheKey(CacheEntryType.Claims, DigestHelper.SHA512Digest(token));
             var claims = await cache.GetOrAddAsync(
                 cacheKey,
                 TimeSpan.FromMinutes(10),
