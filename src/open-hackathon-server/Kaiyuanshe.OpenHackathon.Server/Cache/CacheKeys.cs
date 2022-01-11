@@ -13,6 +13,7 @@
         Default,
         Hackathon,
         Token,
+        Claims,
         HackathonAdmin,
         User,
         Enrollment,

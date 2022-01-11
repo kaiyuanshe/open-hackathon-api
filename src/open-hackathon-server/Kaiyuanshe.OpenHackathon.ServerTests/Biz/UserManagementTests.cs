@@ -198,6 +198,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement
             {
                 StorageContext = storage.Object,
+                Cache = new DefaultCacheProvider(null),
             };
             var result = await userMgmt.ValidateTokenAsync(token);
 
@@ -231,6 +232,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement
             {
                 StorageContext = storage.Object,
+                Cache = new DefaultCacheProvider(null),
             };
             var result = await userMgmt.ValidateTokenAsync(token);
 
@@ -264,6 +266,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement
             {
                 StorageContext = storage.Object,
+                Cache = new DefaultCacheProvider(null),
             };
             var result = await userMgmt.ValidateTokenAsync(token);
 

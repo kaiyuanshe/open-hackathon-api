@@ -10,6 +10,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
     public class DefaultCacheProviderTests
     {
         [Test]
+        public void ContainsKey()
+        {
+            var cacheProvider = new DefaultCacheProvider(null);
+            Assert.IsFalse(cacheProvider.ContainsKey("abc"));
+            MemoryCache.Default.Add("abc", "val", DateTimeOffset.Now.AddMinutes(2));
+            Assert.IsTrue(cacheProvider.ContainsKey("abc"));
+            MemoryCache.Default.Remove("abc");
+            Assert.IsFalse(cacheProvider.ContainsKey("abc"));
+        }
+
+        [Test]
         public async Task GetOrAddAsync()
         {
             CacheEntry<string> entry = new CacheEntry<string>(

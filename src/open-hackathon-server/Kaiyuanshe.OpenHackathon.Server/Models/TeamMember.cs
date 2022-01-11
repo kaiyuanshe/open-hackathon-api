@@ -8,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public class TeamMember : ModelBase
     {
         /// <summary>
-        /// name of hackathon
+        /// name of the hackathon.
         /// </summary>
         /// <example>foo</example>
         public string hackathonName { get; internal set; }
@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string userId { get; internal set; }
 
         /// <summary>
-        /// Detailed user info of the member
+        /// Detailed user info of the member.
         /// </summary>
         public UserInfo user { get; internal set; }
 
@@ -38,13 +38,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string description { get; set; }
 
         /// <summary>
-        /// Role in the team
+        /// Role of the member in the team.
         /// </summary>
         /// <example>admin</example>
         public TeamMemberRole? role { get; set; }
 
         /// <summary>
-        /// Status of the membership
+        /// Status of the membership.
         /// </summary>
         /// <example>approved</example>
         public TeamMemberStatus status { get; internal set; }

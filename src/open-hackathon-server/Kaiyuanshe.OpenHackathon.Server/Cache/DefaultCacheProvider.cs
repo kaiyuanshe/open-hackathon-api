@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +9,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 {
     public interface ICacheProvider
     {
+        /// <summary>
+        /// whether or not contains a cache key
+        /// </summary>
+        /// <returns></returns>
+        bool ContainsKey(string cacheKey);
+
         /// <summary>
         /// Get or add cached value
         /// </summary>
@@ -52,6 +56,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
         public DefaultCacheProvider(ILogger<DefaultCacheProvider> logger)
         {
             Logger = logger;
+        }
+
+        public bool ContainsKey(string cacheKey)
+        {
+            return cache.Contains(cacheKey);
         }
 
         public async Task<TValue> GetOrAddAsync<TValue>(CacheEntry<TValue> cacheEntry, CancellationToken cancellationToken)

@@ -80,7 +80,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<JWTTokenStatus> ValidateTokenRemotelyAsync(string userPoolId, string token, CancellationToken cancellationToken = default);
-   }
+    }
 
     /// <inheritdoc cref="IUserManagement"/>
     public class UserManagement : ManagementClientBase, IUserManagement
@@ -152,8 +152,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (string.IsNullOrWhiteSpace(token))
                 return new ValidationResult(Resources.Auth_Unauthorized);
 
-            var tokenEntity = await GetTokenEntityAsync(token, cancellationToken);
-            return await ValidateTokenAsync(tokenEntity, cancellationToken);
+            string tokenCacheKey = CacheKeys.GetCacheKey(CacheEntryType.Token, DigestHelper.SHA512Digest(token));
+            return await Cache.GetOrAddAsync(tokenCacheKey, TimeSpan.FromMinutes(5), async (c) =>
+            {
+                var tokenEntity = await GetTokenEntityAsync(token, cancellationToken);
+                return await ValidateTokenAsync(tokenEntity, cancellationToken);
+            }, false, cancellationToken);
         }
 
         public Task<ValidationResult> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default)
