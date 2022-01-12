@@ -1,4 +1,6 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -7,23 +9,30 @@ using System;
 using System.Collections;
 using System.Threading.Tasks;
 
-namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
+namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
-    internal class ActivityLogTableTests
+    internal class ActivityLogManagementTests
     {
         [Test]
         public async Task LogActivity_Skip()
         {
             var logger = new Mock<ILogger<ActivityLogTable>>();
-            var table = new Mock<ActivityLogTable>(logger.Object) { CallBase = true };
-            table.Setup(t => t.InsertAsync(It.IsAny<ActivityLogEntity>(), default));
 
+            var table = new Mock<ActivityLogTable>(logger.Object);
+            table.Setup(t => t.InsertAsync(It.IsAny<ActivityLogEntity>(), default));
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
+
+            var management = new ActivityLogManagement(null)
+            {
+                StorageContext = storageContext.Object
+            };
             // null entity
-            await table.Object.LogActivity(null);
+            await management.LogActivity(null);
             // no type
-            await table.Object.LogActivity(new ActivityLogEntity { });
+            await management.LogActivity(new ActivityLogEntity { });
             // neither userId nor hackathonName
-            await table.Object.LogActivity(new ActivityLogEntity { ActivityLogType = "t" });
+            await management.LogActivity(new ActivityLogEntity { ActivityLogType = "t" });
 
             table.Verify(t => t.InsertAsync(It.IsAny<ActivityLogEntity>(), default), Times.Never);
         }
@@ -75,13 +84,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         public async Task LogActivity(ActivityLogEntity entity, bool expectUserLog, bool expectHackLog)
         {
             var logger = new Mock<ILogger<ActivityLogTable>>();
-            var table = new Mock<ActivityLogTable>(logger.Object) { CallBase = true };
+            var table = new Mock<ActivityLogTable>(logger.Object);
             table.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l => l.ActivityId.Length == 36
                 && l.PartitionKey != null
                 && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
                 && l.ActivityLogType == entity.ActivityLogType), default)).Returns(Task.CompletedTask);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
 
-            await table.Object.LogActivity(entity, default);
+            var management = new ActivityLogManagement(null)
+            {
+                StorageContext = storageContext.Object,
+            };
+            await management.LogActivity(entity, default);
 
             if (expectUserLog)
             {

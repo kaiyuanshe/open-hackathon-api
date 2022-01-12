@@ -60,6 +60,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userId = userId,
             };
             var adminEntity = await HackathonAdminManagement.CreateAdminAsync(admin, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createHackathonAdmin.ToString(),
+                CorrelatedUserId = userId,
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+            }, cancellationToken);
+
             var resp = ResponseBuilder.BuildHackathonAdmin(adminEntity, user);
             return Ok(resp);
         }

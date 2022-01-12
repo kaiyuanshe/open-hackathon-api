@@ -9,10 +9,18 @@
     {
         public string HackathonName { get; set; }
 
+        /// <summary>
+        /// User who performs the operation.
+        /// </summary>
         public string UserId { get; set; }
 
         /// <summary>
-        /// activity log id. RowKey.
+        /// The user id on whom the operation perferms.
+        /// </summary>
+        public string CorrelatedUserId { get; set; }
+
+        /// <summary>
+        /// auto-generated activity log id. RowKey. Any input will be ignored.
         /// </summary>
         [IgnoreEntityProperty]
         public string ActivityId
@@ -20,6 +28,9 @@
             get { return RowKey; }
         }
 
+        /// <summary>
+        /// No need to specify for now.
+        /// </summary>
         public ActivityLogCategory Category { get; set; }
 
         /// <summary>
@@ -37,10 +48,5 @@
     {
         Hackathon,
         User,
-    }
-
-    public static class ActivityLogType
-    {
-        public const string Login = "Login";
     }
 }
