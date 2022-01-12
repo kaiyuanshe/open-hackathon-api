@@ -18,6 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         where TRequirement : IAuthorizationRequirement
     {
         IHackathonAdminManagement HackathonAdminManagement { get; set; }
+
         ITeamManagement TeamManagement { get; set; }
 
         protected abstract Task HandleTeamRequirementAsync(AuthorizationHandlerContext context, TRequirement requirement, TeamEntity resource, TeamMemberEntity teamMember);

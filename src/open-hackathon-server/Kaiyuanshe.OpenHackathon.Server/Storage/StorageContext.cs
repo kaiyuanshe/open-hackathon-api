@@ -5,6 +5,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 {
     public interface IStorageContext
     {
+        IActivityLogTable ActivityLogTable { get; set; }
         IAwardTable AwardTable { get; set; }
         IAwardAssignmentTable AwardAssignmentTable { get; set; }
         IEnrollmentTable EnrollmentTable { get; set; }
@@ -27,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
     public class StorageContext : IStorageContext
     {
+        public IActivityLogTable ActivityLogTable { get; set; }
         public IAwardTable AwardTable { get; set; }
         public IAwardAssignmentTable AwardAssignmentTable { get; set; }
         public IEnrollmentTable EnrollmentTable { get; set; }

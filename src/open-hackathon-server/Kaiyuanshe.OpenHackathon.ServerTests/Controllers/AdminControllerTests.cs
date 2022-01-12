@@ -32,19 +32,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             var userManagement = new Mock<IUserManagement>();
             userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            var activityLogManagement = new Mock<IActivityLogManagement>();
 
             var controller = new AdminController
             {
                 HackathonManagement = hackathonManagement.Object,
                 AuthorizationService = authorizationService.Object,
                 UserManagement = userManagement.Object,
+                ActivityLogManagement = activityLogManagement.Object,
             };
             var result = await controller.CreateAdmin("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement);
+            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement, activityLogManagement);
             hackathonManagement.VerifyNoOtherCalls();
             authorizationService.VerifyNoOtherCalls();
             userManagement.VerifyNoOtherCalls();
+            activityLogManagement.VerifyNoOtherCalls();
 
             AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);
         }
@@ -67,6 +70,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             adminManagement.Setup(a => a.CreateAdminAsync(It.Is<HackathonAdmin>(ha =>
                 ha.hackathonName == "hack" && ha.userId == "uid"), default))
                 .ReturnsAsync(adminEntity);
+            var activityLogManagement = new Mock<IActivityLogManagement>();
+            activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.createHackathonAdmin.ToString()
+                && a.CorrelatedUserId == "uid"), default));
+
 
             var controller = new AdminController
             {
@@ -74,15 +82,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 AuthorizationService = authorizationService.Object,
                 HackathonAdminManagement = adminManagement.Object,
                 UserManagement = userManagement.Object,
+                ActivityLogManagement = activityLogManagement.Object,
                 ResponseBuilder = new DefaultResponseBuilder(),
             };
             var result = await controller.CreateAdmin("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, adminManagement, userManagement);
+            Mock.VerifyAll(hackathonManagement, authorizationService, adminManagement, userManagement, activityLogManagement);
             hackathonManagement.VerifyNoOtherCalls();
             authorizationService.VerifyNoOtherCalls();
             userManagement.VerifyNoOtherCalls();
             adminManagement.VerifyNoOtherCalls();
+            activityLogManagement.VerifyNoOtherCalls();
 
             var admin = AssertHelper.AssertOKResult<HackathonAdmin>(result);
             Assert.AreEqual("pk", admin.hackathonName);
