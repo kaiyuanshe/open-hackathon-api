@@ -39,6 +39,7 @@
     {
         // hackathon Admin
         createHackathonAdmin,
+        deleteHackathonAdmin,
 
         // login
         login,

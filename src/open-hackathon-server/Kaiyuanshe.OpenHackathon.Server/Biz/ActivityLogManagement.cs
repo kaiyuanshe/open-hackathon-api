@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+﻿using Kaiyuanshe.OpenHackathon.Server.Storage;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -25,7 +26,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (string.IsNullOrEmpty(entity?.ActivityLogType))
                 return;
 
-            entity.RowKey = Guid.NewGuid().ToString(); // override any input
+            // override any input
+            entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0,8)}";
             entity.CreatedAt = DateTime.UtcNow;
 
             if (!string.IsNullOrEmpty(entity.UserId))

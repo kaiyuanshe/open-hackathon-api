@@ -1,5 +1,3 @@
-using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
