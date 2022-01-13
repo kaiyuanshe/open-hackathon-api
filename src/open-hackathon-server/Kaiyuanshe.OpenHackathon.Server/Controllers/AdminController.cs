@@ -219,6 +219,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await HackathonAdminManagement.DeleteAdminAsync(hackathonName.ToLower(), userId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteHackathonAdmin.ToString(),
+                CorrelatedUserId = userId,
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+            }, cancellationToken);
             return NoContent();
         }
         #endregion

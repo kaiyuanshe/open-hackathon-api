@@ -351,19 +351,25 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var adminManagement = new Mock<IHackathonAdminManagement>();
             adminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
             adminManagement.Setup(a => a.DeleteAdminAsync("hack", "uid", default));
+            var activityLogManagement = new Mock<IActivityLogManagement>();
+            activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.deleteHackathonAdmin.ToString()
+                && a.CorrelatedUserId == "uid"), default));
 
             var controller = new AdminController
             {
                 HackathonManagement = hackathonManagement.Object,
                 HackathonAdminManagement = adminManagement.Object,
                 AuthorizationService = authorizationService.Object,
+                ActivityLogManagement = activityLogManagement.Object,
             };
             var result = await controller.DeleteAdmin("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, adminManagement, authorizationService);
+            Mock.VerifyAll(hackathonManagement, adminManagement, authorizationService, activityLogManagement);
             hackathonManagement.VerifyNoOtherCalls();
             authorizationService.VerifyNoOtherCalls();
             adminManagement.VerifyNoOtherCalls();
+            activityLogManagement.VerifyNoOtherCalls();
 
             AssertHelper.AssertNoContentResult(result);
         }

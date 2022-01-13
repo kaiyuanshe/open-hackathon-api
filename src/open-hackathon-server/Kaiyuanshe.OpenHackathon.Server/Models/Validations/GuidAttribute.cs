@@ -20,7 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
             }
             else
             {
-                return new ValidationResult($"`{value.ToString()}` is not a valid GUID.");
+                return new ValidationResult($"The input `{value.ToString()}` is not a valid GUID.");
             }
         }
     }

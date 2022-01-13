@@ -85,7 +85,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var logger = new Mock<ILogger<ActivityLogTable>>();
             var table = new Mock<ActivityLogTable>(logger.Object);
-            table.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l => l.ActivityId.Length == 36
+            table.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l => l.ActivityId.Length == 28
                 && l.PartitionKey != null
                 && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
                 && l.ActivityLogType == entity.ActivityLogType), default)).Returns(Task.CompletedTask);
@@ -101,7 +101,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             if (expectUserLog)
             {
                 table.Verify(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
-                    l.ActivityId.Length == 36
+                    l.ActivityId.Length == 28
                     && l.PartitionKey != null
                     && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
                     && l.Category == ActivityLogCategory.User
@@ -113,7 +113,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             if (expectHackLog)
             {
                 table.Verify(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
-                    l.ActivityId.Length == 36
+                    l.ActivityId.Length == 28
                     && l.PartitionKey != null
                     && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
                     && l.Category == ActivityLogCategory.Hackathon
