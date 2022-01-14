@@ -59,6 +59,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create award
             parameter.hackathonName = hackathonName.ToLower();
             var awardEntity = await AwardManagement.CreateAwardAsync(hackathonName.ToLower(), parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createAward.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = awardEntity.Name,
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildAward(awardEntity));
         }
         #endregion
@@ -151,6 +158,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update award
             var updated = await AwardManagement.UpdateAwardAsync(award, parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateAward.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = updated.Name,
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildAward(updated));
         }
         #endregion
@@ -246,6 +260,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // delete award
             await AwardManagement.DeleteAwardAsync(award, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteAward.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = award.Name,
+            }, cancellationToken);
             return NoContent();
         }
         #endregion

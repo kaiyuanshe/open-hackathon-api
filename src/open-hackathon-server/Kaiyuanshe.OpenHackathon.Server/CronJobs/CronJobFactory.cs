@@ -25,7 +25,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
 
         public void ReturnJob(IJob job)
         {
-
         }
     }
 
@@ -35,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
     public class CronJobSchedulerFactory : StdSchedulerFactory
     {
         CronJobFactory jobFactory;
+
         public CronJobSchedulerFactory(CronJobFactory jobFactory)
         {
             this.jobFactory = jobFactory;
