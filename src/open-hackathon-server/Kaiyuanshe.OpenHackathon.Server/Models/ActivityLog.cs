@@ -27,12 +27,18 @@
         /// auto-generated activity log id.
         /// </summary>
         /// <example>323fed7f-447e-4c2e-854c-1421e2439208</example>
-        public string ActivityId { get; internal set; }
+        public string activityId { get; internal set; }
+
+        /// <summary>
+        /// Key message related to the activity.
+        /// </summary>
+        /// <example>Something happens.</example>
+        public string message { get; set; }
 
         /// <summary>
         /// type of the activity log.
         /// </summary>
-        public ActivityLogType ActivityLogType { get; internal set; }
+        public ActivityLogType activityLogType { get; internal set; }
     }
 
     public enum ActivityLogType
@@ -40,6 +46,11 @@
         // hackathon Admin
         createHackathonAdmin,
         deleteHackathonAdmin,
+
+        // Award
+        createAward,
+        updateAward,
+        deleteAward,
 
         // login
         login,

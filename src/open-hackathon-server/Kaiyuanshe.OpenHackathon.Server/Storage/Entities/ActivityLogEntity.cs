@@ -26,6 +26,11 @@
         public string ActivityId => RowKey;
 
         /// <summary>
+        /// Key message related to the activity.
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
         /// No need to specify for now.
         /// </summary>
         public ActivityLogCategory Category { get; set; }
