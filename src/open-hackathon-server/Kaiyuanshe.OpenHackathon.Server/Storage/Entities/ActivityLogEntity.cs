@@ -20,6 +20,11 @@
         public string CorrelatedUserId { get; set; }
 
         /// <summary>
+        /// related team id. might be null.
+        /// </summary>
+        public string TeamId { get; set; }
+
+        /// <summary>
         /// auto-generated. RowKey.  Any input will be ignored.
         /// </summary>
         [IgnoreEntityProperty]

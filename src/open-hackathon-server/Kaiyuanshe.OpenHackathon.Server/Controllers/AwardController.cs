@@ -342,6 +342,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.awardId = awardId;
             var assignment = await AwardManagement.CreateOrUpdateAssignmentAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createAwardAssignment.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = awardEntity.Name,
+                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? parameter.assigneeId : null,
+                TeamId = awardEntity.Target == AwardTarget.team ? parameter.assigneeId : null,
+            }, cancellationToken);
             return Ok(await BuildAwardAssignment(assignment, awardEntity, cancellationToken));
         }
         #endregion
@@ -398,6 +407,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.AwardAssignment_NotFound);
             }
             assignment = await AwardManagement.UpdateAssignmentAsync(assignment, parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateAwardAssignment.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = awardEntity.Name,
+                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
+                TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssigneeId : null,
+            }, cancellationToken);
             return Ok(await BuildAwardAssignment(assignment, awardEntity, cancellationToken));
         }
         #endregion
@@ -627,6 +645,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
             await AwardManagement.DeleteAssignmentAsync(hackathonName.ToLower(), assignmentId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteAwardAssignment.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = awardEntity.Name,
+                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
+                TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssignmentId : null,
+            }, cancellationToken); 
             return NoContent();
         }
         #endregion

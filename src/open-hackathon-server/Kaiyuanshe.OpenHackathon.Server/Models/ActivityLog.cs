@@ -18,6 +18,12 @@
         public string userId { get; internal set; }
 
         /// <summary>
+        /// related team id. might be null.
+        /// </summary>
+        /// <example>d1e40c38-cc2a-445f-9eab-60c253256c57</example>
+        public string teamId { get; set; }
+
+        /// <summary>
         /// The user id on whom the operation perferms.
         /// </summary>
         /// <example>2</example>
@@ -51,6 +57,12 @@
         createAward,
         updateAward,
         deleteAward,
+
+        // AwardAssignment
+        createAwardAssignment,
+        updateAwardAssignment,
+        deleteAwardAssignment,
+
 
         // login
         login,
