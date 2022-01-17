@@ -24,7 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
 
         public async Task ScheduleJobsAsync(ILifetimeScope container)
         {
-            Logger.LogInformation($"Scheduling Cron Jobs:");
+            Logger.LogInformation($"Scheduling Cron Jobs...");
             IList<ICronJob> jobs = new List<ICronJob>();
             foreach (var cronJobType in typeof(ICronJob).SubTypes())
             {
@@ -41,6 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
 
             // construct a scheduler factory
             var factory = container.Resolve<CronJobSchedulerFactory>();
+
             // get a scheduler
             IScheduler scheduler = await factory.GetScheduler();
             await scheduler.Start();
