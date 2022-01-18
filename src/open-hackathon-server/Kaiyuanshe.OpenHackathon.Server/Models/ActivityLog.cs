@@ -63,6 +63,11 @@
         updateAwardAssignment,
         deleteAwardAssignment,
 
+        // Enrollment
+        createEnrollment,
+        updateEnrollment,
+        approveEnrollment,
+        rejectEnrollment,
 
         // login
         login,

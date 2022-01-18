@@ -10,7 +10,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public class FileUpload
     {
         /// <summary>
-        /// Expected Upload Url expiration time in minutes. 5 minutes by default.
+        /// Expected expiration time in minutes of the Upload Url. 5 minutes by default.
         /// </summary>
         /// <example>5</example>
         [Range(2, 30)]

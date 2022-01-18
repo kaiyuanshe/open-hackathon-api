@@ -55,6 +55,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 parameter.userId = CurrentUserId;
                 enrollment = await EnrollmentManagement.CreateEnrollmentAsync(hackathon, parameter, cancellationToken);
+                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                {
+                    ActivityLogType = ActivityLogType.createEnrollment.ToString(),
+                    HackathonName = hackathonName.ToLower(),
+                    UserId = CurrentUserId,
+                }, cancellationToken);
                 var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
                 return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
             }
@@ -120,6 +126,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             var enrollment = await EnrollmentManagement.UpdateEnrollmentAsync(existing, request, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateEnrollment.ToString(),
+                HackathonName = enrollment.HackathonName,
+                UserId = CurrentUserId,
+            }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(existing.UserId, cancellationToken);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
@@ -213,7 +225,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return options.ValidateResult;
             }
 
-
             EnrollmentEntity enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName, userId);
             if (enrollment == null)
             {
@@ -221,6 +232,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             enrollment = await EnrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, enrollment, status);
+            var activityLogType = status == EnrollmentStatus.approved ? ActivityLogType.approveEnrollment : ActivityLogType.rejectEnrollment;
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = activityLogType.ToString(),
+                HackathonName = enrollment.HackathonName,
+                UserId = CurrentUserId,
+                CorrelatedUserId = enrollment.UserId,
+            }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
