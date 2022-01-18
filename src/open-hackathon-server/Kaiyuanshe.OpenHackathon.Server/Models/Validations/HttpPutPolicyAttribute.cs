@@ -38,6 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
                     missingMembers.Add(property.Name);
                 }
             }
+
             if (missingMembers.Count > 0)
             {
                 return new ValidationResult("The member is required.", missingMembers);
