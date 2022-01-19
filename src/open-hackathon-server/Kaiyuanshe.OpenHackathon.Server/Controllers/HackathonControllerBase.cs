@@ -46,6 +46,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         public IActivityLogManagement ActivityLogManagement { get; set; }
 
+        public IExperimentManagement ExperimentManagement { get; set; }
+
         /// <summary>
         /// Id of current User. Return string.Empty if token is not required or invalid.
         /// </summary>

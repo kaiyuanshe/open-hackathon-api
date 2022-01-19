@@ -7,7 +7,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
 {
     public class CronJobHostedService : IHostedService
     {
-        private ILifetimeScope lifetimeScope;
+        private readonly ILifetimeScope lifetimeScope;
 
         public CronJobHostedService(ILifetimeScope lifetimeScope)
         {
