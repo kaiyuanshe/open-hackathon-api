@@ -4,6 +4,7 @@ using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,8 +17,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 {
     public class ExperimentController : HackathonControllerBase
     {
-        public IExperimentManagement ExperimentManagement { get; set; }
-
         #region CreateTemplate
         /// <summary>
         /// Create a hackathon template for experiment. Currently only one template with name "default" is allowed.
@@ -53,6 +52,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.name = "default";
             var context = await ExperimentManagement.CreateTemplateAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createTemplate.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = context?.Status?.Message,
+            }, cancellationToken);
+            var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
             if (context.Status.IsFailed())
             {
                 return Problem(
@@ -118,6 +125,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.templateName = "default";
             parameter.userId = CurrentUserId;
             var context = await ExperimentManagement.CreateExperimentAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createExperiment.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = context?.Status?.Message,
+            }, cancellationToken);
 
             // build resp
             var userInfo = await GetCurrentUserInfo(cancellationToken);

@@ -13,6 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public Mock<IUserManagement> UserManagement { get; }
         public Mock<IActivityLogManagement> ActivityLogManagement { get; }
         public Mock<IAuthorizationService> AuthorizationService { get; }
+        public Mock<IExperimentManagement> ExperimentManagement { get; }
 
         public MockControllerContext()
         {
@@ -21,6 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserManagement = new Mock<IUserManagement>();
             ActivityLogManagement = new Mock<IActivityLogManagement>();
             AuthorizationService = new Mock<IAuthorizationService>();
+            ExperimentManagement = new Mock<IExperimentManagement>();
         }
 
         public void SetupController(HackathonControllerBase controller)
@@ -32,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             controller.ProblemDetailsFactory = new CustomProblemDetailsFactory();
             controller.ResponseBuilder = new DefaultResponseBuilder();
             controller.AuthorizationService = AuthorizationService.Object;
+            controller.ExperimentManagement = ExperimentManagement.Object;
         }
     }
 }

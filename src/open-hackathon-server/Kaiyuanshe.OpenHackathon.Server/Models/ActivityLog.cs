@@ -71,5 +71,11 @@
 
         // login
         login,
+
+        // template
+        createTemplate,
+
+        // experiment
+        createExperiment,
     }
 }
