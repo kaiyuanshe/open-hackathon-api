@@ -148,7 +148,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     }
 
     /// <summary>
-    /// Represents the role of current user
+    /// Represents the role of current user.
     /// </summary>
     public class HackathonRoles
     {
