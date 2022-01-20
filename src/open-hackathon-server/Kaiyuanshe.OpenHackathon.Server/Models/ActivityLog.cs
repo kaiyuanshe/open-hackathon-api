@@ -49,6 +49,14 @@
 
     public enum ActivityLogType
     {
+        // hackathon
+        createHackathon,
+        updateHackathon,
+        deleteHackathon,
+        publishHackathon, // request publish
+        approveHackahton, // approve the publish request
+        archiveHackathon, // make it read-only
+
         // hackathon Admin
         createHackathonAdmin,
         deleteHackathonAdmin,
