@@ -8,12 +8,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
 {
     public class HackathonJudgeRequirement : IAuthorizationRequirement
     {
-
     }
 
     public class HackathonJudgeHandler : AuthorizationHandler<HackathonJudgeRequirement, HackathonEntity>
     {
         IHackathonAdminManagement HackathonAdminManagement { get; set; }
+
         IJudgeManagement JudgeManagement { get; set; }
 
         public HackathonJudgeHandler(IHackathonAdminManagement hackathonAdminManagement, IJudgeManagement judgeManagement)

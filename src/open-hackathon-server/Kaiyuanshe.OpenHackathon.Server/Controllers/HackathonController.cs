@@ -203,6 +203,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             var updated = await HackathonManagement.UpdateHackathonAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateHackathon.ToString(),
+                HackathonName = parameter.name,
+                UserId = CurrentUserId,
+                Message = entity.DisplayName,
+            }, cancellationToken);
             var roles = await HackathonManagement.GetHackathonRolesAsync(entity, User, cancellationToken);
             return Ok(ResponseBuilder.BuildHackathon(updated, roles));
         }
