@@ -642,23 +642,28 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task DeleteTest_DeleteLogically()
         {
-            string name = "Foo";
-            HackathonEntity entity = new HackathonEntity();
-            CancellationToken cancellationToken = CancellationToken.None;
+            string name = "Hack";
+            HackathonEntity entity = new HackathonEntity { DisplayName = "dpn" };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", cancellationToken))
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default))
                 .ReturnsAsync(entity);
-            hackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, cancellationToken));
+            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.deleteHackathon.ToString()
+                && a.Message == "dpn"), default));
 
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object
-            };
-            var result = await controller.Delete(name, cancellationToken);
+            // test
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Delete(name, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
+
             AssertHelper.AssertNoContentResult(result);
         }
 
