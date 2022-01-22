@@ -270,7 +270,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await HackathonManagement.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, cancellationToken);
-            return NoContent();
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteHackathon.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = entity.DisplayName,
+            }, cancellationToken); return NoContent();
         }
         #endregion
 

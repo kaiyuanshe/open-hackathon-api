@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string hackathonName { get; internal set; }
 
         /// <summary>
-        /// id of judge
+        /// user id of the judge.
         /// </summary>
         /// <example>1</example>
         public string userId { get; internal set; }
