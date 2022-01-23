@@ -276,7 +276,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
                 Message = entity.DisplayName,
-            }, cancellationToken); return NoContent();
+            }, cancellationToken); 
+            return NoContent();
         }
         #endregion
 
@@ -317,6 +318,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonStatusAsync(hackathon, HackathonStatus.pendingApproval, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.publishHackathon.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = hackathon.DisplayName,
+            }, cancellationToken);
 
             // resp
             var roles = await HackathonManagement.GetHackathonRolesAsync(hackathon, User, cancellationToken);
