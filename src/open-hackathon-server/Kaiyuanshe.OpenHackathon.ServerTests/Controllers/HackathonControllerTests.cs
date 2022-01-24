@@ -776,33 +776,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [TestCase(HackathonStatus.offline)]
         public async Task Publish_Succeeded(HackathonStatus status)
         {
-            string name = "Foo";
-            HackathonEntity entity = new HackathonEntity { Status = status };
+            string name = "Hack";
+            HackathonEntity entity = new HackathonEntity { Status = status, DisplayName = "dpn", };
             var role = new HackathonRoles { isAdmin = true };
-            CancellationToken cancellationToken = CancellationToken.None;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(entity);
-            hackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.online, cancellationToken))
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(entity);
+            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.online, default))
                 .Callback<HackathonEntity, HackathonStatus, CancellationToken>((e, s, c) =>
                 {
                     e.Status = s;
-                })
-                .ReturnsAsync(entity);
-            hackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, cancellationToken))
-               .ReturnsAsync(role);
+                }).ReturnsAsync(entity);
+            mockContext.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.approveHackahton.ToString()
+                && a.Message == "dpn"), default));
 
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
-            var result = await controller.Publish(name, cancellationToken);
+            // test
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Publish(name, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             var resp = AssertHelper.AssertOKResult<Hackathon>(result);
             Assert.AreEqual(HackathonStatus.online, resp.status);
@@ -814,28 +813,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [TestCase(false)]
         public async Task UpdateReadonly(bool readOnly)
         {
-            HackathonEntity entity = new HackathonEntity { };
+            HackathonEntity entity = new HackathonEntity { DisplayName = "dpn" };
             var role = new HackathonRoles { isAdmin = true };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(entity);
-            hackathonManagement.Setup(m => m.UpdateHackathonReadOnlyAsync(entity, readOnly, default))
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(entity);
+            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonReadOnlyAsync(entity, readOnly, default))
                 .Callback<HackathonEntity, bool, CancellationToken>((h, r, c) =>
                 {
                     h.ReadOnly = r;
                 })
                 .ReturnsAsync(entity);
-            hackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
+            mockContext.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.archiveHackathon.ToString()
+                && a.Message == "dpn"), default));
 
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            // test
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
             var result = await controller.UpdateReadonly("Hack", readOnly, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             var resp = AssertHelper.AssertOKResult<Hackathon>(result);
             Assert.AreEqual(readOnly, resp.readOnly);
