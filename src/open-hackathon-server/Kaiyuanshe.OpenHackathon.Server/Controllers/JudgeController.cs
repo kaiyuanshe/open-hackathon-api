@@ -66,6 +66,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.userId = userId;
             var entity = await JudgeManagement.CreateJudgeAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createJudge.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                CorrelatedUserId = userId,
+                Message = parameter.description, 
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildJudge(entity, user));
         }
         #endregion
