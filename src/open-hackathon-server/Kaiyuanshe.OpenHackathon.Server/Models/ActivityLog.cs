@@ -66,6 +66,11 @@
         updateAward,
         deleteAward,
 
+        // Award
+        createJudge,
+        updateJudge,
+        deleteJudge,
+
         // AwardAssignment
         createAwardAssignment,
         updateAwardAssignment,
