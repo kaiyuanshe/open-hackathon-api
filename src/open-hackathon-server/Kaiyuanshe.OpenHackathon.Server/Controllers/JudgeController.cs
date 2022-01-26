@@ -123,6 +123,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.Judge_NotFound);
             }
             entity = await JudgeManagement.UpdateJudgeAsync(entity, parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateJudge.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                CorrelatedUserId = userId,
+                Message = parameter.description ?? entity.Description,
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildJudge(entity, user));
         }
         #endregion

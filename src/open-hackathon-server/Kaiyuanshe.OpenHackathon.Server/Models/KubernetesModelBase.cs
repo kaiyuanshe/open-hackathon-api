@@ -5,7 +5,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public abstract class KubernetesModelBase : ModelBase
     {
         /// <summary>
-        /// Status of the object in kubernetes
+        /// Status of the object in kubernetes.
         /// </summary>
         public Status status { get; internal set; }
     }
@@ -47,7 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// Status of the operation. One of: "Success" or "Failure". More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
         /// </summary>
-        /// <example>success</example>
+        /// <example>Success</example>
         public string status { get; set; }
 
         /// <summary>
