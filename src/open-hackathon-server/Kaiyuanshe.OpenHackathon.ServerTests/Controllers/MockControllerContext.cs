@@ -15,6 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public Mock<IAuthorizationService> AuthorizationService { get; }
         public Mock<IExperimentManagement> ExperimentManagement { get; }
         public Mock<IJudgeManagement> JudgeManagement { get; }
+        public Mock<IRatingManagement> RatingManagement { get; }
 
         public MockControllerContext()
         {
@@ -25,6 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             AuthorizationService = new Mock<IAuthorizationService>();
             ExperimentManagement = new Mock<IExperimentManagement>();
             JudgeManagement = new Mock<IJudgeManagement>();
+            RatingManagement = new Mock<IRatingManagement>();
         }
 
         public void SetupController(HackathonControllerBase controller)
@@ -38,6 +40,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             controller.AuthorizationService = AuthorizationService.Object;
             controller.ExperimentManagement = ExperimentManagement.Object;
             controller.JudgeManagement = JudgeManagement.Object;
+            controller.RatingManagement = RatingManagement.Object;
         }
     }
 }

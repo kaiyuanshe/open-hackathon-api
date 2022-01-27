@@ -290,6 +290,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return PreconditionFailed(string.Format(Resources.Rating_HasRating, nameof(Judge)), userId);
             }
             await JudgeManagement.DeleteJudgeAsync(hackathonName.ToLower(), userId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteJudge.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                CorrelatedUserId = userId,
+            }, cancellationToken);
             return NoContent();
         }
         #endregion

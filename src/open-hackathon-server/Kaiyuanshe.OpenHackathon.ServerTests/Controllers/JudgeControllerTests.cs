@@ -381,40 +381,42 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo { };
             JudgeEntity entity = firstTime ? new JudgeEntity() : null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
-            var ratingManagement = new Mock<IRatingManagement>();
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            mockContext.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
             if (firstTime)
             {
-                judgeManagement.Setup(j => j.DeleteJudgeAsync("hack", "uid", default));
-                ratingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+                mockContext.JudgeManagement.Setup(j => j.DeleteJudgeAsync("hack", "uid", default));
+                mockContext.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                         "hack",
                         It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == "uid" && o.TeamId == null),
                         default)).ReturnsAsync(false);
+                mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                    && a.ActivityLogType == ActivityLogType.deleteJudge.ToString()
+                    && a.CorrelatedUserId == "uid"), default));
             }
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-                RatingManagement = ratingManagement.Object,
-            };
+            // test
+            var controller = new JudgeController();
+            mockContext.SetupController(controller);
             var result = await controller.DeleteJudge("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement, judgeManagement, ratingManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.AuthorizationService, 
+                mockContext.UserManagement, 
+                mockContext.JudgeManagement, 
+                mockContext.RatingManagement, 
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.UserManagement.VerifyNoOtherCalls();
+            mockContext.JudgeManagement.VerifyNoOtherCalls();
+            mockContext.RatingManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             AssertHelper.AssertNoContentResult(result);
         }
