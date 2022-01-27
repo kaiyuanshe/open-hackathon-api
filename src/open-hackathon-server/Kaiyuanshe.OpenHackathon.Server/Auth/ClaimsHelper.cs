@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Auth
 {
@@ -26,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
                     AuthConstant.Issuer.Default);
         }
 
-        public static bool IsPlatformAdministrator(ClaimsPrincipal claimsPrincipal)
+        public static bool IsPlatformAdministrator(this ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
                 return false;
@@ -37,7 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             });
         }
 
-        public static string GetUserId(ClaimsPrincipal claimsPrincipal)
+        public static string GetUserId(this ClaimsPrincipal claimsPrincipal)
         {
             var userIdClaim = claimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserId);
             return userIdClaim?.Value ?? string.Empty;
