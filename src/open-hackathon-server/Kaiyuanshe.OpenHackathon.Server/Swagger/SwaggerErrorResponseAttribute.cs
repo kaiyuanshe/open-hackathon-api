@@ -7,7 +7,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
     {
         public int[] StatusCodes { get; }
 
-        // This is a positional argument
         public SwaggerErrorResponseAttribute(params int[] statusCodes)
         {
             StatusCodes = statusCodes;
