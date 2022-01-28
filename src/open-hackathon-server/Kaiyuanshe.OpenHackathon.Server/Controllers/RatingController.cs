@@ -57,6 +57,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create rating kind
             parameter.hackathonName = hackathonName.ToLower();
             var ratingKindEntity = await RatingManagement.CreateRatingKindAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createRatingKind.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = parameter.description,
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
         }
         #endregion
