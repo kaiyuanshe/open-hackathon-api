@@ -82,6 +82,14 @@
         approveEnrollment,
         rejectEnrollment,
 
+        // Rating
+        createRatingKind,
+        updateRatingKind,
+        deleteRatingKind,
+        createRating,
+        updateRating,
+        deleteRating,
+
         // login
         login,
 
