@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
 using System.Threading;
@@ -43,6 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
     public abstract class CronJobBase : ICronJob
     {
         public ILoggerFactory LoggerFactory { get; set; }
+        public ICacheProvider CacheProvider { get; set; }
 
         protected ILogger Logger
         {
