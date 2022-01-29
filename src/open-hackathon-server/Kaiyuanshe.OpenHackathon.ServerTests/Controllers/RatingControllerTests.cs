@@ -141,30 +141,30 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
-            var parameter = new RatingKind();
+            var parameter = new RatingKind { description = "d" };
             RatingKindEntity entity = new RatingKindEntity { PartitionKey = "pk" };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(r => r.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(entity);
-            ratingManagement.Setup(r => r.UpdateRatingKindAsync(entity, parameter, default)).ReturnsAsync(entity);
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.RatingManagement.Setup(r => r.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(entity);
+            mockContext.RatingManagement.Setup(r => r.UpdateRatingKindAsync(entity, parameter, default)).ReturnsAsync(entity);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.updateRatingKind.ToString()
+                && a.Message == "d"), default));
 
-            var controller = new RatingController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                RatingManagement = ratingManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            // test
+            var controller = new RatingController();
+            mockContext.SetupController(controller);
             var result = await controller.UpdateRatingKind("Hack", "kid", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, ratingManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.AuthorizationService, mockContext.RatingManagement, mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.RatingManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             var resp = AssertHelper.AssertOKResult<RatingKind>(result);
             Assert.AreEqual("pk", resp.hackathonName);

@@ -110,6 +110,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // Update rating kind
             ratingKindEntity = await RatingManagement.UpdateRatingKindAsync(ratingKindEntity, parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateRatingKind.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = parameter.description,
+            }, cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
         }
         #endregion
