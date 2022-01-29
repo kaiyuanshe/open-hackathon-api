@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Kaiyuanshe.OpenHackathon.Server
+namespace Microsoft.Extensions.Logging
 {
     public static class LoggerExtensions
     {
