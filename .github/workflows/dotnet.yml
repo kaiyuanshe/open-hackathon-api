@@ -7,7 +7,7 @@ name: .NET 6 Build, Push and Publish
 on:
   push:
     branches: 
-    - master
+    - main
     paths:
     - src/**
 
