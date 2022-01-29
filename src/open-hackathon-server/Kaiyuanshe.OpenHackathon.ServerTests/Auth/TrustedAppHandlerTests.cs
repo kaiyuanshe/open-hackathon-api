@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -27,11 +28,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var accessor = new Mock<IHttpContextAccessor>();
             accessor.SetupGet(a => a.HttpContext).Returns(context.Object);
 
+            var logger = new Mock<ILogger<TrustedAppHandler>>();
+
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
             }, null, null);
-            var handler = new TrustedAppHandler(config.Object, accessor.Object);
+            var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 
             Mock.VerifyAll(config, request, context, accessor);
@@ -60,11 +63,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var accessor = new Mock<IHttpContextAccessor>();
             accessor.SetupGet(a => a.HttpContext).Returns(context.Object);
 
+            var logger = new Mock<ILogger<TrustedAppHandler>>();
+
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
             }, null, null);
-            var handler = new TrustedAppHandler(config.Object, accessor.Object);
+            var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 
             Mock.VerifyAll(config, request, context, accessor);
@@ -95,11 +100,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var accessor = new Mock<IHttpContextAccessor>();
             accessor.SetupGet(a => a.HttpContext).Returns(context.Object);
 
+            var logger = new Mock<ILogger<TrustedAppHandler>>();
+
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
             }, null, null);
-            var handler = new TrustedAppHandler(config.Object, accessor.Object);
+            var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 
             Mock.VerifyAll(config, request, context, accessor);

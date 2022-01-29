@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,8 +21,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         static readonly string HeaderNameAppId = "x-openhackathon-app-id";
         // Add to env variable "Guacamole__TrustedApps" to set the value.
         static readonly string configNameTrustedApps = "Guacamole:TrustedApps";
+        private readonly ILogger logger;
 
-        public TrustedAppHandler(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public TrustedAppHandler(
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<TrustedAppHandler> logger)
         {
             _httpContextAccessor = httpContextAccessor;
             var trusted = configuration[configNameTrustedApps];
@@ -30,6 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
                 _trustedApps = trusted.Split(new char[] { ',', ';' },
                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             }
+            this.logger = logger;
         }
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, TrustedAppRequirement requirement)
@@ -38,6 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             if (!request.Headers.ContainsKey(HeaderNameAppId))
             {
                 // No "x-openhackathon-app-id" header
+                logger?.TraceInformation("No 'x-openhackathon-app-id' header found");
                 return Task.CompletedTask;
             }
 
@@ -46,6 +53,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             {
                 context.Succeed(requirement);
             }
+
+            logger?.TraceInformation($"Untrusted app id: {appId}");
             return Task.CompletedTask;
         }
     }

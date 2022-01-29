@@ -6,7 +6,7 @@
     public class Experiment : KubernetesModelBase
     {
         /// <summary>
-        /// name of hackathon
+        /// name of the hackathon.
         /// </summary>
         /// <example>foo</example>
         public string hackathonName { get; internal set; }

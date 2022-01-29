@@ -35,6 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         private ProblemDetailsFactory problemDetailsFactory;
         private Func<HttpResponse, string, CancellationToken, Task> writeToResponse;
         private ICacheProvider cache;
+        private readonly ILogger logger;
 
         public DefaultAuthHandler(IOptionsMonitor<DefaultAuthSchemeOptions> options,
             ILoggerFactory logger,
@@ -49,12 +50,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             this.problemDetailsFactory = problemDetailsFactory;
             this.cache = cache;
             this.writeToResponse = writeToResponse ?? HttpResponseWritingExtensions.WriteAsync;
+            this.logger = logger.CreateLogger<DefaultAuthHandler>();
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization))
             {
+                logger?.TraceInformation("No 'Authorization' header found");
                 // No "Authorization" header
                 return AuthenticateResult.Fail(Resources.Auth_Unauthorized);
             }
@@ -63,6 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             var authHeader = Request.Headers[HeaderNames.Authorization].LastOrDefault();
             if (!authHeader.StartsWith(TokenPrefix, StringComparison.OrdinalIgnoreCase))
             {
+                logger?.TraceInformation("Invalid 'Authorizatio' header format");
                 return AuthenticateResult.Fail(Resources.Auth_Unauthorized);
             }
 
@@ -71,6 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             var validationResult = await userManagement.ValidateTokenAsync(token);
             if (validationResult != ValidationResult.Success)
             {
+                logger?.TraceInformation($"Token not found or expired: {token}");
                 return AuthenticateResult.Fail(Resources.Auth_Unauthorized);
             }
 
