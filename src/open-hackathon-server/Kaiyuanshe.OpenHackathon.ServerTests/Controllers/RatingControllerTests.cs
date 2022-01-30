@@ -331,33 +331,33 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
             RatingKindEntity entity = firstTime ? new RatingKindEntity { RowKey = "kid" } : null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(j => j.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(entity);
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.RatingManagement.Setup(j => j.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(entity);
             if (firstTime)
             {
-                ratingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+                mockContext.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                     "hack",
                     It.Is<RatingQueryOptions>(o => o.RatingKindId == "kid" && o.JudgeId == null && o.TeamId == null),
                     default)).ReturnsAsync(false);
-                ratingManagement.Setup(j => j.DeleteRatingKindAsync("hack", "kid", default));
+                mockContext.RatingManagement.Setup(j => j.DeleteRatingKindAsync("hack", "kid", default));
+                mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                    && a.ActivityLogType == ActivityLogType.deleteRatingKind.ToString()), default));
             }
 
-            var controller = new RatingController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                RatingManagement = ratingManagement.Object,
-            };
+            // test
+            var controller = new RatingController();
+            mockContext.SetupController(controller);
             var result = await controller.DeleteRatingKind("Hack", "kid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, ratingManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.AuthorizationService, mockContext.RatingManagement, mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.RatingManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             AssertHelper.AssertNoContentResult(result);
         }
