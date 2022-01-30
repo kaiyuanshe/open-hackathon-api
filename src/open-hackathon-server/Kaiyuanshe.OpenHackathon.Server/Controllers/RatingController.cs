@@ -255,6 +255,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await RatingManagement.DeleteRatingKindAsync(hackathonName.ToLower(), kindId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteRatingKind.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+            }, cancellationToken); 
             return NoContent();
         }
         #endregion
