@@ -8,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public class Team : ModelBase
     {
         /// <summary>
-        /// name of Hackathon
+        /// name of the hackathon.
         /// </summary>
         /// <example>foo</example>
         public string hackathonName { get; internal set; }
