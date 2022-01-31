@@ -352,6 +352,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.judgeId = CurrentUserId;
             var ratingEntity = await RatingManagement.CreateRatingAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createRating.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = kind.Name,
+            }, cancellationToken); 
             var ratingResponse = await BuildRatingResp(ratingEntity, null, team, kind, cancellationToken);
             return Ok(ratingResponse);
         }

@@ -555,48 +555,48 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             var authResult = AuthorizationResult.Success();
             TeamEntity team = new TeamEntity { CreatorId = "creator" };
-            RatingKindEntity ratingKind = new RatingKindEntity { MaximumScore = 4 };
+            RatingKindEntity ratingKind = new RatingKindEntity { MaximumScore = 4, Name = "kind" };
             RatingEntity ratingEntity = new RatingEntity { JudgeId = "judge", Description = "desc" };
             UserInfo judge = new UserInfo { Username = "un" };
             UserInfo teamCreator = new UserInfo { Phone = "phone" };
 
+            // mock
+            var mockContext = new MockControllerContext();
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge))
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge))
                .ReturnsAsync(authResult);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("hack", "tid", default)).ReturnsAsync(team);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(j => j.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(ratingKind);
-            ratingManagement.Setup(j => j.CreateRatingAsync(It.Is<Rating>(p =>
+            mockContext.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "tid", default)).ReturnsAsync(team);
+            mockContext.RatingManagement.Setup(j => j.GetRatingKindAsync("hack", "kid", default)).ReturnsAsync(ratingKind);
+            mockContext.RatingManagement.Setup(j => j.CreateRatingAsync(It.Is<Rating>(p =>
                   p.hackathonName == "hack" &&
                   p.judgeId == ""
             ), default)).ReturnsAsync(ratingEntity);
             var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("judge", default)).ReturnsAsync(judge);
-            userManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(teamCreator);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("judge", default)).ReturnsAsync(judge);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(teamCreator);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.createRating.ToString()
+                && a.Message == "kind"), default));
 
             // test
-            var controller = new RatingController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                TeamManagement = teamManagement.Object,
-                RatingManagement = ratingManagement.Object,
-                UserManagement = userManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            var controller = new RatingController();
+            mockContext.SetupController(controller);
             var result = await controller.CreateRating("Hack", parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, authorizationService, teamManagement, ratingManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.AuthorizationService,
+                mockContext.RatingManagement,
+                mockContext.TeamManagement,
+                mockContext.UserManagement,
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.RatingManagement.VerifyNoOtherCalls();
+            mockContext.UserManagement.VerifyNoOtherCalls();
+            mockContext.TeamManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             var resp = AssertHelper.AssertOKResult<Rating>(result);
             Assert.AreEqual("desc", resp.description);
