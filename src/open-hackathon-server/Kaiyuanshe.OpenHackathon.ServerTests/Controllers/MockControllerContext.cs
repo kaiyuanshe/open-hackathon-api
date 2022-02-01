@@ -17,6 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public Mock<IJudgeManagement> JudgeManagement { get; }
         public Mock<IRatingManagement> RatingManagement { get; }
         public Mock<ITeamManagement> TeamManagement { get; }
+        public Mock<IHackathonAdminManagement> HackathonAdminManagement { get; }
 
         public MockControllerContext()
         {
@@ -29,6 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             JudgeManagement = new Mock<IJudgeManagement>();
             TeamManagement = new Mock<ITeamManagement>();
             RatingManagement = new Mock<IRatingManagement>();
+            HackathonAdminManagement = new Mock<IHackathonAdminManagement>();
         }
 
         public void SetupController(HackathonControllerBase controller)
@@ -44,6 +46,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             controller.JudgeManagement = JudgeManagement.Object;
             controller.RatingManagement = RatingManagement.Object;
             controller.TeamManagement = TeamManagement.Object;
+            controller.HackathonAdminManagement = HackathonAdminManagement.Object;
         }
     }
 }
