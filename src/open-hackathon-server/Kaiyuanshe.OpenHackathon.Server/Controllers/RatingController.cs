@@ -260,7 +260,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 ActivityLogType = ActivityLogType.deleteRatingKind.ToString(),
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
-            }, cancellationToken); 
+            }, cancellationToken);
             return NoContent();
         }
         #endregion
@@ -358,7 +358,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
                 Message = kind.Name,
-            }, cancellationToken); 
+            }, cancellationToken);
             var ratingResponse = await BuildRatingResp(ratingEntity, null, team, kind, cancellationToken);
             return Ok(ratingResponse);
         }
@@ -602,6 +602,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 }
             }
             await RatingManagement.DeleteRatingAsync(hackathonName.ToLower(), ratingId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteRating.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = ratingEntity.Description,
+            }, cancellationToken);
             return NoContent();
         }
         #endregion
