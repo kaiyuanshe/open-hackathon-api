@@ -1,5 +1,6 @@
 ﻿using Authing.ApiClient.Auth;
 using Authing.ApiClient.Types;
+using Azure;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
@@ -7,6 +8,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +32,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<UserInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Search user by name or email.
+        /// </summary>
+        Task<IEnumerable<UserEntity>> SearchUserAsync(UserQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get User remotely from Authing
@@ -209,6 +216,41 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 TimeSpan.FromHours(6),
                 ct => StorageContext.UserTable.GetUserByIdAsync(userId, ct),
                 true,
+                cancellationToken);
+        }
+        #endregion
+
+        #region SearchUserAsync
+        public async Task<IEnumerable<UserEntity>> SearchUserAsync(UserQueryOptions options, CancellationToken cancellationToken = default)
+        {
+            int limit = Math.Max(100, options.Top);
+            List<UserEntity> results = new List<UserEntity>();
+
+            Func<UserEntity, bool> filter = (u) =>
+            {
+                return u.Email.Contains(options.Search)
+                || u.Name.Contains(options.Search)
+                || u.Nickname.Contains(options.Search);
+            };
+
+            string continuationToken = "";
+            do
+            {
+                var entities = await GetCachedUsersByPage(continuationToken, cancellationToken);
+                results.AddRange(entities.Values.Where(filter));
+                continuationToken = entities.ContinuationToken;
+            } while (results.Count < limit && !string.IsNullOrWhiteSpace(continuationToken));
+
+            return results.Take(limit);
+        }
+
+        private async Task<Page<UserEntity>> GetCachedUsersByPage(string continuationToken = "", CancellationToken cancellationToken = default)
+        {
+            return await Cache.GetOrAddAsync(
+                CacheKeys.GetCacheKey(CacheEntryType.User, $"list-{continuationToken}"),
+                TimeSpan.FromMinutes(15),
+                ct => StorageContext.UserTable.ExecuteQuerySegmentedAsync(null, continuationToken, null, null, ct),
+                false,
                 cancellationToken);
         }
         #endregion
