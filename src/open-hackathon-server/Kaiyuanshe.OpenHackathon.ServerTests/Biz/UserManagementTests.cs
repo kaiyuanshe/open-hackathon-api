@@ -20,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
     [TestFixture]
     public class UserManagementTests
     {
+        #region AuthingAsync
         [Test]
         public async Task AuthingAsyncTest()
         {
@@ -54,7 +55,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             usertable.VerifyNoOtherCalls();
             tokenTable.VerifyNoOtherCalls();
         }
+        #endregion
 
+        #region GetCurrentUserRemotelyAsync
         [TestCase(null, "token")]
         [TestCase("", "token")]
         [TestCase("pool", null)]
@@ -64,7 +67,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement();
             Assert.ThrowsAsync<ArgumentNullException>(() => userMgmt.GetCurrentUserRemotelyAsync(userPoolId, accessToken));
         }
+        #endregion
 
+        #region GetUserBasicClaimsAsync
         [Test]
         public async Task GetCurrentUserClaimsAsyncTestInvalidToken1()
         {
@@ -134,7 +139,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual("valueType", claims.Last().ValueType);
             Assert.AreEqual("issuer", claims.Last().Issuer);
         }
+        #endregion
 
+        #region GetTokenEntityAsync
         [Test]
         public async Task GetTokenEntityAsyncTest()
         {
@@ -166,7 +173,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             tokenTable.VerifyNoOtherCalls();
             Assert.AreEqual("1", resp.UserId);
         }
+        #endregion
 
+        #region ValidateTokenAsync
         [TestCase(null)]
         [TestCase("")]
         [TestCase(" ")]
@@ -314,7 +323,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             Assert.AreEqual(ValidationResult.Success, validationResult);
         }
+        #endregion
 
+        #region ValidateTokenRemotelyAsync
         [TestCase(null, "token")]
         [TestCase("", "token")]
         [TestCase("pool", null)]
@@ -324,7 +335,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement();
             Assert.ThrowsAsync<ArgumentNullException>(() => userMgmt.ValidateTokenRemotelyAsync(userPoolId, accessToken));
         }
+        #endregion
 
+        #region GetPlatformAdminClaim
         [Test]
         public async Task GetPlatformRoleClaimTestEnityNotFound()
         {
@@ -382,8 +395,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(userId, claim.Value);
             Assert.AreEqual(ClaimValueTypes.String, claim.ValueType);
             Assert.AreEqual(AuthConstant.Issuer.Default, claim.Issuer);
-
         }
+        #endregion
 
         #region GetCurrentUserAsync
         [Test]
@@ -413,6 +426,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             userTable.VerifyNoOtherCalls();
             Assert.AreEqual(result, userInfo);
         }
+        #endregion
+
+        #region SearchUserAsync
+
         #endregion
     }
 }
