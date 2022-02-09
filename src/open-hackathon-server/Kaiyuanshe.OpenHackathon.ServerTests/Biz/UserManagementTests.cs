@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server;
+﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
@@ -9,6 +10,8 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
@@ -429,7 +432,96 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         #endregion
 
         #region SearchUserAsync
+        private static IEnumerable SearchUserTestData()
+        {
+            var u1 = new UserEntity { Email = "abc@x.com", };
+            var u2 = new UserEntity { Email = "bcd@x.com", };
+            var u3 = new UserEntity { Email = "cde@x.com", Name = "name3", };
+            var u4 = new UserEntity { Email = "def@x.com", Nickname = "Nickname4" };
 
+            // arg0: users
+            // arg1: UserQueryOptions
+            // arg2: expected resp
+
+            // top=1
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "", null)
+                    },
+                    new UserQueryOptions { Top = 1, Search = "b" },
+                    new List<UserEntity> { u1 }
+                );
+
+            // search
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                    },
+                    new UserQueryOptions { Top = 100, Search = "bc" },
+                    new List<UserEntity> { u1, u2 }
+                );
+
+            // search by mail
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                    },
+                    new UserQueryOptions { Top = 100, Search = "c@" },
+                    new List<UserEntity> { u1 }
+                );
+
+            // search by name
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                    },
+                    new UserQueryOptions { Top = 100, Search = "Name" },
+                    new List<UserEntity> { u3, u4 }
+                );
+
+            // multiple pages
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "next", null),
+                        ["next"] = Page<UserEntity>.FromValues(new List<UserEntity> { u3, u4 }, "", null),
+                    },
+                    new UserQueryOptions { Top = 100, Search = "Name" },
+                    new List<UserEntity> { u3, u4 }
+                );
+        }
+
+        [Test, TestCaseSource(nameof(SearchUserTestData))]
+        public async Task SearchUserAsync(Dictionary<string, Page<UserEntity>> users, UserQueryOptions options, List<UserEntity> expected)
+        {
+            // mock
+            var cache = new Mock<ICacheProvider>();
+            foreach (var user in users)
+            {
+                cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<Page<UserEntity>>>(e => e.CacheKey == $"User-list-{user.Key}" && e.AutoRefresh == false), default))
+                    .ReturnsAsync(user.Value);
+            }
+
+            // test
+            var userManagement = new UserManagement
+            {
+                Cache = cache.Object,
+            };
+            var resp = await userManagement.SearchUserAsync(options, default);
+
+            // verify
+            Assert.AreEqual(expected.Count, resp.Count());
+            for (int i = 0; i < resp.Count(); i++)
+            {
+                Assert.AreEqual(expected[i].Email, resp.ElementAt(i).Email);
+            }
+            Mock.VerifyAll(cache);
+            cache.VerifyNoOtherCalls();
+        }
         #endregion
     }
 }

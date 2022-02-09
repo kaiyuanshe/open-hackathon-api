@@ -5,7 +5,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
 {
     public class PlatformAdministratorRequirement : IAuthorizationRequirement
     {
-
     }
 
     public class PlatformAdministratorHandler : AuthorizationHandler<PlatformAdministratorRequirement>
