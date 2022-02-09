@@ -223,14 +223,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region SearchUserAsync
         public async Task<IEnumerable<UserEntity>> SearchUserAsync(UserQueryOptions options, CancellationToken cancellationToken = default)
         {
-            int limit = Math.Max(100, options.Top);
             List<UserEntity> results = new List<UserEntity>();
 
             Func<UserEntity, bool> filter = (u) =>
             {
-                return u.Email.Contains(options.Search)
-                || u.Name.Contains(options.Search)
-                || u.Nickname.Contains(options.Search);
+                return (u.Email != null && u.Email.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                || (u.Name != null && u.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                || (u.Nickname != null && u.Nickname.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             };
 
             string continuationToken = "";
@@ -239,9 +238,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 var entities = await GetCachedUsersByPage(continuationToken, cancellationToken);
                 results.AddRange(entities.Values.Where(filter));
                 continuationToken = entities.ContinuationToken;
-            } while (results.Count < limit && !string.IsNullOrWhiteSpace(continuationToken));
+            } while (results.Count < options.Top && !string.IsNullOrWhiteSpace(continuationToken));
 
-            return results.Take(limit);
+            return results.Take(options.Top);
         }
 
         private async Task<Page<UserEntity>> GetCachedUsersByPage(string continuationToken = "", CancellationToken cancellationToken = default)
