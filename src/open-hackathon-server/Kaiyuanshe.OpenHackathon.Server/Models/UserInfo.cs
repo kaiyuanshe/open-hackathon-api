@@ -380,4 +380,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         //[JsonProperty("groups")]
         //public PaginatedGroups Groups { get; set; }
     }
+
+    /// <summary>
+    /// a list of users
+    /// </summary>
+    public class UserInfoList : ResourceList<UserInfo>
+    {
+        /// <summary>
+        /// a list of UserInfo
+        /// </summary>
+        public override UserInfo[] value { get; set; }
+    }
 }

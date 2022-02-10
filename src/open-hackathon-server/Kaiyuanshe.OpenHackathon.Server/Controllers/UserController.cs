@@ -66,6 +66,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region SearchUser
+        /// <summary>
+        /// Search user by keyword. 
+        /// </summary>
+        /// <param name="search" example="someName">keyword to search. Will search in Name, Nickname and Email.</param>
+        /// <param name="top" example="10">number of records to return. Must be between 1 and 100. Default to 10. </param>
+        /// <returns>a list of users</returns>
+        /// <response code="200">Success. The response describes a user.</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(UserInfoList), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400)]
+        [Route("user/search")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
+        public async Task<object> SearchUser(
+            [FromQuery, Required] string search,
+            [FromQuery, Range(1, 100)] int? top,
+            CancellationToken cancellationToken)
+        {
+            // TODO implemetation
+            return Ok();
+        }
+        #endregion
+
         #region GetUploadUrl
         /// <summary>
         /// Get file URLs including a readOnly url and a writable URL to upload.
