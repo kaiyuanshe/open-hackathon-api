@@ -1,5 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -68,9 +70,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region SearchUser
         /// <summary>
-        /// Search user by keyword. 
+        /// Search user by keyword. Will only return the top N records specified by parameter `top`. 
+        /// `nextLink` is always empty even if there are more than N records in server side.
         /// </summary>
-        /// <param name="search" example="someName">keyword to search. Will search in Name, Nickname and Email.</param>
+        /// <param name="keyword" example="someName">keyword to search. Will search in Name, Nickname and Email.</param>
         /// <param name="top" example="10">number of records to return. Must be between 1 and 100. Default to 10. </param>
         /// <returns>a list of users</returns>
         /// <response code="200">Success. The response describes a user.</response>
@@ -80,12 +83,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [Route("user/search")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
         public async Task<object> SearchUser(
-            [FromQuery, Required] string search,
+            [FromQuery, Required] string keyword,
             [FromQuery, Range(1, 100)] int? top,
             CancellationToken cancellationToken)
         {
-            // TODO implemetation
-            return Ok();
+            var options = new UserQueryOptions
+            {
+                Search = keyword,
+                Top = top.GetValueOrDefault(10)
+            };
+
+            var entities = await UserManagement.SearchUserAsync(options, cancellationToken);
+            var users = ResponseBuilder.BuildResourceList<UserEntity, UserInfo, UserInfoList>(entities, ResponseBuilder.BuildUser, null);
+            return Ok(users);
         }
         #endregion
 

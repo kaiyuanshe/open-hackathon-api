@@ -4,8 +4,10 @@ using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -97,6 +99,37 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(resp, userInfo);
         }
 
+        #endregion
+
+        #region SearchUser
+        [Test]
+        public async Task SearchUser()
+        {
+            var entities = new List<UserEntity>
+            {
+                new UserEntity
+                {
+                    Name="name"
+                }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.UserManagement.Setup(p => p.SearchUserAsync(It.Is<UserQueryOptions>(o => o.Search == "s" && o.Top == 3), default)).ReturnsAsync(entities);
+
+            // test
+            var controller = new UserController();
+            mockContext.SetupController(controller);
+            var result = await controller.SearchUser("s", 3, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.UserManagement);
+            mockContext.UserManagement.VerifyNoOtherCalls();
+
+            var users = AssertHelper.AssertOKResult<UserInfoList>(result);
+            Assert.AreEqual(1, users.value.Length);
+            Assert.AreEqual("name", users.value[0].Name);
+        }
         #endregion
 
         #region GetUploadUrl
