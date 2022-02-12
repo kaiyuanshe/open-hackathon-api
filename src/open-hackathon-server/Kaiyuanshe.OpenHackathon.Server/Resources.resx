@@ -273,6 +273,9 @@
   <data name="Team_NotFound" xml:space="preserve">
     <value>Team with specified id is not found.</value>
   </data>
+  <data name="Template_NotFound" xml:space="preserve">
+    <value>Template `{0}` cannot be found in hackathon `{1}`.</value>
+  </data>
   <data name="User_NotFound" xml:space="preserve">
     <value>The specified user is not found.</value>
   </data>

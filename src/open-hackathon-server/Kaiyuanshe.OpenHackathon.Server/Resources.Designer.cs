@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -525,6 +525,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string TeamWork_TooMany {
             get {
                 return ResourceManager.GetString("TeamWork_TooMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template `{0}` cannot be found in hackathon `{1}`..
+        /// </summary>
+        internal static string Template_NotFound {
+            get {
+                return ResourceManager.GetString("Template_NotFound", resourceCulture);
             }
         }
         

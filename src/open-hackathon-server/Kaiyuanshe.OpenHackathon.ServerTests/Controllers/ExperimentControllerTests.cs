@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server;
+﻿using k8s.Models;
+using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
@@ -27,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var context = new TemplateContext
             {
                 TemplateEntity = entity,
-                Status = new k8s.Models.V1Status
+                Status = new V1Status
                 {
                     Code = 409,
                     Message = "msg",
@@ -73,7 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var context = new TemplateContext
             {
                 TemplateEntity = entity,
-                Status = new k8s.Models.V1Status { Reason = "reason" }
+                Status = new V1Status { Reason = "reason" }
             };
 
             // mock
@@ -105,6 +106,107 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var resp = AssertHelper.AssertOKResult<Template>(result);
             Assert.AreEqual("pk", resp.hackathonName);
             Assert.AreEqual("reason", resp.status.reason);
+        }
+        #endregion
+
+        #region GetTemplate
+        [Test]
+        public async Task GetTemplate_NotFound()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            TemplateContext context = null;
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "tpl", default)).ReturnsAsync(context);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetTemplate("Hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Template_NotFound, "tpl", "Hack"));
+        }
+
+        [Test]
+        public async Task GetTemplate_K8SFailure()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            TemplateContext context = new TemplateContext
+            {
+                TemplateEntity = new TemplateEntity { },
+                Status = new V1Status
+                {
+                    Code = 429,
+                    Message = "msg"
+                }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "tpl", default)).ReturnsAsync(context);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetTemplate("Hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 429, "msg");
+        }
+
+        [Test]
+        public async Task GetTemplate_Success()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            TemplateContext context = new TemplateContext
+            {
+                TemplateEntity = new TemplateEntity { PartitionKey = "pk" },
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "tpl", default)).ReturnsAsync(context);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetTemplate("Hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            var resp = AssertHelper.AssertOKResult<Template>(result);
+            Assert.AreEqual("pk", resp.hackathonName);
         }
         #endregion
 
