@@ -75,6 +75,57 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region GetTemplate
+        /// <summary>
+        /// Query a hackathon template for experiment. Currently only one template with name "default" is allowed.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <returns>The award</returns>
+        /// <response code="200">Success. The response describes a template.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(Template), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/template/{templateName}")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
+        public async Task<object> GetTemplate(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, StringLength(128)] string templateName,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackAdminRequird = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // get template
+            var context = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), templateName, cancellationToken);
+            if (context == null)
+            {
+                return NotFound(string.Format(Resources.Template_NotFound, templateName, hackathonName));
+            }
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: context.TemplateEntity.DisplayName);
+            }
+            else
+            {
+                return Ok(ResponseBuilder.BuildTemplate(context));
+            }
+        }
+        #endregion
+
         #region CreateExperiment
         /// <summary>
         /// Create a hackathon experiment. 
