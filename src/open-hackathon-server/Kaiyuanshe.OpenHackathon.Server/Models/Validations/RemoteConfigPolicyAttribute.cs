@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
 {
@@ -17,10 +14,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
                 // leave it to RequiredAttribute
                 return ValidationResult.Success;
             }
-            
+
             Template template = (Template)value;
             List<string> invalidMembers = new List<string>();
-            if (template.ingressProtocol == IngressProtocol.vnc)
+            if (template.ingressProtocol != null && template.ingressProtocol == IngressProtocol.vnc)
             {
                 if (template.vnc == null)
                 {

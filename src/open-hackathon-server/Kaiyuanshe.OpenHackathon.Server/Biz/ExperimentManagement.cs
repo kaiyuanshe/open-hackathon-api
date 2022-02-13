@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface IExperimentManagement
     {
-        Task<TemplateContext> CreateTemplateAsync(Template template, CancellationToken cancellationToken);
+        Task<TemplateContext> CreateOrUpdateTemplateAsync(Template template, CancellationToken cancellationToken);
         Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
@@ -28,29 +28,48 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             this.logger = logger;
         }
 
-        #region CreateTemplateAsync
-        public async Task<TemplateContext> CreateTemplateAsync(Template template, CancellationToken cancellationToken)
+        #region CreateOrUpdateTemplateAsync
+        public async Task<TemplateContext> CreateOrUpdateTemplateAsync(Template request, CancellationToken cancellationToken)
         {
-            if (template == null)
+            if (request == null)
                 return null;
 
-            var entity = new TemplateEntity
+            var entity = await StorageContext.TemplateTable.RetrieveAsync(request.hackathonName, request.name, cancellationToken);
+            if (entity == null)
             {
-                PartitionKey = template.hackathonName,
-                RowKey = template.name.ToLower(),
-                Commands = template.commands,
-                CreatedAt = DateTime.UtcNow,
-                EnvironmentVariables = template.environmentVariables,
-                Image = template.image,
-                DisplayName = template.displayName ?? "default",
-                IngressPort = template.ingressPort,
-                IngressProtocol = template.ingressProtocol,
-                Vnc = template.vnc,
-            };
-            await StorageContext.TemplateTable.InsertOrReplaceAsync(entity, cancellationToken);
+                entity = new TemplateEntity
+                {
+                    PartitionKey = request.hackathonName,
+                    RowKey = request.name.ToLower(),
+                    Commands = request.commands,
+                    CreatedAt = DateTime.UtcNow,
+                    EnvironmentVariables = request.environmentVariables,
+                    Image = request.image,
+                    DisplayName = request.displayName ?? "default",
+                    IngressPort = request.ingressPort.GetValueOrDefault(5901),
+                    IngressProtocol = request.ingressProtocol.GetValueOrDefault(IngressProtocol.vnc),
+                    Vnc = request.vnc,
+                };
+                await StorageContext.TemplateTable.InsertAsync(entity, cancellationToken);
+            }
+            else
+            {
+                entity.Commands = request.commands ?? entity.Commands;
+                entity.EnvironmentVariables = request.environmentVariables ?? entity.EnvironmentVariables;
+                entity.Image = request.image ?? entity.Image;
+                entity.DisplayName = request.displayName ?? entity.DisplayName;
+                entity.IngressPort = request.ingressPort.GetValueOrDefault(entity.IngressPort);
+                entity.IngressProtocol = request.ingressProtocol.GetValueOrDefault(entity.IngressProtocol);
+                if (request.vnc != null)
+                {
+                    entity.Vnc = entity.Vnc ?? new VncSettings();
+                    entity.Vnc.userName = request.vnc.userName ?? entity.Vnc.userName;
+                    entity.Vnc.password = request.vnc.password ?? entity.Vnc.password;
+                }
+                await StorageContext.TemplateTable.MergeAsync(entity, cancellationToken);
+            }
 
             // call K8S API.
-            entity = await StorageContext.TemplateTable.RetrieveAsync(template.hackathonName, template.name, cancellationToken);
             var context = new TemplateContext { TemplateEntity = entity };
             var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
             try

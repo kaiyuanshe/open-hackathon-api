@@ -17,14 +17,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
     class ExperimentManagementTests
     {
-        #region CreateTemplateAsync
+        #region CreateOrUpdateTemplateAsync
         [Test]
-        public async Task CreateTemplateAsync_Exception()
+        public async Task CreateOrUpdateTemplateAsync_K8SException()
         {
             Template template = new Template
             {
                 hackathonName = "hack",
-                name = "default",
+                name = "any",
                 commands = new string[] { "a", "b", "c" },
                 environmentVariables = new Dictionary<string, string>
                 {
@@ -37,14 +37,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ingressProtocol = IngressProtocol.vnc,
                 vnc = new VncSettings { userName = "un", password = "pw" },
             };
-            TemplateEntity entity = new TemplateEntity { PartitionKey = "pk" };
 
             var logger = new Mock<ILogger<ExperimentManagement>>();
 
             var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(p => p.InsertOrReplaceAsync(It.Is<TemplateEntity>(t =>
+            templateTable.Setup(p => p.RetrieveAsync("hack", "any", default)).ReturnsAsync(default(TemplateEntity));
+            templateTable.Setup(p => p.InsertAsync(It.Is<TemplateEntity>(t =>
                 t.PartitionKey == "hack" &&
-                t.RowKey == "default" &&
+                t.RowKey == "any" &&
                 t.Commands.Length == 3 &&
                 t.Commands[1] == "b" &&
                 t.EnvironmentVariables.Count == 2 &&
@@ -55,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 t.IngressProtocol == IngressProtocol.vnc &&
                 t.Vnc.userName == "un" &&
                 t.Vnc.password == "pw"), default));
-            templateTable.Setup(t => t.RetrieveAsync("hack", "default", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
 
@@ -70,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 StorageContext = storageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
-            var result = await management.CreateTemplateAsync(template, default);
+            var result = await management.CreateOrUpdateTemplateAsync(template, default);
 
             Mock.VerifyAll(storageContext, templateTable, k8s, k8sfactory);
             storageContext.VerifyAll();
@@ -78,19 +77,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
 
-            Assert.AreEqual("pk", result.TemplateEntity.PartitionKey);
+            Assert.AreEqual("hack", result.TemplateEntity.PartitionKey);
             Assert.AreEqual(500, result.Status.Code);
             Assert.AreEqual("Internal Server Error", result.Status.Reason);
             Assert.AreEqual("message", result.Status.Message);
         }
 
         [Test]
-        public async Task CreateTemplateAsync_Success()
+        public async Task CreateOrUpdateTemplateAsync_CreateSuccess()
         {
             Template template = new Template
             {
                 hackathonName = "hack",
-                name = "default",
+                name = "any",
                 commands = new string[] { "a", "b", "c" },
                 environmentVariables = new Dictionary<string, string>
                 {
@@ -103,14 +102,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ingressProtocol = IngressProtocol.vnc,
                 vnc = new VncSettings { userName = "un", password = "pw" },
             };
-            TemplateEntity entity = new TemplateEntity { PartitionKey = "pk" };
 
             var logger = new Mock<ILogger<ExperimentManagement>>();
 
             var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(p => p.InsertOrReplaceAsync(It.Is<TemplateEntity>(t =>
+            templateTable.Setup(p => p.RetrieveAsync("hack", "any", default)).ReturnsAsync(default(TemplateEntity));
+            templateTable.Setup(p => p.InsertAsync(It.Is<TemplateEntity>(t =>
                 t.PartitionKey == "hack" &&
-                t.RowKey == "default" &&
+                t.RowKey == "any" &&
                 t.Commands.Length == 3 &&
                 t.Commands[1] == "b" &&
                 t.EnvironmentVariables.Count == 2 &&
@@ -121,7 +120,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 t.IngressProtocol == IngressProtocol.vnc &&
                 t.Vnc.userName == "un" &&
                 t.Vnc.password == "pw"), default));
-            templateTable.Setup(t => t.RetrieveAsync("hack", "default", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
 
@@ -135,7 +133,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 StorageContext = storageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
-            var result = await management.CreateTemplateAsync(template, default);
+            var result = await management.CreateOrUpdateTemplateAsync(template, default);
 
             Mock.VerifyAll(storageContext, templateTable, k8s, k8sfactory);
             storageContext.VerifyAll();
@@ -143,7 +141,83 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
 
-            Assert.AreEqual("pk", result.TemplateEntity.PartitionKey);
+            Assert.AreEqual("hack", result.TemplateEntity.PartitionKey);
+        }
+
+        [Test]
+        public async Task CreateOrUpdateTemplateAsync_UpdateSuccess()
+        {
+            Template template = new Template
+            {
+                hackathonName = "hack",
+                name = "any",
+                commands = new string[] { "a", "b", "c" },
+                environmentVariables = new Dictionary<string, string>
+                {
+                    { "e1", "v1" },
+                    { "e2", "v2" }
+                },
+                displayName = "dp",
+                image = "image",
+                ingressPort = 22,
+                ingressProtocol = IngressProtocol.vnc,
+                vnc = new VncSettings { userName = "un", password = "pw" },
+            };
+            var entity = new TemplateEntity
+            {
+                PartitionKey = "hack",
+                RowKey = "any",
+                Commands = new string[] { "old" },
+                EnvironmentVariables = new Dictionary<string, string>
+                {
+                    { "o1", "o1" },
+                },
+                DisplayName = "oldDn",
+                Image = "oldImage",
+                IngressPort = 2222,
+                IngressProtocol = IngressProtocol.rdp,
+                Vnc = new VncSettings { userName = "oldUn", password = "oldPwd" },
+            };
+
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+
+            var templateTable = new Mock<ITemplateTable>();
+            templateTable.Setup(p => p.RetrieveAsync("hack", "any", default)).ReturnsAsync(entity);
+            templateTable.Setup(p => p.MergeAsync(It.Is<TemplateEntity>(t =>
+                t.PartitionKey == "hack" &&
+                t.RowKey == "any" &&
+                t.Commands.Length == 3 &&
+                t.Commands[1] == "b" &&
+                t.EnvironmentVariables.Count == 2 &&
+                t.EnvironmentVariables.Last().Value == "v2" &&
+                t.DisplayName == "dp" &&
+                t.Image == "image" &&
+                t.IngressPort == 22 &&
+                t.IngressProtocol == IngressProtocol.vnc &&
+                t.Vnc.userName == "un" &&
+                t.Vnc.password == "pw"), default));
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
+
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.CreateOrUpdateTemplateAsync(It.IsAny<TemplateContext>(), default));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+            var result = await management.CreateOrUpdateTemplateAsync(template, default);
+
+            Mock.VerifyAll(storageContext, templateTable, k8s, k8sfactory);
+            storageContext.VerifyAll();
+            templateTable.VerifyAll();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+
+            Assert.AreEqual("hack", result.TemplateEntity.PartitionKey);
         }
         #endregion
 
