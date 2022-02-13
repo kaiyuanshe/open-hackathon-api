@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create template
             parameter.hackathonName = hackathonName.ToLower();
             parameter.name = "default";
-            var context = await ExperimentManagement.CreateTemplateAsync(parameter, cancellationToken);
+            var context = await ExperimentManagement.CreateOrUpdateTemplateAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.createTemplate.ToString(),

@@ -1,11 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
 {
@@ -17,15 +12,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             var attribute = new RemoteConfigPolicyAttribute();
             Assert.AreEqual(true, attribute.IsValid(null));
 
+            // no protocol
+            Template a = new Template();
+            Assert.AreEqual(true, attribute.IsValid(a));
+
             // rdp
-            Template a = new Template { ingressProtocol = IngressProtocol.rdp };
+            Template a2 = new Template { ingressProtocol = IngressProtocol.rdp };
             Assert.AreEqual(true, attribute.IsValid(a));
 
             // vnc null
             Template b = new Template { ingressProtocol = IngressProtocol.vnc };
             Assert.AreEqual(false, attribute.IsValid(b));
 
-            // un null
+            // username null
             Template c = new Template
             {
                 ingressProtocol = IngressProtocol.vnc,
@@ -36,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
             };
             Assert.AreEqual(false, attribute.IsValid(c));
 
-            // pw null
+            // password null
             Template d = new Template
             {
                 ingressProtocol = IngressProtocol.vnc,
