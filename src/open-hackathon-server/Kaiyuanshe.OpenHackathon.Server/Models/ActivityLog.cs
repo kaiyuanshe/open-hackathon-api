@@ -95,6 +95,7 @@
 
         // template
         createTemplate,
+        updateTemplate,
 
         // experiment
         createExperiment,

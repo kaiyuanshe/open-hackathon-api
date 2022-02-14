@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
-using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
@@ -55,6 +54,65 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.createTemplate.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = context?.Status?.Message,
+            }, cancellationToken);
+            var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: context.TemplateEntity.DisplayName);
+            }
+            else
+            {
+                return Ok(ResponseBuilder.BuildTemplate(context));
+            }
+        }
+        #endregion
+
+        #region UpdateTemplate
+        /// <summary>
+        /// Update a hackathon template. Currently only one template with name "default" is allowed.
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <returns>The award</returns>
+        /// <response code="200">Success. The response describes a template.</response>
+        [HttpPatch]
+        [ProducesResponseType(typeof(Template), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/template/{templateName}")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
+        public async Task<object> UpdateTemplate(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, StringLength(128)] string templateName,
+            [FromBody] Template parameter,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackAdminRequird = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // update template
+            parameter.hackathonName = hackathonName.ToLower();
+            parameter.name = templateName;
+            var context = await ExperimentManagement.CreateOrUpdateTemplateAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateTemplate.ToString(),
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
                 Message = context?.Status?.Message,
