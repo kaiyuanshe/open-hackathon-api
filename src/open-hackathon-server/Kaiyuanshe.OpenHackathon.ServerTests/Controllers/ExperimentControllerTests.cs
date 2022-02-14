@@ -109,6 +109,98 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
+        #region UpdateTemplate
+        [Test]
+        public async Task UpdateTemplate_K8SFailure()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+            var entity = new TemplateEntity { PartitionKey = "pk" };
+            var context = new TemplateContext
+            {
+                TemplateEntity = entity,
+                Status = new V1Status
+                {
+                    Code = 409,
+                    Message = "msg",
+                }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
+                j.name == "any" &&
+                j.hackathonName == "hack"), default)).ReturnsAsync(context);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.updateTemplate.ToString()
+                && a.Message == "msg"), default));
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.UpdateTemplate("Hack", "any", parameter, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService,
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 409, "msg");
+        }
+
+        [Test]
+        public async Task UpdateTemplate_Success()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+            var entity = new TemplateEntity { PartitionKey = "pk" };
+            var context = new TemplateContext
+            {
+                TemplateEntity = entity,
+                Status = new V1Status { Reason = "reason" }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
+                j.name == "any" &&
+                j.hackathonName == "hack"), default)).ReturnsAsync(context);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.updateTemplate.ToString()
+                && a.Message == null), default));
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.UpdateTemplate("Hack", "any", parameter, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService,
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
+
+            var resp = AssertHelper.AssertOKResult<Template>(result);
+            Assert.AreEqual("pk", resp.hackathonName);
+            Assert.AreEqual("reason", resp.status.reason);
+        }
+        #endregion
+
         #region GetTemplate
         [Test]
         public async Task GetTemplate_NotFound()
