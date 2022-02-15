@@ -83,6 +83,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.creatorId = CurrentUserId;
             var teamEntity = await TeamManagement.CreateTeamAsync(parameter, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createTeam.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                TeamId = teamEntity.Id,
+                Message = teamEntity.DisplayName,
+            }, cancellationToken);
             var creator = await GetCurrentUserInfo(cancellationToken);
             return Ok(ResponseBuilder.BuildTeam(teamEntity, creator));
         }

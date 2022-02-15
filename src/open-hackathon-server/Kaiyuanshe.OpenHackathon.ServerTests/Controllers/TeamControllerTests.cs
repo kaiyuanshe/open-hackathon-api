@@ -276,36 +276,35 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             Team parameter = new Team { displayName = "dn" };
-            TeamEntity teamEntity = new TeamEntity { AutoApprove = true, CreatorId = "uid", PartitionKey = "pk", RowKey = "rk" };
+            TeamEntity teamEntity = new TeamEntity { AutoApprove = true, CreatorId = "uid", PartitionKey = "pk", RowKey = "rk", DisplayName = "dn" };
             TeamMemberEntity teamMember = null;
 
-            // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(new List<TeamEntity>());
-            teamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
-            teamManagement.Setup(t => t.CreateTeamAsync(parameter, default)).ReturnsAsync(teamEntity);
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            mockContext.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
+            mockContext.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(new List<TeamEntity>());
+            mockContext.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
+            mockContext.TeamManagement.Setup(t => t.CreateTeamAsync(parameter, default)).ReturnsAsync(teamEntity);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
+                && a.ActivityLogType == ActivityLogType.createTeam.ToString()
+                && a.TeamId == "rk"
+                && a.Message == "dn"), default));
 
-            // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                TeamManagement = teamManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            // test
+            var controller = new TeamController();
+            mockContext.SetupController(controller);
             var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, enrollmentManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.TeamManagement,
+                mockContext.EnrollmentManagement,
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.TeamManagement.VerifyNoOtherCalls();
+            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
 
             Assert.AreEqual("foo", parameter.hackathonName);
             Assert.AreEqual("", parameter.creatorId);

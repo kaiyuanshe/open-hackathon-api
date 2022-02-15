@@ -1,12 +1,12 @@
 ﻿namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
     /// <summary>
-    /// decribes a resource list
+    /// decribes a resource list.
     /// </summary>
     public interface IResourceList<T>
     {
         /// <summary>
-        /// List of the resources
+        /// List of the resources.
         /// </summary>
         T[] value { get; set; }
 
@@ -20,6 +20,9 @@
 
     public abstract class ResourceList<T> : IResourceList<T>
     {
+        /// <summary>
+        /// List of the resources.
+        /// </summary>
         public abstract T[] value { get; set; }
 
         /// <summary>

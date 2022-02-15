@@ -61,6 +61,17 @@
         createHackathonAdmin,
         deleteHackathonAdmin,
 
+        // team
+        createTeam,
+        updateTeam,
+        deleteTeam,
+        createTeamMember,
+        updateTeamMember,
+        deleteTeamMember,
+        createTeamWork,
+        updateTeamWork,
+        deleteTeamWork,
+
         // Award
         createAward,
         updateAward,
