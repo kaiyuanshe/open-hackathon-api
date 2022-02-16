@@ -95,7 +95,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
 
-                logger.TraceInformation($"UpdateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
+                logger.TraceInformation($"UpdateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
                 context.Status = new k8s.Models.V1Status
                 {
                     Code = (int)resp.Response.StatusCode,
