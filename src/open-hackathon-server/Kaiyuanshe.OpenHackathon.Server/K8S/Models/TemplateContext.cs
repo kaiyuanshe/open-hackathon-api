@@ -87,7 +87,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
                 jsonPatch.Replace(t => t.Data.VncConnection.Password, TemplateEntity.Vnc.password);
             }
 
-            var patch = new V1Patch(jsonPatch, V1Patch.PatchType.JsonPatch);
+            var patch = new V1Patch(jsonPatch.Operations, V1Patch.PatchType.JsonPatch);
             return patch;
         }
     }
