@@ -1,6 +1,5 @@
 ﻿using k8s.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.AspNetCore.JsonPatch;
 using System.Collections.Generic;
 
 namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
@@ -12,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public string GetTemplateResourceName()
         {
-            return $"{TemplateEntity.HackathonName}-{TemplateEntity.Name}";
+            return $"{TemplateEntity.HackathonName}-{TemplateEntity.Id}";
         }
 
         public string GetNamespace()
@@ -46,24 +45,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
                     Labels = new Dictionary<string, string>
                     {
                         { "hackathonName", TemplateEntity.HackathonName },
-                        { "templateName", TemplateEntity.Name },
+                        { "templateName", TemplateEntity.Id },
                     },
                 },
-                Data = new TemplateData
+                data = new TemplateData
                 {
-                    IngressPort = TemplateEntity.IngressPort,
-                    IngressProtocol = TemplateEntity.IngressProtocol.ToString(),
-                    Type = "Pod",
-                    PodTemplate = new PodTemplate
+                    ingressPort = TemplateEntity.IngressPort,
+                    ingressProtocol = TemplateEntity.IngressProtocol.ToString(),
+                    type = "Pod",
+                    podTemplate = new PodTemplate
                     {
-                        Image = TemplateEntity.Image,
-                        EnvironmentVariables = BuildEnvironmentVariables(),
-                        Command = TemplateEntity.Commands,
+                        image = TemplateEntity.Image,
+                        env = BuildEnvironmentVariables(),
+                        command = TemplateEntity.Commands,
                     },
-                    VncConnection = TemplateEntity.Vnc == null ? null : new Vnc
+                    vnc = TemplateEntity.Vnc == null ? null : new Vnc
                     {
-                        Username = TemplateEntity.Vnc.userName,
-                        Password = TemplateEntity.Vnc.password,
+                        username = TemplateEntity.Vnc.userName,
+                        password = TemplateEntity.Vnc.password,
                     },
                 },
             };
@@ -73,21 +72,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public V1Patch BuildPatch()
         {
-            var jsonPatch = new JsonPatchDocument<TemplateResource>();
-
-            jsonPatch.Replace(t => t.Data.IngressPort, TemplateEntity.IngressPort);
-            jsonPatch.Replace(t => t.Data.IngressProtocol, TemplateEntity.IngressProtocol.ToString());
-            jsonPatch.Replace(t => t.Data.PodTemplate.Image, TemplateEntity.Image);
-            jsonPatch.Replace(t => t.Data.PodTemplate.EnvironmentVariables, BuildEnvironmentVariables());
-            jsonPatch.Replace(t => t.Data.PodTemplate.Command, TemplateEntity.Commands);
-
-            if (TemplateEntity.Vnc != null)
-            {
-                jsonPatch.Replace(t => t.Data.VncConnection.Username, TemplateEntity.Vnc.userName);
-                jsonPatch.Replace(t => t.Data.VncConnection.Password, TemplateEntity.Vnc.password);
-            }
-
-            var patch = new V1Patch(jsonPatch.Operations, V1Patch.PatchType.JsonPatch);
+            var resource = BuildCustomResource();
+            var patch = new V1Patch(resource, V1Patch.PatchType.MergePatch);
             return patch;
         }
     }

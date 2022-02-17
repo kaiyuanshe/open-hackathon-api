@@ -6,7 +6,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// <summary>
     /// Template for hackathon experiment.
     /// PK: hackathon
-    /// RK: template name
+    /// RK: template id
     /// </summary>
     public class TemplateEntity : BaseTableEntity
     {
@@ -23,10 +23,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         }
 
         /// <summary>
-        /// name of template. RowKey.
+        /// id of template. RowKey. Auto-generated Guid.
         /// </summary>
         [IgnoreEntityProperty]
-        public string Name
+        public string Id
         {
             get
             {

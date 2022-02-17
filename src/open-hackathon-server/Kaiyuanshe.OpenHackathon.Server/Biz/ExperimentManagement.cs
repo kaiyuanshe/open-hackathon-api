@@ -34,13 +34,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (request == null)
                 return null;
 
-            var entity = await StorageContext.TemplateTable.RetrieveAsync(request.hackathonName, request.name, cancellationToken);
+            request.id ??= Guid.NewGuid().ToString();
+            var entity = await StorageContext.TemplateTable.RetrieveAsync(request.hackathonName, request.id, cancellationToken);
             if (entity == null)
             {
                 entity = new TemplateEntity
                 {
                     PartitionKey = request.hackathonName,
-                    RowKey = request.name.ToLower(),
+                    RowKey = request.id.ToLower(),
                     Commands = request.commands,
                     CreatedAt = DateTime.UtcNow,
                     EnvironmentVariables = request.environmentVariables,
@@ -91,12 +92,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetTemplateAsync
-        public async Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken)
+        public async Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
         {
-            if (hackathonName == null || templateName == null)
+            if (hackathonName == null || templateId == null)
                 return null;
 
-            var entity = await StorageContext.TemplateTable.RetrieveAsync(hackathonName, templateName.ToLower(), cancellationToken);
+            var entity = await StorageContext.TemplateTable.RetrieveAsync(hackathonName, templateId.ToLower(), cancellationToken);
             if (entity == null)
                 return null;
 

@@ -18,7 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region CreateTemplate
         /// <summary>
-        /// Create a hackathon template for experiment. Currently only one template with name "default" is allowed.
+        /// Create a hackathon template which can be used to setup a vitual experiment on cloud.
         /// </summary>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
@@ -49,7 +49,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // create template
             parameter.hackathonName = hackathonName.ToLower();
-            parameter.name = "default";
             var context = await ExperimentManagement.CreateOrUpdateTemplateAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
@@ -76,21 +75,22 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region UpdateTemplate
         /// <summary>
-        /// Update a hackathon template. Currently only one template with name "default" is allowed.
+        /// Update a hackathon template.
         /// </summary>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
-        /// <returns>The award</returns>
+        /// <param name="templateId" example="1009bb6-be04-4ba1-901b-21e2b5b0f714">Auto-generated Id of the template. Clients can get the Id in a Create, Update or List request.</param>
+        /// <returns>The updated template.</returns>
         /// <response code="200">Success. The response describes a template.</response>
         [HttpPatch]
         [ProducesResponseType(typeof(Template), StatusCodes.Status200OK)]
         [SwaggerErrorResponse(400, 404)]
-        [Route("hackathon/{hackathonName}/template/{templateName}")]
+        [Route("hackathon/{hackathonName}/template/{templateId}")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
         public async Task<object> UpdateTemplate(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
-            [FromRoute, Required, StringLength(128)] string templateName,
+            [FromRoute, Required, Guid] string templateId,
             [FromBody] Template parameter,
             CancellationToken cancellationToken)
         {
@@ -108,7 +108,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update template
             parameter.hackathonName = hackathonName.ToLower();
-            parameter.name = templateName;
+            parameter.id = templateId;
             var context = await ExperimentManagement.CreateOrUpdateTemplateAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
@@ -135,20 +135,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region GetTemplate
         /// <summary>
-        /// Query a hackathon template for experiment. Currently only one template with name "default" is allowed.
+        /// Query a hackathon template by id.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
-        /// <returns>The award</returns>
+        /// <param name="templateId" example="1009bb6-be04-4ba1-901b-21e2b5b0f714">Auto-generated Id of the template. Clients can get the Id in a Create, Update or List request.</param>
+        /// <returns>The template.</returns>
         /// <response code="200">Success. The response describes a template.</response>
         [HttpGet]
         [ProducesResponseType(typeof(Template), StatusCodes.Status200OK)]
         [SwaggerErrorResponse(400, 404)]
-        [Route("hackathon/{hackathonName}/template/{templateName}")]
+        [Route("hackathon/{hackathonName}/template/{templateId}")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
         public async Task<object> GetTemplate(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
-            [FromRoute, Required, StringLength(128)] string templateName,
+            [FromRoute, Required, Guid] string templateId,
             CancellationToken cancellationToken)
         {
             // validate hackathon
@@ -164,10 +165,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // get template
-            var context = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), templateName, cancellationToken);
+            var context = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), templateId, cancellationToken);
             if (context == null)
             {
-                return NotFound(string.Format(Resources.Template_NotFound, templateName, hackathonName));
+                return NotFound(string.Format(Resources.Template_NotFound, templateId, hackathonName));
             }
             if (context.Status.IsFailed())
             {

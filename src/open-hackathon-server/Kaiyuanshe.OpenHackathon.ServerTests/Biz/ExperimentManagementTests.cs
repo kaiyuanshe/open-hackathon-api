@@ -24,7 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Template template = new Template
             {
                 hackathonName = "hack",
-                name = "any",
+                id = "any",
                 commands = new string[] { "a", "b", "c" },
                 environmentVariables = new Dictionary<string, string>
                 {
@@ -89,7 +89,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Template template = new Template
             {
                 hackathonName = "hack",
-                name = "any",
+                id = "any",
                 commands = new string[] { "a", "b", "c" },
                 environmentVariables = new Dictionary<string, string>
                 {
@@ -150,7 +150,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Template template = new Template
             {
                 hackathonName = "hack",
-                name = "any",
+                id = "any",
                 commands = new string[] { "a", "b", "c" },
                 environmentVariables = new Dictionary<string, string>
                 {

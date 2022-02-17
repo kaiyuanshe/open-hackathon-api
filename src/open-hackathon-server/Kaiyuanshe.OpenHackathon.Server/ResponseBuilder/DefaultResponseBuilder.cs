@@ -125,8 +125,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                         protocol = IngressProtocol.vnc,
                         hostname = context.Status.IngressIPs?.FirstOrDefault(),
                         port = context.Status.IngressPort,
-                        username = context.Status.VncConnection?.Username,
-                        password = context.Status.VncConnection?.Password,
+                        username = context.Status.VncConnection?.username,
+                        password = context.Status.VncConnection?.password,
                     };
                     break;
                 default:

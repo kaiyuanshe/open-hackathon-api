@@ -41,15 +41,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual(2, cr.Metadata.Labels.Count);
             Assert.AreEqual("pk", cr.Metadata.Labels["hackathonName"]);
             Assert.AreEqual("rk", cr.Metadata.Labels["templateName"]);
-            Assert.AreEqual(5901, cr.Data.IngressPort);
-            Assert.AreEqual("vnc", cr.Data.IngressProtocol);
-            Assert.AreEqual("Pod", cr.Data.Type);
-            Assert.AreEqual("image", cr.Data.PodTemplate.Image);
-            Assert.AreEqual("a", cr.Data.PodTemplate.Command[0]);
-            Assert.AreEqual("value", cr.Data.PodTemplate.EnvironmentVariables["key"]);
-            Assert.AreEqual("un", cr.Data.PodTemplate.EnvironmentVariables["USER"]);
-            Assert.AreEqual("un", cr.Data.VncConnection.Username);
-            Assert.AreEqual("pwd", cr.Data.VncConnection.Password);
+            Assert.AreEqual(5901, cr.data.ingressPort);
+            Assert.AreEqual("vnc", cr.data.ingressProtocol);
+            Assert.AreEqual("Pod", cr.data.type);
+            Assert.AreEqual("image", cr.data.podTemplate.image);
+            Assert.AreEqual("a", cr.data.podTemplate.command[0]);
+            Assert.AreEqual("value", cr.data.podTemplate.env["key"]);
+            Assert.AreEqual("un", cr.data.podTemplate.env["USER"]);
+            Assert.AreEqual("un", cr.data.vnc.username);
+            Assert.AreEqual("pwd", cr.data.vnc.password);
         }
     }
 }
