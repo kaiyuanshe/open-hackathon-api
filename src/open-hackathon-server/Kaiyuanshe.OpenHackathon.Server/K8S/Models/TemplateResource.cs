@@ -13,46 +13,37 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         // See also: https://github.com/kaiyuanshe/cloudengine/blob/master/config/crd/bases/hackathon.kaiyuanshe.cn_templates.yaml
         public static readonly string Plural = "templates";
 
-        [JsonProperty(PropertyName = "data")]
-        public TemplateData Data { get; set; }
+        public TemplateData data { get; set; }
     }
 
     public class TemplateData
     {
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
+        public string type { get; set; }
 
-        [JsonProperty(PropertyName = "podTemplate")]
-        public PodTemplate PodTemplate { get; set; }
+        public PodTemplate podTemplate { get; set; }
 
-        [JsonProperty(PropertyName = "ingressProtocol")]
-        public string IngressProtocol { get; set; }
+        public string ingressProtocol { get; set; }
 
-        [JsonProperty(PropertyName = "ingressPort")]
-        public int IngressPort { get; set; }
+        public int ingressPort { get; set; }
 
-        [JsonProperty(PropertyName = "vnc")]
-        public Vnc VncConnection { get; set; }
+        public Vnc vnc { get; set; }
     }
 
     public class PodTemplate
     {
-        [JsonProperty(PropertyName = "image")]
-        public string Image { get; set; }
+        public string image { get; set; }
 
-        [JsonProperty(PropertyName = "command")]
-        public string[] Command { get; set; }
+        public string[] command { get; set; }
 
-        [JsonProperty(PropertyName = "env")]
-        public IDictionary<string, string> EnvironmentVariables { get; set; }
+        public IDictionary<string, string> env { get; set; }
     }
 
     public class Vnc
     {
         [JsonProperty(PropertyName = "username")]
-        public string Username { get; set; }
+        public string username { get; set; }
 
         [JsonProperty(PropertyName = "password")]
-        public string Password { get; set; }
+        public string password { get; set; }
     }
 }

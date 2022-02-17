@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     customResource.Metadata.NamespaceProperty ?? "default",
                     TemplateResource.Plural,
                     cancellationToken: cancellationToken);
-                logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
+                logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
                 context.Status = new k8s.Models.V1Status
                 {
                     Code = (int)resp.Response.StatusCode,

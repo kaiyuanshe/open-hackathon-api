@@ -168,8 +168,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 IngressProtocol = IngressProtocol.vnc,
                 VncConnection = new Vnc
                 {
-                    Username = "un",
-                    Password = "pwd"
+                    username = "un",
+                    password = "pwd"
                 },
             };
             var context = new ExperimentContext { Status = status };
@@ -327,7 +327,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             var template = respBuilder.BuildTemplate(context);
 
             Assert.AreEqual("pk", template.hackathonName);
-            Assert.AreEqual("rk", template.name);
+            Assert.AreEqual("rk", template.id);
             Assert.AreEqual(3, template.commands.Length);
             Assert.AreEqual("a", template.commands[0]);
             Assert.AreEqual(2, template.environmentVariables.Count);

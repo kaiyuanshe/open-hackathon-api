@@ -39,7 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
-                j.name == "default" &&
+                j.id == null &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createTemplate.ToString()
@@ -81,7 +81,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
-                j.name == "default" &&
+                j.id == null &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createTemplate.ToString()
@@ -131,7 +131,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
-                j.name == "any" &&
+                j.id == "any" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.updateTemplate.ToString()
@@ -173,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
-                j.name == "any" &&
+                j.id == "any" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.updateTemplate.ToString()
