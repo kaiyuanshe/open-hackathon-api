@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task CreateOrUpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
+        Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
@@ -31,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             this.logger = logger;
         }
 
+        #region CreateOrUpdateTemplateAsync
         public async Task CreateOrUpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
         {
             var cr = await GetTemplateAsync(context, cancellationToken);
@@ -80,7 +84,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
             }
         }
+        #endregion
 
+        #region UpdateTemplateAsync
         public async Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
         {
             var patch = context.BuildPatch();
@@ -90,7 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     patch,
                     TemplateResource.Group,
                     TemplateResource.Version,
-                    context.GetNamespace(),
+                    TemplateContext.DefaultNameSpace,
                     TemplateResource.Plural,
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
@@ -110,7 +116,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
             }
         }
+        #endregion
 
+        #region GetTemplateAsync
         public async Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
         {
             try
@@ -118,7 +126,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 var cr = await kubeClient.GetNamespacedCustomObjectWithHttpMessagesAsync(
                     CustomResource.Group,
                     CustomResource.Version,
-                    context.GetNamespace(),
+                    TemplateContext.DefaultNameSpace,
                     TemplateResource.Plural,
                     context.GetTemplateResourceName(),
                     null,
@@ -140,6 +148,34 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 return null;
             }
         }
+        #endregion
+
+        #region ListTemplatesAsync
+        public async Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var labelSelector = $"hackathonName={hackathonName}";
+                var listResp = await kubeClient.ListNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResource.Group,
+                    CustomResource.Version,
+                    TemplateContext.DefaultNameSpace,
+                    TemplateResource.Plural,
+                    labelSelector: labelSelector,
+                    cancellationToken: cancellationToken);
+                var crl= SafeJsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
+                return crl.Items;
+            }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response?.Content == null)
+                    throw;
+
+                logger.TraceInformation(exception.Response.Content);
+                return Array.Empty<TemplateResource>();
+            }
+        }
+        #endregion
 
         #region Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
         public async Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
