@@ -1,9 +1,13 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.K8S;
+﻿using k8s.Models;
+using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<TemplateContext> CreateOrUpdateTemplateAsync(Template template, CancellationToken cancellationToken);
         Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
+        Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
@@ -121,6 +126,52 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 };
             }
             return context;
+        }
+        #endregion
+
+        #region ListTemplatesAsync
+        public async Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(hackathonName))
+                return Array.Empty<TemplateContext>();
+
+            // get storage entities
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            var templateEntities = await StorageContext.TemplateTable.QueryEntitiesAsync(filter, null, cancellationToken);
+
+            // get k8s resources
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var k8sResources = await kubernetesCluster.ListTemplatesAsync(hackathonName, cancellationToken);
+
+            // compose resp
+            Func<TemplateResource, string, bool> selector = (k8sResource, tempId) =>
+            {
+                if (k8sResource?.Metadata?.Labels != null
+                    && k8sResource.Metadata.Labels.TryGetValue(TemplateContext.LabelTemplateId, out string templateId)
+                    && tempId == templateId)
+                {
+                    return true;
+                }
+                return false;
+            };
+            return templateEntities.Select(entity =>
+            {
+                var kr = k8sResources.FirstOrDefault(k => selector(k, entity.Id));
+                var status = new V1Status
+                {
+                    Code = kr != null ? 200 : 422,
+                    Status = kr != null ? "success" : "failure",
+                    Reason = kr != null ? "Ok" : "UnprocessableEntity",
+                    Message = kr != null ? "Ok" : "Template not ready in kubernetes. Please call Patch template API to recover it.",
+                };
+                var context = new TemplateContext
+                {
+                    TemplateEntity = entity,
+                    Status = kr == null ? new k8s.Models.V1Status() : new k8s.Models.V1Status(),
+                };
+
+                return context;
+            });
         }
         #endregion
 

@@ -213,7 +213,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "pk-rk",
                 null, default))
-                .ReturnsAsync(new Microsoft.Rest.HttpOperationResponse<object>
+                .ReturnsAsync(new HttpOperationResponse<object>
                 {
                     Body = "{\"kind\":\"template\"}"
                 });
@@ -256,7 +256,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "pk-rk",
                 null, default))
-                .ReturnsAsync(new Microsoft.Rest.HttpOperationResponse<object>
+                .ReturnsAsync(new HttpOperationResponse<object>
                 {
                     Body = "{\"kind\":\"template\"}"
                 });

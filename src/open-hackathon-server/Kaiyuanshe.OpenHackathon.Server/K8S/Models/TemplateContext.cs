@@ -7,6 +7,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
     public class TemplateContext
     {
         public const string DefaultNameSpace = "default";
+        public const string LabelTemplateId = "templateId";
+        public const string LabelHackathonName = "hackathonName";
 
         public TemplateEntity TemplateEntity { get; set; }
         public V1Status Status { get; set; }
@@ -35,14 +37,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
             {
                 ApiVersion = "hackathon.kaiyuanshe.cn/v1",
                 Kind = "Template",
-                Metadata = new k8s.Models.V1ObjectMeta
+                Metadata = new V1ObjectMeta
                 {
                     Name = GetTemplateResourceName(),
                     NamespaceProperty = DefaultNameSpace,
                     Labels = new Dictionary<string, string>
                     {
-                        { "hackathonName", TemplateEntity.HackathonName },
-                        { "templateName", TemplateEntity.Id },
+                        { LabelHackathonName, TemplateEntity.HackathonName },
+                        { LabelTemplateId, TemplateEntity.Id },
                     },
                 },
                 data = new TemplateData

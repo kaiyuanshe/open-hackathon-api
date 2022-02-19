@@ -81,6 +81,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response?.Content == null)
                     throw;
 
+                logger.TraceError($"CreateTemplateAsync: {exception.Message}", exception);
                 context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
             }
         }
@@ -113,6 +114,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response?.Content == null)
                     throw;
 
+                logger.TraceError($"UpdateTemplateAsync: {exception.Message}", exception);
                 context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
             }
         }
@@ -134,9 +136,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 context.Status = new k8s.Models.V1Status
                 {
                     Code = 200,
-                    Status = "success",
+                    Status = "success"
                 };
-                return SafeJsonConvert.DeserializeObject<TemplateResource>(cr.Body.ToString());
+                var resp = SafeJsonConvert.DeserializeObject<TemplateResource>(cr.Body.ToString());
+                return resp;
             }
             catch (HttpOperationException exception)
             {
@@ -155,7 +158,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         {
             try
             {
-                var labelSelector = $"hackathonName={hackathonName}";
+                var labelSelector = $"{TemplateContext.LabelHackathonName}={hackathonName}";
                 var listResp = await kubeClient.ListNamespacedCustomObjectWithHttpMessagesAsync(
                     CustomResource.Group,
                     CustomResource.Version,
@@ -163,7 +166,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     TemplateResource.Plural,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
-                var crl= SafeJsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
+                var crl = SafeJsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
                 return crl.Items;
             }
             catch (HttpOperationException exception)
@@ -177,7 +180,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         }
         #endregion
 
-        #region Task CreateOrUpdateExperiment(ExperimentContext context, CancellationToken cancellationToken);
+        #region CreateOrUpdateExperimentAsync
         public async Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
         {
             var cr = await GetExperimentAsync(context, cancellationToken);
