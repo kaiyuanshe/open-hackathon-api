@@ -40,7 +40,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual("default", cr.Metadata.NamespaceProperty);
             Assert.AreEqual(2, cr.Metadata.Labels.Count);
             Assert.AreEqual("pk", cr.Metadata.Labels["hackathonName"]);
-            Assert.AreEqual("rk", cr.Metadata.Labels["templateName"]);
+            Assert.AreEqual("rk", cr.Metadata.Labels["templateId"]);
             Assert.AreEqual(5901, cr.data.ingressPort);
             Assert.AreEqual("vnc", cr.data.ingressProtocol);
             Assert.AreEqual("Pod", cr.data.type);
