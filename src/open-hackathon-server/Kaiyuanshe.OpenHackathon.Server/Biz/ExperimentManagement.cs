@@ -167,7 +167,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 var context = new TemplateContext
                 {
                     TemplateEntity = entity,
-                    Status = kr == null ? new k8s.Models.V1Status() : new k8s.Models.V1Status(),
+                    Status = status,
                 };
 
                 return context;
