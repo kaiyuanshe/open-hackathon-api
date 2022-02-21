@@ -185,6 +185,42 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region ListTemplate
+        /// <summary>
+        /// List templates of a hackathon.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <returns>The templates.</returns>
+        /// <response code="200">Success. The response describes a list of templates. All templates returned in one request, no pagination support.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(TemplateList), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/templates")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
+        public async Task<object> ListTemplate(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackAdminRequird = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // list templates
+            var contexts = await ExperimentManagement.ListTemplatesAsync(hackathonName.ToLower(), cancellationToken);
+            var resp = ResponseBuilder.BuildResourceList<TemplateContext, Template, TemplateList>(contexts, ResponseBuilder.BuildTemplate, null);
+            return Ok(resp);
+        }
+        #endregion
+
         #region CreateExperiment
         /// <summary>
         /// Create a hackathon experiment. 
