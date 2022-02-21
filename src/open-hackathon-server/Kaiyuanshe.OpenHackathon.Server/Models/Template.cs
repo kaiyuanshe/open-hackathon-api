@@ -74,6 +74,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public VncSettings vnc { get; set; }
     }
 
+    public class TemplateList : ResourceList<Template>
+    {
+        /// <summary>
+        /// a list of templates.
+        /// </summary>
+        public override Template[] value { get; set; }
+    }
+
     /// <summary>
     /// vnc configurations.
     /// </summary>

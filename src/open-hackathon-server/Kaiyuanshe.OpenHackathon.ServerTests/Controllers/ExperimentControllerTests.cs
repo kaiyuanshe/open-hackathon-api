@@ -10,6 +10,8 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -299,6 +301,54 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             var resp = AssertHelper.AssertOKResult<Template>(result);
             Assert.AreEqual("pk", resp.hackathonName);
+        }
+        #endregion
+
+        #region ListTemplate
+        [Test]
+        public async Task ListTemplate()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            List<TemplateContext> contexts = new List<TemplateContext>
+            {
+                new TemplateContext
+                {
+                    TemplateEntity = new TemplateEntity
+                    {
+                        DisplayName = "dn"
+                    },
+                    Status = new V1Status
+                    {
+                        Code = 200
+                    }
+                }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.ListTemplatesAsync("hack", default)).ReturnsAsync(contexts);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ListTemplate("Hack", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            var obj = AssertHelper.AssertOKResult<TemplateList>(result);
+            Assert.AreEqual(1, obj.value.Count());
+            Assert.AreEqual("dn", obj.value.First().displayName);
+            Assert.AreEqual(200, obj.value.First().status.code);
+            Assert.IsNull(obj.nextLink);
         }
         #endregion
 
