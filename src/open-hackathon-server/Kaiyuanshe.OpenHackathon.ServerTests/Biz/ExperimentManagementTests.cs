@@ -400,6 +400,41 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
+        #region GetTemplateCountAsync
+        [Test]
+        public async Task GetTemplateCountAsync()
+        {
+            // data
+            var entities = new List<TemplateEntity>
+            {
+                new TemplateEntity(),
+                new TemplateEntity(),
+                new TemplateEntity(),
+            };
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+
+            var templateTable = new Mock<ITemplateTable>();
+            templateTable.Setup(p => p.QueryEntitiesAsync("PartitionKey eq 'hack'", new string[] { "RowKey" }, default)).ReturnsAsync(entities);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await management.GetTemplateCountAsync("hack", default);
+
+            // verify
+            Mock.VerifyAll(templateTable, storageContext);
+            templateTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            Assert.AreEqual(3, result);
+        }
+        #endregion
+
         #region CreateExperimentAsync
         [Test]
         public async Task CreateExperimentAsync_Exception()

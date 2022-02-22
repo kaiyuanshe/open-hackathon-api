@@ -18,6 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<TemplateContext> CreateOrUpdateTemplateAsync(Template template, CancellationToken cancellationToken);
         Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
+        Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
@@ -172,6 +173,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
                 return context;
             });
+        }
+        #endregion
+
+        #region GetTemplateCountAsync
+        public async Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(hackathonName))
+                return 0;
+
+            // get storage entities
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            var entities = await StorageContext.TemplateTable.QueryEntitiesAsync(filter, new string[] { nameof(TemplateEntity.RowKey) }, cancellationToken);
+            return entities.Count();
         }
         #endregion
 
