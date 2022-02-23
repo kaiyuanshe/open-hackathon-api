@@ -529,6 +529,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create more than {0} templates in a hackathon..
+        /// </summary>
+        internal static string Template_ExceedMax {
+            get {
+                return ResourceManager.GetString("Template_ExceedMax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template `{0}` cannot be found in hackathon `{1}`..
         /// </summary>
         internal static string Template_NotFound {

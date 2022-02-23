@@ -16,6 +16,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 {
     public class ExperimentController : HackathonControllerBase
     {
+        public static readonly int MaxTemplatePerHackathon = 100;
+
         #region CreateTemplate
         /// <summary>
         /// Create a hackathon template which can be used to setup a vitual experiment on cloud.
@@ -45,6 +47,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
             {
                 return options.ValidateResult;
+            }
+
+            // validate count
+            var templateCount = await ExperimentManagement.GetTemplateCountAsync(hackathonName.ToLower(), cancellationToken);
+            if (templateCount >= MaxTemplatePerHackathon)
+            {
+                return PreconditionFailed(string.Format(Resources.Template_ExceedMax, MaxTemplatePerHackathon));
             }
 
             // create template
@@ -104,6 +113,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
             {
                 return options.ValidateResult;
+            }
+
+            // validate template exist
+            var template = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            if (template?.TemplateEntity == null)
+            {
+                return NotFound(string.Format(Resources.Template_NotFound, templateId, hackathonName));
             }
 
             // update template

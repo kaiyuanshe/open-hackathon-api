@@ -21,6 +21,35 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
     {
         #region CreateTemplate
         [Test]
+        public async Task CreateTemplate_TooMany()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateCountAsync("hack", default)).ReturnsAsync(ExperimentController.MaxTemplatePerHackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.CreateTemplate("Hack", parameter, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Template_ExceedMax, ExperimentController.MaxTemplatePerHackathon));
+        }
+
+        [Test]
         public async Task CreateTemplate_K8SFailure()
         {
             var hackathon = new HackathonEntity();
@@ -40,6 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateCountAsync("hack", default)).ReturnsAsync(0);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
                 j.id == null &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
@@ -82,6 +112,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateCountAsync("hack", default)).ReturnsAsync(0);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
                 j.id == null &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
@@ -113,6 +144,70 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
         #region UpdateTemplate
         [Test]
+        public async Task UpdateTemplate_NotFound()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+            var entity = new TemplateEntity { PartitionKey = "pk" };
+            TemplateContext context = null;
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "any", default)).ReturnsAsync(context);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.UpdateTemplate("Hack", "any", parameter, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Template_NotFound, "any", "Hack"));
+        }
+
+        [Test]
+        public async Task UpdateTemplate_NotFound2()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Template { };
+            var entity = new TemplateEntity { PartitionKey = "pk" };
+            var context = new TemplateContext
+            {
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "any", default)).ReturnsAsync(context);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.UpdateTemplate("Hack", "any", parameter, default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Template_NotFound, "any", "Hack"));
+        }
+
+        [Test]
         public async Task UpdateTemplate_K8SFailure()
         {
             var hackathon = new HackathonEntity();
@@ -132,6 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "any", default)).ReturnsAsync(context);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
                 j.id == "any" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
@@ -174,6 +270,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.GetTemplateAsync("hack", "any", default)).ReturnsAsync(context);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateTemplateAsync(It.Is<Template>(j =>
                 j.id == "any" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
