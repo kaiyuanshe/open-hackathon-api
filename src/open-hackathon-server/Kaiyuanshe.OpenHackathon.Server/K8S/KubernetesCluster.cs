@@ -6,6 +6,7 @@ using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
+        Task DeleteTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
@@ -133,6 +135,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     context.GetTemplateResourceName(),
                     null,
                     cancellationToken);
+
                 context.Status = new k8s.Models.V1Status
                 {
                     Code = 200,
@@ -176,6 +179,31 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
 
                 logger.TraceInformation(exception.Response.Content);
                 return Array.Empty<TemplateResource>();
+            }
+        }
+        #endregion
+
+        #region DeleteTemplateAsync
+        public async Task DeleteTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await kubeClient.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResource.Group,
+                    CustomResource.Version,
+                    TemplateContext.DefaultNameSpace,
+                    TemplateResource.Plural,
+                    context.GetTemplateResourceName(),
+                    cancellationToken: cancellationToken);
+            }
+            catch (HttpOperationException exception)
+            {
+                logger.TraceInformation(exception.Response.Content);
+                if (exception.Response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    // ignore 404
+                    throw;
+                }
             }
         }
         #endregion
