@@ -195,6 +195,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     TemplateResource.Plural,
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
+                context.Status = new k8s.Models.V1Status
+                {
+                    Code = 204,
+                    Status = "success"
+                };
             }
             catch (HttpOperationException exception)
             {
@@ -202,7 +207,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response.StatusCode != HttpStatusCode.NotFound)
                 {
                     // ignore 404
-                    throw;
+                    context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                }
+                else
+                {
+                    context.Status = new k8s.Models.V1Status
+                    {
+                        Code = 204,
+                        Status = "success"
+                    };
                 }
             }
         }

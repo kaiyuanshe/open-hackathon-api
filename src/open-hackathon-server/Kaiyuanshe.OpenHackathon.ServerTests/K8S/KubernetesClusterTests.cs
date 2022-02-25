@@ -143,9 +143,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 null, null, null, null, default))
                 .ReturnsAsync(new HttpOperationResponse<object>
                 {
-                    Response = new System.Net.Http.HttpResponseMessage
+                    Response = new HttpResponseMessage
                     {
-                        StatusCode = System.Net.HttpStatusCode.OK,
+                        StatusCode = HttpStatusCode.OK,
                         ReasonPhrase = "success",
                     },
                 });
@@ -236,7 +236,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 null, null, null, null, null, null, default))
                 .Throws(new HttpOperationException
                 {
-                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "abc")
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
                 }); ;
             var context = new TemplateContext
             {
@@ -256,6 +256,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
             logger.VerifyNoOtherCalls();
+
+            Assert.AreEqual(204, context.Status.Code);
         }
 
         [Test]
@@ -269,7 +271,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 null, null, null, null, null, null, default))
                 .Throws(new HttpOperationException
                 {
-                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.BadRequest), "abc")
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.BadRequest), "{\"code\":400}")
                 }); ;
             var context = new TemplateContext
             {
@@ -277,7 +279,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             };
 
             var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
-            Assert.ThrowsAsync<HttpOperationException>(async () => await kubernetesCluster.DeleteTemplateAsync(context, default));
+            await kubernetesCluster.DeleteTemplateAsync(context, default);
 
             Mock.VerifyAll(kubernetes, logger);
             kubernetes.VerifyNoOtherCalls();
@@ -289,6 +291,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
             logger.VerifyNoOtherCalls();
+
+            Assert.AreEqual(400, context.Status.Code);
         }
 
         [Test]
@@ -310,6 +314,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 
             Mock.VerifyAll(kubernetes);
             kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(204, context.Status.Code);
         }
         #endregion
 
