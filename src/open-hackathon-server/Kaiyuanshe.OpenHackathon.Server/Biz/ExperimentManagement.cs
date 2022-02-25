@@ -19,6 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
+        Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
@@ -186,6 +187,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
             var entities = await StorageContext.TemplateTable.QueryEntitiesAsync(filter, new string[] { nameof(TemplateEntity.RowKey) }, cancellationToken);
             return entities.Count();
+        }
+        #endregion
+
+        #region DeleteTemplateAsync
+        public async Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
+        {
+            var entity = await StorageContext.TemplateTable.RetrieveAsync(hackathonName, templateId, cancellationToken);
+            if (entity == null)
+                return null;
+
+            // delete k8s first
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var context = new TemplateContext { TemplateEntity = entity };
+            await kubernetesCluster.DeleteTemplateAsync(context, cancellationToken);
+
+            // delete storage
+            await StorageContext.TemplateTable.DeleteAsync(hackathonName, templateId, cancellationToken);
+            return context;
         }
         #endregion
 

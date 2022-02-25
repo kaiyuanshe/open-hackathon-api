@@ -6,6 +6,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -432,6 +433,81 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             templateTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.AreEqual(3, result);
+        }
+        #endregion
+
+        #region DeleteTemplateAsync
+        [Test]
+        public async Task DeleteTemplateAsync_EntityNotFound()
+        {
+            TemplateEntity entity = null;
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var templateTable = new Mock<ITemplateTable>();
+            templateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
+            var k8s = new Mock<IKubernetesCluster>();
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+            var result = await management.DeleteTemplateAsync("hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
+            templateTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+
+            Assert.IsNull(result);
+        }
+
+        [TestCase(204)]
+        [TestCase(409)]
+        public async Task DeleteTemplateAsync_Deleted(int statusCode)
+        {
+            TemplateEntity entity = new TemplateEntity();
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var templateTable = new Mock<ITemplateTable>();
+            templateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
+            templateTable.Setup(p => p.DeleteAsync("hack", "tpl", default));
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.DeleteTemplateAsync(It.IsAny<TemplateContext>(), default))
+                .Callback<TemplateContext, CancellationToken>((c, ct) =>
+                {
+                    c.Status = new k8s.Models.V1Status { Code = statusCode };
+                });
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+            var result = await management.DeleteTemplateAsync("hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
+            templateTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+
+            Assert.IsNotNull(result.TemplateEntity);
+            Assert.AreEqual(statusCode, result.Status.Code);
         }
         #endregion
 

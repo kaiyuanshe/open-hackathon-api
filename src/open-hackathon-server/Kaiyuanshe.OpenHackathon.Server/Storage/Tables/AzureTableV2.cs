@@ -146,7 +146,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 }
                 catch (RequestFailedException ex)
                 {
-                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
+                    if (ex.Status != 404)
+                        throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
                 }
             }
         }
