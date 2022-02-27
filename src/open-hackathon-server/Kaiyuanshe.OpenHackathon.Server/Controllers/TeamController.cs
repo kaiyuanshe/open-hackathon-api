@@ -322,8 +322,25 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             foreach (var member in members)
             {
                 await TeamManagement.DeleteTeamMemberAsync(member, cancellationToken);
+                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                {
+                    ActivityLogType = ActivityLogType.deleteTeamMember.ToString(),
+                    HackathonName = hackathonName.ToLower(),
+                    UserId = CurrentUserId,
+                    TeamId = teamId,
+                    Message = team.DisplayName,
+                    CorrelatedUserId = member.UserId,
+                }, cancellationToken);
             }
             await TeamManagement.DeleteTeamAsync(team, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteTeam.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                TeamId = teamId,
+                Message = team.DisplayName,
+            }, cancellationToken);
             return NoContent();
         }
         #endregion
