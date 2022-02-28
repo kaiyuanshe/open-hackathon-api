@@ -237,6 +237,60 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region DeleteTemplate
+        /// <summary>
+        /// Delete a hackathon template. Make sure delete all experiments created using it first.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="templateId" example="1009bb6-be04-4ba1-901b-21e2b5b0f714">Auto-generated Id of the template. Clients can get the Id in a Create, Update or List request.</param>
+        /// <response code="204">Success. The response indicates that a template is successfully deleted.</response>
+        [HttpDelete]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/template/{templateId}")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
+        public async Task<object> DeleteTemplate(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, Guid] string templateId,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackAdminRequird = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // delete template
+            var context = await ExperimentManagement.DeleteTemplateAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteTemplate.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = context?.TemplateEntity?.Id,
+            }, cancellationToken);
+
+            if (context?.Status != null && context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: context.TemplateEntity?.Id);
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+        #endregion
+
         #region CreateExperiment
         /// <summary>
         /// Create a hackathon experiment. 
