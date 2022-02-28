@@ -10,6 +10,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -446,6 +447,87 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("dn", obj.value.First().displayName);
             Assert.AreEqual(200, obj.value.First().status.code);
             Assert.IsNull(obj.nextLink);
+        }
+        #endregion
+
+        #region DeleteTemplate
+        private static IEnumerable DeleteTemplateTestData()
+        {
+            // arg0: TemplateContext
+            // arg1: expected http code
+            // arg2: expected http message
+
+            // null context
+            yield return new TestCaseData(
+                    null,
+                    204,
+                    null
+                );
+
+            // no status
+            yield return new TestCaseData(
+                    new TemplateContext { },
+                    204,
+                    null
+                );
+
+            // status < 400
+            yield return new TestCaseData(
+                    new TemplateContext { Status = new V1Status { Code = 200 } },
+                    204,
+                    null
+                );
+
+            // status >= 400
+            yield return new TestCaseData(
+                    new TemplateContext { Status = new V1Status { Code = 400, Message = "error" } },
+                    400,
+                    "error"
+                );
+            yield return new TestCaseData(
+                    new TemplateContext { Status = new V1Status { Code = 500, Message = "error" } },
+                    500,
+                    "error"
+                );
+        }
+
+        [Test, TestCaseSource(nameof(DeleteTemplateTestData))]
+        public async Task DeleteTemplate(TemplateContext templateContext, int expectedCode, string expectedMessage)
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.DeleteTemplateAsync("hack", "tpl", default)).ReturnsAsync(templateContext);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+                && a.ActivityLogType == ActivityLogType.deleteTemplate.ToString()), default));
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.DeleteTemplate("Hack", "tpl", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.AuthorizationService,
+                mockContext.ActivityLogManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.AuthorizationService.VerifyNoOtherCalls();
+            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
+
+            if (expectedCode == 204)
+            {
+                AssertHelper.AssertNoContentResult(result);
+            }
+            else
+            {
+                AssertHelper.AssertObjectResult(result, expectedCode, expectedMessage);
+            }
         }
         #endregion
 

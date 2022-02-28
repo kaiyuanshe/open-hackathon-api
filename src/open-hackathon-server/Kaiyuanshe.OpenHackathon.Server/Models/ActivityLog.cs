@@ -107,8 +107,11 @@
         // template
         createTemplate,
         updateTemplate,
+        deleteTemplate,
 
         // experiment
         createExperiment,
+        updateExperiment,
+        deleteExperiment,
     }
 }
