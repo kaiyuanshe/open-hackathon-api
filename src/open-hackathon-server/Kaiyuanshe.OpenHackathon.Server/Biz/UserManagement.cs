@@ -118,8 +118,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentNullException(string.Format(Resources.Parameter_Required, nameof(token)));
 
-            var authenticationClient = new AuthenticationClient(userPoolId);
-            return await authenticationClient.CurrentUser(token, cancellationToken);
+            //var authenticationClient = new AuthenticationClient(userPoolId);
+            var authenticationClient = new AuthenticationClient(options => options.UserPoolId = userPoolId);
+            authenticationClient.AccessToken = token;
+            return await authenticationClient.GetCurrentUser(cancellationToken);
         }
 
         public async Task<IEnumerable<Claim>> GetUserBasicClaimsAsync(string token, CancellationToken cancellationToken = default)
@@ -189,7 +191,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentNullException(string.Format(Resources.Parameter_Required, nameof(token)));
 
-            var authenticationClient = new AuthenticationClient(userPoolId);
+            //var authenticationClient = new AuthenticationClient(userPoolId);
+            var authenticationClient = new AuthenticationClient(options => options.UserPoolId = userPoolId);
+            authenticationClient.AccessToken = token;
             var jwtTokenStatus = await authenticationClient.CheckLoginStatus(token, cancellationToken);
             return jwtTokenStatus;
         }
