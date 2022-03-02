@@ -10,7 +10,7 @@
   </PropertyGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Authing.ApiClient" Version="4.1.0" />
+    <PackageReference Include="Authing.ApiClient" Version="4.2.4.11" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Azure.Data.Tables" Version="12.4.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
