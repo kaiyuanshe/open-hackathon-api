@@ -11,7 +11,7 @@
     @{
         if (string.IsNullOrWhiteSpace(Request.Query["app_id"]))
         {
-            string exampleUrl = $"https://{Request.Host}/authing/login?app_id=YOUR_AUTHING_APP_ID";
+            string exampleUrl = $"https://{Request.Host}/authing/login?app_id=YOUR_AUTHING_APP_ID&redirect_url=REDIRECT_URL";
             <p>To get a test token, please: </p>
             <ul>
                 <li>Following the below <b>Login Help</b> to setup github and authing.</li>
@@ -22,7 +22,8 @@
         else
         {
             string app_id = Request.Query["app_id"];
-            <a href="https://core.authing.cn/connection/social/github?app_id=@app_id" target="_self">Click to get access token</a>
+            string redirect_url = Request.Query["redirect_url"];
+            <a href="https://core.authing.cn/connection/social/github?app_id=@app_id&redirect_url=@redirect_url" target="_self">Click to get access token</a>
         }
     }
 </div>
