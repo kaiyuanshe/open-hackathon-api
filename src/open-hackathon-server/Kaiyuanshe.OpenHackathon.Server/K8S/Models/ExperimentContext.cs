@@ -13,41 +13,36 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
         {
             return new ExperimentResource
             {
-                ApiVersion = "hackathon.kaiyuanshe.cn/v1",
-                Kind = "Experiment",
+                ApiVersion = CustomResourceDefinition.ApiVersion,
+                Kind = Kinds.Experiment,
                 Metadata = new V1ObjectMeta
                 {
                     Name = GetExperimentResourceName(),
-                    NamespaceProperty = GetNamespace(),
+                    NamespaceProperty = Namespaces.Default,
                     Labels = new Dictionary<string, string>
                     {
-                        { "hackathonName", ExperimentEntity.HackathonName },
-                        { "userId", ExperimentEntity.UserId },
-                        { "templateName", ExperimentEntity.TemplateName },
+                        { Labels.HackathonName, ExperimentEntity.HackathonName },
+                        { Labels.UserId, ExperimentEntity.UserId },
+                        { Labels.TemplateId, ExperimentEntity.TemplateId },
                     },
                 },
                 Spec = new ExperimentSpec
                 {
-                    ClusterName = "meta-cluster",
-                    Template = GetTemplateResourceName(),
-                    Pause = ExperimentEntity.Paused,
+                    custerName = "meta-cluster",
+                    template = GetTemplateResourceName(),
+                    pause = ExperimentEntity.Paused,
                 },
             };
         }
 
         public string GetExperimentResourceName()
         {
-            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateName}-{ExperimentEntity.UserId}";
+            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateId}-{ExperimentEntity.UserId}";
         }
 
         public string GetTemplateResourceName()
         {
-            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateName}";
-        }
-
-        public string GetNamespace()
-        {
-            return "default";
+            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateId}";
         }
     }
 }

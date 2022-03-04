@@ -120,7 +120,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 RowKey = "eid",
                 CreatedAt = DateTime.UtcNow,
                 Timestamp = DateTime.UtcNow,
-                TemplateName = "tn",
+                TemplateId = "tn",
                 UserId = "uid",
             };
             var context = new ExperimentContext
@@ -143,7 +143,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("hack", experiment.hackathonName);
             Assert.AreEqual("uid", experiment.userId);
             Assert.AreEqual("eid", experiment.id);
-            Assert.AreEqual("tn", experiment.templateName);
+            Assert.AreEqual("tn", experiment.templateId);
             Assert.AreEqual(204, experiment.status.code);
             Assert.AreEqual("msg", experiment.status.message);
             Assert.AreEqual(entity.CreatedAt, experiment.createdAt);
@@ -163,10 +163,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             };
             var status = new ExperimentStatus
             {
-                IngressIPs = new string[] { "10.0.0.1", "10.0.0.2" },
-                IngressPort = 15901,
-                IngressProtocol = IngressProtocol.vnc,
-                VncConnection = new Vnc
+                ingressIPs = new string[] { "10.0.0.1", "10.0.0.2" },
+                ingressPort = 15901,
+                protocol = IngressProtocol.vnc,
+                vnc = new Vnc
                 {
                     username = "un",
                     password = "pwd"

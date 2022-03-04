@@ -9,10 +9,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
     /// </summary>
     public class TemplateResource : CustomResource
     {
-        // Properties of CustomResourceDefinition
-        // See also: https://github.com/kaiyuanshe/cloudengine/blob/master/config/crd/bases/hackathon.kaiyuanshe.cn_templates.yaml
-        public static readonly string Plural = "templates";
-
         public TemplateData data { get; set; }
     }
 

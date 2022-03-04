@@ -341,7 +341,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 {
                     PartitionKey = "pk",
                     RowKey = "rk",
-                    TemplateName = "tpl",
+                    TemplateId = "tpl",
                     UserId = "uid",
                 }
             };
@@ -373,7 +373,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 {
                     PartitionKey = "pk",
                     RowKey = "rk",
-                    TemplateName = "tpl",
+                    TemplateId = "tpl",
                     UserId = "uid",
                 }
             };
@@ -385,8 +385,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             kubernetes.VerifyNoOtherCalls();
 
             Assert.AreEqual(200, context.Status.Code);
-            Assert.AreEqual(IngressProtocol.vnc, context.Status.IngressProtocol);
-            Assert.AreEqual("meta-cluster", context.Status.ClusterName);
+            Assert.AreEqual(IngressProtocol.vnc, context.Status.protocol);
+            Assert.AreEqual("meta-cluster", context.Status.cluster);
         }
 
         [Test]
@@ -422,7 +422,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 {
                     PartitionKey = "pk",
                     RowKey = "rk",
-                    TemplateName = "tpl",
+                    TemplateId = "tpl",
                     UserId = "uid",
                 }
             };
