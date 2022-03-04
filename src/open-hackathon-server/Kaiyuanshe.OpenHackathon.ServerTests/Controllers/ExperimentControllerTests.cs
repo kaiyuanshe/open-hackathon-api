@@ -620,7 +620,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
             mockContext.ExperimentManagement.Setup(j => j.CreateExperimentAsync(It.Is<Experiment>(j =>
-                j.templateName == "default" &&
+                j.templateId == "default" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
@@ -663,7 +663,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
             mockContext.ExperimentManagement.Setup(j => j.CreateExperimentAsync(It.Is<Experiment>(j =>
-                j.templateName == "default" &&
+                j.templateId == "default" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
@@ -782,11 +782,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity { };
             var experiment = new ExperimentContext
             {
-                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateName = "tn" },
+                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateId = "tn" },
                 Status = new ExperimentStatus
                 {
-                    IngressProtocol = IngressProtocol.vnc,
-                    IngressPort = 5902
+                    protocol = IngressProtocol.vnc,
+                    ingressPort = 5902
                 }
             };
             var template = new TemplateContext
@@ -826,11 +826,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity { };
             var experiment = new ExperimentContext
             {
-                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateName = "tn" },
+                ExperimentEntity = new ExperimentEntity { UserId = "", TemplateId = "tn" },
                 Status = new ExperimentStatus
                 {
-                    IngressProtocol = IngressProtocol.vnc,
-                    IngressPort = 5902
+                    protocol = IngressProtocol.vnc,
+                    ingressPort = 5902
                 }
             };
             var template = new TemplateContext

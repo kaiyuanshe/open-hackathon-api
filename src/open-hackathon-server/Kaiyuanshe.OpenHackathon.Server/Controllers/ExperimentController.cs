@@ -338,7 +338,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // create experiment
             parameter.hackathonName = hackathonName.ToLower();
-            parameter.templateName = "default";
+            parameter.templateId = "default";
             parameter.userId = CurrentUserId;
             var context = await ExperimentManagement.CreateExperimentAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
@@ -422,7 +422,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 TemplateContext template = await ExperimentManagement.GetTemplateAsync(
                     hackathonName.ToLower(),
-                    context.ExperimentEntity.TemplateName,
+                    context.ExperimentEntity.TemplateId,
                     cancellationToken);
                 var conn = ResponseBuilder.BuildGuacamoleConnection(context, template);
                 var list = new GuacamoleConnectionList

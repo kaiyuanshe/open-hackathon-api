@@ -66,10 +66,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             {
                 var resp = await kubeClient.CreateNamespacedCustomObjectWithHttpMessagesAsync(
                     customResource,
-                    TemplateResource.Group,
-                    TemplateResource.Version,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
                     customResource.Metadata.NamespaceProperty ?? "default",
-                    TemplateResource.Plural,
+                    CustomResourceDefinition.Plurals.Templates,
                     cancellationToken: cancellationToken);
                 logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
                 context.Status = new k8s.Models.V1Status
@@ -97,10 +97,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             {
                 var resp = await kubeClient.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                     patch,
-                    TemplateResource.Group,
-                    TemplateResource.Version,
-                    TemplateContext.DefaultNameSpace,
-                    TemplateResource.Plural,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Templates,
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
 
@@ -128,10 +128,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             try
             {
                 var cr = await kubeClient.GetNamespacedCustomObjectWithHttpMessagesAsync(
-                    CustomResource.Group,
-                    CustomResource.Version,
-                    TemplateContext.DefaultNameSpace,
-                    TemplateResource.Plural,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Templates,
                     context.GetTemplateResourceName(),
                     null,
                     cancellationToken);
@@ -161,12 +161,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         {
             try
             {
-                var labelSelector = $"{TemplateContext.LabelHackathonName}={hackathonName}";
+                var labelSelector = $"{Labels.HackathonName}={hackathonName}";
                 var listResp = await kubeClient.ListNamespacedCustomObjectWithHttpMessagesAsync(
-                    CustomResource.Group,
-                    CustomResource.Version,
-                    TemplateContext.DefaultNameSpace,
-                    TemplateResource.Plural,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Templates,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
                 var crl = SafeJsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
@@ -189,10 +189,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             try
             {
                 await kubeClient.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
-                    CustomResource.Group,
-                    CustomResource.Version,
-                    TemplateContext.DefaultNameSpace,
-                    TemplateResource.Plural,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Templates,
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
                 context.Status = new k8s.Models.V1Status
@@ -251,10 +251,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             {
                 var resp = await kubeClient.CreateNamespacedCustomObjectWithHttpMessagesAsync(
                     customResource,
-                    CustomResource.Group,
-                    CustomResource.Version,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
                     customResource.Metadata.NamespaceProperty ?? "default",
-                    ExperimentResource.Plural,
+                    CustomResourceDefinition.Plurals.Experiments,
                     cancellationToken: cancellationToken);
                 logger.TraceInformation($"CreateExperimentAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
                 context.Status = new ExperimentStatus
@@ -280,10 +280,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             try
             {
                 var cr = await kubeClient.GetNamespacedCustomObjectWithHttpMessagesAsync(
-                    CustomResource.Group,
-                    CustomResource.Version,
-                    context.GetNamespace(),
-                    ExperimentResource.Plural,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Experiments,
                     context.GetExperimentResourceName(),
                     null,
                     cancellationToken);

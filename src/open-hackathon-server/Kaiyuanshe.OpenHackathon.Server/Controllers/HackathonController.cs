@@ -380,7 +380,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #region UpdateReadOnly
         /// <summary>
         /// Mark a hackathon as Readnly or not Readonly. 
-        /// A readonly hackathon cannot be updated. Team, Award, Rating etc are all readonly.
+        /// If a hackathon is Readonly, it cannot be updated any more. All PUT/PATCH/DELETE operations on hackathon and its teams, awards, templates etc are forbidden.
+        /// The GET APIs are still available.  Open hackathon platform admins can call this API again to remove the Readonly mode.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>

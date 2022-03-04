@@ -116,17 +116,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template)
         {
             GuacamoleConnection conn = null;
-            switch (context.Status.IngressProtocol)
+            switch (context.Status.protocol)
             {
                 case IngressProtocol.vnc:
                     conn = new VncConnection
                     {
-                        name = template?.TemplateEntity?.DisplayName ?? context.ExperimentEntity.TemplateName,
+                        name = template?.TemplateEntity?.DisplayName ?? context.ExperimentEntity.TemplateId,
                         protocol = IngressProtocol.vnc,
-                        hostname = context.Status.IngressIPs?.FirstOrDefault(),
-                        port = context.Status.IngressPort,
-                        username = context.Status.VncConnection?.username,
-                        password = context.Status.VncConnection?.password,
+                        hostname = context.Status.ingressIPs?.FirstOrDefault(),
+                        port = context.Status.ingressPort,
+                        username = context.Status.vnc?.username,
+                        password = context.Status.vnc?.password,
                     };
                     break;
                 default:

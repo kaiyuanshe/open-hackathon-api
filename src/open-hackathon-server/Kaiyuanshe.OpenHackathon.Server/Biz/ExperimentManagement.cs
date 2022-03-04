@@ -149,7 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             Func<TemplateResource, string, bool> selector = (k8sResource, tempId) =>
             {
                 if (k8sResource?.Metadata?.Labels != null
-                    && k8sResource.Metadata.Labels.TryGetValue(TemplateContext.LabelTemplateId, out string templateId)
+                    && k8sResource.Metadata.Labels.TryGetValue(Labels.TemplateId, out string templateId)
                     && tempId == templateId)
                 {
                     return true;
@@ -217,10 +217,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var entity = new ExperimentEntity
             {
                 PartitionKey = experiment.hackathonName,
-                RowKey = GetExperimentRowKey(experiment.userId, experiment.templateName),
+                RowKey = GetExperimentRowKey(experiment.userId, experiment.templateId),
                 CreatedAt = DateTime.UtcNow,
                 Paused = false,
-                TemplateName = experiment.templateName,
+                TemplateId = experiment.templateId,
                 UserId = experiment.userId,
             };
             await StorageContext.ExperimentTable.InsertOrReplaceAsync(entity, cancellationToken);

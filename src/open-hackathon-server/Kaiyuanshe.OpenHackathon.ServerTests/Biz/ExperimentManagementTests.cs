@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -345,7 +344,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     {
                         Labels = new Dictionary<string, string>
                         {
-                            { TemplateContext.LabelTemplateId, "other" } // not match
+                            { Labels.TemplateId, "other" } // not match
                         }
                     }
                 },
@@ -355,7 +354,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     {
                         Labels = new Dictionary<string, string>
                         {
-                            { TemplateContext.LabelTemplateId, "t1" }
+                            { Labels.TemplateId, "t1" }
                         }
                     }
                 },
@@ -518,7 +517,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var experiment = new Experiment
             {
                 hackathonName = "hack",
-                templateName = "tn",
+                templateId = "tn",
                 userId = "uid",
             };
             var entity = new ExperimentEntity { PartitionKey = "pk" };
@@ -529,7 +528,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 e.RowKey == "c282b009-b95e-b81a-dcf6-fe4d678105f4" &&
                 e.Paused == false &&
                 e.UserId == "uid" &&
-                e.TemplateName == "tn"), default));
+                e.TemplateId == "tn"), default));
             experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
@@ -567,7 +566,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var experiment = new Experiment
             {
                 hackathonName = "hack",
-                templateName = "tn",
+                templateId = "tn",
                 userId = "uid",
             };
             var entity = new ExperimentEntity { PartitionKey = "pk" };
@@ -578,7 +577,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 e.RowKey == "c282b009-b95e-b81a-dcf6-fe4d678105f4" &&
                 e.Paused == false &&
                 e.UserId == "uid" &&
-                e.TemplateName == "tn"), default));
+                e.TemplateId == "tn"), default));
             experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);

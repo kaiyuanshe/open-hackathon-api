@@ -16,7 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     PartitionKey = "pk",
                     RowKey = "rk",
                     Paused = true,
-                    TemplateName = "tpl",
+                    TemplateId = "tpl",
                     UserId = "uid"
                 }
             };
@@ -29,10 +29,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual(3, cr.Metadata.Labels.Count);
             Assert.AreEqual("pk", cr.Metadata.Labels["hackathonName"]);
             Assert.AreEqual("uid", cr.Metadata.Labels["userId"]);
-            Assert.AreEqual("tpl", cr.Metadata.Labels["templateName"]);
-            Assert.AreEqual("meta-cluster", cr.Spec.ClusterName);
-            Assert.AreEqual("pk-tpl", cr.Spec.Template);
-            Assert.AreEqual(true, cr.Spec.Pause);
+            Assert.AreEqual("tpl", cr.Metadata.Labels["templateId"]);
+            Assert.AreEqual("meta-cluster", cr.Spec.custerName);
+            Assert.AreEqual("pk-tpl", cr.Spec.template);
+            Assert.AreEqual(true, cr.Spec.pause);
         }
     }
 }
