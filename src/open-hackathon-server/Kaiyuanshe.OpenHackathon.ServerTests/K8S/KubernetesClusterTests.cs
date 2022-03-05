@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-               "pk-rk",
+               "rk",
                null, default))
                .Throws(new HttpOperationException
                {
@@ -55,7 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-               "pk-rk",
+               "rk",
                null, default))
                .Throws(new HttpOperationException
                {
@@ -95,7 +95,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, default))
                 .ReturnsAsync(new HttpOperationResponse<object>
                 {
@@ -104,7 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<V1Patch>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, null, null, null, default))
                 .ReturnsAsync(new HttpOperationResponse<object>
                 {
@@ -139,7 +139,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<V1Patch>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, null, null, null, default))
                 .ReturnsAsync(new HttpOperationResponse<object>
                 {
@@ -173,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, default))
                 .ReturnsAsync(new HttpOperationResponse<object>
                 {
@@ -232,7 +232,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, null, null, null, null, null, default))
                 .Throws(new HttpOperationException
                 {
@@ -267,7 +267,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, null, null, null, null, null, default))
                 .Throws(new HttpOperationException
                 {
@@ -302,7 +302,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
-                "pk-rk",
+                "rk",
                 null, null, null, null, null, null, default));
             var context = new TemplateContext
             {
@@ -329,7 +329,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
-               "pk-tpl-uid",
+               "rk",
                null, default))
                .Throws(new HttpOperationException
                {
@@ -354,42 +354,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         }
 
         [Test]
-        public async Task CreateOrUpdateExperimentAsync_Get()
-        {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
-               "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
-               "pk-tpl-uid",
-               null, default))
-               .ReturnsAsync(new Microsoft.Rest.HttpOperationResponse<object>
-               {
-                   Body = "{\"kind\":\"Experiment\",\"status\":{\"cluster\":\"meta-cluster\",\"protocol\":\"vnc\"}}"
-               });
-            var context = new ExperimentContext
-            {
-                ExperimentEntity = new ExperimentEntity
-                {
-                    PartitionKey = "pk",
-                    RowKey = "rk",
-                    TemplateId = "tpl",
-                    UserId = "uid",
-                }
-            };
-
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
-            await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
-
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
-            Assert.AreEqual(200, context.Status.Code);
-            Assert.AreEqual(IngressProtocol.vnc, context.Status.protocol);
-            Assert.AreEqual("meta-cluster", context.Status.cluster);
-        }
-
-        [Test]
         public async Task CreateOrUpdateExperimentAsync_Create()
         {
             var logger = new Mock<ILogger<KubernetesCluster>>();
@@ -398,7 +362,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var kubernetes = new Mock<IKubernetes>();
             kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
-               "pk-tpl-uid",
+               "rk",
                null, default))
                .Throws(new HttpOperationException
                {
@@ -435,6 +399,119 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 
             Assert.AreEqual(201, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
+        }
+
+        [Test]
+        public async Task CreateOrUpdateExperimentAsync_Update()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    PartitionKey = "pk",
+                    RowKey = "rk",
+                    TemplateId = "tpl",
+                    UserId = "uid",
+                }
+            };
+
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+               "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+               "rk",
+               null, default))
+               .ReturnsAsync(new HttpOperationResponse<object>
+               {
+                   Body = "{\"kind\":\"experiment\",\"status\": {}}"
+               });
+            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+                 It.IsAny<V1Patch>(),
+                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                 "rk",
+                 null, null, null, null, default))
+                 .ReturnsAsync(new HttpOperationResponse<object>
+                 {
+                     Response = new HttpResponseMessage
+                     {
+                         StatusCode = HttpStatusCode.OK,
+                         ReasonPhrase = "success",
+                     },
+                 });
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(200, context.Status.Code);
+            Assert.AreEqual("success", context.Status.Reason);
+        }
+        #endregion
+
+        #region UpdateExperimentAsync
+        [Test]
+        public async Task UpdateExperimentAsync()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+                It.IsAny<V1Patch>(),
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "rk",
+                null, null, null, null, default))
+                .ReturnsAsync(new HttpOperationResponse<object>
+                {
+                    Response = new HttpResponseMessage
+                    {
+                        StatusCode = HttpStatusCode.OK,
+                        ReasonPhrase = "success",
+                    },
+                });
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.UpdateExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(200, context.Status.Code);
+            Assert.AreEqual("success", context.Status.Reason);
+        }
+        #endregion
+
+        #region GetExperimentAsync
+        [Test]
+        public async Task GetExperimentAsync()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "rk",
+                null, default))
+                .ReturnsAsync(new HttpOperationResponse<object>
+                {
+                    Body = "{\"kind\":\"experiment\", \"status\":{ \"code\":204}}"
+                });
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var result = await kubernetesCluster.GetExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual("experiment", result.Kind);
+            Assert.AreEqual(204, context.Status.Code);
         }
         #endregion
     }

@@ -525,11 +525,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var experimentTable = new Mock<IExperimentTable>();
             experimentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<ExperimentEntity>(e =>
                 e.HackathonName == "hack" &&
-                e.RowKey == "c282b009-b95e-b81a-dcf6-fe4d678105f4" &&
+                e.RowKey == "aaaec1e9-68c8-5eb1-51e4-1131794444ae" &&
                 e.Paused == false &&
                 e.UserId == "uid" &&
                 e.TemplateId == "tn"), default));
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 
@@ -574,11 +574,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var experimentTable = new Mock<IExperimentTable>();
             experimentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<ExperimentEntity>(e =>
                 e.HackathonName == "hack" &&
-                e.RowKey == "c282b009-b95e-b81a-dcf6-fe4d678105f4" &&
+                e.RowKey == "aaaec1e9-68c8-5eb1-51e4-1131794444ae" &&
                 e.Paused == false &&
                 e.UserId == "uid" &&
                 e.TemplateId == "tn"), default));
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "c282b009-b95e-b81a-dcf6-fe4d678105f4", default)).ReturnsAsync(entity);
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
 

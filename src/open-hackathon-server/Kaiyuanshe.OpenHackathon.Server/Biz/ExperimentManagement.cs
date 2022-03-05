@@ -217,7 +217,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var entity = new ExperimentEntity
             {
                 PartitionKey = experiment.hackathonName,
-                RowKey = GetExperimentRowKey(experiment.userId, experiment.templateId),
+                RowKey = GetExperimentRowKey(experiment.templateId, experiment.userId),
                 CreatedAt = DateTime.UtcNow,
                 Paused = false,
                 TemplateId = experiment.templateId,
@@ -280,9 +280,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        private string GetExperimentRowKey(string userId, string templateName)
+        private string GetExperimentRowKey(string templateId, string userId)
         {
-            string salt = $"{userId}-{templateName}".ToLower();
+            string salt = $"{templateId}-{userId}".ToLower();
             return DigestHelper.String2Guid(salt).ToString();
         }
     }

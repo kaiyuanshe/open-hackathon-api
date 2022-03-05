@@ -29,20 +29,22 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
                 Spec = new ExperimentSpec
                 {
                     custerName = "meta-cluster",
-                    template = GetTemplateResourceName(),
+                    template = ExperimentEntity.TemplateId,
                     pause = ExperimentEntity.Paused,
                 },
             };
         }
 
-        public string GetExperimentResourceName()
+        public V1Patch BuildPatch()
         {
-            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateId}-{ExperimentEntity.UserId}";
+            var resource = BuildCustomResource();
+            var patch = new V1Patch(resource, V1Patch.PatchType.MergePatch);
+            return patch;
         }
 
-        public string GetTemplateResourceName()
+        public string GetExperimentResourceName()
         {
-            return $"{ExperimentEntity.HackathonName}-{ExperimentEntity.TemplateId}";
+            return ExperimentEntity.Id;
         }
     }
 }

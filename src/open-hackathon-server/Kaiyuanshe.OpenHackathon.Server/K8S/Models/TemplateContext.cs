@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public string GetTemplateResourceName()
         {
-            return $"{TemplateEntity.HackathonName}-{TemplateEntity.Id}";
+            return TemplateEntity.Id;
         }
 
         public IDictionary<string, string> BuildEnvironmentVariables()
