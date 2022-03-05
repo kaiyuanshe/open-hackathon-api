@@ -20,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task DeleteTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
+        Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
 
@@ -238,8 +239,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             }
             else
             {
-                context.Status = cr.Status;
-                context.Status.Code = cr.Status.Code.GetValueOrDefault(200);
+                // apply patch
+                await UpdateExperimentAsync(context, cancellationToken);
             }
         }
 
@@ -269,6 +270,39 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response?.Content == null)
                     throw;
 
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+            }
+        }
+        #endregion
+
+        #region UpdateExperimentAsync
+        public async Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
+        {
+            var patch = context.BuildPatch();
+            try
+            {
+                var resp = await kubeClient.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+                    patch,
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Experiments,
+                    context.GetExperimentResourceName(),
+                    cancellationToken: cancellationToken);
+
+                logger.TraceInformation($"UpdateExperimentAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
+                context.Status = new ExperimentStatus
+                {
+                    Code = (int)resp.Response.StatusCode,
+                    Reason = resp.Response.ReasonPhrase,
+                };
+            }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response?.Content == null)
+                    throw;
+
+                logger.TraceError($"UpdateExperimentAsync: {exception.Message}", exception);
                 context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
             }
         }
