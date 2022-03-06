@@ -340,7 +340,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.templateId = "default";
             parameter.userId = CurrentUserId;
-            var context = await ExperimentManagement.CreateExperimentAsync(parameter, cancellationToken);
+            var context = await ExperimentManagement.CreateOrUpdateExperimentAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.createExperiment.ToString(),
