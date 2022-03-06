@@ -20,7 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
         Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
-        Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
+        Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
 
@@ -209,24 +209,32 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region CreateExperimentAsync
-        public async Task<ExperimentContext> CreateExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
+        public async Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
         {
             if (experiment == null)
                 return null;
 
-            var entity = new ExperimentEntity
+            experiment.id = GetExperimentRowKey(experiment.templateId, experiment.userId);
+            var entity = await StorageContext.ExperimentTable.RetrieveAsync(experiment.hackathonName, experiment.id, cancellationToken);
+            if (entity == null)
             {
-                PartitionKey = experiment.hackathonName,
-                RowKey = GetExperimentRowKey(experiment.templateId, experiment.userId),
-                CreatedAt = DateTime.UtcNow,
-                Paused = false,
-                TemplateId = experiment.templateId,
-                UserId = experiment.userId,
-            };
-            await StorageContext.ExperimentTable.InsertOrReplaceAsync(entity, cancellationToken);
+                entity = new ExperimentEntity
+                {
+                    PartitionKey = experiment.hackathonName,
+                    RowKey = experiment.id,
+                    CreatedAt = DateTime.UtcNow,
+                    Paused = false,
+                    TemplateId = experiment.templateId,
+                    UserId = experiment.userId,
+                };
+                await StorageContext.ExperimentTable.InsertAsync(entity, cancellationToken);
+            }
+            else
+            {
+                // nothing to update for now.
+            }
 
             // call k8s api
-            entity = await StorageContext.ExperimentTable.RetrieveAsync(entity.PartitionKey, entity.RowKey, cancellationToken);
             var context = new ExperimentContext
             {
                 ExperimentEntity = entity,

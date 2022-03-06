@@ -510,9 +510,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
-        #region CreateExperimentAsync
+        #region CreateOrUpdateExperimentAsync
         [Test]
-        public async Task CreateExperimentAsync_Exception()
+        public async Task CreateOrUpdateExperimentAsync_Exception()
         {
             var experiment = new Experiment
             {
@@ -523,12 +523,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var entity = new ExperimentEntity { PartitionKey = "pk" };
 
             var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<ExperimentEntity>(e =>
-                e.HackathonName == "hack" &&
-                e.RowKey == "aaaec1e9-68c8-5eb1-51e4-1131794444ae" &&
-                e.Paused == false &&
-                e.UserId == "uid" &&
-                e.TemplateId == "tn"), default));
             experimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
@@ -546,7 +540,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 KubernetesClusterFactory = k8sfactory.Object,
             };
 
-            var result = await management.CreateExperimentAsync(experiment, default);
+            var result = await management.CreateOrUpdateExperimentAsync(experiment, default);
 
             Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
             experimentTable.VerifyNoOtherCalls();
@@ -561,7 +555,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
 
         [Test]
-        public async Task CreateExperimentAsync_Success()
+        public async Task CreateOrUpdateExperimentAsync_Create()
         {
             var experiment = new Experiment
             {
@@ -569,10 +563,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 templateId = "tn",
                 userId = "uid",
             };
-            var entity = new ExperimentEntity { PartitionKey = "pk" };
+            ExperimentEntity entity = null;
 
             var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<ExperimentEntity>(e =>
+            experimentTable.Setup(t => t.InsertAsync(It.Is<ExperimentEntity>(e =>
                 e.HackathonName == "hack" &&
                 e.RowKey == "aaaec1e9-68c8-5eb1-51e4-1131794444ae" &&
                 e.Paused == false &&
@@ -594,7 +588,46 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 KubernetesClusterFactory = k8sfactory.Object,
             };
 
-            var result = await management.CreateExperimentAsync(experiment, default);
+            var result = await management.CreateOrUpdateExperimentAsync(experiment, default);
+
+            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
+            experimentTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+
+            Assert.AreEqual("hack", result.ExperimentEntity.PartitionKey);
+        }
+
+        [Test]
+        public async Task CreateOrUpdateExperimentAsync_Update()
+        {
+            var experiment = new Experiment
+            {
+                hackathonName = "hack",
+                templateId = "tn",
+                userId = "uid",
+            };
+            ExperimentEntity entity = new ExperimentEntity { PartitionKey = "pk" };
+
+            var experimentTable = new Mock<IExperimentTable>();
+            experimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
+
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var management = new ExperimentManagement(logger.Object)
+            {
+                StorageContext = storageContext.Object,
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+
+            var result = await management.CreateOrUpdateExperimentAsync(experiment, default);
 
             Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
             experimentTable.VerifyNoOtherCalls();
