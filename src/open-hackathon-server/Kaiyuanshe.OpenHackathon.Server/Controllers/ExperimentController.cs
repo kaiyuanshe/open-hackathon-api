@@ -338,7 +338,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // create experiment
             parameter.hackathonName = hackathonName.ToLower();
-            parameter.templateId = "default";
             parameter.userId = CurrentUserId;
             var context = await ExperimentManagement.CreateOrUpdateExperimentAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity

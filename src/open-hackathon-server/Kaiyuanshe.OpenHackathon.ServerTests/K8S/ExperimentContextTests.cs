@@ -30,7 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual("pk", cr.Metadata.Labels["hackathonName"]);
             Assert.AreEqual("uid", cr.Metadata.Labels["userId"]);
             Assert.AreEqual("tpl", cr.Metadata.Labels["templateId"]);
-            Assert.AreEqual("meta-cluster", cr.Spec.custerName);
+            Assert.AreEqual("meta-cluster", cr.Spec.clusterName);
             Assert.AreEqual("tpl", cr.Spec.template);
             Assert.AreEqual(true, cr.Spec.pause);
         }

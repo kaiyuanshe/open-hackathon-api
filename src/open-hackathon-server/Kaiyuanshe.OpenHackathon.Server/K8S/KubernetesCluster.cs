@@ -257,7 +257,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     customResource.Metadata.NamespaceProperty ?? "default",
                     CustomResourceDefinition.Plurals.Experiments,
                     cancellationToken: cancellationToken);
-                logger.TraceInformation($"CreateExperimentAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.Content.AsString()}");
+                logger.TraceInformation($"CreateExperimentAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
                 context.Status = new ExperimentStatus
                 {
                     Reason = resp.Response.ReasonPhrase,

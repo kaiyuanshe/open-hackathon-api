@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public string template { get; set; }
 
-        public string custerName { get; set; }
+        public string clusterName { get; set; }
     }
 
     public class ExperimentStatus : V1Status

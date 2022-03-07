@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
                 },
                 Spec = new ExperimentSpec
                 {
-                    custerName = "meta-cluster",
+                    clusterName = "meta-cluster",
                     template = ExperimentEntity.TemplateId,
                     pause = ExperimentEntity.Paused,
                 },
