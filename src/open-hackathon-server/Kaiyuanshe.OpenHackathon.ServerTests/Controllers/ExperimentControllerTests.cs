@@ -599,7 +599,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task CreateExperiment_K8SFailure()
         {
-            var parameter = new Experiment();
+            var parameter = new Experiment { templateId = "tplId" };
             var hackathon = new HackathonEntity();
             var experiment = new ExperimentEntity { RowKey = "rk" };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
@@ -620,7 +620,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
-                j.templateId == "default" &&
+                j.templateId == "tplId" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
@@ -647,7 +647,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task CreateExperiment_Success()
         {
-            var parameter = new Experiment();
+            var parameter = new Experiment { templateId= "tplId" };
             var hackathon = new HackathonEntity();
             var experiment = new ExperimentEntity { RowKey = "rk" };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
@@ -663,7 +663,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
             mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
-                j.templateId == "default" &&
+                j.templateId == "tplId" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
