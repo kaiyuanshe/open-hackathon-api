@@ -334,33 +334,46 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return enrollmentOptions.ValidateResult;
             }
 
-            // TODO validate template. Template name is always `default` for now.
+            // validate template.
+            var templateContext = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), parameter.templateId, cancellationToken);
+            if (templateContext == null)
+            {
+                return NotFound(string.Format(Resources.Template_NotFound, parameter.templateId, hackathonName));
+            }
+            if (templateContext.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: templateContext.Status.Code.Value,
+                    detail: templateContext.Status.Message,
+                    title: templateContext.Status.Reason,
+                    instance: templateContext.TemplateEntity?.DisplayName);
+            }
 
             // create experiment
             parameter.hackathonName = hackathonName.ToLower();
             parameter.userId = CurrentUserId;
-            var context = await ExperimentManagement.CreateOrUpdateExperimentAsync(parameter, cancellationToken);
+            var experimentContext = await ExperimentManagement.CreateOrUpdateExperimentAsync(parameter, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.createExperiment.ToString(),
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
-                Message = context?.Status?.Message,
+                Message = experimentContext?.Status?.Message,
             }, cancellationToken);
 
             // build resp
             var userInfo = await GetCurrentUserInfo(cancellationToken);
-            if (context.Status.IsFailed())
+            if (experimentContext.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
-                    detail: context.Status.Message,
-                    title: context.Status.Reason,
-                    instance: context.ExperimentEntity.Id);
+                    statusCode: experimentContext.Status.Code.Value,
+                    detail: experimentContext.Status.Message,
+                    title: experimentContext.Status.Reason,
+                    instance: experimentContext.ExperimentEntity.Id);
             }
             else
             {
-                return Ok(ResponseBuilder.BuildExperiment(context, userInfo));
+                return Ok(ResponseBuilder.BuildExperiment(experimentContext, userInfo));
             }
         }
         #endregion
