@@ -449,10 +449,26 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     parameter.status = TeamMemberStatus.approved;
                 }
                 teamMember = await TeamManagement.CreateTeamMemberAsync(parameter, cancellationToken);
+                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                {
+                    ActivityLogType = ActivityLogType.createTeamMember.ToString(),
+                    HackathonName = hackathonName.ToLower(),
+                    UserId = userId,
+                    TeamId = teamId,
+                    Message = team.DisplayName,
+                }, cancellationToken);
             }
             else
             {
                 teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
+                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                {
+                    ActivityLogType = ActivityLogType.updateTeamMember.ToString(),
+                    HackathonName = hackathonName.ToLower(),
+                    UserId = userId,
+                    TeamId = teamId,
+                    Message = team.DisplayName,
+                }, cancellationToken);
             }
 
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
