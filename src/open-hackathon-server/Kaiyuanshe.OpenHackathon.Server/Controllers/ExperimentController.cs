@@ -174,6 +174,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 HackAdminRequird = true,
                 HackathonName = hackathonName,
+                WritableRequired = false,
             };
             if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
             {
@@ -224,6 +225,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 HackAdminRequird = true,
                 HackathonName = hackathonName,
+                WritableRequired = false,
             };
             if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
             {
@@ -444,6 +446,63 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     }
                 };
                 return Ok(list);
+            }
+        }
+        #endregion
+
+        #region GetExperiment
+        /// <summary>
+        /// Get experiment by experimentId. Can get experimentId from experiment list api. 
+        /// Sensitive information like username/password/port of the remote connection will not be returned.
+        /// Those info is open to trusted apps only by calling `hackathon/{hackathonName}/experiment/{experimentId}/connections`.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="experimentId" example="6129c741-87e5-4a78-8173-f80724a70aea">id of the experiment</param>
+        /// <returns>an experiment.</returns>
+        /// <response code="200">Success. The response describes an experiment.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(Experiment), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/experiment/{experimentId}")]
+        public async Task<object> GetExperiment(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, Guid] string experimentId,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackathonName = hackathonName,
+                WritableRequired = false,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // query experiment
+            var context = await ExperimentManagement.GetExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
+            if (context?.ExperimentEntity == null)
+            {
+                return NotFound(Resources.Experiment_NotFound);
+            }
+
+            // build resp
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: experimentId);
+            }
+            else
+            {
+                var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity.UserId, cancellationToken);
+                var resp = ResponseBuilder.BuildExperiment(context, userInfo);
+                return Ok(resp);
             }
         }
         #endregion

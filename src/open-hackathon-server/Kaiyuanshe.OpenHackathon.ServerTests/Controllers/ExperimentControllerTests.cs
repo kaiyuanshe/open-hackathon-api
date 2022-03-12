@@ -901,5 +901,106 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("display", vncConnection.name);
         }
         #endregion
+
+        #region GetExperiment
+        [Test]
+        public async Task GetExperiment_ExpNotFound()
+        {
+            var hackathon = new HackathonEntity { };
+            var expContext = new ExperimentContext { };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "exp", default)).ReturnsAsync(expContext);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetExperiment("Hack", "exp", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 404, Resources.Experiment_NotFound);
+        }
+
+        [Test]
+        public async Task GetExperiment_ExpFailed()
+        {
+            var hackathon = new HackathonEntity { };
+            var expContext = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { },
+                Status = new ExperimentStatus
+                {
+                    Code = 422,
+                    Message = "msg"
+                },
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "exp", default)).ReturnsAsync(expContext);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetExperiment("Hack", "exp", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+
+            AssertHelper.AssertObjectResult(result, 422, "msg");
+        }
+
+        [Test]
+        public async Task GetExperiment_Succeeded()
+        {
+            var hackathon = new HackathonEntity { };
+            var expContext = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    UserId = "uid",
+                },
+                Status = new ExperimentStatus
+                {
+                    Code = 200,
+                },
+            };
+            var user = new UserInfo { Name = "un" };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "exp", default)).ReturnsAsync(expContext);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.GetExperiment("Hack", "exp", default);
+
+            // verify
+            Mock.VerifyAll(mockContext.HackathonManagement,
+                mockContext.ExperimentManagement,
+                mockContext.UserManagement);
+            mockContext.HackathonManagement.VerifyNoOtherCalls();
+            mockContext.ExperimentManagement.VerifyNoOtherCalls();
+            mockContext.UserManagement.VerifyNoOtherCalls();
+
+            var exp = AssertHelper.AssertOKResult<Experiment>(result);
+            Assert.AreEqual("un", exp.user.Name);
+            Assert.AreEqual("uid", exp.userId);
+        }
+        #endregion
     }
 }
