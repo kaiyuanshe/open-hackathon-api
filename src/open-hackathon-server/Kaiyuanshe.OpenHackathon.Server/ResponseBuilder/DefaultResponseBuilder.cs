@@ -110,6 +110,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 p.updatedAt = context.ExperimentEntity.Timestamp.UtcDateTime;
                 p.user = userInfo;
                 p.status = Status.FromV1Status(context.Status);
+                p.remoteConnectionUri = String.Format(Guacamole.UriFormat, context.ExperimentEntity.HackathonName, context.ExperimentEntity.Id);
             });
         }
 

@@ -36,10 +36,10 @@
 
         /// <summary>
         /// Uri to access the experiment via remote connection. 
-        /// Be sure to append "token={the ACCESS TOKEN from login}" to the uri. 
-        /// Response from the api call DOESN'T include token. See the example for full url format.
+        /// Be sure to append the access token of current login user to the uri. 
+        /// Response from the api call DOESN'T include token value. 
         /// </summary>
-        /// <example>https://guacamole.kaiyuanshe.cn/guacamole/#/?hackathon=foo&experiment=6129c741-87e5-4a78-8173-f80724a70aea&token=TOKENVALUE</example>
+        /// <example>https://guacamole.kaiyuanshe.cn/guacamole/#/?hackathon=foo&amp;experiment=6129c741-87e5-4a78-8173-f80724a70aea&amp;token=</example>
         public string remoteConnectionUri { get; internal set; }
     }
 }

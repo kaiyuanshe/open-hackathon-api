@@ -149,6 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual(entity.CreatedAt, experiment.createdAt);
             Assert.AreEqual(entity.Timestamp.DateTime, experiment.updatedAt);
             Assert.AreEqual("code", experiment.user.PostalCode);
+            Assert.AreEqual("https://guacamole.kaiyuanshe.cn/guacamole/#/?hackathon=hack&experiment=eid&token=", experiment.remoteConnectionUri);
         }
         #endregion
 
