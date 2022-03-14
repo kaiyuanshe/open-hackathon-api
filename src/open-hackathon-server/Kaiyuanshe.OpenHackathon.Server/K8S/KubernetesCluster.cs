@@ -22,6 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
+        Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -334,6 +335,37 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 logger.TraceInformation(exception.Response.Content);
                 context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
                 return null;
+            }
+        }
+        #endregion
+
+        #region ListExperimentsAsync
+        public async Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var labelSelector = $"{Labels.HackathonName}={hackathonName}";
+                if (!string.IsNullOrWhiteSpace(templateId))
+                {
+                    labelSelector += $",{Labels.TemplateId}={templateId}";
+                }
+                var listResp = await kubeClient.ListNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Experiments,
+                    labelSelector: labelSelector,
+                    cancellationToken: cancellationToken);
+                var crl = SafeJsonConvert.DeserializeObject<CustomResourceList<ExperimentResource>>(listResp.Body.ToString());
+                return crl.Items;
+            }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response?.Content == null)
+                    throw;
+
+                logger.TraceInformation(exception.Response.Content);
+                return Array.Empty<ExperimentResource>();
             }
         }
         #endregion
