@@ -514,5 +514,59 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual(204, context.Status.Code);
         }
         #endregion
+
+        #region ListExperimentsAsync
+        [Test]
+        public async Task ListTemplatesAsync_ByHackathon()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                null, null, null, "hackathonName=hack",
+                null, null, null, null, null, null, null, default))
+                .ReturnsAsync(new HttpOperationResponse<object>
+                {
+                    Body = "{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"items\":[{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"status\":{\"ingressPort\":5901,\"ingressProtocol\":\"vnc\",\"type\":\"Pod\"},\"kind\":\"Experiment\",\"metadata\":{\"labels\":{\"hackathonName\":\"hack\"},\"name\":\"abc\",\"namespace\":\"default\"}}],\"kind\":\"ExperimentList\"}"
+                });
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var result = await kubernetesCluster.ListExperimentsAsync("hack", null, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(5901, result.First().Status.ingressPort);
+            Assert.AreEqual("Experiment", result.First().Kind);
+            Assert.AreEqual("abc", result.First().Metadata.Name);
+        }
+
+        [Test]
+        public async Task ListTemplatesAsync_ByTemplate()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                null, null, null, "hackathonName=hack,templateId=tpl",
+                null, null, null, null, null, null, null, default))
+                .ReturnsAsync(new HttpOperationResponse<object>
+                {
+                    Body = "{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"items\":[{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"status\":{\"ingressPort\":5901,\"ingressProtocol\":\"vnc\",\"type\":\"Pod\"},\"kind\":\"Experiment\",\"metadata\":{\"labels\":{\"hackathonName\":\"hack\"},\"name\":\"abc\",\"namespace\":\"default\"}}],\"kind\":\"ExperimentList\"}"
+                });
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var result = await kubernetesCluster.ListExperimentsAsync("hack", "tpl", default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(5901, result.First().Status.ingressPort);
+            Assert.AreEqual("Experiment", result.First().Kind);
+            Assert.AreEqual("abc", result.First().Metadata.Name);
+        }
+        #endregion
     }
 }
