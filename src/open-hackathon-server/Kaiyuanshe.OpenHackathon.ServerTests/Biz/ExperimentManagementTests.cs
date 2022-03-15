@@ -742,5 +742,76 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(200, result.Status.Code.Value);
         }
         #endregion
+
+        #region ListExperimentsAsync
+        [TestCase("", "PartitionKey eq 'hack'")]
+        [TestCase(null, "PartitionKey eq 'hack'")]
+        [TestCase("tpl", "(PartitionKey eq 'hack') and (TemplateId eq 'tpl')")]
+        public async Task ListExperimentsAsync(string templateId, string expectedFilter)
+        {
+            // data
+            var entities = new List<ExperimentEntity>
+            {
+                new ExperimentEntity{ RowKey="e1" },
+                new ExperimentEntity{ RowKey="e2" },
+            };
+            var k8sResources = new List<ExperimentResource>
+            {
+                new ExperimentResource(), // empty, will be ignored
+                new ExperimentResource
+                {
+                    Metadata = new k8s.Models.V1ObjectMeta
+                    {
+                        Name="other", // not match
+                    }
+                },
+                new ExperimentResource
+                {
+                    Metadata = new k8s.Models.V1ObjectMeta
+                    {
+                        Name = "e1",
+                    }
+                },
+            };
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+
+            var experimentTable = new Mock<IExperimentTable>();
+            experimentTable.Setup(p => p.QueryEntitiesAsync(expectedFilter, null, default)).ReturnsAsync(entities);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.ExperimentTable).Returns(experimentTable.Object);
+
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.ListExperimentsAsync("hack", templateId, default)).ReturnsAsync(k8sResources);
+            var k8sFactory = new Mock<IKubernetesClusterFactory>();
+            k8sFactory.Setup(p => p.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                KubernetesClusterFactory = k8sFactory.Object,
+                StorageContext = storageContext.Object,
+            };
+            var result = await management.ListExperimentsAsync("hack", templateId, default);
+
+            // verify
+            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sFactory);
+            experimentTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            k8s.VerifyNoOtherCalls();
+            k8sFactory.VerifyNoOtherCalls();
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("e1", result.First().ExperimentEntity.Id);
+            Assert.AreEqual(200, result.First().Status.Code);
+            Assert.AreEqual("success", result.First().Status.Status);
+            Assert.AreEqual("Ok", result.First().Status.Reason);
+            Assert.AreEqual("e2", result.Last().ExperimentEntity.Id);
+            Assert.AreEqual(422, result.Last().Status.Code);
+            Assert.AreEqual("failure", result.Last().Status.Status);
+            Assert.AreEqual("UnprocessableEntity", result.Last().Status.Reason);
+        }
+        #endregion
     }
 }
