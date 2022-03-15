@@ -22,6 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
+        Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -285,6 +286,47 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 };
             }
             return context;
+        }
+        #endregion
+
+        #region ListExperimentsAsync
+        public async Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(hackathonName))
+                return Array.Empty<ExperimentContext>();
+
+            // get storage entities
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            if (!string.IsNullOrWhiteSpace(templateId))
+            {
+                var tplIdFilter = TableQueryHelper.FilterForString(nameof(ExperimentEntity.TemplateId), ComparisonOperator.Equal, templateId);
+                filter = TableQueryHelper.And(filter, tplIdFilter);
+            }
+            var experimentEntities = await StorageContext.ExperimentTable.QueryEntitiesAsync(filter, null, cancellationToken);
+
+            // get k8s resources
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var k8sResources = await kubernetesCluster.ListExperimentsAsync(hackathonName, templateId, cancellationToken);
+
+            // compose resp
+            return experimentEntities.Select(entity =>
+            {
+                var kr = k8sResources.FirstOrDefault(k => k.Metadata?.Name == entity.Id);
+                var status = new ExperimentStatus
+                {
+                    Code = kr != null ? 200 : 422,
+                    Status = kr != null ? "success" : "failure",
+                    Reason = kr != null ? "Ok" : "UnprocessableEntity",
+                    Message = kr != null ? "Ok" : "Experiment not ready in kubernetes. Please call experiment Patch API to recover it.",
+                };
+                var context = new ExperimentContext
+                {
+                    ExperimentEntity = entity,
+                    Status = status,
+                };
+
+                return context;
+            });
         }
         #endregion
 
