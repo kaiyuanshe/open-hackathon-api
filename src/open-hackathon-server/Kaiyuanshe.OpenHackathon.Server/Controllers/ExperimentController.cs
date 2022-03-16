@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -266,6 +267,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
             {
                 return options.ValidateResult;
+            }
+
+            // validate template
+            var experiments = await ExperimentManagement.ListExperimentsAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            if (experiments.Count() > 0)
+            {
+                return PreconditionFailed(Resources.Template_HasExperiment);
             }
 
             // delete template

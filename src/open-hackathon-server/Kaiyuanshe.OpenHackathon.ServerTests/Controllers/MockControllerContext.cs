@@ -51,5 +51,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             controller.HackathonAdminManagement = HackathonAdminManagement.Object;
             controller.AwardManagement = AwardManagement.Object;
         }
+
+        public void VerifyAll()
+        {
+            Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement,
+                ActivityLogManagement, AuthorizationService, ExperimentManagement, JudgeManagement,
+                RatingManagement, TeamManagement, HackathonAdminManagement, AwardManagement);
+
+            HackathonManagement.VerifyNoOtherCalls();
+            EnrollmentManagement.VerifyNoOtherCalls();
+            UserManagement.VerifyNoOtherCalls();
+            ActivityLogManagement.VerifyNoOtherCalls();
+            AuthorizationService.VerifyNoOtherCalls();
+            ExperimentManagement.VerifyNoOtherCalls();
+            JudgeManagement.VerifyNoOtherCalls();
+            TeamManagement.VerifyNoOtherCalls();
+            RatingManagement.VerifyNoOtherCalls();
+            HackathonAdminManagement.VerifyNoOtherCalls();
+            AwardManagement.VerifyNoOtherCalls();
+        }
     }
 }

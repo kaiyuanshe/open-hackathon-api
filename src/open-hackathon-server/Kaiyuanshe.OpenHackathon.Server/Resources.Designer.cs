@@ -538,6 +538,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot delete the template since it&apos;s being used by one or more experiments. Please delete the experiments first..
+        /// </summary>
+        internal static string Template_HasExperiment {
+            get {
+                return ResourceManager.GetString("Template_HasExperiment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template `{0}` cannot be found in hackathon `{1}`..
         /// </summary>
         internal static string Template_NotFound {
