@@ -451,6 +451,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region DeleteTemplate
+        [Test]
+        public async Task DeleteTemplate_HasExpr()
+        {
+            var hackathon = new HackathonEntity();
+            var authResult = AuthorizationResult.Success();
+            var experiments = new List<ExperimentContext>
+            {
+                new ExperimentContext{ }
+            };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(experiments);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.DeleteTemplate("Hack", "tpl", default);
+
+            // verify
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.Template_HasExperiment);
+        }
+
         private static IEnumerable DeleteTemplateTestData()
         {
             // arg0: TemplateContext
@@ -502,6 +528,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             mockContext.ExperimentManagement.Setup(j => j.DeleteTemplateAsync("hack", "tpl", default)).ReturnsAsync(templateContext);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(new ExperimentContext[0]);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.deleteTemplate.ToString()), default));
 

@@ -276,6 +276,9 @@
   <data name="Template_ExceedMax" xml:space="preserve">
     <value>Cannot create more than {0} templates in a hackathon.</value>
   </data>
+  <data name="Template_HasExperiment" xml:space="preserve">
+    <value>Cannot delete the template since it's being used by one or more experiments. Please delete the experiments first.</value>
+  </data>
   <data name="Template_NotFound" xml:space="preserve">
     <value>Template `{0}` cannot be found in hackathon `{1}`.</value>
   </data>
