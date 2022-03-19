@@ -42,4 +42,12 @@
         /// <example>https://guacamole.kaiyuanshe.cn/guacamole/#/?hackathon=foo&amp;experiment=6129c741-87e5-4a78-8173-f80724a70aea&amp;token=</example>
         public string remoteConnectionUri { get; internal set; }
     }
+
+    public class ExperimentList : ResourceList<Experiment>
+    {
+        /// <summary>
+        /// a list of experiments.
+        /// </summary>
+        public override Experiment[] value { get; set; }
+    }
 }

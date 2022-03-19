@@ -203,7 +203,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
-        #region ListTemplate
+        #region ListTemplates
         /// <summary>
         /// List templates of a hackathon.
         /// </summary>
@@ -216,7 +216,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [SwaggerErrorResponse(400, 404)]
         [Route("hackathon/{hackathonName}/templates")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
-        public async Task<object> ListTemplate(
+        public async Task<object> ListTemplates(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
             CancellationToken cancellationToken)
         {
@@ -462,7 +462,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Get experiment by experimentId. Can get experimentId from experiment list api. 
         /// Sensitive information like username/password/port of the remote connection will not be returned.
-        /// Those info is open to trusted apps only by calling `hackathon/{hackathonName}/experiment/{experimentId}/connections`.
+        /// Those info are open to trusted apps only by calling `hackathon/{hackathonName}/experiment/{experimentId}/connections`.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -514,5 +514,51 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
         }
         #endregion
+
+        #region ListExperiments
+        /// <summary>
+        /// List experiments by hackthonName(required) and templateId(optional). 
+        /// Sensitive information like username/password/port of the remote connections will not be returned.
+        /// Those info are open to trusted apps only by calling `hackathon/{hackathonName}/experiment/{experimentId}/connections`.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="templateId" example="1009bb6-be04-4ba1-901b-21e2b5b0f714">Optional Id of the template. Clients can get the Template Id in a Template Create(PUT), Update(PATCH) or List(GET) request.</param>
+        /// <returns>an experiment.</returns>
+        /// <response code="200">Success. The response describes an experiment.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(ExperimentList), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/experiments")]
+        public async Task<object> ListExperiments(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromQuery, Guid] string templateId,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackathonName = hackathonName,
+                WritableRequired = false,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // list templates
+            var contexts = await ExperimentManagement.ListExperimentsAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            var resp = await ResponseBuilder.BuildResourceListAsync<ExperimentContext, Experiment, ExperimentList>(
+                contexts,
+                async (context, token) =>
+                {
+                    var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity?.UserId, token);
+                    return ResponseBuilder.BuildExperiment(context, userInfo);
+                },
+                null);
+            return Ok(resp);
+        }
+        #endregion   
     }
 }

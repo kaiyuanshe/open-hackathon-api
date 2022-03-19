@@ -402,9 +402,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
-        #region ListTemplate
+        #region ListTemplates
         [Test]
-        public async Task ListTemplate()
+        public async Task ListTemplates()
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
@@ -432,16 +432,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // test
             var controller = new ExperimentController();
             mockContext.SetupController(controller);
-            var result = await controller.ListTemplate("Hack", default);
+            var result = await controller.ListTemplates("Hack", default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.ExperimentManagement,
-                mockContext.AuthorizationService);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ExperimentManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-
+            mockContext.VerifyAll();
             var obj = AssertHelper.AssertOKResult<TemplateList>(result);
             Assert.AreEqual(1, obj.value.Count());
             Assert.AreEqual("dn", obj.value.First().displayName);
@@ -1027,6 +1021,49 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var exp = AssertHelper.AssertOKResult<Experiment>(result);
             Assert.AreEqual("un", exp.user.Name);
             Assert.AreEqual("uid", exp.userId);
+        }
+        #endregion
+
+        #region ListExperiments
+        [Test]
+        public async Task ListExperiments()
+        {
+            var hackathon = new HackathonEntity();
+            List<ExperimentContext> contexts = new List<ExperimentContext>
+            {
+                new ExperimentContext
+                {
+                    ExperimentEntity = new ExperimentEntity
+                    {
+                        UserId="uid",
+                    },
+                    Status = new ExperimentStatus
+                    {
+                        Code = 200
+                    }
+                }
+            };
+            var userInfo = new UserInfo { Name = "un" };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(contexts);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(userInfo);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ListExperiments("Hack", "tpl", default);
+
+            // verify
+            mockContext.VerifyAll();
+
+            var obj = AssertHelper.AssertOKResult<ExperimentList>(result);
+            Assert.AreEqual(1, obj.value.Count());
+            Assert.AreEqual("un", obj.value.First().user.Name);
+            Assert.AreEqual(200, obj.value.First().status.code);
+            Assert.IsNull(obj.nextLink);
         }
         #endregion
     }
