@@ -568,5 +568,100 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual("abc", result.First().Metadata.Name);
         }
         #endregion
+
+        #region DeleteExperimentAsync
+        [Test]
+        public async Task DeleteExperimentAsync_NotFound()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "rk",
+                null, null, null, null, null, null, default))
+                .Throws(new HttpOperationException
+                {
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
+                }); ;
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.DeleteExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes, logger);
+            kubernetes.VerifyNoOtherCalls();
+            logger.Verify(
+               x => x.Log(
+                   LogLevel.Information,
+                   It.IsAny<EventId>(),
+                   It.IsAny<It.IsAnyType>(),
+                   It.IsAny<Exception>(),
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+            logger.VerifyNoOtherCalls();
+
+            Assert.AreEqual(204, context.Status.Code);
+        }
+
+        [Test]
+        public async Task DeleteExperimentAsync_OtherError()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "rk",
+                null, null, null, null, null, null, default))
+                .Throws(new HttpOperationException
+                {
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.BadRequest), "{\"code\":400}")
+                }); ;
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.DeleteExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes, logger);
+            kubernetes.VerifyNoOtherCalls();
+            logger.Verify(
+               x => x.Log(
+                   LogLevel.Information,
+                   It.IsAny<EventId>(),
+                   It.IsAny<It.IsAnyType>(),
+                   It.IsAny<Exception>(),
+                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+            logger.VerifyNoOtherCalls();
+
+            Assert.AreEqual(400, context.Status.Code);
+        }
+
+        [Test]
+        public async Task DeleteExperimentAsync_Success()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "rk",
+                null, null, null, null, null, null, default));
+            var context = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
+            };
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.DeleteExperimentAsync(context, default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+
+            Assert.AreEqual(204, context.Status.Code);
+        }
+        #endregion
     }
 }
