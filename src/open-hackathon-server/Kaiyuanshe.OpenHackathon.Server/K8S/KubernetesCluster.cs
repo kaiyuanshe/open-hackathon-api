@@ -23,6 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
+        Task DeleteExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -369,5 +370,43 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
             }
         }
         #endregion
+
+        #region DeleteExperimentAsync
+        public async Task DeleteExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await kubeClient.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Experiments,
+                    context.GetExperimentResourceName(),
+                    cancellationToken: cancellationToken);
+                context.Status = new ExperimentStatus
+                {
+                    Code = 204,
+                    Status = "success"
+                };
+            }
+            catch (HttpOperationException exception)
+            {
+                logger.TraceInformation(exception.Response.Content);
+                if (exception.Response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    // ignore 404
+                    context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                }
+                else
+                {
+                    context.Status = new ExperimentStatus
+                    {
+                        Code = 204,
+                        Status = "success"
+                    };
+                }
+            }
+        }
+        #endregion  
     }
 }
