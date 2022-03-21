@@ -23,6 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
+        Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -327,6 +328,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
                 return context;
             });
+        }
+        #endregion
+
+        #region DeleteExperimentAsync
+        public async Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
+        {
+            var entity = await StorageContext.ExperimentTable.RetrieveAsync(hackathonName, experimentId, cancellationToken);
+            if (entity == null)
+                return null;
+
+            // delete k8s first
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var context = new ExperimentContext { ExperimentEntity = entity };
+            await kubernetesCluster.DeleteExperimentAsync(context, cancellationToken);
+
+            // delete storage
+            await StorageContext.ExperimentTable.DeleteAsync(hackathonName, experimentId, cancellationToken);
+            return context;
         }
         #endregion
 
