@@ -528,7 +528,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // Update team member
             teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
-            var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.updateTeamMember.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = userId,
+                TeamId = teamId,
+                Message = team.DisplayName,
+            }, cancellationToken); var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
         #endregion
