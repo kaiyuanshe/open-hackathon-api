@@ -847,7 +847,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.UserManagement.VerifyNoOtherCalls();
             mockContext.AuthorizationService.VerifyNoOtherCalls();
             mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-           
+
             TeamMember output = AssertHelper.AssertOKResult<TeamMember>(result);
             Assert.AreEqual("desc", output.description);
             Assert.AreEqual(TeamMemberStatus.pendingApproval, output.status); // status should NOT be updated
@@ -1133,41 +1133,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", cancellationToken))
-                .ReturnsAsync(teamEntity);
-            teamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", cancellationToken))
-                .ReturnsAsync(memberEntity);
-            teamManagement.Setup(t => t.UpdateTeamMemberAsync(memberEntity, request, cancellationToken))
-                .ReturnsAsync(memberEntityUpdated);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
-                .ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", cancellationToken))
-                .ReturnsAsync(user);
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken)).ReturnsAsync(hackathon);
+            mockContext.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", cancellationToken)).ReturnsAsync(teamEntity);
+            mockContext.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", cancellationToken)).ReturnsAsync(memberEntity);
+            mockContext.TeamManagement.Setup(t => t.UpdateTeamMemberAsync(memberEntity, request, cancellationToken)).ReturnsAsync(memberEntityUpdated);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember)).ReturnsAsync(authResult);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", cancellationToken)).ReturnsAsync(user);
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
+               && a.ActivityLogType == ActivityLogType.updateTeamMember.ToString()
+               && a.UserId == "uid"
+               && a.HackathonName == "foo"
+               && a.TeamId == "tid"), default));
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                TeamManagement = teamManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                UserManagement = userManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                AuthorizationService = authorizationService.Object,
-            };
+            var controller = new TeamController();
+            mockContext.SetupController(controller);
             var result = await controller.UpdateTeamMember(hackName, teamId, userId, request, cancellationToken);
-            // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, authorizationService, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
 
+            // verify
+            mockContext.VerifyAll();
             var resp = AssertHelper.AssertOKResult<TeamMember>(result);
             Assert.AreEqual("desc2", resp.description);
         }
