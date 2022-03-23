@@ -559,6 +559,60 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 null);
             return Ok(resp);
         }
-        #endregion   
+        #endregion
+
+        #region DeleteExperiment
+        /// <summary>
+        /// Delete a hackathon experiment.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="experimentId" example="6129c741-87e5-4a78-8173-f80724a70aea">id of the experiment</param>
+        /// <response code="204">Success. The response indicates that the experiment is successfully deleted.</response>
+        [HttpDelete]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/experiment/{experimentId}")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
+        public async Task<object> DeleteExperiment(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, Guid] string experimentId,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackAdminRequird = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // delete experiment
+            var context = await ExperimentManagement.DeleteExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
+            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.deleteExperiment.ToString(),
+                HackathonName = hackathonName.ToLower(),
+                UserId = CurrentUserId,
+                Message = experimentId,
+            }, cancellationToken);
+
+            if (context?.Status != null && context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: experimentId);
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+        #endregion
     }
 }
