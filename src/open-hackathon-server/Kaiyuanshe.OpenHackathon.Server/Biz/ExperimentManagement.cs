@@ -21,6 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
         Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
+        Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
         Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
@@ -210,7 +211,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region CreateExperimentAsync
+        #region CreateOrUpdateExperimentAsync
         public async Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
         {
             if (experiment == null)
@@ -244,6 +245,37 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
             try
             {
+                await kubernetesCluster.CreateOrUpdateExperimentAsync(context, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.TraceError($"Internal error: {e.Message}", e);
+                context.Status = new ExperimentStatus
+                {
+                    Code = 500,
+                    Reason = "Internal Server Error",
+                    Message = e.Message,
+                };
+            }
+            return context;
+        }
+        #endregion
+
+        #region ResetExperimentAsync
+        public async Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
+        {
+            if (hackathonName == null || experimentId == null)
+                return null;
+
+            var entity = await StorageContext.ExperimentTable.RetrieveAsync(hackathonName, experimentId, cancellationToken);
+            if (entity == null)
+                return null;
+
+            var context = new ExperimentContext { ExperimentEntity = entity };
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            try
+            {
+                await kubernetesCluster.DeleteExperimentAsync(context, cancellationToken);
                 await kubernetesCluster.CreateOrUpdateExperimentAsync(context, cancellationToken);
             }
             catch (Exception e)
