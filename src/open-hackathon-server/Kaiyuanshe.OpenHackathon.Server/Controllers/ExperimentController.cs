@@ -515,6 +515,71 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region ResetExperiment
+        /// <summary>
+        /// Reset experiment by experimentId. Can get experimentId from experiment list api. 
+        /// An experiment can be reset by owner or the administrators of the hackathon.
+        /// The experiment in the backend will be deleted and re-created. 
+        /// All data saved in the experiment will be lost and cannot be recovered. 
+        /// Please backup your data if needed.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="experimentId" example="6129c741-87e5-4a78-8173-f80724a70aea">id of the experiment</param>
+        /// <returns>an experiment.</returns>
+        /// <response code="200">Success. The response describes an experiment.</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(Experiment), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404, 409)]
+        [Route("hackathon/{hackathonName}/experiment/{experimentId}/reset")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
+        public async Task<object> ResetExperiment(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromRoute, Required, Guid] string experimentId,
+            CancellationToken cancellationToken)
+        {
+            // query experiment
+            var context = await ExperimentManagement.GetExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
+            if (context?.ExperimentEntity == null)
+            {
+                return NotFound(Resources.Experiment_NotFound);
+            }
+            bool allowed = context.ExperimentEntity.UserId == CurrentUserId;
+
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackathonName = hackathonName,
+                // if userId doesn't match, check whether it's an admin
+                HackAdminRequird = !allowed,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // reset
+            context = await ExperimentManagement.ResetExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
+
+            // build resp
+            if (context.Status.IsFailed())
+            {
+                return Problem(
+                    statusCode: context.Status.Code.Value,
+                    detail: context.Status.Message,
+                    title: context.Status.Reason,
+                    instance: experimentId);
+            }
+            else
+            {
+                var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity.UserId, cancellationToken);
+                var resp = ResponseBuilder.BuildExperiment(context, userInfo);
+                return Ok(resp);
+            }
+        }
+        #endregion
+
         #region ListExperiments
         /// <summary>
         /// List experiments by hackthonName(required) and templateId(optional). 
