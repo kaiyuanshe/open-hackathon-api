@@ -1024,6 +1024,128 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
+        #region ResetExperiment
+        [Test]
+        public async Task ResetExperiment_ExpNotFound()
+        {
+            var expContext = new ExperimentContext { };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ResetExperiment("Hack", "expr", default);
+
+            // verify
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Experiment_NotFound);
+        }
+
+        [Test]
+        public async Task ResetExperiment_HackNotFound()
+        {
+            var expContext = new ExperimentContext { ExperimentEntity = new(), };
+            HackathonEntity hackathon = null;
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ResetExperiment("Hack", "expr", default);
+
+            // verify
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
+        }
+
+        [Test]
+        public async Task ResetExperiment_AccessDenied()
+        {
+            var expContext = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    UserId = "uid"
+                },
+            };
+            HackathonEntity hackathon = new();
+            var authResult = AuthorizationResult.Failed();
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ResetExperiment("Hack", "expr", default);
+
+            // verify
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 403, Resources.Hackathon_NotAdmin);
+        }
+
+        [TestCase(200)]
+        [TestCase(409)]
+        public async Task ResetExperiment_ResetByAdmin(int statusFromK8s)
+        {
+            var expContext = new ExperimentContext
+            {
+                ExperimentEntity = new ExperimentEntity
+                {
+                    UserId = "uid",
+                    TemplateId = "tpl",
+                },
+                Status = new ExperimentStatus
+                {
+                    Code = statusFromK8s,
+                    Message = "error",
+                }
+            };
+            HackathonEntity hackathon = new();
+            var authResult = AuthorizationResult.Success();
+            var user = new UserInfo { Name = "un" };
+
+            // mock
+            var mockContext = new MockControllerContext();
+            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            mockContext.ExperimentManagement.Setup(e => e.ResetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            if (statusFromK8s < 400)
+            {
+                mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            }
+
+            // test
+            var controller = new ExperimentController();
+            mockContext.SetupController(controller);
+            var result = await controller.ResetExperiment("Hack", "expr", default);
+
+            // verify
+            mockContext.VerifyAll();
+            if (statusFromK8s >= 400)
+            {
+                AssertHelper.AssertObjectResult(result, statusFromK8s, "error");
+            }
+            else
+            {
+                Experiment resp = AssertHelper.AssertOKResult<Experiment>(result);
+                Assert.AreEqual("tpl", resp.templateId);
+                Assert.AreEqual("un", resp.user.Name);
+            }
+        }
+        #endregion
+
         #region ListExperiments
         [Test]
         public async Task ListExperiments()
