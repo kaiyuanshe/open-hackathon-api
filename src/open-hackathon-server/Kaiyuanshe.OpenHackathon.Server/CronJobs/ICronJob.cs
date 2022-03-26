@@ -1,4 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
@@ -45,6 +46,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
     {
         public ILoggerFactory LoggerFactory { get; set; }
         public ICacheProvider CacheProvider { get; set; }
+        public IStorageContext StorageContext { get; set; }
 
         protected ILogger Logger
         {
@@ -66,7 +68,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
         {
             CronJobContext cronJobContext = new CronJobContext
             {
-                EnforceInterval = false,
+                EnforceInterval = true,
                 FireTime = context.FireTimeUtc.DateTime,
             };
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -75,13 +77,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
 
         public Task ExecuteNow(CronJobContext context)
         {
-            CronJobContext cronJobContext = new CronJobContext
-            {
-                EnforceInterval = true,
-                FireTime = DateTime.UtcNow,
-            };
+            context = context ?? new CronJobContext();
+            context.EnforceInterval = true;
+            context.FireTime = DateTime.UtcNow;
+
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            return ExecuteAsync(cronJobContext, cancellationTokenSource.Token);
+            return ExecuteAsync(context, cancellationTokenSource.Token);
         }
 
         protected abstract Task ExecuteAsync(CronJobContext context, CancellationToken token);

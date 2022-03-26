@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+﻿using Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using System;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
@@ -69,13 +70,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         public DateTime? JudgeStartedAt { get; set; }
         public DateTime? JudgeEndedAt { get; set; }
 
+        #region Internal properties
+        /// <summary>
+        /// true if all experiment in k8s are cleaned up.
+        /// clean up is triggered by cron job <see cref="CleanupExperimentJob"/> 
+        /// </summary>
+        public bool ExperimentCleaned { get; set; }
+        #endregion
+
         public bool IsOnline()
         {
             return Status == HackathonStatus.online;
         }
-
-        class ValiateOptions { }
-
-
     }
 }

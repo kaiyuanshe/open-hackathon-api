@@ -25,6 +25,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
         Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
+        /// <summary>
+        /// Delete all experiments of a hackathon
+        /// </summary>
+        Task DeleteExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -378,6 +382,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // delete storage
             await StorageContext.ExperimentTable.DeleteAsync(hackathonName, experimentId, cancellationToken);
             return context;
+        }
+        #endregion
+
+        #region DeleteExperimentsAsync
+        public Task DeleteExperimentsAsync(string hackathonName, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
         #endregion
 
