@@ -270,7 +270,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // validate template
-            var experiments = await ExperimentManagement.ListExperimentsAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            var experiments = await ExperimentManagement.ListExperimentsAsync(hackathon, templateId, cancellationToken);
             if (experiments.Count() > 0)
             {
                 return PreconditionFailed(Resources.Template_HasExperiment);
@@ -613,7 +613,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // list templates
-            var contexts = await ExperimentManagement.ListExperimentsAsync(hackathonName.ToLower(), templateId, cancellationToken);
+            var contexts = await ExperimentManagement.ListExperimentsAsync(hackathon, templateId, cancellationToken);
             var resp = await ResponseBuilder.BuildResourceListAsync<ExperimentContext, Experiment, ExperimentList>(
                 contexts,
                 async (context, token) =>

@@ -20,7 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
             {
                 if (hackaton.ReadOnly)
                 {
-                    await ExperimentManagement.DeleteExperimentsAsync(hackaton.Name, token);
+                    await ExperimentManagement.CleanupKubernetesExperimentsAsync(hackaton.Name, token);
                 }
             }, null, null, token);
         }
