@@ -23,12 +23,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
-        Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string templateId = null, CancellationToken cancellationToken = default);
         Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         /// <summary>
-        /// Delete all experiments of a hackathon
+        /// Delete all experiments of a hackathon from kubernetes, but keep the records in DB for query
         /// </summary>
-        Task DeleteExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
+        Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
     public class ExperimentManagement : ManagementClientBase, IExperimentManagement
@@ -327,23 +327,37 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListExperimentsAsync
-        public async Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string templateId = null, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(hackathonName))
+            if (hackathon == null)
                 return Array.Empty<ExperimentContext>();
 
             // get storage entities
-            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
+            var filter = TableQueryHelper.PartitionKeyFilter(hackathon.Name);
             if (!string.IsNullOrWhiteSpace(templateId))
             {
                 var tplIdFilter = TableQueryHelper.FilterForString(nameof(ExperimentEntity.TemplateId), ComparisonOperator.Equal, templateId);
                 filter = TableQueryHelper.And(filter, tplIdFilter);
             }
             var experimentEntities = await StorageContext.ExperimentTable.QueryEntitiesAsync(filter, null, cancellationToken);
+            if (hackathon.ExperimentCleaned)
+            {
+                // skip k8s query if it's cleaned up already
+                return experimentEntities.Select(x => new ExperimentContext
+                {
+                    ExperimentEntity = x,
+                    Status = new ExperimentStatus
+                    {
+                        Code = 422,
+                        Reason = "UnprocessableEntity",
+                        Message = "The hackathon is over."
+                    }
+                });
+            }
 
             // get k8s resources
             var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
-            var k8sResources = await kubernetesCluster.ListExperimentsAsync(hackathonName, templateId, cancellationToken);
+            var k8sResources = await kubernetesCluster.ListExperimentsAsync(hackathon.Name, templateId, cancellationToken);
 
             // compose resp
             return experimentEntities.Select(entity =>
@@ -385,8 +399,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region DeleteExperimentsAsync
-        public Task DeleteExperimentsAsync(string hackathonName, CancellationToken cancellationToken)
+        #region CleanupKubernetesExperimentsAsync
+        public Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

@@ -448,7 +448,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task DeleteTemplate_HasExpr()
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var authResult = AuthorizationResult.Success();
             var experiments = new List<ExperimentContext>
             {
@@ -459,7 +459,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(experiments);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(experiments);
 
             // test
             var controller = new ExperimentController();
@@ -514,7 +514,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(DeleteTemplateTestData))]
         public async Task DeleteTemplate(TemplateContext templateContext, int expectedCode, string expectedMessage)
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var authResult = AuthorizationResult.Success();
 
             // mock
@@ -522,7 +522,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             mockContext.ExperimentManagement.Setup(j => j.DeleteTemplateAsync("hack", "tpl", default)).ReturnsAsync(templateContext);
-            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(new ExperimentContext[0]);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(new ExperimentContext[0]);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.deleteTemplate.ToString()), default));
 
@@ -1150,7 +1150,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task ListExperiments()
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             List<ExperimentContext> contexts = new List<ExperimentContext>
             {
                 new ExperimentContext
@@ -1170,7 +1170,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock
             var mockContext = new MockControllerContext();
             mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync("hack", "tpl", default)).ReturnsAsync(contexts);
+            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(contexts);
             mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(userInfo);
 
             // test
@@ -1234,7 +1234,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test, TestCaseSource(nameof(DeleteExperimentTestData))]
         public async Task DeleteExperiment(ExperimentContext templateContext, int expectedCode, string expectedMessage)
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { };
             var authResult = AuthorizationResult.Success();
 
             // mock

@@ -24,7 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
 
             // mock
             var experimentManagement = new Mock<IExperimentManagement>();
-            experimentManagement.Setup(e => e.DeleteExperimentsAsync("h2", It.IsAny<CancellationToken>()));
+            experimentManagement.Setup(e => e.CleanupKubernetesExperimentsAsync("h2", It.IsAny<CancellationToken>()));
             var storageContext = new MockStorageContext();
             storageContext.HackathonTable.Setup(h => h.ExecuteQueryAsync("ExperimentCleaned eq false",
                 It.IsAny<Func<HackathonEntity, Task>>(), null, null, It.IsAny<CancellationToken>()))
@@ -45,7 +45,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             await job.ExecuteNow(null);
 
             Mock.VerifyAll(experimentManagement);
-            experimentManagement.Verify(e => e.DeleteExperimentsAsync("h2", It.IsAny<CancellationToken>()), Times.Once);
+            experimentManagement.Verify(e => e.CleanupKubernetesExperimentsAsync("h2", It.IsAny<CancellationToken>()), Times.Once);
 
             storageContext.VerifyAll();
         }
