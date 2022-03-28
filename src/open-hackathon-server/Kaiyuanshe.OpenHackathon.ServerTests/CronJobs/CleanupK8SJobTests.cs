@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
 {
-    internal class CleanupExperimentJobTests
+    internal class CleanupK8SJobTests
     {
         [Test]
         public async Task ExecuteAsync()
@@ -37,7 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
                     }
                 });
 
-            var job = new CleanupExperimentJob
+            var job = new CleanupK8SJob
             {
                 ExperimentManagement = experimentManagement.Object,
                 StorageContext = storageContext.Object,

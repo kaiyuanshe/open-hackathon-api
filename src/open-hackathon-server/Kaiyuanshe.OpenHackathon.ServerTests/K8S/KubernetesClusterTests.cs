@@ -582,7 +582,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 .Throws(new HttpOperationException
                 {
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
-                }); ;
+                });
             var context = new ExperimentContext
             {
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
@@ -617,7 +617,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 .Throws(new HttpOperationException
                 {
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.BadRequest), "{\"code\":400}")
-                }); ;
+                });
             var context = new ExperimentContext
             {
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
@@ -661,6 +661,63 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             kubernetes.VerifyNoOtherCalls();
 
             Assert.AreEqual(204, context.Status.Code);
+        }
+
+        [Test]
+        public async Task DeleteExperimentAsync2_404()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "name",
+                null, null, null, null, null, null, default)).Throws(new HttpOperationException
+                {
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
+                });
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.DeleteExperimentAsync("name", default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public void DeleteExperimentAsync2_OtherError()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "name",
+                null, null, null, null, null, null, default)).Throws(new HttpOperationException
+                {
+                    Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.InternalServerError), "{\"code\":404}")
+                });
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            Assert.ThrowsAsync<HttpOperationException>(() => kubernetesCluster.DeleteExperimentAsync("name", default));
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task DeleteExperimentAsync2_Success()
+        {
+            var logger = new Mock<ILogger<KubernetesCluster>>();
+            var kubernetes = new Mock<IKubernetes>();
+            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
+                "name",
+                null, null, null, null, null, null, default));
+
+            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            await kubernetesCluster.DeleteExperimentAsync("name", default);
+
+            Mock.VerifyAll(kubernetes);
+            kubernetes.VerifyNoOtherCalls();
         }
         #endregion
     }
