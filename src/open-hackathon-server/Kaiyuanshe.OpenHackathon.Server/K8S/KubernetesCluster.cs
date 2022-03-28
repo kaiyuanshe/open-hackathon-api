@@ -24,6 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
         Task DeleteExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
+        Task DeleteExperimentAsync(string experimentResourceName, CancellationToken cancellationToken);
     }
 
     public class KubernetesCluster : IKubernetesCluster
@@ -404,6 +405,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                         Code = 204,
                         Status = "success"
                     };
+                }
+            }
+        }
+
+        public async Task DeleteExperimentAsync(string experimentResourceName, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await kubeClient.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Experiments,
+                    experimentResourceName,
+                    cancellationToken: cancellationToken);
+            }
+            catch (HttpOperationException exception)
+            {
+                logger.TraceInformation(exception.Response.Content);
+                if (exception.Response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    // ignore 404
+                    throw;
                 }
             }
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 {
-    public class CleanupExperimentJob : CronJobBase
+    public class CleanupK8SJob : CronJobBase
     {
         protected override TimeSpan Interval => TimeSpan.FromDays(1);
 

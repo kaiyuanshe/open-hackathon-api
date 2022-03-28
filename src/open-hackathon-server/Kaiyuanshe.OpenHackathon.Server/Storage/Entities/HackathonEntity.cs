@@ -73,7 +73,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         #region Internal properties
         /// <summary>
         /// true if all experiment in k8s are cleaned up.
-        /// clean up is triggered by cron job <see cref="CleanupExperimentJob"/> 
+        /// clean up is triggered by cron job <see cref="CleanupK8SJob"/> 
         /// </summary>
         public bool ExperimentCleaned { get; set; }
         #endregion
