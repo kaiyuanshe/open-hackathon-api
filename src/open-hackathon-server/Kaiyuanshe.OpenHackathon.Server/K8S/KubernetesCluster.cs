@@ -19,6 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task DeleteTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
+        Task DeleteTemplateAsync(string templateResourceName, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
@@ -220,6 +221,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                         Code = 204,
                         Status = "success"
                     };
+                }
+            }
+        }
+
+        public async Task DeleteTemplateAsync(string templateResourceName, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await kubeClient.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+                    CustomResourceDefinition.Group,
+                    CustomResourceDefinition.Version,
+                    Namespaces.Default,
+                    CustomResourceDefinition.Plurals.Templates,
+                    templateResourceName,
+                    cancellationToken: cancellationToken);
+            }
+            catch (HttpOperationException exception)
+            {
+                logger.TraceInformation(exception.Response.Content);
+                if (exception.Response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    // ignore 404 only
+                    throw;
                 }
             }
         }
