@@ -400,9 +400,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region CleanupKubernetesExperimentsAsync
-        public Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken)
+        public async Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var resources = await kubernetesCluster.ListExperimentsAsync(hackathonName, null, cancellationToken);
+            foreach (var resource in resources)
+            {
+                await kubernetesCluster.DeleteExperimentAsync(resource.Metadata.Name, cancellationToken);
+            }
         }
         #endregion
 
