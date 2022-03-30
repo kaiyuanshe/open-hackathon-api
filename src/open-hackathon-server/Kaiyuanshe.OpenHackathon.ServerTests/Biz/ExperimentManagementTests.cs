@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+﻿using k8s.Models;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
@@ -1034,6 +1035,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             Assert.IsNotNull(result.ExperimentEntity);
             Assert.AreEqual(statusCode, result.Status.Code);
+        }
+        #endregion
+
+        #region CleanupKubernetesExperimentsAsync
+        [Test]
+        public async Task CleanupKubernetesExperimentsAsync()
+        {
+            var resources = new List<ExperimentResource>
+            {
+                new ExperimentResource { Metadata = new V1ObjectMeta { Name = "e1" } },
+                new ExperimentResource { Metadata = new V1ObjectMeta { Name = "e2" } },
+            };
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.ListExperimentsAsync("hack", null, default)).ReturnsAsync(resources);
+            k8s.Setup(k => k.DeleteExperimentAsync("e1", default));
+            k8s.Setup(k => k.DeleteExperimentAsync("e2", default));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+            await management.CleanupKubernetesExperimentsAsync("hack", default);
+
+            // verify
+            Mock.VerifyAll(k8s, k8sfactory);
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
         }
         #endregion
     }
