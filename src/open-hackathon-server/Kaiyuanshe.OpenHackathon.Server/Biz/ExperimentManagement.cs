@@ -20,6 +20,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
         Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
+        /// <summary>
+        /// Delete all templates of a hackathon from kubernetes, but keep the records in DB for query
+        /// </summary>
+        Task CleanupKubernetesTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
         Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
@@ -212,6 +216,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // delete storage
             await StorageContext.TemplateTable.DeleteAsync(hackathonName, templateId, cancellationToken);
             return context;
+        }
+        #endregion
+
+        #region CleanupKubernetesTemplatesAsync
+        public async Task CleanupKubernetesTemplatesAsync(string hackathonName, CancellationToken cancellationToken)
+        {
+            var kubernetesCluster = await KubernetesClusterFactory.GetDefaultKubernetes(cancellationToken);
+            var resources = await kubernetesCluster.ListTemplatesAsync(hackathonName, cancellationToken);
+            foreach (var resource in resources)
+            {
+                await kubernetesCluster.DeleteTemplateAsync(resource.Metadata.Name, cancellationToken);
+            }
         }
         #endregion
 
