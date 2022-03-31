@@ -512,6 +512,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
+        #region CleanupKubernetesTemplatesAsync
+        [Test]
+        public async Task CleanupKubernetesTemplatesAsync()
+        {
+            var resources = new List<TemplateResource>
+            {
+                new TemplateResource { Metadata = new V1ObjectMeta { Name = "t1" } },
+                new TemplateResource { Metadata = new V1ObjectMeta { Name = "t2" } },
+            };
+
+            // mock
+            var logger = new Mock<ILogger<ExperimentManagement>>();
+            var k8s = new Mock<IKubernetesCluster>();
+            k8s.Setup(k => k.ListTemplatesAsync("hack", default)).ReturnsAsync(resources);
+            k8s.Setup(k => k.DeleteTemplateAsync("t1", default));
+            k8s.Setup(k => k.DeleteTemplateAsync("t2", default));
+            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+
+            // test
+            var management = new ExperimentManagement(logger.Object)
+            {
+                KubernetesClusterFactory = k8sfactory.Object,
+            };
+            await management.CleanupKubernetesTemplatesAsync("hack", default);
+
+            // verify
+            Mock.VerifyAll(k8s, k8sfactory);
+            k8s.VerifyNoOtherCalls();
+            k8sfactory.VerifyNoOtherCalls();
+        }
+        #endregion
+
         #region CreateOrUpdateExperimentAsync
         [Test]
         public async Task CreateOrUpdateExperimentAsync_Exception()
