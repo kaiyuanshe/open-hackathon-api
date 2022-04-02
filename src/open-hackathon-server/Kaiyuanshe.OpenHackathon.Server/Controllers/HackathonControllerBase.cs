@@ -267,7 +267,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             if (options.OnlineRequired && hackathon.Status != HackathonStatus.online)
             {
-                options.ValidateResult = NotFound(string.Format(Resources.Hackathon_NotFound, options.HackathonName));
+                options.ValidateResult = PreconditionFailed(Resources.Hackathon_NotOnline);
                 return false;
             }
 

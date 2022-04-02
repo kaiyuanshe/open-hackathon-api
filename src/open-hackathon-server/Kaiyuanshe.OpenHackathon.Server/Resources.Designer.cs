@@ -322,6 +322,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested operation is not allowed since the hackathon is not online.
+        /// </summary>
+        internal static string Hackathon_NotOnline {
+            get {
+                return ResourceManager.GetString("Hackathon_NotOnline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The hackathon is not started yet. .
         /// </summary>
         internal static string Hackathon_NotStarted {
