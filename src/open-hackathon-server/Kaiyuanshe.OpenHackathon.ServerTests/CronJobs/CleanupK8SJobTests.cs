@@ -18,15 +18,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             // data
             var hackathons = new List<HackathonEntity>
             {
-                new HackathonEntity{ PartitionKey="h1", ReadOnly=false},
-                new HackathonEntity{ PartitionKey="h2", ReadOnly=true},
+                new HackathonEntity{ PartitionKey="hack"},
             };
 
             // mock
             var experimentManagement = new Mock<IExperimentManagement>();
-            experimentManagement.Setup(e => e.CleanupKubernetesExperimentsAsync("h2", It.IsAny<CancellationToken>()));
+            experimentManagement.Setup(e => e.CleanupKubernetesExperimentsAsync("hack", It.IsAny<CancellationToken>()));
+            experimentManagement.Setup(e => e.CleanupKubernetesTemplatesAsync("hack", It.IsAny<CancellationToken>()));
             var storageContext = new MockStorageContext();
-            storageContext.HackathonTable.Setup(h => h.ExecuteQueryAsync("ExperimentCleaned eq false",
+            storageContext.HackathonTable.Setup(h => h.ExecuteQueryAsync(
+                "(ExperimentCleaned eq false) and (ReadOnly eq true)",
                 It.IsAny<Func<HackathonEntity, Task>>(), null, null, It.IsAny<CancellationToken>()))
                 .Callback<string, Func<HackathonEntity, Task>, int?, IEnumerable<string>, CancellationToken>(
                 (f, func, l, s, t) =>
@@ -36,6 +37,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
                         func(h);
                     }
                 });
+            storageContext.HackathonTable.Setup(h => h.MergeAsync(
+                It.Is<HackathonEntity>(e => e.PartitionKey == "hack" && e.ExperimentCleaned == true),
+                It.IsAny<CancellationToken>()));
 
             var job = new CleanupK8SJob
             {
@@ -45,7 +49,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             await job.ExecuteNow(null);
 
             Mock.VerifyAll(experimentManagement);
-            experimentManagement.Verify(e => e.CleanupKubernetesExperimentsAsync("h2", It.IsAny<CancellationToken>()), Times.Once);
+            experimentManagement.Verify(e => e.CleanupKubernetesExperimentsAsync("hack", It.IsAny<CancellationToken>()), Times.Once);
+            experimentManagement.Verify(e => e.CleanupKubernetesTemplatesAsync("hack", It.IsAny<CancellationToken>()), Times.Once);
 
             storageContext.VerifyAll();
         }

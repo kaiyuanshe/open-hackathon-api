@@ -53,22 +53,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.planning };
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
+
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            mockContext.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
+
             // verify
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, hackName));
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
         [Test]
@@ -366,7 +363,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // verify
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
-            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, hackName));
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
         [Test]

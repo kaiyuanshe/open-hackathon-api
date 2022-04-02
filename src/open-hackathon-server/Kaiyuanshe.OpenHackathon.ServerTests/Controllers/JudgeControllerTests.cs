@@ -225,7 +225,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
 
-            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
         [Test]

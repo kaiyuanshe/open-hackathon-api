@@ -15,13 +15,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 
         protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
         {
-            string filter = TableQueryHelper.FilterForBool(nameof(HackathonEntity.ExperimentCleaned), ComparisonOperator.Equal, false);
+            string filter = TableQueryHelper.And(
+                TableQueryHelper.FilterForBool(nameof(HackathonEntity.ExperimentCleaned), ComparisonOperator.Equal, false),
+                TableQueryHelper.FilterForBool(nameof(HackathonEntity.ReadOnly), ComparisonOperator.Equal, true)
+            );
             await StorageContext.HackathonTable.ExecuteQueryAsync(filter, async (hackaton) =>
             {
-                if (hackaton.ReadOnly)
-                {
-                    await ExperimentManagement.CleanupKubernetesExperimentsAsync(hackaton.Name, token);
-                }
+                await ExperimentManagement.CleanupKubernetesExperimentsAsync(hackaton.Name, token);
+                await ExperimentManagement.CleanupKubernetesTemplatesAsync(hackaton.Name, token);
+                // mark as cleaned
+                hackaton.ExperimentCleaned = true;
+                await StorageContext.HackathonTable.MergeAsync(hackaton, token);
             }, null, null, token);
         }
     }

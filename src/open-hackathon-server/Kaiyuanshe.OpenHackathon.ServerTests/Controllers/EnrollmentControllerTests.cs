@@ -69,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
-            AssertHelper.AssertObjectResult(result, 404);
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
         [Test]
