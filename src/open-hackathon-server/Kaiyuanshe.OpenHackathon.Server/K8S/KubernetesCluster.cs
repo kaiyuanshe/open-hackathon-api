@@ -1,8 +1,7 @@
 ﻿using k8s;
+using k8s.Autorest;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
-using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -146,7 +145,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     Code = 200,
                     Status = "success"
                 };
-                var resp = SafeJsonConvert.DeserializeObject<TemplateResource>(cr.Body.ToString());
+                var resp = JsonConvert.DeserializeObject<TemplateResource>(cr.Body.ToString());
                 return resp;
             }
             catch (HttpOperationException exception)
@@ -174,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Templates,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
-                var crl = SafeJsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
+                var crl = JsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
                 return crl.Items;
             }
             catch (HttpOperationException exception)
@@ -348,7 +347,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     context.GetExperimentResourceName(),
                     null,
                     cancellationToken);
-                var exp = SafeJsonConvert.DeserializeObject<ExperimentResource>(cr.Body.ToString());
+                var exp = JsonConvert.DeserializeObject<ExperimentResource>(cr.Body.ToString());
                 context.Status = exp.Status;
                 context.Status.Code = exp.Status.Code.GetValueOrDefault(200);
                 return exp;
@@ -382,7 +381,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Experiments,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
-                var crl = SafeJsonConvert.DeserializeObject<CustomResourceList<ExperimentResource>>(listResp.Body.ToString());
+                var crl = JsonConvert.DeserializeObject<CustomResourceList<ExperimentResource>>(listResp.Body.ToString());
                 return crl.Items;
             }
             catch (HttpOperationException exception)

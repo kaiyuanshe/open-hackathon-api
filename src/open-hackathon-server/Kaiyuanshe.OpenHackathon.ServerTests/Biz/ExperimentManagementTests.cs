@@ -1,4 +1,5 @@
-﻿using k8s.Models;
+﻿using k8s.Autorest;
+using k8s.Models;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
@@ -62,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.CreateOrUpdateTemplateAsync(It.IsAny<TemplateContext>(), default))
-                .Throws(new Microsoft.Rest.HttpOperationException("message"));
+                .Throws(new HttpOperationException("message"));
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
@@ -261,7 +262,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.GetTemplateAsync(It.IsAny<TemplateContext>(), default))
-                .Throws(new Microsoft.Rest.HttpOperationException("message"));
+                .Throws(new HttpOperationException("message"));
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
@@ -564,7 +565,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default))
-                .Throws(new Microsoft.Rest.HttpOperationException("message"));
+                .Throws(new HttpOperationException("message"));
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
@@ -712,7 +713,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.GetExperimentAsync(It.IsAny<ExperimentContext>(), default))
-                .Throws(new Microsoft.Rest.HttpOperationException("message"));
+                .Throws(new HttpOperationException("message"));
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 

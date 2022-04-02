@@ -1,8 +1,8 @@
 ﻿using k8s;
+using k8s.Autorest;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
-using Microsoft.Rest;
 using Moq;
 using NUnit.Framework;
 using System.Linq;
