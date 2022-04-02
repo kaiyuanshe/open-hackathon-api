@@ -1,11 +1,10 @@
 ﻿using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
-using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 using Moq;
 using NUnit.Framework;
 using System;
