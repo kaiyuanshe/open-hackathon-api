@@ -21,7 +21,7 @@
         /// related team id. might be null.
         /// </summary>
         /// <example>d1e40c38-cc2a-445f-9eab-60c253256c57</example>
-        public string teamId { get; set; }
+        public string teamId { get; internal set; }
 
         /// <summary>
         /// The user id on whom the operation perferms.
@@ -39,7 +39,7 @@
         /// Key message related to the activity.
         /// </summary>
         /// <example>Something happens.</example>
-        public string message { get; set; }
+        public string message { get; internal set; }
 
         /// <summary>
         /// type of the activity log.

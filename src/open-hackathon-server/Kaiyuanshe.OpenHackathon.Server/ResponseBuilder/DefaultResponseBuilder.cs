@@ -11,34 +11,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 {
     public interface IResponseBuilder
     {
-        Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles);
-
-        HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo);
-
-        Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
-
-        Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
-
-        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template);
-
-        Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
-
-        TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
-
-        TeamWork BuildTeamWork(TeamWorkEntity teamWorkEntity);
-
-        Template BuildTemplate(TemplateContext context);
-
+        ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity);
         Award BuildAward(AwardEntity awardEntity);
-
         AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team team, UserInfo user);
-
+        Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
+        Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
+        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template);
+        Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles);
+        HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo);
         Judge BuildJudge(JudgeEntity judgeEntity, UserInfo userInfo);
-
-        RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity);
-
         Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind);
-
+        RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity);
+        Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
+        TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
+        TeamWork BuildTeamWork(TeamWorkEntity teamWorkEntity);
+        Template BuildTemplate(TemplateContext context);
         UserInfo BuildUser(UserEntity userEntity);
 
         TResult BuildResourceList<TSrcItem, TResultItem, TResult>(
@@ -76,24 +63,34 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
     public class DefaultResponseBuilder : IResponseBuilder
     {
-        public Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles)
+        public ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity)
         {
-            return hackathonEntity.As<Hackathon>(h =>
+            // TODO: UT
+            // TODO: map activity log type to resource file
+            return activityLogEntity.As<ActivityLog>(p =>
             {
-                h.updatedAt = hackathonEntity.Timestamp.UtcDateTime;
-                h.roles = roles;
+                p.updatedAt = activityLogEntity.Timestamp.UtcDateTime;
             });
         }
 
-        public HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo)
+        public Award BuildAward(AwardEntity awardEntity)
         {
-            return hackathonAdminEntity.As<HackathonAdmin>(h =>
+            return awardEntity.As<Award>(p =>
             {
-                h.updatedAt = hackathonAdminEntity.Timestamp.UtcDateTime;
-                h.user = userInfo;
+                p.updatedAt = awardEntity.Timestamp.UtcDateTime;
             });
         }
 
+        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team team, UserInfo user)
+        {
+            return awardAssignmentEntity.As<AwardAssignment>((p) =>
+            {
+                p.updatedAt = awardAssignmentEntity.Timestamp.UtcDateTime;
+                p.user = user;
+                p.team = team;
+            });
+        }
+    
         public Enrollment BuildEnrollment(EnrollmentEntity enrollment, UserInfo userInfo)
         {
             return enrollment.As<Enrollment>(p =>
@@ -137,6 +134,52 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             return conn;
         }
 
+        public Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles)
+        {
+            return hackathonEntity.As<Hackathon>(h =>
+            {
+                h.updatedAt = hackathonEntity.Timestamp.UtcDateTime;
+                h.roles = roles;
+            });
+        }
+
+        public HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo)
+        {
+            return hackathonAdminEntity.As<HackathonAdmin>(h =>
+            {
+                h.updatedAt = hackathonAdminEntity.Timestamp.UtcDateTime;
+                h.user = userInfo;
+            });
+        }
+
+        public Judge BuildJudge(JudgeEntity judgeEntity, UserInfo userInfo)
+        {
+            return judgeEntity.As<Judge>((p) =>
+            {
+                p.updatedAt = judgeEntity.Timestamp.UtcDateTime;
+                p.user = userInfo;
+            });
+        }
+
+        public Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind)
+        {
+            return ratingEntity.As<Rating>((p) =>
+            {
+                p.updatedAt = ratingEntity.Timestamp.UtcDateTime;
+                p.judge = judge;
+                p.team = team;
+                p.ratingKind = ratingKind;
+            });
+        }
+
+        public RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity)
+        {
+            return ratingKindEntity.As<RatingKind>((p) =>
+            {
+                p.updatedAt = ratingKindEntity.Timestamp.UtcDateTime;
+            });
+        }
+        
         public Team BuildTeam(TeamEntity teamEntity, UserInfo creator)
         {
             return teamEntity.As<Team>(p =>
@@ -169,52 +212,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             {
                 p.updatedAt = context.TemplateEntity.Timestamp.UtcDateTime;
                 p.status = Status.FromV1Status(context.Status);
-            });
-        }
-
-        public Award BuildAward(AwardEntity awardEntity)
-        {
-            return awardEntity.As<Award>(p =>
-            {
-                p.updatedAt = awardEntity.Timestamp.UtcDateTime;
-            });
-        }
-
-        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team team, UserInfo user)
-        {
-            return awardAssignmentEntity.As<AwardAssignment>((p) =>
-            {
-                p.updatedAt = awardAssignmentEntity.Timestamp.UtcDateTime;
-                p.user = user;
-                p.team = team;
-            });
-        }
-
-        public Judge BuildJudge(JudgeEntity judgeEntity, UserInfo userInfo)
-        {
-            return judgeEntity.As<Judge>((p) =>
-            {
-                p.updatedAt = judgeEntity.Timestamp.UtcDateTime;
-                p.user = userInfo;
-            });
-        }
-
-        public RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity)
-        {
-            return ratingKindEntity.As<RatingKind>((p) =>
-            {
-                p.updatedAt = ratingKindEntity.Timestamp.UtcDateTime;
-            });
-        }
-
-        public Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind)
-        {
-            return ratingEntity.As<Rating>((p) =>
-            {
-                p.updatedAt = ratingEntity.Timestamp.UtcDateTime;
-                p.judge = judge;
-                p.team = team;
-                p.ratingKind = ratingKind;
             });
         }
 
