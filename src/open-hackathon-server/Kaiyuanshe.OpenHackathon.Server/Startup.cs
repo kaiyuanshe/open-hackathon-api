@@ -10,12 +10,14 @@ using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -57,6 +59,13 @@ namespace Kaiyuanshe.OpenHackathon.Server
                 options.AllowSynchronousIO = true;
             });
             services.AddHttpContextAccessor();
+
+            // localization
+            services.AddLocalization(options =>
+            {
+                options.ResourcesPath = "Resources";
+            });
+
 
             // Razor pages
             services.AddRazorPages(options =>
@@ -111,6 +120,17 @@ namespace Kaiyuanshe.OpenHackathon.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRequestLocalization(options =>
+            {
+                options.SupportedUICultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("zh-CN")
+                };
+                options.SetDefaultCulture("en-US");
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider());
+            });
 
             // middleware
             // In asp.net core 3.0, middlewares must be registered before MapControllers
