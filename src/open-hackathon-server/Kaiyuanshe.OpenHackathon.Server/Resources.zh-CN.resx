@@ -117,7 +117,175 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Admin_CannotDeleteCreator" xml:space="preserve">
+    <value>活动的创建者不能被删除</value>
+  </data>
+  <data name="Admin_NotFound" xml:space="preserve">
+    <value>用户不是活动的管理员</value>
+  </data>
+  <data name="Auth_Forbidden" xml:space="preserve">
+    <value>当前用户无权访问。请联系活动管理员以获取权限。</value>
+  </data>
+  <data name="Auth_TokenExpired" xml:space="preserve">
+    <value>access token已过期于{0}. 请重新登陆。</value>
+  </data>
+  <data name="Auth_Token_ValidateRemoteFailed" xml:space="preserve">
+    <value>用户access token验证失败。code: {0}, message:{1}</value>
+  </data>
+  <data name="Auth_Unauthorized" xml:space="preserve">
+    <value>access token为空或者无效。请在http header中传入有效token：Headers["Authorization"]=token TOKEN. </value>
+  </data>
+  <data name="AwardAssignment_NotFound" xml:space="preserve">
+    <value>颁发记录不存在。</value>
+  </data>
+  <data name="Award_CannotDeleteAssigned" xml:space="preserve">
+    <value>该奖项已经颁发，无法删除。请先删除颁发记录。</value>
+  </data>
+  <data name="Award_CannotUpdateTarget" xml:space="preserve">
+    <value>`award.target` 无法修改：已经颁发给个人或者团队。请先删除颁发记录然后重试。</value>
+  </data>
+  <data name="Award_NotFound" xml:space="preserve">
+    <value>奖项不存在。</value>
+  </data>
+  <data name="Award_TooMany" xml:space="preserve">
+    <value>最多只能设置100项奖励。</value>
+  </data>
+  <data name="Award_TooManyAssignments" xml:space="preserve">
+    <value>该项奖励最多只能颁发给{0}位个人或团队。</value>
+  </data>
+  <data name="Enrollment_Ended" xml:space="preserve">
+    <value>报名已截止。截止时间：{0}</value>
+  </data>
+  <data name="Enrollment_Full" xml:space="preserve">
+    <value>报名失败，已超出最大允许人数。</value>
+  </data>
+  <data name="Enrollment_NotApproved" xml:space="preserve">
+    <value>报名审核中，请联系活动管理员。</value>
+  </data>
+  <data name="Enrollment_NotFound" xml:space="preserve">
+    <value>用户{0}没有报名参与活动 {1}，请先报名。</value>
+  </data>
+  <data name="Enrollment_NotStarted" xml:space="preserve">
+    <value>报名尚未开始。开始时间： {0}</value>
+  </data>
+  <data name="Enrollment_TooManyExtensions" xml:space="preserve">
+    <value>扩展字段数量超额。最大允许数量： {0}.</value>
+  </data>
+  <data name="Experiment_NotFound" xml:space="preserve">
+    <value>实验环境不存在。</value>
+  </data>
+  <data name="Experiment_UserNotMatch" xml:space="preserve">
+    <value>禁止访问。该实验环境属于其它用户。</value>
+  </data>
+  <data name="Hackathon_AlreadyOnline" xml:space="preserve">
+    <value>活动 {0} 已经上线</value>
+  </data>
+  <data name="Hackathon_CreateTooMany" xml:space="preserve">
+    <value>用户创建活动过多，请隔段时间再试或者联系平台管理员。</value>
+  </data>
+  <data name="Hackathon_Deleted" xml:space="preserve">
+    <value>活动{0}已下线，禁止编辑。</value>
+  </data>
+  <data name="Hackathon_Ended" xml:space="preserve">
+    <value>活动已结束。结束时间： {0}</value>
+  </data>
+  <data name="Hackathon_Name_Invalid" xml:space="preserve">
+    <value>活动名称非法。只能包含字母或数字，长度1-100。</value>
+  </data>
+  <data name="Hackathon_Name_Taken" xml:space="preserve">
+    <value>名称已被占用，请另选一个名称。</value>
+  </data>
+  <data name="Hackathon_NotAdmin" xml:space="preserve">
+    <value>拒绝访问。仅活动管理员有权访问。请联系活动管理员。</value>
+  </data>
   <data name="Hackathon_NotFound" xml:space="preserve">
     <value>黑客送活动 `{0}`不存在。请调用PUT接口创建新活动。</value>
+  </data>
+  <data name="Hackathon_NotJudge" xml:space="preserve">
+    <value>拒绝访问。仅活动裁判/评审有权访问。</value>
+  </data>
+  <data name="Hackathon_NotOnline" xml:space="preserve">
+    <value>活动尚未正式发布，编辑中。</value>
+  </data>
+  <data name="Hackathon_NotStarted" xml:space="preserve">
+    <value>活动尚未开始。</value>
+  </data>
+  <data name="Hackathon_ReadOnly" xml:space="preserve">
+    <value>活动已存档，当前处于只读模式。</value>
+  </data>
+  <data name="Hackathon_UnhandledException" xml:space="preserve">
+    <value>服务器未知异常。请稍后重试，您也可以在github上报告issue：https://github.com/kaiyuanshe/open-hackathon/issues</value>
+  </data>
+  <data name="Judge_NotFound" xml:space="preserve">
+    <value>该用户不是活动的裁判/评审。</value>
+  </data>
+  <data name="Judge_TooMany" xml:space="preserve">
+    <value>最多添加100位裁判或评审。</value>
+  </data>
+  <data name="Parameter_Required" xml:space="preserve">
+    <value>参数 {0}不能为空。</value>
+  </data>
+  <data name="Rating_HasRating" xml:space="preserve">
+    <value>无法删除 {0}。请先删除已经评分。</value>
+  </data>
+  <data name="Rating_KindNotFound" xml:space="preserve">
+    <value>评分类型不存在。</value>
+  </data>
+  <data name="Rating_NotFound" xml:space="preserve">
+    <value>评分不存在。</value>
+  </data>
+  <data name="Rating_OnlyCreator" xml:space="preserve">
+    <value>拒绝访问，此评分记录由其他人提交。</value>
+  </data>
+  <data name="Rating_ScoreNotInRange" xml:space="preserve">
+    <value>分值非法。不能超过最大值：{0}.</value>
+  </data>
+  <data name="Rating_TooManyKinds" xml:space="preserve">
+    <value>最多只能创建100个评分类型。</value>
+  </data>
+  <data name="TeamMember_AccessDenied" xml:space="preserve">
+    <value>团队成员{0}无权执行该操作，请联系团队管理员。</value>
+  </data>
+  <data name="TeamMember_LastAdmin" xml:space="preserve">
+    <value>无法删除：您正在试图删除团队最后一位管理员，而团队中尚有其他成员。</value>
+  </data>
+  <data name="TeamMember_NotFound" xml:space="preserve">
+    <value>用户{0}不属于团队{1}。</value>
+  </data>
+  <data name="TeamWork_NotFound" xml:space="preserve">
+    <value>团队作品不存在。</value>
+  </data>
+  <data name="TeamWork_TooMany" xml:space="preserve">
+    <value>每个团队最多只能添加100件作品。</value>
+  </data>
+  <data name="Team_CreateSecond" xml:space="preserve">
+    <value>无法创建新团队：当前用户已经加入团队。</value>
+  </data>
+  <data name="Team_HasAward" xml:space="preserve">
+    <value>无法删除团队：团队有获得颁奖，请先删除颁奖记录。</value>
+  </data>
+  <data name="Team_NameTaken" xml:space="preserve">
+    <value>团队名称'{0}'已被占用。请选择一个不通的名称。</value>
+  </data>
+  <data name="Team_NotAdmin" xml:space="preserve">
+    <value>拒绝访问，请联系团队管理员</value>
+  </data>
+  <data name="Team_NotEnrolled" xml:space="preserve">
+    <value>未报名者无法创建团队，请先报名</value>
+  </data>
+  <data name="Team_NotFound" xml:space="preserve">
+    <value>团队不存在。</value>
+  </data>
+  <data name="Template_ExceedMax" xml:space="preserve">
+    <value>每个活动最多只能创建 {0}个虚拟环境模板。</value>
+  </data>
+  <data name="Template_HasExperiment" xml:space="preserve">
+    <value>无法删除使用中的虚拟环境模板。请先删除对应的虚拟环境。</value>
+  </data>
+  <data name="Template_NotFound" xml:space="preserve">
+    <value>虚拟环境模板 `{0}`不存在。对应活动：`{1}`.</value>
+  </data>
+  <data name="User_NotFound" xml:space="preserve">
+    <value>用户不存在。</value>
   </data>
 </root>

@@ -511,7 +511,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Member {0} is not a member of team {1}.
+        ///   Looks up a localized string similar to User {0} is not a member of team {1}.
         /// </summary>
         internal static string TeamMember_NotFound {
             get {

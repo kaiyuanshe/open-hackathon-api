@@ -250,7 +250,7 @@
     <value>The user cannot be removed since there are more than 1 members and the user is the only admin with admin access.</value>
   </data>
   <data name="TeamMember_NotFound" xml:space="preserve">
-    <value>Member {0} is not a member of team {1}</value>
+    <value>User {0} is not a member of team {1}</value>
   </data>
   <data name="TeamWork_NotFound" xml:space="preserve">
     <value>The team work cannot be found.</value>
