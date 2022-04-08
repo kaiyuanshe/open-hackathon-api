@@ -21,8 +21,9 @@
         </li>
         <li>After a successful login, post the response data(token is included) returend by Authing to api <code>/v2/login</code>. This step MIGHT be skipped in future.</li>
         <li>
-            Afterwards, you can all other APIs with the access token before it expires:
-            <code>Headers["Authorization"]="token TOKENVALUE"</code>. User has to login again if token expires.
+            Afterwards, you can call other APIs with an <code>Authorization</code> header. The header value is of format <code>token TOKENVALUE</code>. 
+            Notice that if the token expires, users need to login again to get a new token.
+            <code>Headers["Authorization"]="token TOKENVALUE"</code>
         </li>
     </ul>
 </div>
@@ -46,6 +47,30 @@
     </ul>
 </div>
 
+<h3>Multilingual Support</h3>
+<div>
+    Multiple languages support is still in progress. We are aiming to support 2 languanges: English(<b>default</b>) and Chinese. Scopes:
+    <ul>
+        <li>
+            Web Pages: <b>Not supported</b>. This includes the home page, Swagger UI etc.
+        </li>
+        <li>
+            User Input: <b>Not supported</b>. Any content from users is not supported. e.g. the display name and content of a hackathon.
+        </li>
+        <li>
+            Error Response: <b>Supported</b>.
+        </li>
+        <li>
+            Content from partners: <b>Not supported</b>. For instance, user info from Github/Authing cannot be localized.
+        </li>
+    </ul>
+    <div>
+        To get response in a different language, add Http Header <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language" target="_blank">Accept-Language</a>
+        to your request:
+        <code>Headers["Accept-Language"]="zh-CN"</code>
+    </div>
+</div>
+
 <h3>Error Response</h3>
 <div>
     Http response with a code >= 400 is considered Error. A <a href="https://tools.ietf.org/html/rfc7807" target="_blank">RFC7807</a>-compliant standard
@@ -65,6 +90,3 @@
 }
 </pre>
 </div>
-
-<h3>Legacy API</h3>
-<div>View legacy API at <a href="https://github.com/kaiyuanshe/open-hackathon/wiki/Open-hackathon-Restful-API" target="_blank">Open Hackthon Rest API V1 spec</a></div>
