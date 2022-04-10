@@ -53,7 +53,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
         [Test, TestCaseSource(nameof(GetMessageTestData))]
         public string GetMessage(ActivityLogEntity entity)
         {
-            return ActivityLogExtenstions.GetMessage(entity);
+            return entity.GetMessage();
         }
     }
 }
