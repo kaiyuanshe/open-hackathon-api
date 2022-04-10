@@ -44,6 +44,6 @@
         /// <summary>
         /// type of the activity log.
         /// </summary>
-        public ActivityLogType activityLogType { get; internal set; }
+        public string activityLogType { get; internal set; }
     }
 }

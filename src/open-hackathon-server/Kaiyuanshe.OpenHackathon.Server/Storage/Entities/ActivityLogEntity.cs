@@ -1,4 +1,6 @@
-﻿namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
+﻿using System;
+
+namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
     /// <summary>
     /// activity logs of user and hackathon
@@ -17,11 +19,13 @@
         /// <summary>
         /// The user id on whom the operation perferms.
         /// </summary>
+        [Obsolete]
         public string CorrelatedUserId { get; set; }
 
         /// <summary>
         /// related team id. might be null.
         /// </summary>
+        [Obsolete]
         public string TeamId { get; set; }
 
         /// <summary>
@@ -29,11 +33,6 @@
         /// </summary>
         [IgnoreEntityProperty]
         public string ActivityId => RowKey;
-
-        /// <summary>
-        /// Key message related to the activity.
-        /// </summary>
-        public string Message { get; set; }
 
         /// <summary>
         /// No need to specify for now.
@@ -44,6 +43,16 @@
         /// type of the activity log. <see cref="ActivityLogType"/>
         /// </summary>
         public string ActivityLogType { get; set; }
+
+        /// <summary>
+        /// Args to format the message.
+        /// </summary>
+        public string[] Args { get; set; } = new string[0];
+
+        /// <summary>
+        /// Default message of the activity, will used if cannot find the message in Resource file.
+        /// </summary>
+        public string Message { get; set; }
 
         public ActivityLogEntity Clone()
         {
