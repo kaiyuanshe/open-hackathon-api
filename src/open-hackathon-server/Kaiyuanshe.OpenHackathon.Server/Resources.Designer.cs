@@ -61,7 +61,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} created a new hackathon {1}..
+        ///   Looks up a localized string similar to {0} created a new hackathon: {1}..
         /// </summary>
         internal static string ActivitityLog_CreateHackathon {
             get {

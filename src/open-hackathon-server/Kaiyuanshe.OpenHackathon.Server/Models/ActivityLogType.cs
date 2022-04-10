@@ -16,6 +16,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
 
     public enum ActivityLogType
     {
+        none,
+
         // hackathon
         [MessageFormat(nameof(Resources.ActivitityLog_CreateHackathon))]
         createHackathon,
