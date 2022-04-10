@@ -13,75 +13,106 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
     [TestFixture]
     public class DefaultResponseBuilderTest
     {
-        #region BuildHackathon
+        #region BuildActivityLog
         [Test]
-        public void BuildHackathonTest()
+        public void BuildActivityLog()
         {
-            var entity = new HackathonEntity
+            var entity = new ActivityLogEntity
+            {
+                ActivityLogType = ActivityLogType.createHackathon.ToString(),
+                Args = new string[] { "uid", "hack" },
+                Category = ActivityLogCategory.Hackathon,
+                CreatedAt = DateTime.UtcNow,
+                HackathonName = "hack",
+                Message = "msg",
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Timestamp = DateTimeOffset.UtcNow,
+                UserId = "uid",
+            };
+
+            var resp = new DefaultResponseBuilder().BuildActivityLog(entity);
+            Assert.AreEqual("createHackathon", resp.activityLogType);
+            Assert.AreEqual(entity.CreatedAt, resp.createdAt);
+            Assert.AreEqual("hack", resp.hackathonName);
+            Assert.AreEqual("uid created a new hackathon: hack.", resp.message);
+            Assert.AreEqual("rk", resp.activityId);
+            Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
+            Assert.AreEqual("uid", resp.userId);
+        }
+        #endregion
+
+        #region BuildAward
+        [Test]
+        public void BuildAward()
+        {
+            AwardEntity awardAssignment = new AwardEntity
             {
                 PartitionKey = "pk",
-                AutoApprove = true,
-                CreatorId = "abc",
-                Location = "loc",
-                JudgeStartedAt = DateTime.UtcNow,
-                Status = HackathonStatus.online,
-                Enrollment = 100,
-                ReadOnly = true,
-            };
-
-            var roles = new HackathonRoles
-            {
-                isAdmin = true,
-                isEnrolled = true,
-                isJudge = true,
-            };
-
-            var builder = new DefaultResponseBuilder();
-            var hack = builder.BuildHackathon(entity, roles);
-
-            Assert.IsNull(hack.tags);
-            Assert.AreEqual("pk", hack.name);
-            Assert.IsTrue(hack.autoApprove.Value);
-            Assert.AreEqual("loc", hack.location);
-            Assert.AreEqual("abc", hack.creatorId);
-            Assert.IsTrue(hack.judgeStartedAt.HasValue);
-            Assert.IsFalse(hack.judgeEndedAt.HasValue);
-            Assert.AreEqual(100, hack.enrollment);
-            Assert.IsTrue(hack.roles.isAdmin);
-            Assert.IsTrue(hack.roles.isEnrolled);
-            Assert.IsTrue(hack.roles.isJudge);
-            Assert.IsTrue(hack.readOnly);
-        }
-        #endregion
-
-        #region BuildHackathonAdmin
-        [Test]
-        public void BuildHackathonAdmin()
-        {
-            HackathonAdminEntity entity = new HackathonAdminEntity
-            {
-                PartitionKey = "hack",
-                RowKey = "uid",
+                RowKey = "rk",
+                Description = "desc",
+                Name = "award",
+                Quantity = 5,
+                Target = AwardTarget.team,
+                Pictures = new PictureInfo[]
+                {
+                    new PictureInfo{ name="pic", uri="uri", description="a pic" }
+                },
                 CreatedAt = DateTime.UtcNow,
-                Timestamp = DateTime.UtcNow,
-            };
-            UserInfo userInfo = new UserInfo
-            {
-                PreferredUsername = "pun"
+                Timestamp = DateTimeOffset.UtcNow
             };
 
-            var respBuilder = new DefaultResponseBuilder();
-            var admin = respBuilder.BuildHackathonAdmin(entity, userInfo);
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildAward(awardAssignment);
 
-            Assert.AreEqual("hack", admin.hackathonName);
-            Assert.AreEqual("uid", admin.userId);
-            Assert.AreEqual(entity.CreatedAt, admin.createdAt);
-            Assert.AreEqual(entity.Timestamp.DateTime, admin.updatedAt);
-            Assert.AreEqual("pun", admin.user.PreferredUsername);
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.id);
+            Assert.AreEqual("award", result.name);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual(5, result.quantity);
+            Assert.AreEqual(AwardTarget.team, result.target);
+            Assert.AreEqual(1, result.pictures.Length);
+            Assert.AreEqual("pic", result.pictures[0].name);
+            Assert.AreEqual("uri", result.pictures[0].uri);
+            Assert.AreEqual("a pic", result.pictures[0].description);
+            Assert.AreEqual(awardAssignment.CreatedAt, result.createdAt);
+            Assert.AreEqual(awardAssignment.Timestamp.UtcDateTime, result.updatedAt);
         }
         #endregion
 
-        #region BuildEnrollmentTest
+        #region BuildAwardAssignmentTest
+        [Test]
+        public void BuildAwardAssignmentTest()
+        {
+            AwardAssignmentEntity awardAssignment = new AwardAssignmentEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                AssigneeId = "assignee",
+                AwardId = "award",
+                Description = "desc",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+            var user = new UserInfo { Device = "device" };
+            var team = new Team { id = "teamid" };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildAwardAssignment(awardAssignment, team, user);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.assignmentId);
+            Assert.AreEqual("assignee", result.assigneeId);
+            Assert.AreEqual("award", result.awardId);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual(awardAssignment.CreatedAt, result.createdAt);
+            Assert.AreEqual(awardAssignment.Timestamp.UtcDateTime, result.updatedAt);
+            Assert.AreEqual("device", result.user.Device);
+            Assert.AreEqual("teamid", result.team.id);
+        }
+        #endregion
+
+        #region BuildEnrollment
         [Test]
         public void BuildEnrollmentTest()
         {
@@ -189,7 +220,167 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
-        #region BuildTeamTest
+        #region BuildHackathon
+        [Test]
+        public void BuildHackathonTest()
+        {
+            var entity = new HackathonEntity
+            {
+                PartitionKey = "pk",
+                AutoApprove = true,
+                CreatorId = "abc",
+                Location = "loc",
+                JudgeStartedAt = DateTime.UtcNow,
+                Status = HackathonStatus.online,
+                Enrollment = 100,
+                ReadOnly = true,
+            };
+
+            var roles = new HackathonRoles
+            {
+                isAdmin = true,
+                isEnrolled = true,
+                isJudge = true,
+            };
+
+            var builder = new DefaultResponseBuilder();
+            var hack = builder.BuildHackathon(entity, roles);
+
+            Assert.IsNull(hack.tags);
+            Assert.AreEqual("pk", hack.name);
+            Assert.IsTrue(hack.autoApprove.Value);
+            Assert.AreEqual("loc", hack.location);
+            Assert.AreEqual("abc", hack.creatorId);
+            Assert.IsTrue(hack.judgeStartedAt.HasValue);
+            Assert.IsFalse(hack.judgeEndedAt.HasValue);
+            Assert.AreEqual(100, hack.enrollment);
+            Assert.IsTrue(hack.roles.isAdmin);
+            Assert.IsTrue(hack.roles.isEnrolled);
+            Assert.IsTrue(hack.roles.isJudge);
+            Assert.IsTrue(hack.readOnly);
+        }
+        #endregion
+
+        #region BuildHackathonAdmin
+        [Test]
+        public void BuildHackathonAdmin()
+        {
+            HackathonAdminEntity entity = new HackathonAdminEntity
+            {
+                PartitionKey = "hack",
+                RowKey = "uid",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow,
+            };
+            UserInfo userInfo = new UserInfo
+            {
+                PreferredUsername = "pun"
+            };
+
+            var respBuilder = new DefaultResponseBuilder();
+            var admin = respBuilder.BuildHackathonAdmin(entity, userInfo);
+
+            Assert.AreEqual("hack", admin.hackathonName);
+            Assert.AreEqual("uid", admin.userId);
+            Assert.AreEqual(entity.CreatedAt, admin.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, admin.updatedAt);
+            Assert.AreEqual("pun", admin.user.PreferredUsername);
+        }
+        #endregion
+
+        #region BuildJudge
+        [Test]
+        public void BuildJudgeTest()
+        {
+            JudgeEntity entity = new JudgeEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Description = "desc",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+            var user = new UserInfo { MiddleName = "mn" };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildJudge(entity, user);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.userId);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+            Assert.AreEqual("mn", result.user.MiddleName);
+        }
+        #endregion
+
+        #region BuildRating
+        [Test]
+        public void BuildRating()
+        {
+            RatingEntity entity = new RatingEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Description = "desc",
+                JudgeId = "jid",
+                RatingKindId = "kid",
+                TeamId = "tid",
+                Score = 5,
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+            UserInfo judge = new UserInfo { Country = "country" };
+            Team team = new Team { displayName = "myteam" };
+            RatingKind kind = new RatingKind { maximumScore = 10 };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildRating(entity, judge, team, kind);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.id);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual("jid", result.judgeId);
+            Assert.AreEqual("country", result.judge.Country);
+            Assert.AreEqual("kid", result.ratingKindId);
+            Assert.AreEqual(10, result.ratingKind.maximumScore);
+            Assert.AreEqual("tid", result.teamId);
+            Assert.AreEqual("myteam", result.team.displayName);
+            Assert.AreEqual(5, result.score);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
+        #region BuildRatingKind
+        [Test]
+        public void BuildRatingKind()
+        {
+            RatingKindEntity entity = new RatingKindEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Description = "desc",
+                Name = "name",
+                MaximumScore = 20,
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildRatingKind(entity);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.id);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual("name", result.name);
+            Assert.AreEqual(20, result.maximumScore);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
+        #region BuildTeam
         [Test]
         public void BuildTeamTest()
         {
@@ -224,7 +415,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
-        #region BuildTeamMemberTest
+        #region BuildTeamMember
         [Test]
         public void BuildTeamMemberTest()
         {
@@ -259,7 +450,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
-        #region BuildTeamWorkTest
+        #region BuildTeamWork
         [Test]
         public void BuildTeamWorkTest()
         {
@@ -344,130 +535,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual(entity.Timestamp.DateTime, template.updatedAt);
             Assert.AreEqual(200, template.status.code);
             Assert.AreEqual("kind", template.status.kind);
-        }
-        #endregion
-
-        #region BuildAwardAssignmentTest
-        [Test]
-        public void BuildAwardAssignmentTest()
-        {
-            AwardAssignmentEntity awardAssignment = new AwardAssignmentEntity
-            {
-                PartitionKey = "pk",
-                RowKey = "rk",
-                AssigneeId = "assignee",
-                AwardId = "award",
-                Description = "desc",
-                CreatedAt = DateTime.UtcNow,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            var user = new UserInfo { Device = "device" };
-            var team = new Team { id = "teamid" };
-
-            var responseBuilder = new DefaultResponseBuilder();
-            var result = responseBuilder.BuildAwardAssignment(awardAssignment, team, user);
-
-            Assert.AreEqual("pk", result.hackathonName);
-            Assert.AreEqual("rk", result.assignmentId);
-            Assert.AreEqual("assignee", result.assigneeId);
-            Assert.AreEqual("award", result.awardId);
-            Assert.AreEqual("desc", result.description);
-            Assert.AreEqual(awardAssignment.CreatedAt, result.createdAt);
-            Assert.AreEqual(awardAssignment.Timestamp.UtcDateTime, result.updatedAt);
-            Assert.AreEqual("device", result.user.Device);
-            Assert.AreEqual("teamid", result.team.id);
-        }
-        #endregion
-
-        #region BuildJudgeTest
-        [Test]
-        public void BuildJudgeTest()
-        {
-            JudgeEntity entity = new JudgeEntity
-            {
-                PartitionKey = "pk",
-                RowKey = "rk",
-                Description = "desc",
-                CreatedAt = DateTime.UtcNow,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            var user = new UserInfo { MiddleName = "mn" };
-
-            var responseBuilder = new DefaultResponseBuilder();
-            var result = responseBuilder.BuildJudge(entity, user);
-
-            Assert.AreEqual("pk", result.hackathonName);
-            Assert.AreEqual("rk", result.userId);
-            Assert.AreEqual("desc", result.description);
-            Assert.AreEqual(entity.CreatedAt, result.createdAt);
-            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
-            Assert.AreEqual("mn", result.user.MiddleName);
-        }
-        #endregion
-
-        #region BuildRatingKind
-        [Test]
-        public void BuildRatingKind()
-        {
-            RatingKindEntity entity = new RatingKindEntity
-            {
-                PartitionKey = "pk",
-                RowKey = "rk",
-                Description = "desc",
-                Name = "name",
-                MaximumScore = 20,
-                CreatedAt = DateTime.UtcNow,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-
-            var responseBuilder = new DefaultResponseBuilder();
-            var result = responseBuilder.BuildRatingKind(entity);
-
-            Assert.AreEqual("pk", result.hackathonName);
-            Assert.AreEqual("rk", result.id);
-            Assert.AreEqual("desc", result.description);
-            Assert.AreEqual("name", result.name);
-            Assert.AreEqual(20, result.maximumScore);
-            Assert.AreEqual(entity.CreatedAt, result.createdAt);
-            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
-        }
-        #endregion
-
-        #region BuildRating
-        [Test]
-        public void BuildRating()
-        {
-            RatingEntity entity = new RatingEntity
-            {
-                PartitionKey = "pk",
-                RowKey = "rk",
-                Description = "desc",
-                JudgeId = "jid",
-                RatingKindId = "kid",
-                TeamId = "tid",
-                Score = 5,
-                CreatedAt = DateTime.UtcNow,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            UserInfo judge = new UserInfo { Country = "country" };
-            Team team = new Team { displayName = "myteam" };
-            RatingKind kind = new RatingKind { maximumScore = 10 };
-
-            var responseBuilder = new DefaultResponseBuilder();
-            var result = responseBuilder.BuildRating(entity, judge, team, kind);
-
-            Assert.AreEqual("pk", result.hackathonName);
-            Assert.AreEqual("rk", result.id);
-            Assert.AreEqual("desc", result.description);
-            Assert.AreEqual("jid", result.judgeId);
-            Assert.AreEqual("country", result.judge.Country);
-            Assert.AreEqual("kid", result.ratingKindId);
-            Assert.AreEqual(10, result.ratingKind.maximumScore);
-            Assert.AreEqual("tid", result.teamId);
-            Assert.AreEqual("myteam", result.team.displayName);
-            Assert.AreEqual(5, result.score);
-            Assert.AreEqual(entity.CreatedAt, result.createdAt);
-            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
         }
         #endregion
 

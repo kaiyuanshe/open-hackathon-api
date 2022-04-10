@@ -65,11 +65,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
     {
         public ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity)
         {
-            // TODO: UT
-            // TODO: map activity log type to resource file
             return activityLogEntity.As<ActivityLog>(p =>
             {
                 p.updatedAt = activityLogEntity.Timestamp.UtcDateTime;
+                p.message = activityLogEntity.GetMessage();
             });
         }
 
@@ -90,7 +89,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 p.team = team;
             });
         }
-    
+
         public Enrollment BuildEnrollment(EnrollmentEntity enrollment, UserInfo userInfo)
         {
             return enrollment.As<Enrollment>(p =>
@@ -179,7 +178,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 p.updatedAt = ratingKindEntity.Timestamp.UtcDateTime;
             });
         }
-        
+
         public Team BuildTeam(TeamEntity teamEntity, UserInfo creator)
         {
             return teamEntity.As<Team>(p =>

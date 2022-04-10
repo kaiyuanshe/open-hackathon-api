@@ -47,6 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// Args to format the message.
         /// </summary>
+        [ConvertableEntityProperty]
         public string[] Args { get; set; } = new string[0];
 
         /// <summary>

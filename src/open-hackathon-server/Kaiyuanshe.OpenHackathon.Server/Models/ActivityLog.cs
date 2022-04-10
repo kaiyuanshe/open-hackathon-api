@@ -18,18 +18,6 @@
         public string userId { get; internal set; }
 
         /// <summary>
-        /// related team id. might be null.
-        /// </summary>
-        /// <example>d1e40c38-cc2a-445f-9eab-60c253256c57</example>
-        public string teamId { get; internal set; }
-
-        /// <summary>
-        /// The user id on whom the operation perferms.
-        /// </summary>
-        /// <example>2</example>
-        public string correlatedUserId { get; internal set; }
-
-        /// <summary>
         /// auto-generated activity log id.
         /// </summary>
         /// <example>323fed7f-447e-4c2e-854c-1421e2439208</example>
