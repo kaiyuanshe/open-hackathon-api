@@ -1,4 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
@@ -7,12 +9,15 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
     internal class ActivityLogManagementTests
     {
+        #region LogActivity
         [Test]
         public async Task LogActivity_Skip()
         {
@@ -123,5 +128,129 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
             table.VerifyNoOtherCalls();
         }
+        #endregion
+
+        #region ListActivityLogs
+        private static IEnumerable ListActivityLogsTestData()
+        {
+            // options
+            // returned continuationToken
+            // expected filter
+            // expected continuationToken
+            // expected top
+            // expected next Pagination
+
+            // no filter, default top
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { },
+                null,
+                "Category eq 1",
+                null,
+                100,
+                new Pagination { top = 100 }
+                );
+
+            // no filter, top
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { Pagination = new Pagination { top = 5 } },
+                null,
+                "Category eq 1",
+                null,
+                5,
+                new Pagination { top = 5 }
+                );
+
+            // no filter, top & token
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { Pagination = new Pagination { top = 5, np = "np", nr = "nr" } },
+                null,
+                "Category eq 1",
+                "np nr",
+                5,
+                new Pagination { top = 5 }
+                );
+
+            // no filter, with returned pagination
+            yield return new TestCaseData(
+               new ActivityLogQueryOptions { },
+               "np2 nr2",
+               "Category eq 1",
+               null,
+               100,
+               new Pagination { top = 100, np = "np2", nr = "nr2" }
+               );
+
+            // with HackathonName
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { HackathonName = "hack" },
+                null,
+                "(PartitionKey eq 'hack') and (Category eq 0)",
+                null,
+                100,
+                new Pagination { top = 100 }
+                );
+
+            // with UserId
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { UserId = "uid" },
+                null,
+                "(PartitionKey eq 'uid') and (Category eq 1)",
+                null,
+                100,
+                new Pagination { top = 100 }
+                );
+
+            // with HackathonName and UserId
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { HackathonName = "hack", UserId = "uid" },
+                null,
+                "(PartitionKey eq 'hack') and (Category eq 0) and (UserId eq 'uid')",
+                null,
+                100,
+                new Pagination { top = 100 }
+                );
+
+            // all
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions
+                {
+                    HackathonName = "hack",
+                    UserId = "uid",
+                    Pagination = new Pagination { top = 10, np = "np", nr = "nr" }
+                },
+                "np2 nr2",
+                "(PartitionKey eq 'hack') and (Category eq 0) and (UserId eq 'uid')",
+                "np nr",
+                10,
+                new Pagination { top = 10, np = "np2", nr = "nr2" }
+                );
+        }
+
+        [Test, TestCaseSource(nameof(ListActivityLogsTestData))]
+        public async Task ListActivityLogs(ActivityLogQueryOptions options, string returnedToken,
+            string expectedFilter, string expectedToken, int expectedTop, Pagination expectedNext)
+        {
+            var logs = new List<ActivityLogEntity>()
+            {
+                new ActivityLogEntity{ },
+                new ActivityLogEntity{ },
+            };
+
+            var page = MockHelper.CreatePage(logs, returnedToken);
+            var storageContext = new MockStorageContext();
+            storageContext.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
+                .ReturnsAsync(page);
+
+            var activityLogManagement = new ActivityLogManagement(null)
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await activityLogManagement.ListActivityLogs(options, default);
+
+            storageContext.VerifyAll();
+            Assert.AreEqual(2, result.Count());
+            AssertHelper.AssertEqual(expectedNext, options.NextPage);
+        }
+        #endregion
     }
 }

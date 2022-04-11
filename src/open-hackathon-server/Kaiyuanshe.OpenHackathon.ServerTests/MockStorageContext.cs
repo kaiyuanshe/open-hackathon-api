@@ -7,16 +7,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
     internal class MockStorageContext
     {
         Mock<IStorageContext> StorageContext;
+        public Mock<IActivityLogTable> ActivityLogTable { get; set; }
         public Mock<IExperimentTable> ExperimentTable { get; }
         public Mock<IHackathonTable> HackathonTable { get; }
 
         public MockStorageContext()
         {
+            ActivityLogTable = new Mock<IActivityLogTable>();
             ExperimentTable = new Mock<IExperimentTable>();
             HackathonTable = new Mock<IHackathonTable>();
 
             StorageContext = new Mock<IStorageContext>();
-            StorageContext.SetupGet(p => p.ExperimentTable).Returns(ExperimentTable.Object);
+            StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
+            StorageContext.Setup(p => p.ExperimentTable).Returns(ExperimentTable.Object);
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
         }
 
@@ -24,8 +27,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
         public void VerifyAll()
         {
-            Mock.VerifyAll(ExperimentTable, HackathonTable);
+            Mock.VerifyAll(ActivityLogTable, ExperimentTable, HackathonTable);
 
+            ActivityLogTable.VerifyNoOtherCalls();
             ExperimentTable.VerifyNoOtherCalls();
             HackathonTable.VerifyNoOtherCalls();
         }

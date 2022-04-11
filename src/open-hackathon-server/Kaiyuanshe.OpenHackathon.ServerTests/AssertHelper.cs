@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System;
 
@@ -44,6 +45,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Assert.IsTrue(result is NoContentResult);
             NoContentResult noContent = (NoContentResult)result;
             Assert.AreEqual(204, noContent.StatusCode);
+        }
+
+        public static void AssertEqual(Pagination expected, Pagination actual)
+        {
+            if (expected == actual)
+                return;
+
+            Assert.IsNotNull(expected);
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(expected.np, actual.np);
+            Assert.AreEqual(expected.nr, actual.nr);
+            Assert.AreEqual(expected.top, actual.top);
         }
     }
 }
