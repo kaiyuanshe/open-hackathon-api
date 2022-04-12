@@ -1,6 +1,7 @@
 ﻿using Authing.ApiClient.Types;
 using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
@@ -9,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
@@ -157,6 +159,55 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             FileUpload resp = AssertHelper.AssertOKResult<FileUpload>(result);
             Assert.AreEqual(10, resp.expiration.Value);
             Assert.AreEqual("user/avatar.jpg", resp.filename);
+        }
+        #endregion
+
+        #region ListAcitivitiesByUser
+        [Test]
+        public async Task ListAcitivitiesByUser_UserNotFound()
+        {
+            UserInfo user = null;
+
+            var mockContext = new MockControllerContext();
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+
+            var controller = new UserController();
+            mockContext.SetupController(controller);
+            var result = await controller.ListAcitivitiesByUser("uid", null, default);
+
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);
+        }
+
+        [Test]
+        public async Task ListAcitivitiesByUser_Success()
+        {
+            UserInfo user = new UserInfo { };
+            var pagination = new Pagination();
+            var entities = new List<ActivityLogEntity>
+            {
+                new ActivityLogEntity{ },
+                new ActivityLogEntity{ }
+            };
+
+            var mockContext = new MockControllerContext();
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            mockContext.ActivityLogManagement.Setup(l => l.ListActivityLogs(
+                It.Is<ActivityLogQueryOptions>(o => o.Pagination == pagination && o.UserId == "uid"), default))
+                .ReturnsAsync(entities)
+                .Callback<ActivityLogQueryOptions, CancellationToken>((o, c) =>
+                {
+                    o.NextPage = new Pagination { np = "np", nr = "nr", top = 1 };
+                });
+
+            var controller = new UserController();
+            mockContext.SetupController(controller);
+            var result = await controller.ListAcitivitiesByUser("uid", pagination, default);
+
+            mockContext.VerifyAll();
+            var logs = AssertHelper.AssertOKResult<ActivityLogList>(result);
+            Assert.AreEqual(2, logs.value.Length);
+            Assert.AreEqual("&np=np&nr=nr&top=1", logs.nextLink);
         }
         #endregion
     }

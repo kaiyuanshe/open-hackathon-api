@@ -26,8 +26,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IResponseBuilder ResponseBuilder { get; set; }
 
         public IHackathonManagement HackathonManagement { get; set; }
-        public IHackathonAdminManagement HackathonAdminManagement { get; set; }
 
+        public IHackathonAdminManagement HackathonAdminManagement { get; set; }
+        
         public IUserManagement UserManagement { get; set; }
 
         public IEnrollmentManagement EnrollmentManagement { get; set; }
@@ -96,6 +97,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             routeValues.Add(nameof(Pagination.np), nextPage.np);
             routeValues.Add(nameof(Pagination.nr), nextPage.nr);
+            if (nextPage?.top != null)
+            {
+                routeValues.Add(nameof(Pagination.top), nextPage.top);
+            }
 
             if (EnvironmentHelper.IsRunningInTests())
             {

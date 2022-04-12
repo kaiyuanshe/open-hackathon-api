@@ -34,4 +34,15 @@
         /// </summary>
         public string activityLogType { get; internal set; }
     }
+
+    /// <summary>
+    /// a list of enrollment
+    /// </summary>
+    public class ActivityLogList : ResourceList<ActivityLog>
+    {
+        /// <summary>
+        /// a list of activity logs
+        /// </summary>
+        public override ActivityLog[] value { get; set; }
+    }
 }
