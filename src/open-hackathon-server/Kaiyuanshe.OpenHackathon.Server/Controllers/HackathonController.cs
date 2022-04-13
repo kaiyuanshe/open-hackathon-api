@@ -18,16 +18,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region ListHackathon
         /// <summary>
-        /// List paginated online hackathons.
+        /// List paginated online hackathons. Deleted hackathons might be included in response. 
+        /// See parameter listType for details. Clients can check the status of hackathon.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <param name="search">keyword to search in name, display name or details. Do case-insensitive substring match only.</param>
         /// <param name="orderby">order by. Default to createdAt.</param>
         /// <param name="listType">type of list. Default to online. 
         /// online: list hackathons in online status only; 
-        /// admin: list hackathons in any status where current user has admin access.
-        /// enrolled: list enrolled hackathons.
-        /// fresh: hackathons that are about to start.
+        /// admin: list hackathons in any status where current user has admin access. Note that, Platform admins can see all hackathons including deleted(offline) ones.
+        /// enrolled: list enrolled hackathons;
+        /// fresh: hackathons that are about to start;
         /// </param>
         /// <returns>A list of hackathon.</returns>
         /// <response code="200">Success. The response describes a list of hackathon and a nullable link to query more results.</response>
@@ -217,7 +218,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region Get
         /// <summary>
-        /// Query a hackathon by name.
+        /// Query a hackathon by name. 
+        /// If a hackathon is offline(also know as Deleted), it's visible to platform admins only.
+        /// If a hackathon is in planning or pendingApproval state, it's visible to the hackathon admins only.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -237,6 +240,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
             }
 
+            if (entity.Status == HackathonStatus.offline && !ClaimsHelper.IsPlatformAdministrator(User))
+            {
+                return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
+            }
+
             var role = await HackathonManagement.GetHackathonRolesAsync(entity, User, cancellationToken);
             if (!entity.IsOnline() && (role == null || !role.isAdmin))
             {
@@ -249,7 +257,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region Delete
         /// <summary>
-        /// Delete a hackathon by name. The hackathon is marked as Deleted, the record becomes invisible.
+        /// Delete a hackathon by name. The hackathon is marked as Deleted(also called Offline).
+        /// The record becomes invisible to non-admin users. Hackathon admins are still able to see it.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -276,7 +285,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
                 Message = entity.DisplayName,
-            }, cancellationToken); 
+            }, cancellationToken);
             return NoContent();
         }
         #endregion
