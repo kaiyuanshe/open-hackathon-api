@@ -1,5 +1,6 @@
 ﻿using Azure;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {

@@ -363,6 +363,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
 
         [Test]
+        public async Task GetTest_OfflineNotPlatformAdmin()
+        {
+            string name = "Foo";
+            HackathonEntity entity = new HackathonEntity { Status = HackathonStatus.offline };
+
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", CancellationToken.None))
+                .ReturnsAsync(entity);
+
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Get(name, default);
+
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, name));
+        }
+
+        [Test]
         public async Task GetTest_NotOnlineAnonymous()
         {
             string name = "Foo";
