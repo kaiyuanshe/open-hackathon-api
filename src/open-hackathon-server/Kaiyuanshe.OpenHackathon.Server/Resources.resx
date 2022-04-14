@@ -120,6 +120,9 @@
   <data name="ActivitityLog_CreateHackathon" xml:space="preserve">
     <value>{0} created a new hackathon: {1}.</value>
   </data>
+  <data name="ActivitityLog_CreateHackathonAdmin" xml:space="preserve">
+    <value>{0} is added as Administrator of hackathon '{1}'  by {2}</value>
+  </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>
   </data>

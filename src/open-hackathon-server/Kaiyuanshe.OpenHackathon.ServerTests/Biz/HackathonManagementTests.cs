@@ -139,6 +139,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             cache.VerifyNoOtherCalls();
 
             Assert.AreEqual("loc", result.Location);
+            Assert.AreEqual("test", result.DisplayName); // fallback to name
             Assert.AreEqual("test", result.PartitionKey);
             Assert.AreEqual("uid", result.CreatorId);
             Assert.AreEqual(string.Empty, result.RowKey);

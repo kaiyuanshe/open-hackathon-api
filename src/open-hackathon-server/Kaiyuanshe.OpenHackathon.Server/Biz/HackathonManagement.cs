@@ -140,7 +140,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 CreatedAt = DateTime.UtcNow,
                 CreatorId = request.creatorId,
                 Detail = request.detail,
-                DisplayName = request.displayName,
+                DisplayName = request.displayName ?? request.name,
                 EventStartedAt = request.eventStartedAt,
                 EventEndedAt = request.eventEndedAt,
                 EnrollmentStartedAt = request.enrollmentStartedAt,

@@ -57,47 +57,30 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
-            UserInfo user = new UserInfo { Zoneinfo = "zone" };
+            UserInfo user = new UserInfo { Name = "name" };
             var adminEntity = new HackathonAdminEntity { PartitionKey = "pk", RowKey = "rk" };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var adminManagement = new Mock<IHackathonAdminManagement>();
-            adminManagement.Setup(a => a.CreateAdminAsync(It.Is<HackathonAdmin>(ha =>
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            mockContext.HackathonAdminManagement.Setup(a => a.CreateAdminAsync(It.Is<HackathonAdmin>(ha =>
                 ha.hackathonName == "hack" && ha.userId == "uid"), default))
                 .ReturnsAsync(adminEntity);
-            var activityLogManagement = new Mock<IActivityLogManagement>();
-            activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
+            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(
+                a => a.HackathonName == "hack"
                 && a.ActivityLogType == ActivityLogType.createHackathonAdmin.ToString()
-                && a.CorrelatedUserId == "uid"), default));
+                && a.Args.Length == 3), default));
 
-
-            var controller = new AdminController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                HackathonAdminManagement = adminManagement.Object,
-                UserManagement = userManagement.Object,
-                ActivityLogManagement = activityLogManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            var controller = new AdminController();
+            mockContext.SetupController(controller);
             var result = await controller.CreateAdmin("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, adminManagement, userManagement, activityLogManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            adminManagement.VerifyNoOtherCalls();
-            activityLogManagement.VerifyNoOtherCalls();
-
+            mockContext.VerifyAll();
             var admin = AssertHelper.AssertOKResult<HackathonAdmin>(result);
             Assert.AreEqual("pk", admin.hackathonName);
             Assert.AreEqual("rk", admin.userId);
-            Assert.AreEqual("zone", admin.user.Zoneinfo);
+            Assert.AreEqual("name", admin.user.Name);
         }
         #endregion
 

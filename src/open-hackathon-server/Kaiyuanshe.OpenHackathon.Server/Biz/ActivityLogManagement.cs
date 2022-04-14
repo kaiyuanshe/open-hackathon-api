@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+﻿using Flurl.Http;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -34,6 +35,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // override any input
             entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0, 8)}";
             entity.CreatedAt = DateTime.UtcNow;
+
+            if (string.IsNullOrWhiteSpace(entity.Message))
+            {
+                entity.Message = entity.GetMessage();
+            }
 
             if (!string.IsNullOrEmpty(entity.UserId))
             {
