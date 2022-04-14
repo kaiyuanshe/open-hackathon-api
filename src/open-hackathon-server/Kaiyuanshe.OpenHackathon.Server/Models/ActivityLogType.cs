@@ -28,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         archiveHackathon, // make it read-only
 
         // hackathon Admin
+        [MessageFormat(nameof(Resources.ActivitityLog_CreateHackathonAdmin))]
         createHackathonAdmin,
         deleteHackathonAdmin,
 

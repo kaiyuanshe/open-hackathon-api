@@ -70,6 +70,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is added as Administrator of hackathon &apos;{1}&apos;  by {2}.
+        /// </summary>
+        internal static string ActivitityLog_CreateHackathonAdmin {
+            get {
+                return ResourceManager.GetString("ActivitityLog_CreateHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The creator of a hackathon cannot be deleted..
         /// </summary>
         internal static string Admin_CannotDeleteCreator {

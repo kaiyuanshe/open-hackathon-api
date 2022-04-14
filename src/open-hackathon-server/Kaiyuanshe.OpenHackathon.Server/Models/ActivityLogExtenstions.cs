@@ -1,15 +1,24 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Helpers;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
+using System.Collections.Concurrent;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
     public static class ActivityLogExtenstions
     {
+        static ConcurrentDictionary<ActivityLogType, string> resourceKeys = new();
+
         public static string GetResourceKey(this ActivityLogType activityLogType)
         {
-            var attr = activityLogType.GetCustomAttribute<MessageFormatAttribute>();
-            return attr?.ResourceKey ?? string.Empty;
+            if (!resourceKeys.ContainsKey(activityLogType))
+            {
+                var attr = activityLogType.GetCustomAttribute<MessageFormatAttribute>();
+                string key = attr?.ResourceKey ?? string.Empty;
+                resourceKeys.TryAdd(activityLogType, key);
+            }
+
+            return resourceKeys[activityLogType];
         }
 
         public static string GetMessage(this ActivityLogEntity entity)
