@@ -220,12 +220,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await HackathonAdminManagement.DeleteAdminAsync(hackathonName.ToLower(), userId, cancellationToken);
+            var currentUser = await GetCurrentUserInfo(cancellationToken);
+            var deletedUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             await ActivityLogManagement.LogActivity(new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.deleteHackathonAdmin.ToString(),
-                CorrelatedUserId = userId,
                 HackathonName = hackathonName.ToLower(),
                 UserId = CurrentUserId,
+                Args = new string[] { currentUser.ActivitLogName(), hackathon.DisplayName, deletedUser.ActivitLogName() }
             }, cancellationToken);
             return NoContent();
         }
