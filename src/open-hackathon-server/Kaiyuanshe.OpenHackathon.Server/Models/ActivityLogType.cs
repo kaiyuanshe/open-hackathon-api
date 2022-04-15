@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         none,
 
         // hackathon
-        [MessageFormat(nameof(Resources.ActivitityLog_CreateHackathon))]
+        [MessageFormat(nameof(Resources.ActivityLog_CreateHackathon))]
         createHackathon,
         updateHackathon,
         deleteHackathon,
@@ -28,8 +28,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         archiveHackathon, // make it read-only
 
         // hackathon Admin
-        [MessageFormat(nameof(Resources.ActivitityLog_CreateHackathonAdmin))]
+        [MessageFormat(nameof(Resources.ActivityLog_CreateHackathonAdmin))]
         createHackathonAdmin,
+        [MessageFormat(nameof(Resources.ActivityLog_DeleteHackathonAdmin))]
         deleteHackathonAdmin,
 
         // team

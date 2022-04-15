@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
         public void GetResourceKey()
         {
             Assert.AreEqual("", ActivityLogType.none.GetResourceKey());
-            Assert.AreEqual("ActivitityLog_CreateHackathon", ActivityLogType.createHackathon.GetResourceKey());
+            Assert.AreEqual("ActivityLog_CreateHackathon", ActivityLogType.createHackathon.GetResourceKey());
         }
 
         private static IEnumerable GetMessageTestData()
