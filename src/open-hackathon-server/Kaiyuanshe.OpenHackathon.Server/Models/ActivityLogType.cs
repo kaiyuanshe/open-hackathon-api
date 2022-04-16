@@ -16,10 +16,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
 
     public enum ActivityLogType
     {
-        none,
-
         // hackathon
-        [MessageFormat(nameof(Resources.ActivityLog_CreateHackathon))]
+        //[MessageFormat(nameof(Resources.ActivityLog_CreateHackathon))]
         createHackathon,
         updateHackathon,
         deleteHackathon,
@@ -28,9 +26,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         archiveHackathon, // make it read-only
 
         // hackathon Admin
-        [MessageFormat(nameof(Resources.ActivityLog_CreateHackathonAdmin))]
+        //[MessageFormat(nameof(Resources.ActivityLog_CreateHackathonAdmin))]
         createHackathonAdmin,
-        [MessageFormat(nameof(Resources.ActivityLog_DeleteHackathonAdmin))]
+        //[MessageFormat(nameof(Resources.ActivityLog_DeleteHackathonAdmin))]
         deleteHackathonAdmin,
 
         // team
