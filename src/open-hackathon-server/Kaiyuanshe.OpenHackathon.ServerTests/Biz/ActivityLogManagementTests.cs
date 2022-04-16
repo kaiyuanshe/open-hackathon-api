@@ -151,7 +151,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     Pagination = new Pagination { top = 5 }
                 },
                 null,
-                "(PartitionKey eq 'uid') and (Category eq 2)",
+                "(PartitionKey eq 'uid') and (Category eq 1)",
                 null,
                 5,
                 new Pagination { top = 5 }
@@ -168,7 +168,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     Pagination = new Pagination { top = 5, np = "np", nr = "nr" }
                 },
                 null,
-                "(PartitionKey eq 'uid') and (Category eq 2)",
+                "(PartitionKey eq 'uid') and (Category eq 1)",
                 "np nr",
                 5,
                 new Pagination { top = 5 }
@@ -184,7 +184,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     UserId = "uid",
                 },
                 "np2 nr2",
-                "(PartitionKey eq 'uid') and (Category eq 2)",
+                "(PartitionKey eq 'uid') and (Category eq 1)",
                 null,
                 100,
                 new Pagination { top = 100, np = "np2", nr = "nr2" }
@@ -201,7 +201,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     Pagination = new Pagination { top = 10, np = "np", nr = "nr" }
                 },
                 "np2 nr2",
-                "(PartitionKey eq 'uid') and (Category eq 2)",
+                "(PartitionKey eq 'uid') and (Category eq 1)",
                 "np nr",
                 10,
                 new Pagination { top = 10, np = "np2", nr = "nr2" }

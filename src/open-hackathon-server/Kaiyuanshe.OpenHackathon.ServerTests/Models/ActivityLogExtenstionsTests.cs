@@ -3,6 +3,8 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
 {
@@ -78,6 +80,37 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             Assert.AreEqual(cn, entity.Messages["zh-CN"]);
             Assert.IsTrue(entity.Messages.ContainsKey("en-US"));
             Assert.AreEqual(en, entity.Messages["en-US"]);
+        }
+
+        private static IEnumerable GetMessageTestData()
+        {
+            yield return new TestCaseData(new Dictionary<string, string>
+            {
+            }).Returns(null);
+
+            yield return new TestCaseData(new Dictionary<string, string>
+            {
+                ["zh-CN"] = "cn"
+            }).Returns("cn");
+
+            yield return new TestCaseData(new Dictionary<string, string>
+            {
+                ["en-US"] = "en"
+            }).Returns("en");
+
+            yield return new TestCaseData(new Dictionary<string, string>
+            {
+                ["zh-CN"] = "cn",
+                ["en-US"] = "en"
+            }).Returns("cn");
+        }
+
+        [Test, TestCaseSource(nameof(GetMessageTestData))]
+        public string GetMessage(Dictionary<string, string> messages)
+        {
+            CultureInfo.CurrentUICulture = CultureInfos.zh_CN;
+            var entity = new ActivityLogEntity { Messages = messages };
+            return entity.GetMessage();
         }
 
         /// <summary>

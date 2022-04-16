@@ -63,17 +63,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// </summary>
         [ConvertableEntityProperty]
         public Dictionary<string, string> Messages { get; set; } = new();
-
-        public ActivityLogEntity Clone()
-        {
-            return (ActivityLogEntity)MemberwiseClone();
-        }
     }
 
     public enum ActivityLogCategory
     {
         Hackathon,
-        Team,
         User,
+        Team,
     }
 }

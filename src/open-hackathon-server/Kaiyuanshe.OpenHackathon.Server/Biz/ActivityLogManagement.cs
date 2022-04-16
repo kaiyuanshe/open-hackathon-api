@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -62,22 +61,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0, 8)}";
             entity.CreatedAt = DateTime.UtcNow;
 
+            var ltype = Enum.Parse<ActivityLogType>(entity.ActivityLogType);
+            var largs = new { hackathonName = entity.HackathonName, userName = entity.OperatorId };
             if (!string.IsNullOrEmpty(entity.OperatorId))
             {
-                await CloneAndSave(entity, (e) =>
-                {
-                    e.PartitionKey = entity.OperatorId;
-                    e.Category = ActivityLogCategory.User;
-                }, cancellationToken);
+                await LogHackathonActivity(entity.HackathonName, entity.OperatorId, ltype, largs);
             }
 
             if (!string.IsNullOrEmpty(entity.HackathonName))
             {
-                await CloneAndSave(entity, (e) =>
-                {
-                    e.PartitionKey = entity.HackathonName;
-                    e.Category = ActivityLogCategory.Hackathon;
-                }, cancellationToken);
+                await LogUserActivity(entity.OperatorId, entity.HackathonName, entity.OperatorId, ltype, largs);
             }
         }
 
@@ -143,20 +136,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 // ignore any exception
             }
         }
-
-        private async Task CloneAndSave(ActivityLogEntity entity, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
-        {
-            var clone = entity.Clone();
-            customize(clone);
-            try
-            {
-                await StorageContext.ActivityLogTable.InsertAsync(clone, cancellationToken);
-            }
-            catch
-            {
-                // ignore any exception
-            }
-        }
         #endregion
 
         #region ListActivityLogs
@@ -195,5 +174,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
         }
         #endregion
+    }
+
+    public static class IActivityLogManagementExtensions
+    {
+        public static async Task OnHackathonCreateOrUpdate(this IActivityLogManagement activityLogManagement,
+            string hackathonName, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
+        {
+            await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, cancellationToken);
+            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, cancellationToken);
+        }
     }
 }

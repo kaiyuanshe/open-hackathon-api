@@ -152,13 +152,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
                 parameter.creatorId = CurrentUserId;
                 var created = await HackathonManagement.CreateHackathonAsync(parameter, cancellationToken);
-                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+
+                var user = await GetCurrentUserInfo(cancellationToken);
+                var logArgs = new
                 {
-                    ActivityLogType = ActivityLogType.createHackathon.ToString(),
-                    HackathonName = hackathonName.ToLower(),
-                    OperatorId = CurrentUserId,
-                    Message = parameter.displayName,
-                }, cancellationToken);
+                    hackathonName = created.DisplayName,
+                    userName = user.ActivitLogName()
+                };
+                await ActivityLogManagement.OnHackathonCreateOrUpdate(
+                    nameLowercase,
+                    CurrentUserId,
+                    ActivityLogType.createHackathon,
+                    logArgs,
+                    cancellationToken);
+
                 var roles = await HackathonManagement.GetHackathonRolesAsync(created, User, cancellationToken);
                 return Ok(ResponseBuilder.BuildHackathon(created, roles));
             }
