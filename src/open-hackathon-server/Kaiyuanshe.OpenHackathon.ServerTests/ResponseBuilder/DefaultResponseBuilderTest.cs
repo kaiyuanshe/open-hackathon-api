@@ -1,4 +1,5 @@
 ﻿using Authing.ApiClient.Types;
+using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
@@ -6,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
@@ -29,7 +31,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 OperatorId = "uid",
                 Messages = new Dictionary<string, string>
                 {
-                    ["zh-CN"] = "cn",
                     ["en-US"] = "en"
                 }
             };
