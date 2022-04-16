@@ -1,4 +1,5 @@
 ﻿using Authing.ApiClient.Types;
+using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
@@ -6,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
@@ -41,6 +43,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("rk", resp.activityId);
             Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
             Assert.AreEqual("uid", resp.operatorId);
+            CultureInfo.CurrentUICulture = CultureInfos.en_US;
             Assert.AreEqual("en", resp.message);
         }
         #endregion
