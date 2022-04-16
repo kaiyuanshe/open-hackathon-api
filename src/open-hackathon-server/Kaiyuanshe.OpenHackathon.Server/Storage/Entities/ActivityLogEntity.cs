@@ -13,9 +13,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         public string HackathonName { get; set; }
 
         /// <summary>
-        /// User who performs the operation.
+        /// Id of User who performs the operation.
         /// </summary>
-        public string UserId { get; set; }
+        public string OperatorId { get; set; }
 
         /// <summary>
         /// The user id on whom the operation perferms.
@@ -64,7 +64,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         [ConvertableEntityProperty]
         public Dictionary<string, string> Messages { get; set; } = new();
 
-        [Obsolete]
         public ActivityLogEntity Clone()
         {
             return (ActivityLogEntity)MemberwiseClone();
@@ -74,6 +73,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     public enum ActivityLogCategory
     {
         Hackathon,
+        Team,
         User,
     }
 }

@@ -59,7 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 {
                     ActivityLogType = ActivityLogType.createEnrollment.ToString(),
                     HackathonName = hackathonName.ToLower(),
-                    UserId = CurrentUserId,
+                    OperatorId = CurrentUserId,
                 }, cancellationToken);
                 var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
                 return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
@@ -130,7 +130,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateEnrollment.ToString(),
                 HackathonName = enrollment.HackathonName,
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
             }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(existing.UserId, cancellationToken);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
@@ -237,7 +237,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = activityLogType.ToString(),
                 HackathonName = enrollment.HackathonName,
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 CorrelatedUserId = enrollment.UserId,
             }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);

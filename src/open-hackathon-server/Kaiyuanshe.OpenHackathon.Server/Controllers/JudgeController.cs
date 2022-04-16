@@ -70,7 +70,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createJudge.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 CorrelatedUserId = userId,
                 Message = parameter.description, 
             }, cancellationToken);
@@ -127,7 +127,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateJudge.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 CorrelatedUserId = userId,
                 Message = parameter.description ?? entity.Description,
             }, cancellationToken);
@@ -294,7 +294,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteJudge.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 CorrelatedUserId = userId,
             }, cancellationToken);
             return NoContent();

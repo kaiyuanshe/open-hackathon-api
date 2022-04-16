@@ -64,7 +64,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createTemplate.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = context?.Status?.Message,
             }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
@@ -131,7 +131,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateTemplate.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = context?.Status?.Message,
             }, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
@@ -282,7 +282,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteTemplate.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = context?.TemplateEntity?.Id,
             }, cancellationToken);
 
@@ -367,7 +367,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createExperiment.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = experimentContext?.Status?.Message,
             }, cancellationToken);
 
@@ -661,7 +661,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteExperiment.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = experimentId,
             }, cancellationToken);
 

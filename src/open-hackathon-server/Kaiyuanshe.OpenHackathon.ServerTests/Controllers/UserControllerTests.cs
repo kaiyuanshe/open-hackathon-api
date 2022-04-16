@@ -193,7 +193,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var mockContext = new MockControllerContext();
             mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
             mockContext.ActivityLogManagement.Setup(l => l.ListActivityLogs(
-                It.Is<ActivityLogQueryOptions>(o => o.Pagination == pagination && o.UserId == "uid"), default))
+                It.Is<ActivityLogQueryOptions>(o =>
+                    o.Pagination == pagination
+                    && o.Category == ActivityLogCategory.User
+                    && o.UserId == "uid"), default))
                 .ReturnsAsync(entities)
                 .Callback<ActivityLogQueryOptions, CancellationToken>((o, c) =>
                 {

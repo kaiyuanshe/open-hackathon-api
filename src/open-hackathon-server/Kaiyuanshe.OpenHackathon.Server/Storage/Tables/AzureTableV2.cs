@@ -33,14 +33,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
     {
         TableClient tableClient = null;
-        ILogger logger;
         protected abstract string TableName { get; }
 
         public override string StorageName => tableClient?.AccountName;
+        public ILogger<TEntity> Logger { get; set; }
+
+        protected AzureTableV2()
+        {
+
+        }
 
         protected AzureTableV2(ILogger logger)
         {
-            this.logger = logger;
         }
 
         public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -281,7 +285,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 clientOptions.AddPolicy(traceIdPolicy, HttpPipelinePosition.PerRetry);
 
                 tableClient = new TableClient(conn, TableName, clientOptions);
-                logger.TraceInformation($"Building TableClient for {StorageName}.{TableName}.");
+                Logger.TraceInformation($"Building TableClient for {StorageName}.{TableName}.");
                 using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
                 {
                     try

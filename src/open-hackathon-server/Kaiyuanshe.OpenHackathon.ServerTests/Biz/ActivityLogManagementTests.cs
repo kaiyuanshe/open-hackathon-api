@@ -1,10 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -17,116 +14,89 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
     internal class ActivityLogManagementTests
     {
-        #region LogActivity
+        #region LogHackathonActivity
         [Test]
-        public async Task LogActivity_Skip()
+        public async Task LogHackathonActivity()
         {
-            var logger = new Mock<ILogger<ActivityLogTable>>();
+            var args = new { userName = "un" };
 
-            var table = new Mock<ActivityLogTable>(logger.Object);
-            table.Setup(t => t.InsertAsync(It.IsAny<ActivityLogEntity>(), default));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
-
-            var management = new ActivityLogManagement()
-            {
-                StorageContext = storageContext.Object
-            };
-            // null entity
-            await management.LogActivity(null);
-            // no type
-            await management.LogActivity(new ActivityLogEntity { });
-            // neither userId nor hackathonName
-            await management.LogActivity(new ActivityLogEntity { ActivityLogType = "t" });
-
-            table.Verify(t => t.InsertAsync(It.IsAny<ActivityLogEntity>(), default), Times.Never);
-        }
-
-        private static IEnumerable LogActivityTestData()
-        {
-            // entity
-            // expect log user activity
-            // expect log hackathon activity
-            yield return new TestCaseData(
-                new ActivityLogEntity { ActivityLogType = "t", },
-                false,
-                false
-                );
-
-            yield return new TestCaseData(
-                new ActivityLogEntity
-                {
-                    ActivityLogType = "t",
-                    UserId = "uid"
-                },
-                true,
-                false
-                );
-
-            yield return new TestCaseData(
-                new ActivityLogEntity
-                {
-                    ActivityLogType = "t",
-                    HackathonName = "hack"
-                },
-                false,
-                true
-                );
-
-            yield return new TestCaseData(
-               new ActivityLogEntity
-               {
-                   ActivityLogType = "t",
-                   UserId = "uid",
-                   HackathonName = "hack"
-               },
-               true,
-               true
-               );
-        }
-
-        [Test, TestCaseSource(nameof(LogActivityTestData))]
-        public async Task LogActivity(ActivityLogEntity entity, bool expectUserLog, bool expectHackLog)
-        {
-            var logger = new Mock<ILogger<ActivityLogTable>>();
-            var table = new Mock<ActivityLogTable>(logger.Object);
-            table.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l => l.ActivityId.Length == 28
-                && l.PartitionKey != null
-                && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
-                && l.ActivityLogType == entity.ActivityLogType), default)).Returns(Task.CompletedTask);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
+            var storageContext = new MockStorageContext();
+            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+                l.ActivityId.Length == 28
+                && l.PartitionKey == "hack"
+                && l.Category == ActivityLogCategory.Hackathon
+                && l.OperatorId == "op"
+                && l.HackathonName == "hack"
+                && l.CreatedAt > DateTime.UtcNow.AddMinutes(-1)
+                && l.ActivityLogType == ActivityLogType.createHackathon.ToString()
+                && l.Messages.Count() == 2
+                && l.Messages["zh-CN"] == "un创建了活动。"
+                && l.Messages["en-US"] == "created by un."), default));
 
             var management = new ActivityLogManagement()
             {
                 StorageContext = storageContext.Object,
             };
-            await management.LogActivity(entity, default);
+            await management.LogHackathonActivity("hack", "op", ActivityLogType.createHackathon, args, default);
 
-            if (expectUserLog)
-            {
-                table.Verify(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
-                    l.ActivityId.Length == 28
-                    && l.PartitionKey != null
-                    && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
-                    && l.Category == ActivityLogCategory.User
-                    && l.UserId == entity.UserId
-                    && l.HackathonName == entity.HackathonName
-                    && l.ActivityLogType == entity.ActivityLogType), default), Times.Once);
-            }
+            storageContext.VerifyAll();
+        }
+        #endregion
 
-            if (expectHackLog)
+        #region LogTeamActivity
+        [Test]
+        public async Task LogTeamActivity()
+        {
+            var storageContext = new MockStorageContext();
+            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+                l.ActivityId.Length == 28
+                && l.PartitionKey == "tid"
+                && l.Category == ActivityLogCategory.Team
+                && l.OperatorId == "op"
+                && l.HackathonName == "hack"
+                && l.CreatedAt > DateTime.UtcNow.AddMinutes(-1)
+                && l.ActivityLogType == ActivityLogType.createTeam.ToString()
+                && l.Messages.Count() == 2
+                && l.Messages["zh-CN"] == null
+                && l.Messages["en-US"] == null), default));
+
+            var management = new ActivityLogManagement()
             {
-                table.Verify(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
-                    l.ActivityId.Length == 28
-                    && l.PartitionKey != null
-                    && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
-                    && l.Category == ActivityLogCategory.Hackathon
-                    && l.UserId == entity.UserId
-                    && l.HackathonName == entity.HackathonName
-                    && l.ActivityLogType == entity.ActivityLogType), default), Times.Once);
-            }
-            table.VerifyNoOtherCalls();
+                StorageContext = storageContext.Object,
+            };
+            await management.LogTeamActivity("hack", "tid", "op", ActivityLogType.createTeam, null, default);
+
+            storageContext.VerifyAll();
+        }
+        #endregion
+
+        #region LogUserActivity
+        [Test]
+        public async Task LogUserActivity()
+        {
+            var args = new { hackathonName = "hack" };
+
+            var storageContext = new MockStorageContext();
+            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+                l.ActivityId.Length == 28
+                && l.PartitionKey == "uid"
+                && l.Category == ActivityLogCategory.User
+                && l.OperatorId == "op"
+                && l.HackathonName == "foo"
+                && l.CreatedAt > DateTime.UtcNow.AddMinutes(-1)
+                && l.ActivityLogType == ActivityLogType.createHackathon.ToString()
+                && l.Messages.Count() == 2
+                && l.Messages["zh-CN"] == "创建了新活动：hack"
+                && l.Messages["en-US"] == "created a new hackathon: hack"
+                ), default));
+
+            var management = new ActivityLogManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            await management.LogUserActivity("uid", "foo", "op", ActivityLogType.createHackathon, args, default);
+
+            storageContext.VerifyAll();
         }
         #endregion
 
@@ -140,86 +110,98 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // expected top
             // expected next Pagination
 
-            // no filter, default top
+            // catetory hackathon, not ready
             yield return new TestCaseData(
-                new ActivityLogQueryOptions { },
+                new ActivityLogQueryOptions { Category = ActivityLogCategory.Hackathon },
                 null,
-                "Category eq 1",
+                null, // filter
                 null,
-                100,
-                new Pagination { top = 100 }
+                null,
+                null
                 );
 
-            // no filter, top
+            // catetory Team, not ready
             yield return new TestCaseData(
-                new ActivityLogQueryOptions { Pagination = new Pagination { top = 5 } },
+                new ActivityLogQueryOptions { Category = ActivityLogCategory.Team },
                 null,
-                "Category eq 1",
+                null, // filter
+                null,
+                null,
+                null
+                );
+
+            // catetory User, without UserId
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions { Category = ActivityLogCategory.User },
+                null,
+                null, // filter
+                null,
+                null,
+                null
+                );
+
+            // Category=user, with top
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions
+                {
+                    Category = ActivityLogCategory.User,
+                    HackathonName = "hack",
+                    TeamId = "tid",
+                    UserId = "uid",
+                    Pagination = new Pagination { top = 5 }
+                },
+                null,
+                "(PartitionKey eq 'uid') and (Category eq 2)",
                 null,
                 5,
                 new Pagination { top = 5 }
                 );
 
-            // no filter, top & token
+            // Category=user, with top and token
             yield return new TestCaseData(
-                new ActivityLogQueryOptions { Pagination = new Pagination { top = 5, np = "np", nr = "nr" } },
+                new ActivityLogQueryOptions
+                {
+                    Category = ActivityLogCategory.User,
+                    HackathonName = "hack",
+                    TeamId = "tid",
+                    UserId = "uid",
+                    Pagination = new Pagination { top = 5, np = "np", nr = "nr" }
+                },
                 null,
-                "Category eq 1",
+                "(PartitionKey eq 'uid') and (Category eq 2)",
                 "np nr",
                 5,
                 new Pagination { top = 5 }
                 );
 
-            // no filter, with returned pagination
-            yield return new TestCaseData(
-               new ActivityLogQueryOptions { },
-               "np2 nr2",
-               "Category eq 1",
-               null,
-               100,
-               new Pagination { top = 100, np = "np2", nr = "nr2" }
-               );
-
-            // with HackathonName
-            yield return new TestCaseData(
-                new ActivityLogQueryOptions { HackathonName = "hack" },
-                null,
-                "(PartitionKey eq 'hack') and (Category eq 0)",
-                null,
-                100,
-                new Pagination { top = 100 }
-                );
-
-            // with UserId
-            yield return new TestCaseData(
-                new ActivityLogQueryOptions { UserId = "uid" },
-                null,
-                "(PartitionKey eq 'uid') and (Category eq 1)",
-                null,
-                100,
-                new Pagination { top = 100 }
-                );
-
-            // with HackathonName and UserId
-            yield return new TestCaseData(
-                new ActivityLogQueryOptions { HackathonName = "hack", UserId = "uid" },
-                null,
-                "(PartitionKey eq 'hack') and (Category eq 0) and (UserId eq 'uid')",
-                null,
-                100,
-                new Pagination { top = 100 }
-                );
-
-            // all
+            // Category=user, with returned pagination
             yield return new TestCaseData(
                 new ActivityLogQueryOptions
                 {
+                    Category = ActivityLogCategory.User,
                     HackathonName = "hack",
+                    TeamId = "tid",
+                    UserId = "uid",
+                },
+                "np2 nr2",
+                "(PartitionKey eq 'uid') and (Category eq 2)",
+                null,
+                100,
+                new Pagination { top = 100, np = "np2", nr = "nr2" }
+                );
+
+            // Category=user, with all other options
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions
+                {
+                    Category = ActivityLogCategory.User,
+                    HackathonName = "hack",
+                    TeamId = "tid",
                     UserId = "uid",
                     Pagination = new Pagination { top = 10, np = "np", nr = "nr" }
                 },
                 "np2 nr2",
-                "(PartitionKey eq 'hack') and (Category eq 0) and (UserId eq 'uid')",
+                "(PartitionKey eq 'uid') and (Category eq 2)",
                 "np nr",
                 10,
                 new Pagination { top = 10, np = "np2", nr = "nr2" }
@@ -228,7 +210,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         [Test, TestCaseSource(nameof(ListActivityLogsTestData))]
         public async Task ListActivityLogs(ActivityLogQueryOptions options, string returnedToken,
-            string expectedFilter, string expectedToken, int expectedTop, Pagination expectedNext)
+            string expectedFilter, string expectedToken, int? expectedTop, Pagination expectedNext)
         {
             var logs = new List<ActivityLogEntity>()
             {
@@ -238,8 +220,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var page = MockHelper.CreatePage(logs, returnedToken);
             var storageContext = new MockStorageContext();
-            storageContext.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
-                .ReturnsAsync(page);
+            if (!string.IsNullOrEmpty(expectedFilter))
+            {
+                storageContext.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
+                    .ReturnsAsync(page);
+            }
 
             var activityLogManagement = new ActivityLogManagement()
             {
@@ -248,7 +233,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var result = await activityLogManagement.ListActivityLogs(options, default);
 
             storageContext.VerifyAll();
-            Assert.AreEqual(2, result.Count());
+            if (expectedTop.HasValue)
+            {
+                Assert.AreEqual(2, result.Count());
+            }
             AssertHelper.AssertEqual(expectedNext, options.NextPage);
         }
         #endregion

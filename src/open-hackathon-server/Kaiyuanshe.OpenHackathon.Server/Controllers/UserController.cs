@@ -150,6 +150,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 Pagination = pagination,
                 UserId = userId,
+                Category = ActivityLogCategory.User,
             };
             var logs = await ActivityLogManagement.ListActivityLogs(options, cancellationToken);
 
