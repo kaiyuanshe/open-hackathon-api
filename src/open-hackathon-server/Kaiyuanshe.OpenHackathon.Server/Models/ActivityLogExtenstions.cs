@@ -1,5 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+using SmartFormat;
 using System;
+using System.Globalization;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
@@ -15,22 +17,34 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             return $"{ResourceKeyPrefix}_{entity.Category}_{entity.ActivityLogType}";
         }
 
-        public static string GetMessage(this ActivityLogEntity entity)
+        public static void GenerateMessage(this ActivityLogEntity entity, object args)
         {
             if (entity == null)
-                return null;
+                return;
 
-            try
+            var resourceKey = entity.GetResourceKey();
+            Func<CultureInfo, string> messageByCulture = (culture) =>
             {
-                var logType = Enum.Parse<ActivityLogType>(entity.ActivityLogType);
-                var resourceKey = entity.GetResourceKey();
-                var messageFormat = Resources.ResourceManager.GetString(resourceKey);
-                return string.Format(messageFormat, entity.Args);
-            }
-            catch (Exception)
+                try
+                {
+                    var messageFormat = Resources.ResourceManager.GetString(resourceKey, culture);
+                    if (messageFormat == null)
+                    {
+                        return null;
+                    }
+
+                    return Smart.Format(messageFormat, args);
+                }
+                catch (Exception)
+                {
+                    // return null in case of any Exception
+                    return null;
+                }
+            };
+
+            foreach (var culture in CultureInfos.SupportedCultures)
             {
-                // return default message in case of any Exception
-                return entity.Message;
+                entity.Messages[culture.Name] = messageByCulture(culture);
             }
         }
     }

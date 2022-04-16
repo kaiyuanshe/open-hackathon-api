@@ -19,46 +19,64 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             Assert.AreEqual(expectedKey, entity.GetResourceKey());
         }
 
-        private static IEnumerable GetMessageTestData()
+        private static IEnumerable GenerateMessageTestData()
         {
-            // null
-            yield return new TestCaseData(null)
-                .Returns(null);
+            // arg0: ActivityLogEntity
+            // arg1: dynamic args
+            // arg2: expected message in zh-CN
+            // arg3: expected message in en-US
 
             // unknown log type
-            yield return new TestCaseData(new ActivityLogEntity
-            {
-                ActivityLogType = "unknown",
-                Message = "msg"
-            }).Returns("msg");
-
-            // no format key
-            yield return new TestCaseData(new ActivityLogEntity
-            {
-                ActivityLogType = "none",
-                Message = "msg"
-            }).Returns("msg");
+            yield return new TestCaseData(
+                new ActivityLogEntity
+                {
+                    ActivityLogType = "unknown",
+                },
+                null,
+                null,
+                null);
 
             // malformat
-            yield return new TestCaseData(new ActivityLogEntity
-            {
-                ActivityLogType = "createHackathon",
-                Message = "msg"
-            }).Returns("msg");
+            yield return new TestCaseData(
+                new ActivityLogEntity
+                {
+                    ActivityLogType = "createHackathon",
+                },
+                new { },
+                null,
+                null);
 
-            // formated
-            //yield return new TestCaseData(new ActivityLogEntity
-            //{
-            //    ActivityLogType = "createHackathon",
-            //    Message = "msg",
-            //    Args = new[] { "uid", "hack" },
-            //}).Returns("uid created a new hackathon: hack.");
+            // formated, catetory=Hackathon
+            yield return new TestCaseData(
+                new ActivityLogEntity
+                {
+                    ActivityLogType = "createHackathon",
+                    Category = ActivityLogCategory.Hackathon,
+                },
+                new { userName = "un" },
+                "un创建了活动。",
+                "created by un.");
+
+            // formated, catetory=User
+            yield return new TestCaseData(
+                new ActivityLogEntity
+                {
+                    ActivityLogType = "createHackathon",
+                    Category = ActivityLogCategory.User,
+                },
+                new { hackathonName = "hack" },
+                "创建了新活动：hack",
+                "created a new hackathon: hack");
         }
 
-        [Test, TestCaseSource(nameof(GetMessageTestData))]
-        public string GetMessage(ActivityLogEntity entity)
+        [Test, TestCaseSource(nameof(GenerateMessageTestData))]
+        public void GenerateMessage(ActivityLogEntity entity, object args, string cn, string en)
         {
-            return entity.GetMessage();
+            entity.GenerateMessage(args);
+            Assert.IsTrue(entity.Messages.ContainsKey("zh-CN"));
+            Assert.AreEqual(cn, entity.Messages["zh-CN"]);
+            Assert.IsTrue(entity.Messages.ContainsKey("en-US"));
+            Assert.AreEqual(en, entity.Messages["en-US"]);
         }
     }
 }

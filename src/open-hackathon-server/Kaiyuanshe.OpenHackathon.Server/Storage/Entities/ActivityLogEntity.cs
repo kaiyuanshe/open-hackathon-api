@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
@@ -48,13 +49,22 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// Args to format the message.
         /// </summary>
         [ConvertableEntityProperty]
+        [Obsolete]
         public string[] Args { get; set; } = new string[0];
 
         /// <summary>
         /// Default message of the activity, will used if cannot find the message in Resource file.
         /// </summary>
+        [Obsolete]
         public string Message { get; set; }
 
+        /// <summary>
+        /// Messages for all cultures. Use CultureInfo.Name as key.
+        /// </summary>
+        [ConvertableEntityProperty]
+        public Dictionary<string, string> Messages { get; set; } = new();
+
+        [Obsolete]
         public ActivityLogEntity Clone()
         {
             return (ActivityLogEntity)MemberwiseClone();
