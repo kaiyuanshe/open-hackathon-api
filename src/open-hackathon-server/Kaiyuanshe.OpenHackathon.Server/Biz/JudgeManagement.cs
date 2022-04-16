@@ -21,7 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken);
     }
 
-    public class JudgeManagement : ManagementClientBase, IJudgeManagement
+    public class JudgeManagement : ManagementClientBaseV0, IJudgeManagement
     {
         static readonly int MaxJudgeCount = 100;
 

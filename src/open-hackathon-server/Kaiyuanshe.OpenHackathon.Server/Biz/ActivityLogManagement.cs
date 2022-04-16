@@ -1,9 +1,7 @@
-﻿using Flurl.Http;
-using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,15 +15,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<ActivityLogEntity>> ListActivityLogs(ActivityLogQueryOptions options, CancellationToken cancellationToken = default);
     }
 
-    public class ActivityLogManagement : ManagementClientBase, IActivityLogManagement
+    public class ActivityLogManagement : ManagementClientBase<ActivityLogManagement>, IActivityLogManagement
     {
-        private readonly ILogger Logger;
-
-        public ActivityLogManagement(ILogger<ActivityLogManagement> logger)
-        {
-            Logger = logger;
-        }
-
         #region LogActivity
         public async Task LogActivity(ActivityLogEntity entity, CancellationToken cancellationToken = default)
         {

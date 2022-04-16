@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
-    public class ExperimentManagement : ManagementClientBase, IExperimentManagement
+    public class ExperimentManagement : ManagementClientBaseV0, IExperimentManagement
     {
         private readonly ILogger logger;
 

@@ -1,5 +1,4 @@
-﻿using DotLiquid.Util;
-using Kaiyuanshe.OpenHackathon.Server.Biz;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
@@ -29,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
 
-            var management = new ActivityLogManagement(null)
+            var management = new ActivityLogManagement()
             {
                 StorageContext = storageContext.Object
             };
@@ -98,7 +97,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.ActivityLogTable).Returns(table.Object);
 
-            var management = new ActivityLogManagement(null)
+            var management = new ActivityLogManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -242,7 +241,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storageContext.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
                 .ReturnsAsync(page);
 
-            var activityLogManagement = new ActivityLogManagement(null)
+            var activityLogManagement = new ActivityLogManagement()
             {
                 StorageContext = storageContext.Object,
             };
