@@ -1,24 +1,18 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Helpers;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
-using System.Collections.Concurrent;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
     public static class ActivityLogExtenstions
     {
-        static ConcurrentDictionary<ActivityLogType, string> resourceKeys = new();
+        private static readonly string ResourceKeyPrefix = "ActivityLog";
 
-        public static string GetResourceKey(this ActivityLogType activityLogType)
+        public static string GetResourceKey(this ActivityLogEntity entity)
         {
-            if (!resourceKeys.ContainsKey(activityLogType))
-            {
-                var attr = activityLogType.GetCustomAttribute<MessageFormatAttribute>();
-                string key = attr?.ResourceKey ?? string.Empty;
-                resourceKeys.TryAdd(activityLogType, key);
-            }
+            if (entity == null)
+                return null;
 
-            return resourceKeys[activityLogType];
+            return $"{ResourceKeyPrefix}_{entity.Category}_{entity.ActivityLogType}";
         }
 
         public static string GetMessage(this ActivityLogEntity entity)
@@ -29,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             try
             {
                 var logType = Enum.Parse<ActivityLogType>(entity.ActivityLogType);
-                var resourceKey = GetResourceKey(logType);
+                var resourceKey = entity.GetResourceKey();
                 var messageFormat = Resources.ResourceManager.GetString(resourceKey);
                 return string.Format(messageFormat, entity.Args);
             }

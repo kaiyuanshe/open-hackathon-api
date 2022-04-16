@@ -129,39 +129,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
             table.VerifyNoOtherCalls();
         }
-
-        [TestCase(null)]
-        [TestCase("msg")]
-        public async Task LogActivity_Message(string defaultMsg)
-        {
-            var entity = new ActivityLogEntity
-            {
-                UserId = "uid",
-                Message = defaultMsg,
-                ActivityLogType = ActivityLogType.createHackathon.ToString(),
-                Args = new string[] { "u", "h" }
-            };
-
-            var logger = new Mock<ILogger<ActivityLogTable>>();
-            var storageContext = new MockStorageContext();
-            var expectedMsg = defaultMsg ?? "u created a new hackathon: h.";
-            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l => l.ActivityId.Length == 28
-                && l.PartitionKey != null
-                && l.CreatedAt > DateTime.UtcNow.AddMinutes(-5)
-                && l.Category == ActivityLogCategory.User
-                && l.UserId == "uid"
-                && l.Message == expectedMsg
-                && l.ActivityLogType == entity.ActivityLogType), default)).Returns(Task.CompletedTask);
-
-            var management = new ActivityLogManagement(null)
-            {
-                StorageContext = storageContext.Object,
-            };
-            await management.LogActivity(entity, default);
-
-            storageContext.VerifyAll();
-        }
-
         #endregion
 
         #region ListActivityLogs
