@@ -68,7 +68,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             return activityLogEntity.As<ActivityLog>(p =>
             {
                 p.updatedAt = activityLogEntity.Timestamp.UtcDateTime;
-                p.message = activityLogEntity.GetMessage();
+                //p.message = activityLogEntity.GetMessage();
             });
         }
 

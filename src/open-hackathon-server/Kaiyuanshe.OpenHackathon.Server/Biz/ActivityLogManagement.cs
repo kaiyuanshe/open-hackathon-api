@@ -27,11 +27,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0, 8)}";
             entity.CreatedAt = DateTime.UtcNow;
 
-            if (string.IsNullOrWhiteSpace(entity.Message))
-            {
-                entity.Message = entity.GetMessage();
-            }
-
             if (!string.IsNullOrEmpty(entity.UserId))
             {
                 await CloneAndSave(entity, (e) =>

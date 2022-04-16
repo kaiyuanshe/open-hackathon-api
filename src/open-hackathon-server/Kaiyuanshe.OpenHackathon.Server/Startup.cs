@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -122,13 +121,9 @@ namespace Kaiyuanshe.OpenHackathon.Server
             app.UseAuthorization();
             app.UseRequestLocalization(options =>
             {
-                options.SupportedUICultures = new[]
-                {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("zh-CN")
-                };
-                options.SetDefaultCulture("en-US");
-                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedUICultures = CultureInfos.SupportedCultures;
+                options.SetDefaultCulture(CultureInfos.en_US.Name);
+                options.DefaultRequestCulture = new RequestCulture(CultureInfos.en_US.Name);
                 options.AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider());
             });
 
