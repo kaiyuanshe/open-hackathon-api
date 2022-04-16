@@ -15,7 +15,7 @@
         /// id of user who performs the operation.
         /// </summary>
         /// <example>1</example>
-        public string userId { get; internal set; }
+        public string operatorId { get; internal set; }
 
         /// <summary>
         /// auto-generated activity log id.

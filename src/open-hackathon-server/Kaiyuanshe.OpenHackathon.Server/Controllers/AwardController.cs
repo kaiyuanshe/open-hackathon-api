@@ -63,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createAward.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = awardEntity.Name,
             }, cancellationToken);
             return Ok(ResponseBuilder.BuildAward(awardEntity));
@@ -162,7 +162,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateAward.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = updated.Name,
             }, cancellationToken);
             return Ok(ResponseBuilder.BuildAward(updated));
@@ -264,7 +264,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteAward.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = award.Name,
             }, cancellationToken);
             return NoContent();
@@ -346,7 +346,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createAwardAssignment.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = awardEntity.Name,
                 CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? parameter.assigneeId : null,
                 TeamId = awardEntity.Target == AwardTarget.team ? parameter.assigneeId : null,
@@ -411,7 +411,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateAwardAssignment.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = awardEntity.Name,
                 CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
                 TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssigneeId : null,
@@ -649,7 +649,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteAwardAssignment.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = awardEntity.Name,
                 CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
                 TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssignmentId : null,

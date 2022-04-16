@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+﻿using Kaiyuanshe.OpenHackathon.Server;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System.Collections;
@@ -53,7 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     ActivityLogType = "createHackathon",
                     Category = ActivityLogCategory.Hackathon,
                 },
-                new { userName = "un" },
+                new { userName = "un", unknown = "any" },
                 "un创建了活动。",
                 "created by un.");
 
@@ -77,6 +78,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             Assert.AreEqual(cn, entity.Messages["zh-CN"]);
             Assert.IsTrue(entity.Messages.ContainsKey("en-US"));
             Assert.AreEqual(en, entity.Messages["en-US"]);
+        }
+
+        /// <summary>
+        /// Keep updating this Test for more cases whenever we add a new combination of category+type
+        /// </summary>
+        [TestCase(ActivityLogCategory.Hackathon, ActivityLogType.createHackathon)]
+        [TestCase(ActivityLogCategory.User, ActivityLogType.createHackathon)]
+        public void EnsureResources(ActivityLogCategory category, ActivityLogType type)
+        {
+            var entity = new ActivityLogEntity
+            {
+                Category = category,
+                ActivityLogType = type.ToString(),
+            };
+            var resourceKey = entity.GetResourceKey();
+            foreach (var culture in CultureInfos.SupportedCultures)
+            {
+                var messageFormat = Resources.ResourceManager.GetString(resourceKey, culture);
+                Assert.IsNotNull(messageFormat);
+            }
         }
     }
 }

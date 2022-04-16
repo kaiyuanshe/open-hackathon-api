@@ -61,7 +61,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createRatingKind.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = parameter.description,
             }, cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
@@ -114,7 +114,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateRatingKind.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = parameter.description,
             }, cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
@@ -259,7 +259,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteRatingKind.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
             }, cancellationToken);
             return NoContent();
         }
@@ -356,7 +356,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.createRating.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = kind.Name,
             }, cancellationToken);
             var ratingResponse = await BuildRatingResp(ratingEntity, null, team, kind, cancellationToken);
@@ -431,7 +431,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateRating.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = kind.Name,
             }, cancellationToken);
             var ratingResponse = await BuildRatingResp(ratingEntity, null, null, kind, cancellationToken);
@@ -606,7 +606,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteRating.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = ratingEntity.Description,
             }, cancellationToken);
             return NoContent();

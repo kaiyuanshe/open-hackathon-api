@@ -156,7 +156,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 {
                     ActivityLogType = ActivityLogType.createHackathon.ToString(),
                     HackathonName = hackathonName.ToLower(),
-                    UserId = CurrentUserId,
+                    OperatorId = CurrentUserId,
                     Message = parameter.displayName,
                 }, cancellationToken);
                 var roles = await HackathonManagement.GetHackathonRolesAsync(created, User, cancellationToken);
@@ -208,7 +208,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.updateHackathon.ToString(),
                 HackathonName = parameter.name,
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = entity.DisplayName,
             }, cancellationToken);
             var roles = await HackathonManagement.GetHackathonRolesAsync(entity, User, cancellationToken);
@@ -283,7 +283,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.deleteHackathon.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = entity.DisplayName,
             }, cancellationToken);
             return NoContent();
@@ -331,7 +331,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.publishHackathon.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = hackathon.DisplayName,
             }, cancellationToken);
 
@@ -376,7 +376,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.approveHackahton.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = hackathon.DisplayName,
             }, cancellationToken);
 
@@ -425,7 +425,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ActivityLogType = ActivityLogType.archiveHackathon.ToString(),
                 HackathonName = hackathonName.ToLower(),
-                UserId = CurrentUserId,
+                OperatorId = CurrentUserId,
                 Message = hackathon.DisplayName,
             }, cancellationToken);
 

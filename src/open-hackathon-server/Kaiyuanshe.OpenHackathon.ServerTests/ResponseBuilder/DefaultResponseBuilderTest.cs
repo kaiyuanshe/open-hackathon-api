@@ -20,25 +20,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             var entity = new ActivityLogEntity
             {
                 ActivityLogType = ActivityLogType.createHackathon.ToString(),
-                Args = new string[] { "uid", "hack" },
                 Category = ActivityLogCategory.Hackathon,
                 CreatedAt = DateTime.UtcNow,
                 HackathonName = "hack",
-                Message = "msg",
                 PartitionKey = "pk",
                 RowKey = "rk",
                 Timestamp = DateTimeOffset.UtcNow,
-                UserId = "uid",
+                OperatorId = "uid",
             };
 
             var resp = new DefaultResponseBuilder().BuildActivityLog(entity);
             Assert.AreEqual("createHackathon", resp.activityLogType);
             Assert.AreEqual(entity.CreatedAt, resp.createdAt);
             Assert.AreEqual("hack", resp.hackathonName);
-            //Assert.AreEqual("uid created a new hackathon: hack.", resp.message);
             Assert.AreEqual("rk", resp.activityId);
             Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
-            Assert.AreEqual("uid", resp.userId);
+            Assert.AreEqual("uid", resp.operatorId);
         }
         #endregion
 

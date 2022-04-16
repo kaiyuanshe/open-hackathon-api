@@ -890,7 +890,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(user);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
                 && a.ActivityLogType == ActivityLogType.createTeamMember.ToString()
-                && a.UserId == "uid"
+                && a.OperatorId == "uid"
                 && a.HackathonName == "foo"
                 && a.TeamId == "tid"), default));
 
@@ -953,7 +953,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(user);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
                 && a.ActivityLogType == ActivityLogType.updateTeamMember.ToString()
-                && a.UserId == "uid"
+                && a.OperatorId == "uid"
                 && a.HackathonName == "foo"
                 && a.TeamId == "tid"), default));
 
@@ -1139,7 +1139,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", cancellationToken)).ReturnsAsync(user);
             mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
                && a.ActivityLogType == ActivityLogType.updateTeamMember.ToString()
-               && a.UserId == "uid"
+               && a.OperatorId == "uid"
                && a.HackathonName == "foo"
                && a.TeamId == "tid"), default));
 
