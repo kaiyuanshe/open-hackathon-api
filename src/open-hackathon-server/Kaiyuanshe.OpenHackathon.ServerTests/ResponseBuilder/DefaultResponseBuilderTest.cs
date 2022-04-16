@@ -31,7 +31,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 OperatorId = "uid",
                 Messages = new Dictionary<string, string>
                 {
-                    ["zh-CN"] = "cn",
                     ["en-US"] = "en"
                 }
             };
@@ -43,7 +42,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("rk", resp.activityId);
             Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
             Assert.AreEqual("uid", resp.operatorId);
-            CultureInfo.CurrentUICulture = CultureInfos.en_US;
             Assert.AreEqual("en", resp.message);
         }
         #endregion

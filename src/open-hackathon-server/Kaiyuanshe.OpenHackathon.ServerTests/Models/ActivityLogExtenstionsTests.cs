@@ -36,7 +36,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     ActivityLogType = "unknown",
                 },
                 null,
-                null,
                 null);
 
             // malformat
@@ -46,7 +45,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     ActivityLogType = "createHackathon",
                 },
                 new { },
-                null,
                 null);
 
             // formated, catetory=Hackathon
@@ -57,7 +55,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.Hackathon,
                 },
                 new { userName = "un", unknown = "any" },
-                "un创建了活动。",
                 "created by un.");
 
             // formated, catetory=User
@@ -68,16 +65,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.User,
                 },
                 new { hackathonName = "hack" },
-                "创建了新活动：hack",
                 "created a new hackathon: hack");
         }
 
         [Test, TestCaseSource(nameof(GenerateMessageTestData))]
-        public void GenerateMessage(ActivityLogEntity entity, object args, string cn, string en)
+        public void GenerateMessage(ActivityLogEntity entity, object args, string en)
         {
             entity.GenerateMessage(args);
             Assert.IsTrue(entity.Messages.ContainsKey("zh-CN"));
-            //Assert.AreEqual(cn, entity.Messages["zh-CN"]);
+            if (en != null)
+                Assert.IsNotNull(entity.Messages["zh-CN"]);
+            // CultureInfo unable to set/get on Github actions
             Assert.IsTrue(entity.Messages.ContainsKey("en-US"));
             Assert.AreEqual(en, entity.Messages["en-US"]);
         }
