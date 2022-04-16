@@ -103,7 +103,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="ITeamManagement"/>
-    public class TeamManagement : ManagementClientBase, ITeamManagement
+    public class TeamManagement : ManagementClientBaseV0, ITeamManagement
     {
         private readonly ILogger Logger;
 

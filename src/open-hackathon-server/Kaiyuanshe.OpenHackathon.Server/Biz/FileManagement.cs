@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload request, CancellationToken cancellationToken = default);
     }
 
-    public class FileManagement : ManagementClientBase, IFileManagement
+    public class FileManagement : ManagementClientBaseV0, IFileManagement
     {
         public static readonly string HackathonApiStaticSite = "https://hackathon-api.static.kaiyuanshe.cn";
 

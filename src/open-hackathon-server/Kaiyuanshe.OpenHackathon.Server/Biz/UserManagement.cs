@@ -90,7 +90,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="IUserManagement"/>
-    public class UserManagement : ManagementClientBase, IUserManagement
+    public class UserManagement : ManagementClientBaseV0, IUserManagement
     {
         public async Task AuthingAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {

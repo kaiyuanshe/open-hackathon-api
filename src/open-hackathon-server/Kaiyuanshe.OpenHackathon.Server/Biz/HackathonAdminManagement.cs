@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> IsHackathonAdmin(string hackathonName, ClaimsPrincipal user, CancellationToken cancellationToken = default);
     }
 
-    public class HackathonAdminManagement : ManagementClientBase, IHackathonAdminManagement
+    public class HackathonAdminManagement : ManagementClientBaseV0, IHackathonAdminManagement
     {
         private readonly ILogger logger;
 

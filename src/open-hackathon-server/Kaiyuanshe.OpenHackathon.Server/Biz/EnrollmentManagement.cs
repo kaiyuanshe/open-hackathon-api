@@ -54,7 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> IsUserEnrolledAsync(HackathonEntity hackathon, string userId, CancellationToken cancellationToken = default);
     }
 
-    public class EnrollmentManagement : ManagementClientBase, IEnrollmentManagement
+    public class EnrollmentManagement : ManagementClientBaseV0, IEnrollmentManagement
     {
         // only cache enrollments when its count is <=1000, to avoid too many memory being used.
         private static readonly int CACHE_THRESHOLD = 1000;

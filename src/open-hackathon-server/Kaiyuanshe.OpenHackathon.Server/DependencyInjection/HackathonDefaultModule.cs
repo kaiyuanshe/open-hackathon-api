@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.CronJobs;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
@@ -22,18 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             builder.RegisterType<TraceIdHttpPipelinePolicyFactory>().As<ITraceIdHttpPipelinePolicyFactory>().PropertiesAutowired().SingleInstance();
 
             //Biz
-            builder.RegisterType<HackathonManagement>().As<IHackathonManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<EnrollmentManagement>().As<IEnrollmentManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<HackathonAdminManagement>().As<IHackathonAdminManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<UserManagement>().As<IUserManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<TeamManagement>().As<ITeamManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<AwardManagement>().As<IAwardManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<FileManagement>().As<IFileManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<WorkManagement>().As<IWorkManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<JudgeManagement>().As<IJudgeManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<RatingManagement>().As<IRatingManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<ExperimentManagement>().As<IExperimentManagement>().PropertiesAutowired().SingleInstance();
-            builder.RegisterType<ActivityLogManagement>().As<IActivityLogManagement>().PropertiesAutowired().SingleInstance();
+            builder.RegisterManagementClients();
 
             // Kubernetes
             builder.RegisterType<KubernetesConfigProvider>().As<IKubernetesConfigProvider>().PropertiesAutowired().SingleInstance();

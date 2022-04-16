@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using System;
@@ -47,6 +48,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
         public static void RegisterAzureBlobContainersV2(this ContainerBuilder builder)
         {
             builder.RegisterSubTypesAsDirectInterfaces(typeof(IAzureBlobContainerV2));
+        }
+
+        public static void RegisterManagementClients(this ContainerBuilder builder)
+        {
+            builder.RegisterSubTypesAsDirectInterfaces(typeof(IManagementClient));
+            builder.RegisterSubTypesAsDirectInterfaces(typeof(ManagementClientBaseV0));
         }
     }
 }
