@@ -1,7 +1,9 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+using Microsoft.OpenApi.Writers;
 using SmartFormat;
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
@@ -46,6 +48,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             {
                 entity.Messages[culture.Name] = messageByCulture(culture);
             }
+        }
+
+        public static string GetMessage(this ActivityLogEntity entity)
+        {
+            if (entity == null)
+                return null;
+
+            var cultureInfo = CultureInfo.CurrentUICulture ?? CultureInfos.en_US;
+            if (entity.Messages.ContainsKey(cultureInfo.Name))
+            {
+                return entity.Messages[cultureInfo.Name];
+            }
+
+            return entity.Messages.Values.FirstOrDefault(m => m != null);
         }
     }
 }

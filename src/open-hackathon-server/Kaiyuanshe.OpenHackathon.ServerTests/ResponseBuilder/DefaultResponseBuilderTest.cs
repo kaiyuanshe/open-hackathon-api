@@ -27,6 +27,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 RowKey = "rk",
                 Timestamp = DateTimeOffset.UtcNow,
                 OperatorId = "uid",
+                Messages = new Dictionary<string, string>
+                {
+                    ["zh-CN"] = "cn",
+                    ["en-US"] = "en"
+                }
             };
 
             var resp = new DefaultResponseBuilder().BuildActivityLog(entity);
@@ -36,6 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("rk", resp.activityId);
             Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
             Assert.AreEqual("uid", resp.operatorId);
+            Assert.AreEqual("en", resp.message);
         }
         #endregion
 

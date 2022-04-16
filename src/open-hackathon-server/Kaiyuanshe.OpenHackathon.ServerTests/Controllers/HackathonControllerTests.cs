@@ -133,9 +133,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.HackathonManagement.Setup(p => p.CreateHackathonAsync(hack, default)).ReturnsAsync(inserted);
             mockContext.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(inserted, null, default)).ReturnsAsync(role);
             mockContext.HackathonManagement.Setup(p => p.CanCreateHackathonAsync(It.IsAny<ClaimsPrincipal>(), default)).ReturnsAsync(true);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.createHackathon.ToString()
-                && a.Message == "dp"), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.createHackathon, It.IsAny<object>(), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.createHackathon, It.IsAny<object>(), default));
 
             // test
             var controller = new HackathonController();
