@@ -2,12 +2,12 @@
 {
     public static class UserInfoExtensions
     {
-        public static string ActivitLogName(this UserInfo user)
+        public static string GetDisplayName(this UserInfo userInfo)
         {
-            if (user == null)
+            if (userInfo == null)
                 return string.Empty;
 
-            return user.Nickname ?? user.Username ?? user.Name ?? user.Email ?? user.Id;
+            return userInfo.Nickname ?? userInfo.Username ?? userInfo.Name ?? userInfo.Email ?? userInfo.Id;
         }
     }
 }

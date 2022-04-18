@@ -90,7 +90,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="IUserManagement"/>
-    public class UserManagement : ManagementClientBaseV0, IUserManagement
+    public class UserManagement : ManagementClientBase<UserManagement>, IUserManagement
     {
         public async Task AuthingAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {
@@ -104,6 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 PartitionKey = DigestHelper.SHA512Digest(userInfo.Token),
                 RowKey = string.Empty,
                 UserId = userInfo.Id,
+                UserDisplayName = userInfo.GetDisplayName(),
                 TokenExpiredAt = userInfo.TokenExpiredAt,
                 Token = userInfo.Token,
                 CreatedAt = DateTime.UtcNow,

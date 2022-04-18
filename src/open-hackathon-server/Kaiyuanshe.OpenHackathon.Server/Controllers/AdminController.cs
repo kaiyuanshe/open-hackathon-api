@@ -66,7 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 ActivityLogType = ActivityLogType.createHackathonAdmin.ToString(),
                 HackathonName = hackathonName.ToLower(),
                 OperatorId = CurrentUserId,
-                Args = new string[] { user.ActivitLogName(), hackathon.DisplayName, currentUser.ActivitLogName() },
+                Args = new string[] { user.GetDisplayName(), hackathon.DisplayName, currentUser.GetDisplayName() },
             }, cancellationToken);
 
             var resp = ResponseBuilder.BuildHackathonAdmin(adminEntity, user);
@@ -227,7 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 ActivityLogType = ActivityLogType.deleteHackathonAdmin.ToString(),
                 HackathonName = hackathonName.ToLower(),
                 OperatorId = CurrentUserId,
-                Args = new string[] { currentUser.ActivitLogName(), hackathon.DisplayName, deletedUser.ActivitLogName() }
+                Args = new string[] { currentUser.GetDisplayName(), hackathon.DisplayName, deletedUser.GetDisplayName() }
             }, cancellationToken);
             return NoContent();
         }
