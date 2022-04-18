@@ -12,6 +12,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     {
         public string UserId { get; set; }
 
+        [BackwardCompatible("UserId")]
+        public string UserDisplayName { get; set; }
+
         public string Token { get; set; }
 
         public DateTime TokenExpiredAt { get; set; }

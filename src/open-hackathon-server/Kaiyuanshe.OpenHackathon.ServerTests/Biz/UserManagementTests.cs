@@ -32,6 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 Id = "id",
                 Token = "token",
+                Nickname = "nickname"
             };
             var cancellationToken = new CancellationTokenSource().Token;
 
@@ -42,7 +43,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storage.SetupGet(s => s.UserTable).Returns(usertable.Object);
             storage.SetupGet(s => s.UserTokenTable).Returns(tokenTable.Object);
             usertable.Setup(u => u.SaveUserAsync(userInfo, cancellationToken));
-            tokenTable.Setup(t => t.InsertOrReplaceAsync(It.IsAny<UserTokenEntity>(), cancellationToken));
+            tokenTable.Setup(t => t.InsertOrReplaceAsync(It.Is<UserTokenEntity>(u =>
+                u.UserId == "id"
+                && u.Token == "token"
+                && u.UserDisplayName == "nickname"), cancellationToken));
             var cache = new DefaultCacheProvider(null);
 
             // test

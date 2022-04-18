@@ -157,7 +157,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 var logArgs = new
                 {
                     hackathonName = created.DisplayName,
-                    userName = user.ActivitLogName()
+                    userName = user.GetDisplayName()
                 };
                 await ActivityLogManagement.OnHackathonCreateOrUpdate(
                     nameLowercase,
