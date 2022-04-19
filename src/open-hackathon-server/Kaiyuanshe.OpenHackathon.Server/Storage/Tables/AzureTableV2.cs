@@ -38,7 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         public override string StorageName => tableClient?.AccountName;
         public ILogger<TEntity> Logger { get; set; }
 
-        protected AzureTableV2()
+        public AzureTableV2()
         {
 
         }

@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="orderby">order by. Default to createdAt.</param>
         /// <param name="listType">type of list. Default to online. 
         /// online: list hackathons in online status only; 
-        /// admin: list hackathons in any status where current user has admin access. Note that, Platform admins can see all hackathons including deleted(offline) ones.
+        /// admin: list hackathons in any status where current user has admin access; 
         /// enrolled: list enrolled hackathons;
         /// fresh: hackathons that are about to start;
         /// </param>
@@ -247,11 +247,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
             }
 
-            if (entity.Status == HackathonStatus.offline && !ClaimsHelper.IsPlatformAdministrator(User))
-            {
-                return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
-            }
-
             var role = await HackathonManagement.GetHackathonRolesAsync(entity, User, cancellationToken);
             if (!entity.IsOnline() && (role == null || !role.isAdmin))
             {
@@ -280,7 +275,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             var entity = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
-            if (entity == null || entity.Status == HackathonStatus.offline)
+            if (entity == null)
             {
                 return NoContent();
             }
@@ -321,7 +316,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathonName,
                 UserId = CurrentUserId,
                 HackAdminRequird = true,
-                NotDeletedRequired = true,
             };
             if (await ValidateHackathon(hackathon, options) == false)
             {

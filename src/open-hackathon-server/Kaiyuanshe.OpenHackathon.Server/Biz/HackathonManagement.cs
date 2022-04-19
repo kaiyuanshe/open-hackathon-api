@@ -64,12 +64,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="IHackathonManagement"/>
-    public class HackathonManagement : ManagementClientBaseV0, IHackathonManagement
+    public class HackathonManagement : ManagementClientBase<HackathonManagement>, IHackathonManagement
     {
         static readonly int MaxHackathonsEachDay = 3;
         static readonly int MaxHackathonsEachMonth = 10;
 
-        private readonly ILogger logger;
         internal static string cacheKeyForAllHackathon = CacheKeys.GetCacheKey(CacheEntryType.Hackathon, "all");
 
         public IHackathonAdminManagement HackathonAdminManagement { get; set; }
@@ -77,11 +76,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public IEnrollmentManagement EnrollmentManagement { get; set; }
 
         public IJudgeManagement JudgeManagement { get; set; }
-
-        public HackathonManagement(ILogger<HackathonManagement> logger)
-        {
-            this.logger = logger;
-        }
 
         #region Hackathon Cache
         private void InvalidateCacheAllHackathon()
@@ -107,14 +101,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var thisDay = myCreated.Count(h => h.CreatedAt > DateTime.UtcNow.AddDays(-1));
             if (thisDay >= MaxHackathonsEachDay)
             {
-                logger.LogInformation($"{userId} created {thisDay} hackathons in the past 24 hours, cannot create more.");
+                Logger?.LogInformation($"{userId} created {thisDay} hackathons in the past 24 hours, cannot create more.");
                 return false;
             }
 
             var thisMonth = myCreated.Count(h => h.CreatedAt > DateTime.UtcNow.AddMonths(-1));
             if (thisMonth >= MaxHackathonsEachMonth)
             {
-                logger.LogInformation($"{userId} created {thisMonth} hackathons in the past month, cannot create more.");
+                Logger?.LogInformation($"{userId} created {thisMonth} hackathons in the past month, cannot create more.");
                 return false;
             }
 
@@ -196,6 +190,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public async Task<HackathonEntity> GetHackathonEntityByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             var entity = await StorageContext.HackathonTable.RetrieveAsync(name, string.Empty, cancellationToken);
+
+            // Offline is treated as Deleted
+            if (entity != null && entity.Status == HackathonStatus.offline)
+            {
+                return null;
+            }
+
             return entity;
         }
         #endregion
@@ -301,9 +302,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 List<HackathonEntity> filtered = new List<HackathonEntity>();
                 foreach (var item in hackathons)
                 {
-                    if (item.Status == HackathonStatus.offline)
-                        continue;
-
                     var admins = await HackathonAdminManagement.ListHackathonAdminAsync(item.Name, cancellationToken);
                     if (admins.Any(a => a.UserId == userId))
                     {

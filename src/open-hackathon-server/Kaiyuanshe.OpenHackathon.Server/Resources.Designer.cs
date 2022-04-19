@@ -295,15 +295,6 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hackathon {0} is Offline. Cannot be updated..
-        /// </summary>
-        internal static string Hackathon_Deleted {
-            get {
-                return ResourceManager.GetString("Hackathon_Deleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The hackathon is already ended at {0}.
         /// </summary>
         internal static string Hackathon_Ended {
