@@ -64,18 +64,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(CanCreateHackathonAsyncTestData))]
         public async Task CanCreateHackathonAsync(Dictionary<string, HackathonEntity> entities, bool expectedResult)
         {
-            var user = new ClaimsPrincipal(
-                    new ClaimsIdentity(new List<Claim>
-                    {
-                        new Claim(AuthConstant.ClaimType.UserId, "uid")
-                    })
-                );
+            var user = MockHelper.ClaimsPrincipalWithUserId("uid");
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), default)).ReturnsAsync(entities);
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 Cache = cache.Object,
             };
@@ -123,7 +117,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 });
 
             // test
-            var hackathonManager = new HackathonManagement(null)
+            var hackathonManager = new HackathonManagement()
             {
                 StorageContext = storageContext.Object,
                 HackathonAdminManagement = hackathonAdminManagement.Object,
@@ -171,7 +165,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             CancellationToken cancellationToken = CancellationToken.None;
             HackathonEntity hackathonEntity = new HackathonEntity { Status = origin };
 
-            var hackathonManagement = new HackathonManagement(null)
+            var hackathonManagement = new HackathonManagement()
             {
             };
             var updated = await hackathonManagement.UpdateHackathonStatusAsync(hackathonEntity, target, cancellationToken);
@@ -204,7 +198,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             cache.Setup(c => c.Remove(HackathonManagement.cacheKeyForAllHackathon));
 
             // test
-            var hackathonManagement = new HackathonManagement(null)
+            var hackathonManagement = new HackathonManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -233,7 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.HackathonTable).Returns(hackathonTable.Object);
 
-            var hackathonManager = new HackathonManagement(null)
+            var hackathonManager = new HackathonManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -249,7 +243,48 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         #region GetHackathonEntityByNameAsync
         [Test]
-        public async Task GetHackathonEntityByNameAsyncTest()
+        public async Task GetHackathonEntityByNameAsync_Null()
+        {
+            string name = "test";
+            HackathonEntity entity = null;
+
+            var storageContext = new MockStorageContext();
+            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
+
+            var hackathonManager = new HackathonManagement
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
+
+            storageContext.VerifyAll();
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task GetHackathonEntityByNameAsync_Offline()
+        {
+            string name = "test";
+            var entity = new HackathonEntity
+            {
+                Status = HackathonStatus.offline
+            };
+
+            var storageContext = new MockStorageContext();
+            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
+
+            var hackathonManager = new HackathonManagement
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
+
+            storageContext.VerifyAll();
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task GetHackathonEntityByNameAsync_Success()
         {
             string name = "test";
             var entity = new HackathonEntity
@@ -257,24 +292,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Location = "loc"
             };
 
-            var hackathonTable = new Mock<IHackathonTable>();
-            hackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, CancellationToken.None))
-                .ReturnsAsync(entity);
+            var storageContext = new MockStorageContext();
+            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
 
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.HackathonTable).Returns(hackathonTable.Object);
-
-            var hackathonManager = new HackathonManagement(null);
-            hackathonManager.StorageContext = storageContext.Object;
+            var hackathonManager = new HackathonManagement
+            {
+                StorageContext = storageContext.Object,
+            };
             var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
 
-            Mock.VerifyAll();
-            hackathonTable.Verify(p => p.RetrieveAsync(name, string.Empty, CancellationToken.None), Times.Once);
-            hackathonTable.VerifyNoOtherCalls();
-
-            storageContext.VerifyGet(p => p.HackathonTable, Times.Once);
-            storageContext.VerifyNoOtherCalls();
-
+            storageContext.VerifyAll();
             Assert.AreEqual("loc", result.Location);
         }
         #endregion
@@ -504,12 +531,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             CancellationToken cancellationToken = CancellationToken.None;
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), cancellationToken))
                 .ReturnsAsync(allHackathons);
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 Cache = cache.Object,
             };
@@ -561,12 +587,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 PartitionKey = "h4",
                 CreatedAt = DateTime.Now.AddDays(4),
-            };
-            var h5 = new HackathonEntity
-            {
-                PartitionKey = "h5",
-                CreatedAt = DateTime.Now.AddDays(4),
-                Status = HackathonStatus.offline,
             };
 
             var a0 = new HackathonAdminEntity { RowKey = "uid" };
@@ -629,7 +649,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     { "h2", h2 },
                     { "h3", h3 },
                     { "h4", h4 },
-                    { "h5", h5 }
                 },
                 new Dictionary<string, List<HackathonAdminEntity>>
                 {
@@ -659,7 +678,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ListType = HackathonListType.admin,
             };
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var cache = new Mock<ICacheProvider>();
             if (user != null)
             {
@@ -676,7 +694,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             }
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 Cache = cache.Object,
                 HackathonAdminManagement = hackathonAdminManagement.Object,
@@ -807,7 +825,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ListType = HackathonListType.enrolled,
             };
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var cache = new Mock<ICacheProvider>();
             var enrollmentManagement = new Mock<IEnrollmentManagement>();
 
@@ -826,7 +843,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             }
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 Cache = cache.Object,
                 EnrollmentManagement = enrollmentManagement.Object,
@@ -911,12 +928,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ListType = HackathonListType.fresh,
             };
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), cancellationToken))
                 .ReturnsAsync(allHackathons);
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 Cache = cache.Object,
             };
@@ -946,13 +962,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 { "test", new HackathonEntity{ } }
             };
 
-            var logger = new Mock<ILogger<HackathonManagement>>();
             var hackathonTable = new Mock<IHackathonTable>();
             hackathonTable.Setup(p => p.ListAllHackathonsAsync(cancellationToken)).ReturnsAsync(data);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.HackathonTable).Returns(hackathonTable.Object);
 
-            var hackathonManagement = new HackathonManagement(logger.Object)
+            var hackathonManagement = new HackathonManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = new DefaultCacheProvider(null),
@@ -992,7 +1007,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             cache.Setup(c => c.Remove(HackathonManagement.cacheKeyForAllHackathon));
 
             // test
-            var hackathonManager = new HackathonManagement(null)
+            var hackathonManager = new HackathonManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -1049,7 +1064,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             judgeManagement.Setup(j => j.IsJudgeAsync("hack1", "uid", default)).ReturnsAsync(false);
             judgeManagement.Setup(j => j.IsJudgeAsync("hack2", "uid", default)).ReturnsAsync(true);
 
-            var hackathonManagement = new HackathonManagement(null)
+            var hackathonManagement = new HackathonManagement()
             {
                 HackathonAdminManagement = hackathonAdminManagement.Object,
                 EnrollmentManagement = enrollmentManagement.Object,
@@ -1084,7 +1099,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }));
             CancellationToken cancellationToken = CancellationToken.None;
 
-            var hackathonManagement = new HackathonManagement(null);
+            var hackathonManagement = new HackathonManagement();
             Assert.IsNull(await hackathonManagement.GetHackathonRolesAsync(hackathon, null, cancellationToken));
             Assert.IsNull(await hackathonManagement.GetHackathonRolesAsync(hackathon, user, cancellationToken));
             Assert.IsNull(await hackathonManagement.GetHackathonRolesAsync(hackathon, user2, cancellationToken));
@@ -1205,7 +1220,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var judgeManagement = new Mock<IJudgeManagement>();
             judgeManagement.Setup(j => j.IsJudgeAsync("hack", "uid", default)).ReturnsAsync(isJudge);
 
-            var hackathonManagement = new HackathonManagement(null)
+            var hackathonManagement = new HackathonManagement()
             {
                 EnrollmentManagement = enrollmentManagement.Object,
                 HackathonAdminManagement = hackathonAdminManagement.Object,

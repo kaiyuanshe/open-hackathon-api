@@ -362,24 +362,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
 
         [Test]
-        public async Task GetTest_OfflineNotPlatformAdmin()
-        {
-            string name = "Foo";
-            HackathonEntity entity = new HackathonEntity { Status = HackathonStatus.offline };
-
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", CancellationToken.None))
-                .ReturnsAsync(entity);
-
-            var controller = new HackathonController();
-            mockContext.SetupController(controller);
-            var result = await controller.Get(name, default);
-
-            mockContext.VerifyAll();
-            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, name));
-        }
-
-        [Test]
         public async Task GetTest_NotOnlineAnonymous()
         {
             string name = "Foo";
@@ -617,42 +599,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             string name = "Foo";
             HackathonEntity entity = null;
-            CancellationToken cancellationToken = CancellationToken.None;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(entity);
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(entity);
 
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object
-            };
-            var result = await controller.Delete(name, cancellationToken);
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Delete(name, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            AssertHelper.AssertNoContentResult(result);
-        }
-
-        [Test]
-        public async Task DeleteTest_AlreadyDeleted()
-        {
-            string name = "Foo";
-            HackathonEntity entity = new HackathonEntity { Status = HackathonStatus.offline };
-            CancellationToken cancellationToken = CancellationToken.None;
-
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(entity);
-
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object
-            };
-            var result = await controller.Delete(name, cancellationToken);
-
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            mockContext.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
 
@@ -687,30 +642,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region RequestPublish
-        [Test]
-        public async Task RequestPublish_Deleted()
-        {
-            string name = "Foo";
-            HackathonEntity entity = new HackathonEntity { Status = HackathonStatus.offline };
-            CancellationToken cancellationToken = CancellationToken.None;
-
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(entity);
-
-            var controller = new HackathonController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.RequestPublish(name, cancellationToken);
-
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-
-            AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Hackathon_Deleted, name));
-        }
-
         [Test]
         public async Task RequestPublish_AlreadyOnline()
         {
