@@ -1,6 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
@@ -448,44 +449,20 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region ListHackathon
-        [Test]
-        public async Task ListHackathon_Unauthorized()
-        {
-            // input
-            var authResult = AuthorizationResult.Failed();
-
-            // mock and capture
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), null, AuthConstant.PolicyForSwagger.LoginUser))
-                .ReturnsAsync(authResult);
-
-            // run
-            var controller = new HackathonController
-            {
-                AuthorizationService = authorizationService.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.ListHackathon(null, null, null, HackathonListType.admin, default);
-
-            // verify
-            Mock.VerifyAll(authorizationService);
-            authorizationService.VerifyNoOtherCalls();
-
-            AssertHelper.AssertObjectResult(result, 401, Resources.Auth_Unauthorized);
-        }
-
         private static IEnumerable ListHackathonTestData()
         {
             // arg0: pagination
             // arg1: search
-            // arg2: order by
-            // arg3: listType
-            // arg4: next pagination
-            // arg5: expected nextlink
+            // arg2: userId
+            // arg3: order by
+            // arg4: listType
+            // arg5: next pagination
+            // arg6: expected nextlink
 
             // no pagination, no filter, no top
             yield return new TestCaseData(
                     new Pagination { },
+                    null,
                     null,
                     null,
                     null,
@@ -497,6 +474,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             yield return new TestCaseData(
                     new Pagination { top = 10, np = "np", nr = "nr" },
                     "search",
+                    null,
                     HackathonOrderBy.updatedAt,
                     HackathonListType.online,
                     null,
@@ -507,6 +485,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             yield return new TestCaseData(
                     new Pagination { top = 10 },
                     "search",
+                    null,
                     HackathonOrderBy.updatedAt,
                     HackathonListType.admin,
                     new Pagination { np = "np", nr = "nr" },
@@ -515,10 +494,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             yield return new TestCaseData(
                     new Pagination { top = 10 },
                     "search",
+                    null,
                     HackathonOrderBy.updatedAt,
                     HackathonListType.online,
                     new Pagination { np = "np", nr = "nr" },
                     "&top=10&search=search&orderby=updatedAt&listType=online&np=np&nr=nr"
+                );
+
+            // with userId, pagination and filters
+            yield return new TestCaseData(
+                    new Pagination { top = 10 },
+                    "search",
+                    "uid2",
+                    HackathonOrderBy.updatedAt,
+                    HackathonListType.admin,
+                    new Pagination { np = "np", nr = "nr" },
+                    "&top=10&search=search&orderby=updatedAt&listType=admin&np=np&nr=nr"
                 );
         }
 
@@ -526,6 +517,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task ListHackathon(
             Pagination pagination,
             string search,
+            string userId,
             HackathonOrderBy? orderBy,
             HackathonListType? listType,
             Pagination next,
@@ -544,42 +536,31 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             {
                 Tuple.Create(hackathons.First(), new HackathonRoles{})
             };
-            ClaimsPrincipal user = null;
-            var authResult = AuthorizationResult.Success();
 
             // mock and capture
-            var hackathonManagement = new Mock<IHackathonManagement>();
+            var mockContext = new MockControllerContext();
             HackathonQueryOptions optionsCaptured = null;
-            hackathonManagement.Setup(p => p.ListPaginatedHackathonsAsync(user, It.IsAny<HackathonQueryOptions>(), default))
-                .Callback<ClaimsPrincipal, HackathonQueryOptions, CancellationToken>((u, o, t) =>
+            mockContext.HackathonManagement.Setup(p => p.ListPaginatedHackathonsAsync(It.IsAny<HackathonQueryOptions>(), default))
+                .Callback<HackathonQueryOptions, CancellationToken>((o, t) =>
                  {
                      optionsCaptured = o;
                      optionsCaptured.NextPage = next;
                  })
                 .ReturnsAsync(hackathons);
-            hackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, user, default))
+            mockContext.HackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, It.IsAny<ClaimsPrincipal>(), default))
                 .ReturnsAsync(hackWithRoles);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            if (listType == HackathonListType.admin)
+            if (!string.IsNullOrEmpty(userId))
             {
-                authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), null, AuthConstant.PolicyForSwagger.LoginUser))
-                    .ReturnsAsync(authResult);
+                mockContext.HackathonAdminManagement.Setup(a => a.IsPlatformAdmin(userId, default)).ReturnsAsync(true);
             }
 
             // run
-            var controller = new HackathonController
-            {
-                ResponseBuilder = new DefaultResponseBuilder(),
-                AuthorizationService = authorizationService.Object,
-                HackathonManagement = hackathonManagement.Object,
-            };
-            var result = await controller.ListHackathon(pagination, search, orderBy, listType, default);
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.ListHackathon(pagination, search, userId, orderBy, listType, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
+            mockContext.VerifyAll();
 
             var list = AssertHelper.AssertOKResult<HackathonList>(result);
             Assert.AreEqual(expectedLink, list.nextLink);
@@ -587,6 +568,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("pk", list.value[0].name);
             Assert.AreEqual(pagination.top, optionsCaptured.Pagination?.top);
             Assert.AreEqual(orderBy, optionsCaptured.OrderBy);
+            Assert.AreEqual(userId ?? string.Empty, optionsCaptured.UserId);
+            Assert.AreEqual(!string.IsNullOrEmpty(userId), optionsCaptured.IsPlatformAdmin);
             Assert.AreEqual(listType, optionsCaptured.ListType);
             Assert.AreEqual(pagination.np, optionsCaptured.Pagination?.np);
             Assert.AreEqual(pagination.nr, optionsCaptured.Pagination?.nr);

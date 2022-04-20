@@ -33,6 +33,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<HackathonAdminEntity> GetAdminAsync(string hackathonName, string userId, CancellationToken cancellationToken);
         Task DeleteAdminAsync(string hackathonName, string userId, CancellationToken cancellationToken);
         Task<bool> IsHackathonAdmin(string hackathonName, ClaimsPrincipal user, CancellationToken cancellationToken = default);
+        Task<bool> IsPlatformAdmin(string userId, CancellationToken cancellationToken = default);
     }
 
     public class HackathonAdminManagement : ManagementClientBaseV0, IHackathonAdminManagement
@@ -146,6 +147,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 var admins = await ListHackathonAdminAsync(hackathonName, cancellationToken);
                 return admins.Any(a => a.UserId == userId);
             }
+        }
+        #endregion
+
+        #region IsPlatformAdmin
+        public async Task<bool> IsPlatformAdmin(string userId, CancellationToken cancellationToken = default)
+        {
+            var admin = await StorageContext.HackathonAdminTable.GetPlatformRole(userId, cancellationToken);
+            return admin != null && admin.IsPlatformAdministrator();
         }
         #endregion
     }

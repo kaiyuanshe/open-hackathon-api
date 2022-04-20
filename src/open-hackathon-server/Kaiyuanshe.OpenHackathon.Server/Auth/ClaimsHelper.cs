@@ -1,10 +1,30 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Auth
 {
     public static class ClaimsHelper
     {
+        public static ClaimsPrincipal NewClaimsPrincipal(IEnumerable<Claim> claims)
+        {
+            var identity = new ClaimsIdentity(claims, AuthConstant.AuthType.Token);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+            return claimsPrincipal;
+        }
+
+        public static ClaimsPrincipal NewClaimsPrincipal(string userId, bool isPlatformAdmin = false)
+        {
+            var claims = new List<Claim>();
+            claims.Add(UserId(userId));
+            if (isPlatformAdmin)
+            {
+                claims.Add(PlatformAdministrator(userId));
+            }
+
+            return NewClaimsPrincipal(claims);
+        }
+
         public static Claim UserId(string userId)
         {
             return new Claim(

@@ -335,5 +335,35 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
 
         #endregion
+
+        #region IsPlatformAdmin
+        private static IEnumerable IsPlatformAdminTestData()
+        {
+            yield return new TestCaseData(null).Returns(false);
+
+            yield return new TestCaseData(new HackathonAdminEntity
+            {
+                PartitionKey = "hack"
+            }).Returns(false);
+
+            yield return new TestCaseData(new HackathonAdminEntity()).Returns(true);
+        }
+
+        [Test, TestCaseSource(nameof(IsPlatformAdminTestData))]
+        public async Task<bool> IsPlatformAdmin(HackathonAdminEntity admin)
+        {
+            var storageContext = new MockStorageContext();
+            storageContext.HackathonAdminTable.Setup(p => p.GetPlatformRole("uid", default)).ReturnsAsync(admin);
+
+            var adminManagement = new HackathonAdminManagement(null)
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await adminManagement.IsPlatformAdmin("uid", default);
+
+            storageContext.VerifyAll();
+            return result;
+        }
+        #endregion
     }
 }

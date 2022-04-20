@@ -30,24 +30,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
     }
 
-    public class HackathonQueryOptions : TableQueryOptions
-    {
-        /// <summary>
-        /// search in name/display name/desc
-        /// </summary>
-        public string Search { get; set; }
-
-        /// <summary>
-        /// Ordering. default to createdAt.
-        /// </summary>
-        public HackathonOrderBy? OrderBy { get; set; }
-
-        /// <summary>
-        /// type of hackathons. Default to online. 
-        /// </summary>
-        public HackathonListType? ListType { get; set; }
-    }
-
     public class AdminQueryOptions : TableQueryOptions
     {
 

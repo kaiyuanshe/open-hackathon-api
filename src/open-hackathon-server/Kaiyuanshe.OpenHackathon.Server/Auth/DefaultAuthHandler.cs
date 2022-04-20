@@ -13,7 +13,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
-using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,8 +84,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
                 cacheKey,
                 TimeSpan.FromMinutes(10),
                 (cancellationToken) => userManagement.GetUserBasicClaimsAsync(token, cancellationToken));
-            var identity = new ClaimsIdentity(claims, AuthConstant.AuthType.Token);
-            var claimsPrincipal = new ClaimsPrincipal(identity);
+            var claimsPrincipal = ClaimsHelper.NewClaimsPrincipal(claims);
             return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, AuthConstant.AuthType.Token));
         }
 
