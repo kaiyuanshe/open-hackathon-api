@@ -1,5 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
@@ -539,7 +540,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 Cache = cache.Object,
             };
-            var result = await hackathonManagement.ListPaginatedHackathonsAsync(null, options, cancellationToken);
+            var result = await hackathonManagement.ListPaginatedHackathonsAsync(options, cancellationToken);
 
             Mock.VerifyAll(cache);
             cache.VerifyNoOtherCalls();
@@ -593,14 +594,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var a1 = new HackathonAdminEntity { RowKey = "a1" };
             var a2 = new HackathonAdminEntity { RowKey = "a2" };
 
-            // arg0: user
-            // arg1: all hackathons
-            // arg2: admins
-            // arg3: expected result
+            // arg0: userId
+            // arg1: isPlatformAdmin
+            // arg2: all hackathons
+            // arg3: admins
+            // arg4: expected result
 
             // empty user
             yield return new TestCaseData(
                 null,
+                false,
                 new Dictionary<string, HackathonEntity>
                 {
                     { "h1", h1 },
@@ -614,13 +617,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // Platform Admin
             yield return new TestCaseData(
-                new ClaimsPrincipal(
-                    new ClaimsIdentity(new List<Claim>
-                    {
-                        new Claim(AuthConstant.ClaimType.PlatformAdministrator, "foo"),
-                        new Claim(AuthConstant.ClaimType.UserId, "uid")
-                    })
-                ),
+                "uid",
+                true,
                 new Dictionary<string, HackathonEntity>
                 {
                     { "h1", h1 },
@@ -637,12 +635,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // normal user
             yield return new TestCaseData(
-                new ClaimsPrincipal(
-                    new ClaimsIdentity(new List<Claim>
-                    {
-                        new Claim(AuthConstant.ClaimType.UserId, "uid")
-                    })
-                ),
+                "uid",
+                false,
                 new Dictionary<string, HackathonEntity>
                 {
                     { "h1", h1 },
@@ -666,22 +660,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         [Test, TestCaseSource(nameof(ListPaginatedHackathonsAsyncTestData_admin))]
         public async Task ListPaginatedHackathonsAsync_admin(
-            ClaimsPrincipal user,
+            string userId,
+            bool isPlatformAdmin,
             Dictionary<string, HackathonEntity> allHackathons,
             Dictionary<string, List<HackathonAdminEntity>> admins,
             List<HackathonEntity> expectedResult)
         {
-            CancellationToken cancellationToken = CancellationToken.None;
             var options = new HackathonQueryOptions
             {
                 OrderBy = HackathonOrderBy.createdAt,
                 ListType = HackathonListType.admin,
+                UserId = userId,
+                IsPlatformAdmin = isPlatformAdmin,
             };
 
             var cache = new Mock<ICacheProvider>();
-            if (user != null)
+            if (!string.IsNullOrEmpty(userId))
             {
-                cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), cancellationToken))
+                cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), default))
                     .ReturnsAsync(allHackathons);
             }
             var hackathonAdminManagement = new Mock<IHackathonAdminManagement>();
@@ -689,7 +685,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 foreach (var item in admins)
                 {
-                    hackathonAdminManagement.Setup(p => p.ListHackathonAdminAsync(item.Key, cancellationToken))
+                    hackathonAdminManagement.Setup(p => p.ListHackathonAdminAsync(item.Key, default))
                         .ReturnsAsync(item.Value);
                 }
             }
@@ -699,7 +695,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Cache = cache.Object,
                 HackathonAdminManagement = hackathonAdminManagement.Object,
             };
-            var result = await hackathonManagement.ListPaginatedHackathonsAsync(user, options, cancellationToken);
+            var result = await hackathonManagement.ListPaginatedHackathonsAsync(options, default);
 
             Mock.VerifyAll(cache, hackathonAdminManagement);
             cache.VerifyNoOtherCalls();
@@ -744,12 +740,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Status = HackathonStatus.offline,
             };
 
-            // arg0: user
+            // arg0: userId
             // arg1: all hackathons
             // arg2: enrolled
             // arg3: expected result
 
-            // empty user
+            // empty userId
             yield return new TestCaseData(
                 null,
                 new Dictionary<string, HackathonEntity>
@@ -763,14 +759,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new List<HackathonEntity>()
                 );
 
-            // no userId
+            // empty userId
             yield return new TestCaseData(
-                new ClaimsPrincipal(
-                    new ClaimsIdentity(new List<Claim>
-                    {
-                        new Claim(AuthConstant.ClaimType.PlatformAdministrator, "foo"),
-                    })
-                ),
+                "",
                 new Dictionary<string, HackathonEntity>
                 {
                     { "h1", h1 },
@@ -784,12 +775,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // normal user
             yield return new TestCaseData(
-                new ClaimsPrincipal(
-                    new ClaimsIdentity(new List<Claim>
-                    {
-                        new Claim(AuthConstant.ClaimType.UserId, "uid")
-                    })
-                ),
+                "uid",
                 new Dictionary<string, HackathonEntity>
                 {
                     { "h1", h1 },
@@ -813,7 +799,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         [Test, TestCaseSource(nameof(ListPaginatedHackathonsAsyncTestData_enrolled))]
         public async Task ListPaginatedHackathonsAsync_enrolled(
-            ClaimsPrincipal user,
+            string userId,
             Dictionary<string, HackathonEntity> allHackathons,
             Dictionary<string, bool> enrolled,
             List<HackathonEntity> expectedResult)
@@ -823,12 +809,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 OrderBy = HackathonOrderBy.createdAt,
                 ListType = HackathonListType.enrolled,
+                UserId = userId,
             };
 
             var cache = new Mock<ICacheProvider>();
             var enrollmentManagement = new Mock<IEnrollmentManagement>();
 
-            string userId = ClaimsHelper.GetUserId(user);
             if (!string.IsNullOrWhiteSpace(userId))
             {
                 cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), cancellationToken))
@@ -848,7 +834,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Cache = cache.Object,
                 EnrollmentManagement = enrollmentManagement.Object,
             };
-            var result = await hackathonManagement.ListPaginatedHackathonsAsync(user, options, cancellationToken);
+            var result = await hackathonManagement.ListPaginatedHackathonsAsync(options, cancellationToken);
 
             Mock.VerifyAll(cache, enrollmentManagement);
             cache.VerifyNoOtherCalls();
@@ -936,7 +922,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 Cache = cache.Object,
             };
-            var result = await hackathonManagement.ListPaginatedHackathonsAsync(null, options, cancellationToken);
+            var result = await hackathonManagement.ListPaginatedHackathonsAsync(options, cancellationToken);
 
             Mock.VerifyAll(cache);
             cache.VerifyNoOtherCalls();

@@ -1,4 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -45,7 +46,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Search paginated hackathon
         /// </summary>
-        Task<IEnumerable<HackathonEntity>> ListPaginatedHackathonsAsync(ClaimsPrincipal user, HackathonQueryOptions options, CancellationToken cancellationToken = default);
+        Task<IEnumerable<HackathonEntity>> ListPaginatedHackathonsAsync(HackathonQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List all hackathons
@@ -283,27 +284,22 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return hackathons;
         }
 
-        private async Task<IEnumerable<HackathonEntity>> ListAdminHackathons(ClaimsPrincipal user, HackathonQueryOptions options, CancellationToken cancellationToken)
+        private async Task<IEnumerable<HackathonEntity>> ListAdminHackathons(HackathonQueryOptions options, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                return new List<HackathonEntity>();
-            }
-            string userId = ClaimsHelper.GetUserId(user);
-            if (string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrEmpty(options.UserId))
             {
                 return new List<HackathonEntity>();
             }
 
             IEnumerable<HackathonEntity> hackathons = (await ListAllHackathonsAsync(cancellationToken)).Values;
-            // filter by admin. PlatformAdmin can access every hackathon
-            if (!ClaimsHelper.IsPlatformAdministrator(user))
+            // filter by hackathon admin. PlatformAdmin can access every hackathon
+            if (!options.IsPlatformAdmin)
             {
                 List<HackathonEntity> filtered = new List<HackathonEntity>();
                 foreach (var item in hackathons)
                 {
                     var admins = await HackathonAdminManagement.ListHackathonAdminAsync(item.Name, cancellationToken);
-                    if (admins.Any(a => a.UserId == userId))
+                    if (admins.Any(a => a.UserId == options.UserId))
                     {
                         filtered.Add(item);
                     }
@@ -313,12 +309,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return hackathons;
         }
 
-        private async Task<IEnumerable<HackathonEntity>> ListEnrolledHackathons(ClaimsPrincipal user, HackathonQueryOptions options, CancellationToken cancellationToken)
+        private async Task<IEnumerable<HackathonEntity>> ListEnrolledHackathons(HackathonQueryOptions options, CancellationToken cancellationToken)
         {
             var result = new List<HackathonEntity>();
 
-            string userId = ClaimsHelper.GetUserId(user);
-            if (string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(options.UserId))
             {
                 return result;
             }
@@ -329,7 +324,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 if (hackathon.Status == HackathonStatus.offline)
                     continue;
 
-                var enrolled = await EnrollmentManagement.IsUserEnrolledAsync(hackathon, userId, cancellationToken);
+                var enrolled = await EnrollmentManagement.IsUserEnrolledAsync(hackathon, options.UserId, cancellationToken);
                 if (enrolled)
                 {
                     result.Add(hackathon);
@@ -337,6 +332,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             return result;
         }
+
         private async Task<IEnumerable<HackathonEntity>> ListFreshHackathons(HackathonQueryOptions options, CancellationToken cancellationToken)
         {
             IEnumerable<HackathonEntity> hackathons = (await ListAllHackathonsAsync(cancellationToken)).Values;
@@ -347,7 +343,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return hackathons;
         }
 
-        public async Task<IEnumerable<HackathonEntity>> ListPaginatedHackathonsAsync(ClaimsPrincipal user, HackathonQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<HackathonEntity>> ListPaginatedHackathonsAsync(HackathonQueryOptions options, CancellationToken cancellationToken = default)
         {
             IEnumerable<HackathonEntity> hackathons = new List<HackathonEntity>();
             // get candidates
@@ -358,10 +354,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                     hackathons = await ListOnlineHackathons(options, cancellationToken);
                     break;
                 case HackathonListType.admin:
-                    hackathons = await ListAdminHackathons(user, options, cancellationToken);
+                    hackathons = await ListAdminHackathons(options, cancellationToken);
                     break;
                 case HackathonListType.enrolled:
-                    hackathons = await ListEnrolledHackathons(user, options, cancellationToken);
+                    hackathons = await ListEnrolledHackathons(options, cancellationToken);
                     break;
                 case HackathonListType.fresh:
                     hackathons = await ListFreshHackathons(options, cancellationToken);
@@ -373,9 +369,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // search
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                hackathons = hackathons.Where(h => h.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
-                                                || (h.DisplayName?.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).GetValueOrDefault(false)
-                                                || (h.Detail?.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).GetValueOrDefault(false));
+                hackathons = hackathons.Where(
+                    h => h.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                        || (h.DisplayName?.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).GetValueOrDefault(false)
+                        || (h.Detail?.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).GetValueOrDefault(false));
             }
 
             // ordering and paging

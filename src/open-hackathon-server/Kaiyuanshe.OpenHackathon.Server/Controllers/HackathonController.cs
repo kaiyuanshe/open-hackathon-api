@@ -1,5 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,16 +20,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region ListHackathon
         /// <summary>
-        /// List paginated online hackathons. Deleted hackathons might be included in response. 
-        /// See parameter listType for details. Clients can check the status of hackathon.
+        /// List paginated hackathons. Optionally client can send `Authorization` header and/or query strings. 
+        /// See the parameters for more details.
         /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <param name="search">keyword to search in name, display name or details. Do case-insensitive substring match only.</param>
+        /// <param name="search">keyword to search in hackathon name, displayName or details. Do case-insensitive substring match only.</param>
+        /// <param name="userId">optional id of user. If userId is not empty, will override the current user from Authorization header.</param>
         /// <param name="orderby">order by. Default to createdAt.</param>
-        /// <param name="listType">type of list. Default to online. 
-        /// online: list hackathons in online status only; 
-        /// admin: list hackathons in any status where current user has admin access; 
-        /// enrolled: list enrolled hackathons;
+        /// <param name="listType">type of list. Default to online.
+        /// online: list hackathons in online status only regardless of the userId; 
+        /// admin: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned; 
+        /// enrolled: list enrolled hackathons of a user, either userId or Auth header is required, otherwise empty list returned;
         /// fresh: hackathons that are about to start;
         /// </param>
         /// <returns>A list of hackathon.</returns>
@@ -38,29 +40,31 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public async Task<object> ListHackathon(
             [FromQuery] Pagination pagination,
             [FromQuery] string search,
+            [FromQuery] string userId,
             [FromQuery] HackathonOrderBy? orderby,
             [FromQuery] HackathonListType? listType,
             CancellationToken cancellationToken)
         {
-            // check login if list by admin
-            if (listType == HackathonListType.admin)
-            {
-                var authorizationResult = await AuthorizationService.AuthorizeAsync(User, null, AuthConstant.PolicyForSwagger.LoginUser);
-                if (!authorizationResult.Succeeded)
-                {
-                    return Unauthorized(Resources.Auth_Unauthorized);
-                }
-            }
-
-            var hackathonQueryOptions = new HackathonQueryOptions
+            var options = new HackathonQueryOptions
             {
                 Pagination = pagination,
                 OrderBy = orderby,
                 Search = search,
                 ListType = listType,
+                UserId = CurrentUserId,
             };
-            var entities = await HackathonManagement.ListPaginatedHackathonsAsync(User, hackathonQueryOptions, cancellationToken);
-            var entityWithRoles = await HackathonManagement.ListHackathonRolesAsync(entities, User, cancellationToken);
+
+            var userQueried = User;
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                // override the id from Auth header.
+                options.UserId = userId.Trim();
+                options.IsPlatformAdmin = await HackathonAdminManagement.IsPlatformAdmin(options.UserId, cancellationToken);
+                userQueried = ClaimsHelper.NewClaimsPrincipal(userId, options.IsPlatformAdmin);
+            }
+
+            var entities = await HackathonManagement.ListPaginatedHackathonsAsync(options, cancellationToken);
+            var entityWithRoles = await HackathonManagement.ListHackathonRolesAsync(entities, userQueried, cancellationToken);
 
             var routeValues = new RouteValueDictionary();
             if (pagination.top.HasValue)
@@ -76,7 +80,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(listType), listType.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, hackathonQueryOptions.NextPage);
+            var nextLink = BuildNextLinkUrl(routeValues, options.NextPage);
 
             return Ok(ResponseBuilder.BuildResourceList<HackathonEntity, HackathonRoles, Hackathon, HackathonList>(
                     entityWithRoles, ResponseBuilder.BuildHackathon, nextLink));
