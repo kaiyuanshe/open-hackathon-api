@@ -25,10 +25,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             return NewClaimsPrincipal(claims);
         }
 
-        public static Claim UserId(string userId)
+        public static Claim UserId(string userDisplayName)
         {
             return new Claim(
                     AuthConstant.ClaimType.UserId,
+                    userDisplayName,
+                    ClaimValueTypes.String,
+                    AuthConstant.Issuer.Default);
+        }
+
+        public static Claim UserDisplayName(string userId)
+        {
+            return new Claim(
+                    AuthConstant.ClaimType.UserDisplayName,
                     userId,
                     ClaimValueTypes.String,
                     AuthConstant.Issuer.Default);
