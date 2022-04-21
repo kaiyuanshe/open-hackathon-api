@@ -28,6 +28,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             public const string UserId = "UserId";
 
             /// <summary>
+            /// Type for user's display name. Claim value is user.displayName
+            /// </summary>
+            public const string UserDisplayName = "UserDisplayName";
+
+            /// <summary>
             /// type for PlatformAdministrator, whoever has this type of Claim is an Admin of Open Hackathon platform. 
             /// Claim value can be any string, typically the user's id.
             /// </summary>
