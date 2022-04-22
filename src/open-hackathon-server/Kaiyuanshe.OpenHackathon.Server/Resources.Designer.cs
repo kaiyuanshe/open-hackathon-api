@@ -70,16 +70,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} deleted an administrator for hackathon &apos;{1}&apos;: {2}.
-        /// </summary>
-        internal static string ActivityLog_DeleteHackathonAdmin {
-            get {
-                return ResourceManager.GetString("ActivityLog_DeleteHackathonAdmin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to created by {userName}..
+        ///   Looks up a localized string similar to Created by {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_createHackathon {
             get {
@@ -88,11 +79,29 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to created a new hackathon: {hackathonName}.
+        ///   Looks up a localized string similar to Deleted by: {userName}.
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created a new hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_createHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleted hackathon: {hackathonName}.
+        /// </summary>
+        internal static string ActivityLog_User_deleteHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteHackathon", resourceCulture);
             }
         }
         
@@ -300,6 +309,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string Hackathon_Ended {
             get {
                 return ResourceManager.GetString("Hackathon_Ended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hackathon is not allowed to delete since there are active award assignments. Please revoke the award assignments first..
+        /// </summary>
+        internal static string Hackathon_HasAwardAssignment {
+            get {
+                return ResourceManager.GetString("Hackathon_HasAwardAssignment", resourceCulture);
             }
         }
         

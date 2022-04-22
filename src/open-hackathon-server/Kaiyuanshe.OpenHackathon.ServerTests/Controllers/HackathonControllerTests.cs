@@ -269,7 +269,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
-            AssertHelper.AssertObjectResult(result, 403, Resources.Hackathon_ReadOnly);
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_ReadOnly);
         }
 
         [Test]
@@ -595,33 +595,85 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
 
         [Test]
-        public async Task DeleteTest_DeleteLogically()
+        public async Task DeleteTest_ReadOnly()
         {
-            string name = "Hack";
-            HackathonEntity entity = new HackathonEntity { DisplayName = "dpn" };
+            string name = "Foo";
+            HackathonEntity entity = new HackathonEntity { ReadOnly = true };
 
-            // mock
             var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default))
-                .ReturnsAsync(entity);
-            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, default));
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.deleteHackathon.ToString()
-                && a.Message == "dpn"), default));
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(entity);
 
-            // test
             var controller = new HackathonController();
             mockContext.SetupController(controller);
             var result = await controller.Delete(name, default);
 
-            // verify
-            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
-            AssertHelper.AssertNoContentResult(result);
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_ReadOnly);
         }
 
+        [Test]
+        public async Task DeleteTest_NotAdmin()
+        {
+            string name = "Foo";
+            HackathonEntity entity = new HackathonEntity { };
+            var authResult = AuthorizationResult.Failed();
+
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(entity);
+            mockContext.AuthorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), entity, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Delete(name, default);
+
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 403, Resources.Hackathon_NotAdmin);
+        }
+
+        [Test]
+        public async Task DeleteTest_HasAwardAssignment()
+        {
+            string name = "Foo";
+            HackathonEntity entity = new HackathonEntity { };
+            var authResult = AuthorizationResult.Success();
+            var assignmentCount = 1;
+
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(entity);
+            mockContext.AuthorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), entity, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.AwardManagement.Setup(a => a.GetAssignmentCountAsync("foo", null, default)).ReturnsAsync(assignmentCount);
+
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Delete(name, default);
+
+            mockContext.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_HasAwardAssignment);
+        }
+
+        [Test]
+        public async Task DeleteTest_Success()
+        {
+            string name = "Foo";
+            HackathonEntity entity = new HackathonEntity { };
+            var authResult = AuthorizationResult.Success();
+            var assignmentCount = 0;
+
+            var mockContext = new MockControllerContext();
+            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(entity);
+            mockContext.AuthorizationService.Setup(a => a.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), entity, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            mockContext.AwardManagement.Setup(a => a.GetAssignmentCountAsync("foo", null, default)).ReturnsAsync(assignmentCount);
+            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteHackathon, It.IsAny<object>(), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteHackathon, It.IsAny<object>(), default));
+
+            var controller = new HackathonController();
+            mockContext.SetupController(controller);
+            var result = await controller.Delete(name, default);
+
+            mockContext.VerifyAll();
+            AssertHelper.AssertNoContentResult(result);
+        }
         #endregion
 
         #region RequestPublish

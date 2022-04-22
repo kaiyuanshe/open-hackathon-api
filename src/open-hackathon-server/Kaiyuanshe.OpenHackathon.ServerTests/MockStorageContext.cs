@@ -8,6 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
     {
         Mock<IStorageContext> StorageContext;
         public Mock<IActivityLogTable> ActivityLogTable { get; set; }
+        public Mock<IAwardAssignmentTable> AwardAssignmentTable { get; set; }
         public Mock<IExperimentTable> ExperimentTable { get; }
         public Mock<IHackathonTable> HackathonTable { get; }
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; }
@@ -15,12 +16,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public MockStorageContext()
         {
             ActivityLogTable = new Mock<IActivityLogTable>();
+            AwardAssignmentTable = new Mock<IAwardAssignmentTable>();
             ExperimentTable = new Mock<IExperimentTable>();
             HackathonTable = new Mock<IHackathonTable>();
             HackathonAdminTable = new Mock<IHackathonAdminTable>();
 
             StorageContext = new Mock<IStorageContext>();
             StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
+            StorageContext.Setup(p => p.AwardAssignmentTable).Returns(AwardAssignmentTable.Object);
             StorageContext.Setup(p => p.ExperimentTable).Returns(ExperimentTable.Object);
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
@@ -30,9 +33,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
         public void VerifyAll()
         {
-            Mock.VerifyAll(ActivityLogTable, ExperimentTable, HackathonTable, HackathonAdminTable);
+            Mock.VerifyAll(ActivityLogTable, AwardAssignmentTable, ExperimentTable, HackathonTable, HackathonAdminTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
+            AwardAssignmentTable.VerifyNoOtherCalls();
             ExperimentTable.VerifyNoOtherCalls();
             HackathonTable.VerifyNoOtherCalls();
             HackathonAdminTable?.VerifyNoOtherCalls();

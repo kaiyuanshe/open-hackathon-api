@@ -120,14 +120,17 @@
   <data name="ActivityLog_CreateHackathonAdmin" xml:space="preserve">
     <value>{0}成为了活动'{1}'的管理员,由{2}操作。</value>
   </data>
-  <data name="ActivityLog_DeleteHackathonAdmin" xml:space="preserve">
-    <value>{0}删除了活动‘{1}’的管理员: {2}</value>
-  </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
     <value>{userName}创建了活动。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
+    <value>活动被{userName}删除。</value>
+  </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>创建了新活动：{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
+    <value>删除活动:{hackathonName}</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>活动的创建者不能被删除</value>
@@ -197,6 +200,9 @@
   </data>
   <data name="Hackathon_Ended" xml:space="preserve">
     <value>活动已结束。结束时间： {0}</value>
+  </data>
+  <data name="Hackathon_HasAwardAssignment" xml:space="preserve">
+    <value>不能删除已颁奖的活动，请先撤销所有已颁发奖项。</value>
   </data>
   <data name="Hackathon_Name_Invalid" xml:space="preserve">
     <value>活动名称非法。只能包含字母或数字，长度1-100。</value>

@@ -163,7 +163,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     hackathonName = created.DisplayName,
                     userName = user.GetDisplayName()
                 };
-                await ActivityLogManagement.OnHackathonCreateOrUpdate(
+                await ActivityLogManagement.OnHackathonEvent(
                     nameLowercase,
                     CurrentUserId,
                     ActivityLogType.createHackathon,
@@ -272,8 +272,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <response code="204">Success. The response indicates the hackathon is deleted.</response>
         [HttpDelete]
         [Route("hackathon/{hackathonName}")]
-        [SwaggerErrorResponse(400, 403)]
-        [Authorize(AuthConstant.Policy.PlatformAdministrator)]
+        [SwaggerErrorResponse(400, 412)]
+        [Authorize(AuthConstant.PolicyForSwagger.HackathonAdministrator)]
         public async Task<object> Delete(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
             CancellationToken cancellationToken)
@@ -284,14 +284,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
 
-            await HackathonManagement.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var options = new ValidateHackathonOptions
             {
-                ActivityLogType = ActivityLogType.deleteHackathon.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = entity.DisplayName,
-            }, cancellationToken);
+                HackAdminRequird = true,
+                NoAwardAssignmentRequired = true,
+                HackathonName = hackathonName,
+            };
+            if (await ValidateHackathon(entity, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            await HackathonManagement.UpdateHackathonStatusAsync(entity, HackathonStatus.offline, cancellationToken);
+            var args = new
+            {
+                userName = CurrentUserDisplayName,
+                hackathonName = entity.DisplayName,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathonName.ToLower(), CurrentUserId, ActivityLogType.deleteHackathon, args, cancellationToken);
             return NoContent();
         }
         #endregion

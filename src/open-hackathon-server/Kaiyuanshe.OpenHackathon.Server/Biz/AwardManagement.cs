@@ -1,7 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get count of assignment of an award
         /// </summary>
-        Task<int> GetAssignmentCountAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default);
+        Task<int> GetAssignmentCountAsync(string hackathonName, string awardId = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get assignment by Id
@@ -80,16 +79,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<AwardAssignmentEntity>> ListAssignmentsByTeamAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
     }
 
-    public class AwardManagement : ManagementClientBaseV0, IAwardManagement
+    public class AwardManagement : ManagementClientBase<AwardManagement>, IAwardManagement
     {
         static readonly int MaxAwardCount = 100;
-
-        private readonly ILogger Logger;
-
-        public AwardManagement(ILogger<AwardManagement> logger)
-        {
-            Logger = logger;
-        }
 
         #region Cache
         private string CacheKeyAwards(string hackathonName)
@@ -270,10 +262,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetAssignmentCountAsync
-        public async Task<int> GetAssignmentCountAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default)
+        public async Task<int> GetAssignmentCountAsync(string hackathonName, string awardId = null, CancellationToken cancellationToken = default)
         {
-            var allAssignment = await ListByAwardAsync(hackathonName, awardId, cancellationToken);
-            return allAssignment.Count();
+            if (string.IsNullOrWhiteSpace(awardId))
+            {
+                var byHack = await ListByHackathonAsync(hackathonName, cancellationToken);
+                return byHack.Count();
+            }
+            else
+            {
+                var byAward = await ListByAwardAsync(hackathonName, awardId, cancellationToken);
+                return byAward.Count();
+            }
         }
         #endregion
 

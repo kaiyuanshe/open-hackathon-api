@@ -31,7 +31,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && l.ActivityLogType == ActivityLogType.createHackathon.ToString()
                 && l.Messages.Count() == 2
                 && l.Messages["zh-CN"] != null // CultureInfo unable to set/get on Github actions 
-                && l.Messages["en-US"] == "created by un."), default));
+                && l.Messages["en-US"] == "Created by un."), default));
 
             var management = new ActivityLogManagement()
             {
@@ -87,7 +87,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && l.ActivityLogType == ActivityLogType.createHackathon.ToString()
                 && l.Messages.Count() == 2
                 && l.Messages["zh-CN"] != null // CultureInfo unable to set/get on Github actions 
-                && l.Messages["en-US"] == "created a new hackathon: hack"
+                && l.Messages["en-US"] == "Created a new hackathon: hack"
                 ), default));
 
             var management = new ActivityLogManagement()

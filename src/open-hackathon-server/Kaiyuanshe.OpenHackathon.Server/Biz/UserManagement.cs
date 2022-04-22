@@ -139,7 +139,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // User Id
             claims.Add(ClaimsHelper.UserId(tokenEntity.UserId));
-            claims.Add(ClaimsHelper.UserDisplayName(tokenEntity.UserDisplayName));
+            // TODO remove ?? after backwardCompatible impl ready
+            claims.Add(ClaimsHelper.UserDisplayName(tokenEntity.UserDisplayName ?? tokenEntity.UserId));
 
             // PlatformAdministrator
             var pa = await GetPlatformAdminClaim(tokenEntity.UserId, cancellationToken);
