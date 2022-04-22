@@ -26,13 +26,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase(" ", null)]
         public async Task GeAwardByIdAsync_Null(string hackName, string awardId)
         {
-            var cancellationToken = CancellationToken.None;
-            var logger = new Mock<ILogger<AwardManagement>>();
-            AwardManagement awardManagement = new AwardManagement(logger.Object);
-            var result = await awardManagement.GetAwardByIdAsync(hackName, awardId, cancellationToken);
+            AwardManagement awardManagement = new AwardManagement();
+            var result = await awardManagement.GetAwardByIdAsync(hackName, awardId, default);
 
-            Mock.VerifyAll(logger);
-            logger.VerifyNoOtherCalls();
             Assert.IsNull(result);
         }
 
@@ -44,21 +40,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cancellationToken = CancellationToken.None;
             AwardEntity teamEntity = new AwardEntity { Description = "desc" };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardTable = new Mock<IAwardTable>();
             awardTable.Setup(t => t.RetrieveAsync("hack", "aid", cancellationToken))
                 .ReturnsAsync(teamEntity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardTable).Returns(awardTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };
             var result = await awardManagement.GetAwardByIdAsync(hackName, awardId, cancellationToken);
 
-            Mock.VerifyAll(logger, storageContext, awardTable);
-            logger.VerifyNoOtherCalls();
+            Mock.VerifyAll(storageContext, awardTable);
             storageContext.VerifyNoOtherCalls();
             awardTable.VerifyNoOtherCalls();
             Assert.AreEqual("desc", result.Description);
@@ -92,12 +86,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(CanCreateNewAwardTestData))]
         public async Task CanCreateNewAward(List<AwardEntity> awards, bool expectedResult)
         {
-            var logger = new Mock<ILogger<AwardManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(c => c.CacheKey == "Award-hack"), default))
                 .ReturnsAsync(awards);
 
-            var awardManagement = new AwardManagement(logger.Object)
+            var awardManagement = new AwardManagement()
             {
                 Cache = cache.Object,
             };
@@ -160,7 +153,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "Hack";
             var cancellationToken = CancellationToken.None;
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardTable = new Mock<IAwardTable>();
             awardTable.Setup(t => t.InsertAsync(It.IsAny<AwardEntity>(), cancellationToken));
             var storageContext = new Mock<IStorageContext>();
@@ -168,15 +160,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("Award-Hack"));
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
             };
             var result = await awardManagement.CreateAwardAsync(hackName, request, cancellationToken);
 
-            Mock.VerifyAll(logger, storageContext, awardTable, cache);
-            logger.VerifyNoOtherCalls();
+            Mock.VerifyAll(storageContext, awardTable, cache);
             storageContext.VerifyNoOtherCalls();
             awardTable.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
@@ -282,7 +273,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var cancellationToken = CancellationToken.None;
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardTable = new Mock<IAwardTable>();
             awardTable.Setup(t => t.MergeAsync(It.IsAny<AwardEntity>(), cancellationToken));
             var storageContext = new Mock<IStorageContext>();
@@ -290,15 +280,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove($"Award-{existing.HackathonName}"));
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
             };
             var result = await awardManagement.UpdateAwardAsync(existing, request, cancellationToken);
 
-            Mock.VerifyAll(logger, storageContext, awardTable, cache);
-            logger.VerifyNoOtherCalls();
+            Mock.VerifyAll(storageContext, awardTable, cache);
             storageContext.VerifyNoOtherCalls();
             awardTable.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
@@ -324,7 +313,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var cache = new Mock<ICacheProvider>();
 
-            var awardManagement = new AwardManagement(null)
+            var awardManagement = new AwardManagement()
             {
                 Cache = cache.Object,
             };
@@ -346,7 +335,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardTable).Returns(awardTable.Object);
 
-            var awardManagement = new AwardManagement(null)
+            var awardManagement = new AwardManagement()
             {
                 Cache = new DefaultCacheProvider(null),
                 StorageContext = storageContext.Object,
@@ -434,12 +423,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "foo";
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(c => c.CacheKey == "Award-foo"), default))
                 .ReturnsAsync(allAwards);
 
-            var awardManagement = new AwardManagement(logger.Object)
+            var awardManagement = new AwardManagement()
             {
                 Cache = cache.Object,
             };
@@ -477,7 +465,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 RowKey = "rk",
             };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardTable = new Mock<IAwardTable>();
             awardTable.Setup(t => t.DeleteAsync("pk", "rk", cancellationToken));
             var storageContext = new Mock<IStorageContext>();
@@ -485,15 +472,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("Award-pk"));
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
             };
             await awardManagement.DeleteAwardAsync(award, cancellationToken);
 
-            Mock.VerifyAll(logger, storageContext, awardTable, cache);
-            logger.VerifyNoOtherCalls();
+            Mock.VerifyAll(storageContext, awardTable, cache);
             storageContext.VerifyNoOtherCalls();
             awardTable.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
@@ -512,7 +498,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 hackathonName = "hack",
             };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
             awardAssignmentTable.Setup(t => t.InsertOrReplaceAsync(It.Is<AwardAssignmentEntity>(a =>
                 a.HackathonName == "hack" &&
@@ -523,7 +508,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -549,13 +534,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             AwardAssignmentEntity existing = new AwardAssignmentEntity { Description = "desc" };
             AwardAssignment request = new AwardAssignment { description = requestDesc, assigneeId = "ass", assignmentId = "rk", awardId = "award" };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
             awardAssignmentTable.Setup(t => t.MergeAsync(It.Is<AwardAssignmentEntity>(a => a.Description == expectedDesc), default));
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -575,7 +559,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         #region GetAssignmentCountAsync
         [Test]
-        public async Task GetAssignmentCountAsync()
+        public async Task GetAssignmentCountAsync_ByHackathon()
         {
             var assignments = new List<AwardAssignmentEntity>
             {
@@ -586,22 +570,43 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
-            var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
-            awardAssignmentTable.Setup(t => t.ListByAwardAsync("hack", "award", default)).ReturnsAsync(assignments);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
+            var storageContext = new MockStorageContext();
+            storageContext.AwardAssignmentTable.Setup(t => t.ListByHackathonAsync("hack", default)).ReturnsAsync(assignments);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
+            {
+                StorageContext = storageContext.Object,
+                Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
+            };
+            var count = await awardManagement.GetAssignmentCountAsync("hack", "", default);
+
+            storageContext.VerifyAll();
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public async Task GetAssignmentCountAsync_ByAward()
+        {
+            var assignments = new List<AwardAssignmentEntity>
+            {
+                new AwardAssignmentEntity
+                {
+                    AssigneeId = "tid",
+                    Description = "desc"
+                }
+            };
+
+            var storageContext = new MockStorageContext();
+            storageContext.AwardAssignmentTable.Setup(t => t.ListByAwardAsync("hack", "award", default)).ReturnsAsync(assignments);
+
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var count = await awardManagement.GetAssignmentCountAsync("hack", "award", default);
 
-            Mock.VerifyAll(awardAssignmentTable, storageContext);
-            awardAssignmentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            storageContext.VerifyAll();
             Assert.AreEqual(1, count);
         }
         #endregion
@@ -612,13 +617,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             AwardAssignmentEntity entity = new AwardAssignmentEntity { AwardId = "award" };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
             awardAssignmentTable.Setup(t => t.RetrieveAsync("hack", "assign", default)).ReturnsAsync(entity);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -721,7 +725,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "hack";
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var cache = new Mock<ICacheProvider>();
             if (options.QueryType == AwardAssignmentQueryType.Award)
             {
@@ -741,7 +744,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
             }
 
-            var awardManagement = new AwardManagement(logger.Object)
+            var awardManagement = new AwardManagement()
             {
                 Cache = cache.Object,
                 StorageContext = storageContext.Object,
@@ -783,13 +786,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             };
 
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
             awardAssignmentTable.Setup(t => t.ListByAssigneeAsync("hack", "tid", default)).ReturnsAsync(assignments);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -807,13 +809,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteAssignmentAsync()
         {
-            var logger = new Mock<ILogger<AwardManagement>>();
             var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
             awardAssignmentTable.Setup(t => t.DeleteAsync("hack", "assign", default));
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement(logger.Object)
+            AwardManagement awardManagement = new AwardManagement()
             {
                 StorageContext = storageContext.Object,
             };

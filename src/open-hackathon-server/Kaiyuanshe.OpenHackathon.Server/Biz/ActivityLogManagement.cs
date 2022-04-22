@@ -178,7 +178,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
     public static class IActivityLogManagementExtensions
     {
-        public static async Task OnHackathonCreateOrUpdate(this IActivityLogManagement activityLogManagement,
+        public static async Task OnHackathonEvent(this IActivityLogManagement activityLogManagement,
             string hackathonName, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, cancellationToken);

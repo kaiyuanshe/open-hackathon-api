@@ -25,20 +25,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             return NewClaimsPrincipal(claims);
         }
 
-        public static Claim UserId(string userDisplayName)
+        public static Claim UserId(string userId)
         {
             return new Claim(
                     AuthConstant.ClaimType.UserId,
-                    userDisplayName,
+                    userId,
                     ClaimValueTypes.String,
                     AuthConstant.Issuer.Default);
         }
 
-        public static Claim UserDisplayName(string userId)
+        public static Claim UserDisplayName(string userDisplayName)
         {
             return new Claim(
                     AuthConstant.ClaimType.UserDisplayName,
-                    userId,
+                    userDisplayName,
                     ClaimValueTypes.String,
                     AuthConstant.Issuer.Default);
         }
@@ -66,6 +66,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         public static string GetUserId(this ClaimsPrincipal claimsPrincipal)
         {
             var userIdClaim = claimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserId);
+            return userIdClaim?.Value ?? string.Empty;
+        }
+
+        public static string GetUserDisplayName(this ClaimsPrincipal claimsPrincipal)
+        {
+            var userIdClaim = claimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserDisplayName);
             return userIdClaim?.Value ?? string.Empty;
         }
     }

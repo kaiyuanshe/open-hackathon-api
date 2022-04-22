@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IHackathonManagement HackathonManagement { get; set; }
 
         public IHackathonAdminManagement HackathonAdminManagement { get; set; }
-        
+
         public IUserManagement UserManagement { get; set; }
 
         public IEnrollmentManagement EnrollmentManagement { get; set; }
@@ -53,6 +53,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// Id of current User. Return string.Empty if token is not required or invalid.
         /// </summary>
         protected string CurrentUserId
+        {
+            get
+            {
+                return ClaimsHelper.GetUserId(User);
+            }
+        }
+
+        protected string CurrentUserDisplayName
         {
             get
             {
@@ -211,6 +219,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             public bool HackAdminRequird { get; set; }
             public bool HackJudgeRequird { get; set; }
             public bool OnlineRequired { get; set; }
+            public bool NoAwardAssignmentRequired { get; set; }
         }
 
         public class ValidateEnrollmentOptions : ControllerValiationOptions
@@ -265,7 +274,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             if (options.WritableRequired && hackathon.ReadOnly)
             {
-                options.ValidateResult = Forbidden(Resources.Hackathon_ReadOnly);
+                options.ValidateResult = PreconditionFailed(Resources.Hackathon_ReadOnly);
                 return false;
             }
 
@@ -335,6 +344,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 if (!authorizationResult.Succeeded)
                 {
                     options.ValidateResult = Forbidden(Resources.Hackathon_NotJudge);
+                    return false;
+                }
+            }
+
+            if (options.NoAwardAssignmentRequired)
+            {
+                var count = await AwardManagement.GetAssignmentCountAsync(options.HackathonName.ToLower(), null, cancellationToken);
+                if (count > 0)
+                {
+                    options.ValidateResult = PreconditionFailed(Resources.Hackathon_HasAwardAssignment);
                     return false;
                 }
             }

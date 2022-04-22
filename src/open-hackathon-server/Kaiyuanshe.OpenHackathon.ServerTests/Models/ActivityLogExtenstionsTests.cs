@@ -55,7 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.Hackathon,
                 },
                 new { userName = "un", unknown = "any" },
-                "created by un.");
+                "Created by un.");
 
             // formated, catetory=User
             yield return new TestCaseData(
@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.User,
                 },
                 new { hackathonName = "hack" },
-                "created a new hackathon: hack");
+                "Created a new hackathon: hack");
         }
 
         [Test, TestCaseSource(nameof(GenerateMessageTestData))]
