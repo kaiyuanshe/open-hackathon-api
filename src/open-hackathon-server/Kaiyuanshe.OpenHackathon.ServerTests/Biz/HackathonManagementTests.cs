@@ -936,6 +936,86 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
+        #region created
+        private static IEnumerable ListPaginatedHackathonsAsyncTestData_created()
+        {
+            var h1 = new HackathonEntity
+            {
+                PartitionKey = "h1",
+                CreatorId = "u1"
+            };
+            var h2 = new HackathonEntity
+            {
+                PartitionKey = "h2",
+                CreatorId = "u2"
+            };
+
+            // arg0: userId
+            // arg1: all hackathons
+            // arg2: expected result
+
+            // empty user
+            yield return new TestCaseData(
+                null,
+                new Dictionary<string, HackathonEntity>
+                {
+                    { "h1", h1 },
+                    { "h2", h2 },
+                },
+                new List<HackathonEntity>
+                {
+                });
+
+            // normal user
+            yield return new TestCaseData(
+                "u1",
+                new Dictionary<string, HackathonEntity>
+                {
+                    { "h1", h1 },
+                    { "h2", h2 },
+                },
+                new List<HackathonEntity>
+                {
+                    h1
+                });
+        }
+
+        [Test, TestCaseSource(nameof(ListPaginatedHackathonsAsyncTestData_created))]
+        public async Task ListPaginatedHackathonsAsync_created(
+            string userId,
+            Dictionary<string, HackathonEntity> allHackathons,
+            List<HackathonEntity> expectedResult)
+        {
+            var options = new HackathonQueryOptions
+            {
+                UserId = userId,
+                ListType = HackathonListType.created,
+            };
+
+            var cache = new Mock<ICacheProvider>();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                cache.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<Dictionary<string, HackathonEntity>>>(), default))
+                    .ReturnsAsync(allHackathons);
+            }
+
+            var hackathonManagement = new HackathonManagement()
+            {
+                Cache = cache.Object,
+            };
+            var result = await hackathonManagement.ListPaginatedHackathonsAsync(options, default);
+
+            Mock.VerifyAll(cache);
+            cache.VerifyNoOtherCalls();
+
+            Assert.AreEqual(expectedResult.Count(), result.Count());
+            for (int i = 0; i < result.Count(); i++)
+            {
+                Assert.AreEqual(expectedResult[i].Name, result.ElementAt(i).Name);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region ListAllHackathonsAsync

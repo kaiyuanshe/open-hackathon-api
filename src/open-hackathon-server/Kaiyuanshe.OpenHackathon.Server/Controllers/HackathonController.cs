@@ -20,17 +20,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region ListHackathon
         /// <summary>
-        /// List paginated hackathons. Optionally client can send `Authorization` header and/or query strings. 
+        /// List paginated hackathons. Optionally client can send <b>Authorization</b> header and/or query strings. 
         /// See the parameters for more details.
         /// </summary>
         /// <param name="search">keyword to search in hackathon name, displayName or details. Do case-insensitive substring match only.</param>
-        /// <param name="userId">optional id of user. If userId is not empty, will override the current user from Authorization header.</param>
-        /// <param name="orderby">order by. Default to createdAt.</param>
-        /// <param name="listType">type of list. Default to online.
-        /// online: list hackathons in online status only regardless of the userId; 
-        /// admin: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned; 
-        /// enrolled: list enrolled hackathons of a user, either userId or Auth header is required, otherwise empty list returned;
-        /// fresh: hackathons that are about to start;
+        /// <param name="userId">optional id of user. If <b>userId</b> in query is not empty, will override the current user from <code>Authorization</code> header.</param>
+        /// <param name="orderby">order by. Default to <b>createdAt</b>.</param>
+        /// <param name="listType">type of list. Default to <b>online</b>. <br />
+        /// <b>online</b>: list hackathons in online status only regardless of the userId; <br />
+        /// <b>admin</b>: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned; <br />
+        /// <b>enrolled</b>: list enrolled hackathons of a user, either userId or <code>Authorization</code> header is required, otherwise empty list returned;<br />
+        /// <b>fresh</b>: hackathons that are about to start;<br />
+        /// <b>created</b>: hackathons that are created by specified user(either userId in query or user from access token.
         /// </param>
         /// <returns>A list of hackathon.</returns>
         /// <response code="200">Success. The response describes a list of hackathon and a nullable link to query more results.</response>

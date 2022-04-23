@@ -343,6 +343,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return hackathons;
         }
 
+        private async Task<IEnumerable<HackathonEntity>> ListCreatedHackathons(HackathonQueryOptions options, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(options.UserId))
+            {
+                return new List<HackathonEntity>();
+            }
+
+            IEnumerable<HackathonEntity> hackathons = (await ListAllHackathonsAsync(cancellationToken)).Values;
+            var created = hackathons.Where(h => h.CreatorId == options.UserId);
+            return created;
+        }
+
         public async Task<IEnumerable<HackathonEntity>> ListPaginatedHackathonsAsync(HackathonQueryOptions options, CancellationToken cancellationToken = default)
         {
             IEnumerable<HackathonEntity> hackathons = new List<HackathonEntity>();
@@ -361,6 +373,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                     break;
                 case HackathonListType.fresh:
                     hackathons = await ListFreshHackathons(options, cancellationToken);
+                    break;
+                case HackathonListType.created:
+                    hackathons = await ListCreatedHackathons(options, cancellationToken);
                     break;
                 default:
                     break;
