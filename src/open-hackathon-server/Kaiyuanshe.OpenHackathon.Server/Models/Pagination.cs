@@ -12,13 +12,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public class Pagination
     {
         /// <summary>
-        /// conbined with "nr" to query more results. Used by server-side paging only. Don't set it manually. You should request the "nextLink" in result to request more.
+        /// conbined with <b>nr</b> to query more results. Used by server-side paging only. Don't set it manually. You should request the <b>nextLink</b> in result to request more.
         /// </summary>
         [MaxLength(200)]
         public string np { get; set; }
 
         /// <summary>
-        /// conbined with "np" to query more results. Used by server-side paging only. Don't set it manually. You should request the "nextLink" in result to request more.
+        /// conbined with <b>np</b> to query more results. Used by server-side paging only. Don't set it manually. You should request the <b>nextLink</b> in result to request more.
         /// </summary>
         [MaxLength(128)]
         public string nr { get; set; }

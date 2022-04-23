@@ -10,7 +10,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public class Hackathon : ModelBase
     {
         /// <summary>
-        /// Name of a hackathon. Can only be set when it's created. Readonly afterwards.
+        /// Name of a hackathon. Can only be set when it's created. Readonly afterwards. <br />
         /// Length between 1-100. alphabeta and numbers only.
         /// </summary>
         /// <example>foo</example>
@@ -39,7 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string summary { get; set; }
 
         /// <summary>
-        /// Detailed description. Usually rich-text html. Max length is 64K. 
+        /// Detailed description. Usually rich-text html. Max length is 64K. <br />
         /// If it contains utf-18 or unicode, the max length is 32K.
         /// </summary>
         /// <example>A detailed rich-text html to desribe the hackathon in detail</example>
@@ -54,15 +54,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string location { get; set; }
 
         /// <summary>
-        /// A list of banner images. At least 1 image. Max 10 images supported. All images must be invalid Uri.
-        /// To add a new picture, be sure to submit all pictures in request including the existing ones. 
+        /// A list of banner images. At least 1 image. Max 10 images supported. All images must be invalid Uri.<br />
+        /// To add a new picture, be sure to submit all pictures in request including the existing ones.<br />
         /// The entire list will be replaced with list in request.
         /// </summary>
         [HackathonBannersPolicy]
         public PictureInfo[] banners { get; set; }
 
         /// <summary>
-        /// whether a hackathon is readOnly or not. 
+        /// whether a hackathon is readOnly or not. <br />
         /// If a hackathon is readOnly, no WRITE operation is allowed including hackathon, enrollment, team etc.
         /// </summary>
         /// <example>false</example>
@@ -245,5 +245,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// hackathons about to start
         /// </summary>
         fresh,
+        /// <summary>
+        /// hackathons created by a user
+        /// </summary>
+        created,
     }
 }
