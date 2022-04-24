@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,18 +19,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region ListHackathon
         /// <summary>
-        /// List paginated hackathons. Optionally client can send <b>Authorization</b> header and/or query strings. 
+        /// List paginated hackathons. Optionally client can send 'Authorization' header and/or query strings. 
         /// See the parameters for more details.
         /// </summary>
         /// <param name="search">keyword to search in hackathon name, displayName or details. Do case-insensitive substring match only.</param>
         /// <param name="userId">optional id of user. If <b>userId</b> in query is not empty, will override the current user from <code>Authorization</code> header.</param>
         /// <param name="orderby">order by. Default to <b>createdAt</b>.</param>
         /// <param name="listType">type of list. Default to <b>online</b>. <br />
-        /// <b>online</b>: list hackathons in online status only regardless of the userId; <br />
-        /// <b>admin</b>: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned; <br />
-        /// <b>enrolled</b>: list enrolled hackathons of a user, either userId or <code>Authorization</code> header is required, otherwise empty list returned;<br />
-        /// <b>fresh</b>: hackathons that are about to start;<br />
-        /// <b>created</b>: hackathons that are created by specified user(either userId in query or user from access token.
+        /// <ul>
+        /// <li><b>online</b>: list hackathons in online status only regardless of the userId;</li>
+        /// <li><b>admin</b>: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned;</li>
+        /// <li><b>enrolled</b>: list enrolled hackathons of a user, either userId or <code>Authorization</code> header is required, otherwise empty list returned;</li>
+        /// <li><b>fresh</b>: hackathons that are about to start;</li>
+        /// <li><b>created</b>: hackathons that are created by specified user(either userId in query or user from access token.</li>
+        /// </ul>
         /// </param>
         /// <returns>A list of hackathon.</returns>
         /// <response code="200">Success. The response describes a list of hackathon and a nullable link to query more results.</response>
@@ -264,9 +265,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region Delete
         /// <summary>
-        /// Delete a hackathon by name. The hackathon is marked as Deleted(also called Offline).
-        /// The record becomes invisible to non-admin users. Hackathon admins are still able to see it.
+        /// Delete a hackathon by name. 
         /// </summary>
+        /// <remarks>
+        /// A hackathon can be deleted by any of its administrators. <br />
+        /// A hackathon cannot be deleted if any award is assigned. Clients need to delete all award assignments first.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <returns></returns>
