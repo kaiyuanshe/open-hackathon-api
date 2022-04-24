@@ -20,16 +20,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
 
         public DateTime Date { get; set; }
         public DateTime DateEmpty { get; set; }
+        public DateTime DateWithKind { get; set; }
         public byte[] Binary { get; set; }
         public bool Bool { get; set; }
         public Guid Guid { get; set; }
         public long Long { get; set; }
         public string String { get; set; }
         public double Double { get; set; }
+
+        public string StringAnother { get; set; }
+        [BackwardCompatible("StringAnother")]
+        public string StringWIthBackwardCompatible { get; set; }
     }
 
     class BaseTableEntityTests
     {
+        #region ToTableEntity
         [Test]
         public void ToTableEntity()
         {
@@ -41,6 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
                 IgnoredProperty = "ignore",
                 ComplexObject = new string[] { "a", "b", "c" },
                 Date = DateTime.UtcNow,
+                DateWithKind = new DateTime(2022, 4, 24, 0, 0, 0, DateTimeKind.Local),
                 Binary = Encoding.UTF8.GetBytes("a"),
                 Bool = true,
                 Guid = Guid.NewGuid(),
@@ -59,6 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.IsFalse(tableEntity.ContainsKey("IgnoredProperty"));
             Assert.AreEqual("[\"a\",\"b\",\"c\"]", tableEntity.GetString("ComplexObject"));
             Assert.AreEqual(entity.Date, tableEntity.GetDateTime("Date"));
+            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").Value.Kind);
             Assert.IsFalse(tableEntity.ContainsKey("DateEmpty"));
             Assert.AreEqual(entity.Binary, tableEntity.GetBinary("Binary"));
             Assert.AreEqual(true, tableEntity.GetBoolean("Bool"));
@@ -68,6 +76,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.AreEqual(0.1, tableEntity.GetDouble("Double"));
         }
 
+        [TestCase(DateTimeKind.Local)]
+        [TestCase(DateTimeKind.Unspecified)]
+        public void ToTableEntity_Kind(DateTimeKind kind)
+        {
+            var entity = new TestEntity
+            {
+                DateWithKind = new DateTime(2022, 4, 24, 0, 0, 0, kind),
+            };
+
+            var tableEntity = entity.ToTableEntity();
+
+            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").Value.Kind);
+        }
+        #endregion
+
+        #region ToBaseEntity
         [Test]
         public void ToBaseEntity()
         {
@@ -86,7 +110,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
                 { "Guid", guid },
                 { "Long", 1L },
                 { "String", "str" },
-                { "Double", 0.1 }
+                { "Double", 0.1 },
             });
 
             var entity = tableEntity.ToBaseTableEntity<TestEntity>();
@@ -104,6 +128,33 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.AreEqual("str", entity.String);
             Assert.AreEqual(0.1, entity.Double);
         }
+
+        [TestCase(null, "another")] // read from Another if null
+        [TestCase("val", "val")] // read from itself if not null
+        public void ToBaseEntity_BackwardCompatible(string valulFromDb, string expectedValue)
+        {
+            var tableEntity = new TableEntity(new Dictionary<string, object>
+            {
+                { "StringAnother", "another"},
+                { "StringWIthBackwardCompatible", valulFromDb}
+            });
+
+            var entity = tableEntity.ToBaseTableEntity<TestEntity>();
+            Assert.AreEqual(expectedValue, entity.StringWIthBackwardCompatible);
+        }
+
+        [Test]
+        public void ToBaseEntity_BackwardCompatible2()
+        {
+            var tableEntity = new TableEntity(new Dictionary<string, object>
+            {
+                { "StringAnother", "another"},
+            });
+
+            var entity = tableEntity.ToBaseTableEntity<TestEntity>();
+            Assert.AreEqual("another", entity.StringWIthBackwardCompatible);
+        }
+        #endregion
 
         #region EntityWithDefaultValue
         class EntityWithDefaultValue : BaseTableEntity

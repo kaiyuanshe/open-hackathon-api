@@ -103,9 +103,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                 {
                     continue;
                 }
-                else if (property.PropertyType.IsDateTime() && ((DateTime)propertyValue).Year < 1700)
+                else if (property.PropertyType == typeof(DateTime) || nullableType == typeof(DateTime))
                 {
-                    continue;
+                    if (propertyValue != null && ((DateTime)propertyValue).Year < 1700)
+                    {
+                        continue;
+                    }
+                    if (propertyValue is DateTime dt && dt.Kind != DateTimeKind.Utc)
+                    {
+                        values.Add(property.Name, DateTime.SpecifyKind(dt, DateTimeKind.Utc));
+                    }
+                    else
+                    {
+                        values.Add(property.Name, propertyValue);
+                    }
                 }
                 else
                 {
@@ -168,6 +179,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                     if (objectValue != null)
                     {
                         property.SetValue(entity, objectValue);
+                    }
+                }
+                else if (!tableEntity.ContainsKey(property.Name) || tableEntity[property.Name] == null)
+                {
+                    var backwardCompatibleAttributes = Attribute.GetCustomAttributes(property, typeof(BackwardCompatibleAttribute));
+                    foreach (BackwardCompatibleAttribute attribute in backwardCompatibleAttributes)
+                    {
+                        var value = attribute.GetValue(tableEntity);
+                        if (value != null)
+                        {
+                            property.SetValue(entity, value);
+                            break;
+                        }
                     }
                 }
                 else if (property.PropertyType.IsEnum
