@@ -61,9 +61,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 // override the id from Auth header.
                 options.UserId = userId.Trim();
-                options.IsPlatformAdmin = await HackathonAdminManagement.IsPlatformAdmin(options.UserId, cancellationToken);
                 userQueried = ClaimsHelper.NewClaimsPrincipal(userId, options.IsPlatformAdmin);
             }
+            options.IsPlatformAdmin = await HackathonAdminManagement.IsPlatformAdmin(options.UserId, cancellationToken);
 
             var entities = await HackathonManagement.ListPaginatedHackathonsAsync(options, cancellationToken);
             var entityWithRoles = await HackathonManagement.ListHackathonRolesAsync(entities, userQueried, cancellationToken);

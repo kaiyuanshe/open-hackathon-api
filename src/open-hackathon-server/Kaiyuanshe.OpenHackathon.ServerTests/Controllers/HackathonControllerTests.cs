@@ -549,10 +549,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(hackathons);
             mockContext.HackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, It.IsAny<ClaimsPrincipal>(), default))
                 .ReturnsAsync(hackWithRoles);
-            if (!string.IsNullOrEmpty(userId))
-            {
-                mockContext.HackathonAdminManagement.Setup(a => a.IsPlatformAdmin(userId, default)).ReturnsAsync(true);
-            }
+            mockContext.HackathonAdminManagement.Setup(a => a.IsPlatformAdmin(It.IsAny<string>(), default)).ReturnsAsync(true);
 
             // run
             var controller = new HackathonController();
@@ -569,7 +566,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(pagination.top, optionsCaptured.Pagination?.top);
             Assert.AreEqual(orderBy, optionsCaptured.OrderBy);
             Assert.AreEqual(userId ?? string.Empty, optionsCaptured.UserId);
-            Assert.AreEqual(!string.IsNullOrEmpty(userId), optionsCaptured.IsPlatformAdmin);
+            Assert.AreEqual(true, optionsCaptured.IsPlatformAdmin);
             Assert.AreEqual(listType, optionsCaptured.ListType);
             Assert.AreEqual(pagination.np, optionsCaptured.Pagination?.np);
             Assert.AreEqual(pagination.nr, optionsCaptured.Pagination?.nr);

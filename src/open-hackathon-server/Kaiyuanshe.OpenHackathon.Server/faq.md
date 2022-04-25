@@ -1,8 +1,8 @@
 ﻿# FAQ
 
 ## Url/Query String too long
-if try login while debug in IIS Express on Windows, probably you will hit the **Url too lon** 
-or **Query String too long** error. This is a limitation of IIS Express, not of ASP.NET core. 
+if try login while debug in IIS Express on Windows, probably you will hit the **Url too long** 
+or **Query String too long** error. This is a limitation of IIS Express, not limit of ASP.NET core. 
 .Net(or .Net core) doesn't have those limits any more to support all OS. So there is no way
 to setup the limits in .Net 5+ or .Net core. We cannot update web.config as most google search results 
 suggest since we don't have this file in a .Net 5 project.
