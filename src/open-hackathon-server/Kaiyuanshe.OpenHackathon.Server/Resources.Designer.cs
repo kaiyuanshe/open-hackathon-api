@@ -70,7 +70,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created by {userName}..
+        ///   Looks up a localized string similar to Created by user: {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_createHackathon {
             get {
@@ -79,11 +79,20 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deleted by: {userName}.
+        ///   Looks up a localized string similar to Deleted by user: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_Hackathon_deleteHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated by user: {userName}..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateHackathon", resourceCulture);
             }
         }
         
@@ -102,6 +111,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated hackathon: {hackathonName}.
+        /// </summary>
+        internal static string ActivityLog_User_updateHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateHackathon", resourceCulture);
             }
         }
         

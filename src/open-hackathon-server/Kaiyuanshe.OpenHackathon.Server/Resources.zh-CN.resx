@@ -126,11 +126,17 @@
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>活动被{userName}删除。</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
+    <value>{userName}修改了活动。</value>
+  </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>创建了新活动：{hackathonName}</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>删除活动:{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
+    <value>修改了活动：{hackathonName}</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>活动的创建者不能被删除</value>

@@ -55,7 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.Hackathon,
                 },
                 new { userName = "un", unknown = "any" },
-                "Created by un.");
+                "Created by user: un.");
 
             // formated, catetory=User
             yield return new TestCaseData(

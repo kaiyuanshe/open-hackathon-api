@@ -64,7 +64,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         {
             get
             {
-                return ClaimsHelper.GetUserId(User);
+                return ClaimsHelper.GetUserDisplayName(User);
             }
         }
 
