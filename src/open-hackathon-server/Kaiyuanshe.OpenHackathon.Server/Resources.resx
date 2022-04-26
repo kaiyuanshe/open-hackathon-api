@@ -121,16 +121,22 @@
     <value>{0} is added as Administrator of hackathon '{1}'  by {2}</value>
   </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
-    <value>Created by {userName}.</value>
+    <value>Created by user: {userName}.</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
-    <value>Deleted by: {userName}</value>
+    <value>Deleted by user: {userName}</value>
+  </data>
+  <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
+    <value>Updated by user: {userName}.</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>Created a new hackathon: {hackathonName}</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>Deleted hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
+    <value>Updated hackathon: {hackathonName}</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>

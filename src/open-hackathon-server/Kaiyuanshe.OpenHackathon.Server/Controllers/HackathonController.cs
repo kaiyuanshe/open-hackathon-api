@@ -91,8 +91,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region CheckNameAvailability
         /// <summary>
-        /// Check the name availability
+        /// Check the name availability.
         /// </summary>
+        /// <remarks>
+        /// Check if a hackathon is valid. <br />
+        /// A name could be invalid because of invalid length, containing invalid charactors or already in use.
+        /// Please choose a different name if not valid.
+        /// </remarks>
         /// <param name="parameter">parameter including the name to check</param>
         /// <param name="cancellationToken"></param>
         /// <returns>availability and a reason if not available.</returns>
@@ -123,9 +128,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #region CreateOrUpdate
         /// <summary>
         /// Create or update hackathon. 
-        /// If hackathon with the {hackathonName} exists, will retrive update it accordingly(must be admin of the hackathon).
+        /// 
         /// Else create a new hackathon.
         /// </summary>
+        /// <remarks>
+        /// If hackathon with the name {hackathonName} exists, will trigger an Update operation(the caller must be an admin of the hackathon in this case). 
+        /// Otherwise a new hackathon will be created.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -163,7 +172,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 var logArgs = new
                 {
                     hackathonName = created.DisplayName,
-                    userName = user.GetDisplayName()
+                    userName = CurrentUserDisplayName,
                 };
                 await ActivityLogManagement.OnHackathonEvent(
                     nameLowercase,
@@ -183,6 +192,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Update hackathon. Caller must be adminstrator of the hackathon. 
         /// </summary>
+        /// <remarks>
+        /// In an Update request, properties that are not included in request will remain unchanged.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -217,13 +229,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             var updated = await HackathonManagement.UpdateHackathonAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateHackathon.ToString(),
-                HackathonName = parameter.name,
-                OperatorId = CurrentUserId,
-                Message = entity.DisplayName,
-            }, cancellationToken);
+                hackathonName = updated.DisplayName,
+                userName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnHackathonEvent(
+                updated.Name,
+                CurrentUserId,
+                ActivityLogType.updateHackathon,
+                logArgs,
+                cancellationToken);
             var roles = await HackathonManagement.GetHackathonRolesAsync(entity, User, cancellationToken);
             return Ok(ResponseBuilder.BuildHackathon(updated, roles));
         }
