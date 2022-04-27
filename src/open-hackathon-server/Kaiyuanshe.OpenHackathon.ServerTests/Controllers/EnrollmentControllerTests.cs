@@ -167,6 +167,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackathonName = "Hack";
             HackathonEntity hackathonEntity = new HackathonEntity
             {
+                PartitionKey = "test2",
                 EnrollmentStartedAt = DateTime.UtcNow.AddDays(-1),
                 EnrollmentEndedAt = DateTime.UtcNow.AddDays(1),
                 Status = HackathonStatus.online,
@@ -182,8 +183,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", "", default)).ReturnsAsync(default(EnrollmentEntity));
             mockContext.EnrollmentManagement.Setup(p => p.CreateEnrollmentAsync(hackathonEntity, request, default)).ReturnsAsync(enrollment);
             mockContext.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.createEnrollment.ToString()), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), default));
 
             // test
             var controller = new EnrollmentController();
@@ -191,12 +192,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.Enroll(hackathonName, request, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.UserManagement, mockContext.EnrollmentManagement, mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.UserManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            mockContext.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Enrollment>(result);
             Assert.AreEqual("pk", enrollment.HackathonName);
         }
