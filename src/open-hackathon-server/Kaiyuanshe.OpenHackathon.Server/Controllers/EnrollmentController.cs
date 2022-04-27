@@ -55,12 +55,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 parameter.userId = CurrentUserId;
                 enrollment = await EnrollmentManagement.CreateEnrollmentAsync(hackathon, parameter, cancellationToken);
-                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+
+                var args = new
                 {
-                    ActivityLogType = ActivityLogType.createEnrollment.ToString(),
-                    HackathonName = hackathonName.ToLower(),
-                    OperatorId = CurrentUserId,
-                }, cancellationToken);
+                    userName = CurrentUserDisplayName,
+                    hackathonName = hackathon.DisplayName,
+                };
+                await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.createEnrollment, args, cancellationToken);
+
                 var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
                 return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
             }

@@ -120,6 +120,9 @@
   <data name="ActivityLog_CreateHackathonAdmin" xml:space="preserve">
     <value>{0}成为了活动'{1}'的管理员,由{2}操作。</value>
   </data>
+  <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
+    <value>用户报名成功：{userName}</value>
+  </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
     <value>{userName}创建了活动。</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>{userName}修改了活动。</value>
+  </data>
+  <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
+    <value>报名参加活动：{hackathonName}</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>创建了新活动：{hackathonName}</value>
