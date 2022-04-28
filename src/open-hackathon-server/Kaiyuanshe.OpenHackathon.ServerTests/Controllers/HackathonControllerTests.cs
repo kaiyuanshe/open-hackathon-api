@@ -732,7 +732,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task Publish_Succeeded(HackathonStatus status)
         {
             string name = "Hack";
-            HackathonEntity entity = new HackathonEntity { Status = status, DisplayName = "dpn", };
+            HackathonEntity entity = new HackathonEntity { PartitionKey = "foo", Status = status, DisplayName = "dpn", };
             var role = new HackathonRoles { isAdmin = true };
 
             // mock
@@ -744,9 +744,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     e.Status = s;
                 }).ReturnsAsync(entity);
             mockContext.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.approveHackahton.ToString()
-                && a.Message == "dpn"), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
+            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
 
             // test
             var controller = new HackathonController();
@@ -754,10 +753,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.Publish(name, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            mockContext.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Hackathon>(result);
             Assert.AreEqual(HackathonStatus.online, resp.status);
         }

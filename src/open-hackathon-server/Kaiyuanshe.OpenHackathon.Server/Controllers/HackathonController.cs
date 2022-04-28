@@ -168,7 +168,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 parameter.creatorId = CurrentUserId;
                 var created = await HackathonManagement.CreateHackathonAsync(parameter, cancellationToken);
 
-                var user = await GetCurrentUserInfo(cancellationToken);
                 var logArgs = new
                 {
                     hackathonName = created.DisplayName,
@@ -379,8 +378,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region Publish
         /// <summary>
-        /// Publish a hackathon. The hackathon will go online and become visible to everyone.
+        /// Approve and publish a hackathon. 
         /// </summary>
+        /// <remarks>
+        /// The hackathon will go online and become visible to everyone. <br />
+        /// To ensure all published hackathons are of high quality, only administrators of the open hackathon platform can approve and publish a hackathon.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="cancellationToken"></param>
@@ -408,13 +411,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonStatusAsync(hackathon, HackathonStatus.online, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.approveHackahton.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = hackathon.DisplayName,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.approveHackahton, args, cancellationToken);
 
             // resp
             var roles = await HackathonManagement.GetHackathonRolesAsync(hackathon, User, cancellationToken);

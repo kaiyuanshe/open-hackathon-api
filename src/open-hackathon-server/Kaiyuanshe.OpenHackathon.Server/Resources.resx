@@ -120,6 +120,9 @@
   <data name="ActivityLog_CreateHackathonAdmin" xml:space="preserve">
     <value>{0} is added as Administrator of hackathon '{1}'  by {2}</value>
   </data>
+  <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
+    <value>Hackathon is approved by an admin and becomes online.</value>
+  </data>
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>user enrolled successfully: {userName}</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>Updated by user: {userName}.</value>
+  </data>
+  <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
+    <value>Approved and published hackathon: {hackathonName}</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>enrolled in hackathon: {hackathonName}</value>
