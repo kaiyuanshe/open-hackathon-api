@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>活动被{userName}删除。</value>
   </data>
+  <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
+    <value>活动正在上线，等待审核中。提交者：{userName}</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>{userName}修改了活动。</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>删除活动:{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
+    <value>申请活动上线：{hackathonName}</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
     <value>修改了活动：{hackathonName}</value>
