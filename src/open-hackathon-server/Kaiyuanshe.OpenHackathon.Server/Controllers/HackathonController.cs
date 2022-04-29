@@ -362,13 +362,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonStatusAsync(hackathon, HackathonStatus.pendingApproval, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.publishHackathon.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = hackathon.DisplayName,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.publishHackathon, args, cancellationToken);
 
             // resp
             var roles = await HackathonManagement.GetHackathonRolesAsync(hackathon, User, cancellationToken);

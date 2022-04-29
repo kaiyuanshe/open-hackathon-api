@@ -106,6 +106,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ready to go online, waiting for approval. Requested by: {userName}.
+        /// </summary>
+        internal static string ActivityLog_Hackathon_publishHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_publishHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updated by user: {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateHackathon {
@@ -147,6 +156,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested to publish hackathon: {hackathonName}.
+        /// </summary>
+        internal static string ActivityLog_User_publishHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_publishHackathon", resourceCulture);
             }
         }
         

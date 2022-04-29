@@ -49,6 +49,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Middlewares
             // 172.21.13.45 - GET "/scripts/iisadmin/ism.dll?http/serv" 200
             string message = $"[{elapsedMs}]{clientIp} - {method} '{path}{query}' {statusCode}";
             logger.TraceInformation(message);
+
+            // trace http header
+            logger.TraceInformation($"AcceptLanguage: {context.Request.Headers.AcceptLanguage}");
+
             if (!string.IsNullOrEmpty(requestBody))
             {
                 logger.TraceInformation(requestBody);
