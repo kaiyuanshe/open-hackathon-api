@@ -243,22 +243,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task DeleteAdminAsync()
         {
             var logger = new Mock<ILogger<HackathonAdminManagement>>();
-            var hackathonAdminTable = new Mock<IHackathonAdminTable>();
-            hackathonAdminTable.Setup(a => a.DeleteAsync("hack", "uid", default));
-
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.HackathonAdminTable).Returns(hackathonAdminTable.Object);
+            var moqs = new Moqs();
+            moqs.HackathonAdminTable.Setup(a => a.DeleteAsync("hack", "uid", default));
+            moqs.CacheProvider.Setup(c => c.Remove("HackathonAdmin-hack"));
 
             var management = new HackathonAdminManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
+                Cache = moqs.CacheProvider.Object,
             };
             await management.DeleteAdminAsync("hack", "uid", default);
 
-            Mock.VerifyAll(storageContext, hackathonAdminTable);
-            storageContext.VerifyNoOtherCalls();
-            hackathonAdminTable.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
         }
         #endregion
 

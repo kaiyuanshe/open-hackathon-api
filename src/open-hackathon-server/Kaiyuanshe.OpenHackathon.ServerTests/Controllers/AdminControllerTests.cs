@@ -267,16 +267,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonAdminEntity adminEntity = null;
             var authResult = AuthorizationResult.Success();
 
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
 
             var controller = new AdminController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteAdmin("Hack", "uid", default);
 
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
 
@@ -287,42 +287,40 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonAdminEntity adminEntity = new HackathonAdminEntity();
             var authResult = AuthorizationResult.Success();
 
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
 
             var controller = new AdminController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteAdmin("Hack", "uid", default);
 
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Admin_CannotDeleteCreator);
         }
 
         [Test]
         public async Task DeleteAdmin_Deleted()
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
             HackathonAdminEntity adminEntity = new HackathonAdminEntity();
             var authResult = AuthorizationResult.Success();
 
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
-            mockContext.HackathonAdminManagement.Setup(a => a.DeleteAdminAsync("hack", "uid", default));
-            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(new UserInfo());
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(
-                a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.deleteHackathonAdmin.ToString()
-                && a.Args.Length == 3), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
+            moqs.HackathonAdminManagement.Setup(a => a.DeleteAdminAsync("hack", "uid", default));
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(new UserInfo());
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), default));
 
             var controller = new AdminController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteAdmin("Hack", "uid", default);
 
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
         #endregion
