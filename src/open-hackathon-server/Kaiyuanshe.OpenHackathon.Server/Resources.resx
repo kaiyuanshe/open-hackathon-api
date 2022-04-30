@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>Deleted by user: {userName}</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteHackathonAdmin" xml:space="preserve">
+    <value>Admin '{userName}' removed another admin '{adminName}'.</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>Judge '{judgeName}' is deleted by admin '{userName}'</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>Deleted hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_deleteHackathonAdmin" xml:space="preserve">
+    <value>Deleted an admin '{adminName}' from hackathon '{hackathonName}'</value>
   </data>
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>Deleted judge '{judgeName}' of hackathon: {hackathonName}</value>

@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>活动被{userName}删除。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteHackathonAdmin" xml:space="preserve">
+    <value>管理员'{userName}'删除了另外一名管理员'{adminName}'。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>管理员'{userName}'删除了活动裁判'{judgeName}'。</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>删除活动:{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_deleteHackathonAdmin" xml:space="preserve">
+    <value>删除活动'{hackathonName}'的一名管理员：{adminName}</value>
   </data>
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>删除活动'{hackathonName}'的一位裁判：{judgeName}</value>

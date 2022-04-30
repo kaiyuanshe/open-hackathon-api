@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
@@ -180,8 +181,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteAdmin
         /// <summary>
-        /// Delete as hackathon admin.
+        /// Delete a hackathon admin.
         /// </summary>
+        /// <remarks>
+        /// Delete a hackathon administrator. Note that the creator of the hackathon cannot be deleted.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="userId" example="1">Id of user</param>
@@ -220,15 +224,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await HackathonAdminManagement.DeleteAdminAsync(hackathonName.ToLower(), userId, cancellationToken);
-            var currentUser = await GetCurrentUserInfo(cancellationToken);
             var deletedUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.deleteHackathonAdmin.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Args = new string[] { currentUser.GetDisplayName(), hackathon.DisplayName, deletedUser.GetDisplayName() }
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                adminName = deletedUser.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.deleteHackathonAdmin, args, cancellationToken);
             return NoContent();
         }
         #endregion
