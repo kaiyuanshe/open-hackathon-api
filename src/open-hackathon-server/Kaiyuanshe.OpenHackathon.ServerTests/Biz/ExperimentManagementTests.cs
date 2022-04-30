@@ -787,21 +787,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // mock
             var logger = new Mock<ILogger<ExperimentManagement>>();
-            var storageContext = new MockStorageContext();
-            storageContext.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
             var k8s = new Mock<IKubernetesCluster>();
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
 
             // test
             var management = new ExperimentManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
             var result = await management.ResetExperimentAsync("hack", "expr", default);
 
             // verify
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
@@ -816,8 +816,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // mock
             var logger = new Mock<ILogger<ExperimentManagement>>();
-            var storageContext = new MockStorageContext();
-            storageContext.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.DeleteExperimentAsync(It.IsAny<ExperimentContext>(), default));
             k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default))
@@ -828,13 +828,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // test
             var management = new ExperimentManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
             var result = await management.ResetExperimentAsync("hack", "expr", default);
 
             // verify
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
@@ -852,8 +852,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // mock
             var logger = new Mock<ILogger<ExperimentManagement>>();
-            var storageContext = new MockStorageContext();
-            storageContext.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.DeleteExperimentAsync(It.IsAny<ExperimentContext>(), default));
             k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default))
@@ -867,13 +867,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // test
             var management = new ExperimentManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
             var result = await management.ResetExperimentAsync("hack", "expr", default);
 
             // verify
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
@@ -1011,21 +1011,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // mock
             var logger = new Mock<ILogger<ExperimentManagement>>();
-            var storageContext = new MockStorageContext();
-            storageContext.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
             var k8s = new Mock<IKubernetesCluster>();
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
 
             // test
             var management = new ExperimentManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
             var result = await management.DeleteExperimentAsync("hack", "expr", default);
 
             // verify
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
@@ -1041,9 +1041,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // mock
             var logger = new Mock<ILogger<ExperimentManagement>>();
-            var storageContext = new MockStorageContext();
-            storageContext.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
-            storageContext.ExperimentTable.Setup(p => p.DeleteAsync("hack", "expr", default));
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(p => p.RetrieveAsync("hack", "expr", default)).ReturnsAsync(entity);
+            moqs.ExperimentTable.Setup(p => p.DeleteAsync("hack", "expr", default));
             var k8s = new Mock<IKubernetesCluster>();
             k8s.Setup(k => k.DeleteExperimentAsync(It.IsAny<ExperimentContext>(), default))
                 .Callback<ExperimentContext, CancellationToken>((c, ct) =>
@@ -1056,13 +1056,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // test
             var management = new ExperimentManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 KubernetesClusterFactory = k8sfactory.Object,
             };
             var result = await management.DeleteExperimentAsync("hack", "expr", default);
 
             // verify
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();

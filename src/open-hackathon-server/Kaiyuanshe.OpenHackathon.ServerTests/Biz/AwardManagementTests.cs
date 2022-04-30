@@ -570,17 +570,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             };
 
-            var storageContext = new MockStorageContext();
-            storageContext.AwardAssignmentTable.Setup(t => t.ListByHackathonAsync("hack", default)).ReturnsAsync(assignments);
+            var moqs = new Moqs();
+            moqs.AwardAssignmentTable.Setup(t => t.ListByHackathonAsync("hack", default)).ReturnsAsync(assignments);
 
             AwardManagement awardManagement = new AwardManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var count = await awardManagement.GetAssignmentCountAsync("hack", "", default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Assert.AreEqual(1, count);
         }
 
@@ -596,17 +596,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             };
 
-            var storageContext = new MockStorageContext();
-            storageContext.AwardAssignmentTable.Setup(t => t.ListByAwardAsync("hack", "award", default)).ReturnsAsync(assignments);
+            var moqs = new Moqs();
+            moqs.AwardAssignmentTable.Setup(t => t.ListByAwardAsync("hack", "award", default)).ReturnsAsync(assignments);
 
             AwardManagement awardManagement = new AwardManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
                 Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var count = await awardManagement.GetAssignmentCountAsync("hack", "award", default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Assert.AreEqual(1, count);
         }
         #endregion

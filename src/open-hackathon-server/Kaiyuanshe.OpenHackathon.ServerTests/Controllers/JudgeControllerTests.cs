@@ -376,48 +376,35 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [TestCase(true)]
         public async Task DeleteJudge(bool firstTime)
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             UserInfo user = new UserInfo { };
             JudgeEntity entity = firstTime ? new JudgeEntity() : null;
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            mockContext.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
             if (firstTime)
             {
-                mockContext.JudgeManagement.Setup(j => j.DeleteJudgeAsync("hack", "uid", default));
-                mockContext.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+                moqs.JudgeManagement.Setup(j => j.DeleteJudgeAsync("hack", "uid", default));
+                moqs.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                         "hack",
                         It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == "uid" && o.TeamId == null),
                         default)).ReturnsAsync(false);
-                mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                    && a.ActivityLogType == ActivityLogType.deleteJudge.ToString()
-                    && a.CorrelatedUserId == "uid"), default));
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), default));
             }
 
             // test
             var controller = new JudgeController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteJudge("Hack", "uid", default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.AuthorizationService, 
-                mockContext.UserManagement, 
-                mockContext.JudgeManagement, 
-                mockContext.RatingManagement, 
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.UserManagement.VerifyNoOtherCalls();
-            mockContext.JudgeManagement.VerifyNoOtherCalls();
-            mockContext.RatingManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
 

@@ -20,8 +20,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var args = new { userName = "un" };
 
-            var storageContext = new MockStorageContext();
-            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+            var moqs = new Moqs();
+            moqs.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
                 l.ActivityId.Length == 28
                 && l.PartitionKey == "hack"
                 && l.Category == ActivityLogCategory.Hackathon
@@ -35,11 +35,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var management = new ActivityLogManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             await management.LogHackathonActivity("hack", "op", ActivityLogType.createHackathon, args, default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
         }
         #endregion
 
@@ -47,8 +47,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task LogTeamActivity()
         {
-            var storageContext = new MockStorageContext();
-            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+            var moqs = new Moqs();
+            moqs.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
                 l.ActivityId.Length == 28
                 && l.PartitionKey == "tid"
                 && l.Category == ActivityLogCategory.Team
@@ -62,11 +62,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var management = new ActivityLogManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             await management.LogTeamActivity("hack", "tid", "op", ActivityLogType.createTeam, null, default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
         }
         #endregion
 
@@ -76,8 +76,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var args = new { hackathonName = "hack" };
 
-            var storageContext = new MockStorageContext();
-            storageContext.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
+            var moqs = new Moqs();
+            moqs.ActivityLogTable.Setup(t => t.InsertAsync(It.Is<ActivityLogEntity>(l =>
                 l.ActivityId.Length == 28
                 && l.PartitionKey == "uid"
                 && l.Category == ActivityLogCategory.User
@@ -92,11 +92,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var management = new ActivityLogManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             await management.LogUserActivity("uid", "foo", "op", ActivityLogType.createHackathon, args, default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
         }
         #endregion
 
@@ -219,20 +219,20 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
 
             var page = MockHelper.CreatePage(logs, returnedToken);
-            var storageContext = new MockStorageContext();
+            var moqs = new Moqs();
             if (!string.IsNullOrEmpty(expectedFilter))
             {
-                storageContext.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
+                moqs.ActivityLogTable.Setup(a => a.ExecuteQuerySegmentedAsync(expectedFilter, expectedToken, expectedTop, null, default))
                     .ReturnsAsync(page);
             }
 
             var activityLogManagement = new ActivityLogManagement()
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             var result = await activityLogManagement.ListActivityLogs(options, default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             if (expectedTop.HasValue)
             {
                 Assert.AreEqual(2, result.Count());

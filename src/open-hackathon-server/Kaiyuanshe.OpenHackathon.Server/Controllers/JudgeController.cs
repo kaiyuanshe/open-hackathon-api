@@ -72,7 +72,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathonName.ToLower(),
                 OperatorId = CurrentUserId,
                 CorrelatedUserId = userId,
-                Message = parameter.description, 
+                Message = parameter.description,
             }, cancellationToken);
             return Ok(ResponseBuilder.BuildJudge(entity, user));
         }
@@ -241,11 +241,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteJudge
         /// <summary>
-        /// Delete a judge. Please make sure all related ratings are already deleted.
+        /// Delete a judge of a hackathon. 
         /// </summary>
+        /// <remarks>
+        /// A judge cannot be deleted if any ratings are submitted.
+        /// Please delete the related ratings first. 
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
-        /// <param name="userId" example="1">Id of user</param>
+        /// <param name="userId" example="1">User Id of the judge</param>
         /// <response code="204">Deleted</response>
         [HttpDelete]
         [SwaggerErrorResponse(400, 404, 412)]
@@ -290,13 +294,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return PreconditionFailed(string.Format(Resources.Rating_HasRating, nameof(Judge)), userId);
             }
             await JudgeManagement.DeleteJudgeAsync(hackathonName.ToLower(), userId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.deleteJudge.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                CorrelatedUserId = userId,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                judgeName = user.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.deleteJudge, args, cancellationToken);
             return NoContent();
         }
         #endregion
