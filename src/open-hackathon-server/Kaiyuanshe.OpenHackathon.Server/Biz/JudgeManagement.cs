@@ -136,13 +136,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region Task DeleteJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken);
+        #region DeleteJudgeAsync
         public async Task DeleteJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(userId))
                 return;
 
             await StorageContext.JudgeTable.DeleteAsync(hackathonName, userId, cancellationToken);
+            InvalidateCachedJudges(hackathonName);
         }
         #endregion
     }

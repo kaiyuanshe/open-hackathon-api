@@ -352,16 +352,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(IsPlatformAdminTestData))]
         public async Task<bool> IsPlatformAdmin(HackathonAdminEntity admin)
         {
-            var storageContext = new MockStorageContext();
-            storageContext.HackathonAdminTable.Setup(p => p.GetPlatformRole("uid", default)).ReturnsAsync(admin);
+            var moqs = new Moqs();
+            moqs.HackathonAdminTable.Setup(p => p.GetPlatformRole("uid", default)).ReturnsAsync(admin);
 
             var adminManagement = new HackathonAdminManagement(null)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             var result = await adminManagement.IsPlatformAdmin("uid", default);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             return result;
         }
         #endregion

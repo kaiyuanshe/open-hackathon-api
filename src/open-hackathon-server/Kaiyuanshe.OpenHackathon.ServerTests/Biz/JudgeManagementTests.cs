@@ -327,20 +327,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task DeleteJudgeAsync()
         {
             var logger = new Mock<ILogger<JudgeManagement>>();
-            var judgeTable = new Mock<IJudgeTable>();
-            judgeTable.Setup(j => j.DeleteAsync("hack", "uid", default));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.Setup(s => s.JudgeTable).Returns(judgeTable.Object);
+            var moqs = new Moqs();
+            moqs.JudgeTable.Setup(j => j.DeleteAsync("hack", "uid", default));
+            moqs.CacheProvider.Setup(c => c.Remove("Judge-hack"));
 
             var judgeManagement = new JudgeManagement(logger.Object)
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
+                Cache = moqs.CacheProvider.Object,
             };
             await judgeManagement.DeleteJudgeAsync("hack", "uid", default);
 
-            Mock.VerifyAll(judgeTable, storageContext);
-            judgeTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
         #endregion
     }

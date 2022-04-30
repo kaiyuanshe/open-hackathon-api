@@ -3,9 +3,11 @@ using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
+using System;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 {
+    [Obsolete]
     internal class MockControllerContext
     {
         public Mock<IHackathonManagement> HackathonManagement { get; }
@@ -35,6 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             AwardManagement = new Mock<IAwardManagement>();
         }
 
+        [Obsolete]
         public void SetupController(HackathonControllerBase controller)
         {
             controller.HackathonManagement = HackathonManagement.Object;
@@ -52,6 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             controller.AwardManagement = AwardManagement.Object;
         }
 
+        [Obsolete]
         public void VerifyAll()
         {
             Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement,

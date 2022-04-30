@@ -249,16 +249,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string name = "test";
             HackathonEntity entity = null;
 
-            var storageContext = new MockStorageContext();
-            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
 
             var hackathonManager = new HackathonManagement
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Assert.IsNull(result);
         }
 
@@ -271,16 +271,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Status = HackathonStatus.offline
             };
 
-            var storageContext = new MockStorageContext();
-            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
 
             var hackathonManager = new HackathonManagement
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Assert.IsNull(result);
         }
 
@@ -293,16 +293,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Location = "loc"
             };
 
-            var storageContext = new MockStorageContext();
-            storageContext.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.HackathonTable.Setup(p => p.RetrieveAsync(name, string.Empty, default)).ReturnsAsync(entity);
 
             var hackathonManager = new HackathonManagement
             {
-                StorageContext = storageContext.Object,
+                StorageContext = moqs.StorageContext.Object,
             };
             var result = await hackathonManager.GetHackathonEntityByNameAsync(name, CancellationToken.None);
 
-            storageContext.VerifyAll();
+            moqs.VerifyAll();
             Assert.AreEqual("loc", result.Location);
         }
         #endregion
