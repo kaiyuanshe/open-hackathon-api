@@ -34,7 +34,7 @@ users:
     password: password
     username: username
 ";
-            var configObj = Yaml.LoadFromString<K8SConfiguration>(testConfig);
+            var configObj = KubernetesYaml.Deserialize<K8SConfiguration>(testConfig);
             KubernetesClientConfiguration kubeconfig = KubernetesClientConfiguration.BuildConfigFromConfigObject(configObj);
 
             var configProvider = new Mock<IKubernetesConfigProvider>();

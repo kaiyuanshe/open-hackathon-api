@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         internal async Task<K8SConfiguration> GetDefaultConfigObjectAsync(CancellationToken cancellationToken)
         {
             var content = await StorageContext.KubernetesBlobContainer.DownloadBlockBlobAsync(DefaultConfigBlob, cancellationToken);
-            return Yaml.LoadFromString<K8SConfiguration>(content);
+            return KubernetesYaml.Deserialize<K8SConfiguration>(content);
         }
     }
 }
