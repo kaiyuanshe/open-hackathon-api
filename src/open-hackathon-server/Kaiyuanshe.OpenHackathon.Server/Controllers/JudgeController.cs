@@ -66,14 +66,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.userId = userId;
             var entity = await JudgeManagement.CreateJudgeAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.createJudge.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                CorrelatedUserId = userId,
-                Message = parameter.description,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                judgeName = user.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.createJudge, args, cancellationToken);
             return Ok(ResponseBuilder.BuildJudge(entity, user));
         }
         #endregion
@@ -123,14 +122,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.Judge_NotFound);
             }
             entity = await JudgeManagement.UpdateJudgeAsync(entity, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.updateJudge.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                CorrelatedUserId = userId,
-                Message = parameter.description ?? entity.Description,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                judgeName = user.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.updateJudge, args, cancellationToken);
+
             return Ok(ResponseBuilder.BuildJudge(entity, user));
         }
         #endregion

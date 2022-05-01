@@ -97,6 +97,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &apos;{userName}&apos; added a judge: &apos;{judgeName}&apos;.
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createJudge {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted by user: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteHackathon {
@@ -142,6 +151,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &apos;{userName}&apos; updated judge: &apos;{judgeName}&apos;.
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateJudge {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Approved and published hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_approveHackahton {
@@ -165,6 +183,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added a new judge &apos;{judgeName}&apos; for hackathon: {hackathonName}.
+        /// </summary>
+        internal static string ActivityLog_User_createJudge {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createJudge", resourceCulture);
             }
         }
         
@@ -210,6 +237,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated judge &apos;{judgeName}&apos; for hackathon: {hackathonName}.
+        /// </summary>
+        internal static string ActivityLog_User_updateJudge {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateJudge", resourceCulture);
             }
         }
         

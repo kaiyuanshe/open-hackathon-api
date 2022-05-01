@@ -3,7 +3,6 @@ using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
-using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
@@ -27,26 +26,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var parameter = new Judge();
             UserInfo user = null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                UserManagement = userManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.CreateJudge("Hack", "uid", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);
         }
 
@@ -58,70 +47,49 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var parameter = new Judge { description = "desc" };
             UserInfo user = new UserInfo { };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.CanCreateJudgeAsync("hack", default)).ReturnsAsync(false);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.CanCreateJudgeAsync("hack", default)).ReturnsAsync(false);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.CreateJudge("Hack", "uid", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement, judgeManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Judge_TooMany);
         }
 
         [Test]
         public async Task CreateJudge_Created()
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             var parameter = new Judge { description = "desc" };
             UserInfo user = new UserInfo { FamilyName = "fn" };
             var entity = new JudgeEntity { PartitionKey = "pk" };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            mockContext.JudgeManagement.Setup(j => j.CreateJudgeAsync(It.Is<Judge>(j =>
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.CreateJudgeAsync(It.Is<Judge>(j =>
                 j.description == "desc" &&
                 j.hackathonName == "hack" &&
                 j.userId == "uid"), default)).ReturnsAsync(entity);
-            mockContext.JudgeManagement.Setup(j => j.CanCreateJudgeAsync("hack", default)).ReturnsAsync(true);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.createJudge.ToString()
-                && a.CorrelatedUserId == "uid"
-                && a.Message == "desc"), default));
+            moqs.JudgeManagement.Setup(j => j.CanCreateJudgeAsync("hack", default)).ReturnsAsync(true);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), default));
 
             // test
             var controller = new JudgeController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateJudge("Hack", "uid", parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.AuthorizationService, mockContext.UserManagement, mockContext.JudgeManagement, mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.UserManagement.VerifyNoOtherCalls();
-            mockContext.JudgeManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Judge>(result);
             Assert.AreEqual("pk", resp.hackathonName);
             Assert.AreEqual("fn", resp.user.FamilyName);
@@ -139,67 +107,46 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo();
             JudgeEntity entity = null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.UpdateJudge("Hack", "uid", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement, judgeManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, Resources.Judge_NotFound);
         }
 
         [Test]
         public async Task UpdateJudge_Updated()
         {
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             var parameter = new Judge { description = "desc" };
             UserInfo user = new UserInfo { Province = "province" };
             JudgeEntity entity = new JudgeEntity { PartitionKey = "pk", Description = "d1" };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            mockContext.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
-            mockContext.JudgeManagement.Setup(j => j.UpdateJudgeAsync(entity, parameter, default)).ReturnsAsync(entity);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.updateJudge.ToString()
-                && a.CorrelatedUserId == "uid"
-                && a.Message == "desc"), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
+            moqs.JudgeManagement.Setup(j => j.UpdateJudgeAsync(entity, parameter, default)).ReturnsAsync(entity);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), default));
 
             // test
             var controller = new JudgeController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.UpdateJudge("Hack", "uid", parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement, mockContext.AuthorizationService, mockContext.UserManagement, mockContext.JudgeManagement, mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.UserManagement.VerifyNoOtherCalls();
-            mockContext.JudgeManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Judge>(result);
             Assert.AreEqual("pk", resp.hackathonName);
             Assert.AreEqual("province", resp.user.Province);
@@ -213,18 +160,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity { };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.GetJudge("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
@@ -234,24 +177,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity { Status = HackathonStatus.online };
             UserInfo user = null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                UserManagement = userManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.GetJudge("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);
         }
+
         [Test]
         public async Task GetJudge_Succeeded()
         {
@@ -259,27 +196,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo { Profile = "profile" };
             var judgeEntity = new JudgeEntity { PartitionKey = "pk" };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(judgeEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(judgeEntity);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.GetJudge("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, userManagement, judgeManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Judge>(result);
             Assert.AreEqual("pk", resp.hackathonName);
             Assert.AreEqual("profile", resp.user.Profile);
@@ -337,31 +263,20 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var user = new UserInfo { Website = "https://website" };
 
             // mock and capture
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.ListPaginatedJudgesAsync("hack", It.IsAny<JudgeQueryOptions>(), default))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.JudgeManagement.Setup(j => j.ListPaginatedJudgesAsync("hack", It.IsAny<JudgeQueryOptions>(), default))
                 .Callback<string, JudgeQueryOptions, CancellationToken>((h, opt, c) => { opt.NextPage = next; })
                 .ReturnsAsync(judges);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
 
             // run
-            var controller = new JudgeController
-            {
-                ResponseBuilder = new DefaultResponseBuilder(),
-                HackathonManagement = hackathonManagement.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.ListJudgesByHackathon("Hack", pagination, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, judgeManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var list = AssertHelper.AssertOKResult<JudgeList>(result);
             Assert.AreEqual(expectedLink, list.nextLink);
             Assert.AreEqual(1, list.value.Length);
@@ -416,37 +331,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo { };
             JudgeEntity entity = new JudgeEntity();
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            var judgeManagement = new Mock<IJudgeManagement>();
-            judgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
+            moqs.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                 "hack",
                 It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == "uid" && o.TeamId == null),
                 default)).ReturnsAsync(true);
 
-            var controller = new JudgeController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                UserManagement = userManagement.Object,
-                JudgeManagement = judgeManagement.Object,
-                RatingManagement = ratingManagement.Object,
-            };
+            var controller = new JudgeController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteJudge("Hack", "uid", default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, userManagement, judgeManagement, ratingManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            judgeManagement.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Rating_HasRating, nameof(Judge)));
         }
         #endregion
