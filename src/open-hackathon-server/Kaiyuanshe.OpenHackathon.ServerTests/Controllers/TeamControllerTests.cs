@@ -28,21 +28,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             HackathonEntity hackathon = null;
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
+
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
+
             // verify
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, hackName));
         }
 
@@ -55,16 +52,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Team parameter = new Team { };
 
             // moq
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
 
             // run
             var controller = new TeamController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotOnline);
         }
 
@@ -75,21 +72,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, EventStartedAt = DateTime.UtcNow.AddDays(1) };
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
+
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
+
             // verify
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Hackathon_NotStarted);
         }
 
@@ -100,21 +94,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, EventEndedAt = DateTime.UtcNow.AddDays(-1) };
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
+
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
+
             // verify
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Hackathon_Ended, hackathon.EventEndedAt));
         }
 
@@ -126,30 +117,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollment = null;
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
-
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", cancellationToken)).ReturnsAsync(enrollment);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Enrollment_NotFound, "", hackName));
         }
 
@@ -161,29 +141,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.pendingApproval };
             Team parameter = new Team { };
-            CancellationToken cancellationToken = CancellationToken.None;
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
-                .ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", cancellationToken)).ReturnsAsync(enrollment);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.CreateTeam(hackName, parameter, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Enrollment_NotApproved);
         }
 
@@ -198,30 +168,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var teamsByName = new List<TeamEntity> { new TeamEntity() };
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(teamsByName);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
+            moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(teamsByName);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                TeamManagement = teamManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement, teamManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Team_NameTaken, "dn"));
         }
 
@@ -237,31 +195,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             TeamMemberEntity teamMember = new TeamMemberEntity();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(teamsByName);
-            teamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
+            moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(teamsByName);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                TeamManagement = teamManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement, teamManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Team_CreateSecond);
         }
 
@@ -270,39 +216,30 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             string hackName = "Foo";
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             Team parameter = new Team { displayName = "dn" };
             TeamEntity teamEntity = new TeamEntity { AutoApprove = true, CreatorId = "uid", PartitionKey = "pk", RowKey = "rk", DisplayName = "dn" };
             TeamMemberEntity teamMember = null;
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
-            mockContext.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
-            mockContext.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(new List<TeamEntity>());
-            mockContext.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
-            mockContext.TeamManagement.Setup(t => t.CreateTeamAsync(parameter, default)).ReturnsAsync(teamEntity);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
-                && a.ActivityLogType == ActivityLogType.createTeam.ToString()
-                && a.TeamId == "rk"
-                && a.Message == "dn"), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", default)).ReturnsAsync(enrollment);
+            moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(new List<TeamEntity>());
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
+            moqs.TeamManagement.Setup(t => t.CreateTeamAsync(parameter, default)).ReturnsAsync(teamEntity);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
 
             // test
             var controller = new TeamController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateTeam(hackName, parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.TeamManagement,
-                mockContext.EnrollmentManagement,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.TeamManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual("foo", parameter.hackathonName);
             Assert.AreEqual("", parameter.creatorId);
             Team resp = AssertHelper.AssertOKResult<Team>(result);

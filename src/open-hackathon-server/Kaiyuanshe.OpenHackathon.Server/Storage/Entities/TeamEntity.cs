@@ -21,7 +21,7 @@
         }
 
         /// <summary>
-        /// id of team
+        /// id of team, RowKey.
         /// </summary>
         [IgnoreEntityProperty]
         public string Id

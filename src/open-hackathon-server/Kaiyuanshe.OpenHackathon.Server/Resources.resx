@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>Admin '{userName}' added a judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_createTeam" xml:space="preserve">
+    <value>A new team '{teamName}' is created by {userName}.</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>Deleted by user: {userName}</value>
   </data>
@@ -150,6 +153,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Team_createTeam" xml:space="preserve">
+    <value>Team created by '{userName}'.</value>
+  </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>Approved and published hackathon: {hackathonName}</value>
   </data>
@@ -161,6 +167,9 @@
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>Added a new judge '{judgeName}' for hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_createTeam" xml:space="preserve">
+    <value>Created a team '{teamName}' in hackathon: {hackathonName}.</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>Deleted hackathon: {hackathonName}</value>
