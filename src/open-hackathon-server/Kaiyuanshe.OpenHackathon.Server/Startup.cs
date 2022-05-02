@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -42,8 +43,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             // won't get called. Don't create a ContainerBuilder
             // for Autofac here, and don't call builder.Populate() - that
             // happens in the AutofacServiceProviderFactory for you.
-            services
-                .AddMvc(mvcOptions =>
+            services.AddMvc(mvcOptions =>
                 {
                     mvcOptions.EnableEndpointRouting = false;
                 })
@@ -60,6 +60,14 @@ namespace Kaiyuanshe.OpenHackathon.Server
             services.AddHttpContextAccessor();
 
             // localization
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.SupportedCultures = CultureInfos.SupportedCultures;
+                options.SupportedUICultures = CultureInfos.SupportedCultures;
+                options.SetDefaultCulture(CultureInfos.en_US.Name);
+                options.DefaultRequestCulture = new RequestCulture(CultureInfos.en_US.Name);
+                options.AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider());
+            });
             services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
@@ -119,13 +127,8 @@ namespace Kaiyuanshe.OpenHackathon.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseRequestLocalization(options =>
-            {
-                options.SupportedUICultures = CultureInfos.SupportedCultures;
-                options.SetDefaultCulture(CultureInfos.en_US.Name);
-                options.DefaultRequestCulture = new RequestCulture(CultureInfos.en_US.Name);
-                options.AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider());
-            });
+            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(options.Value);
 
             // middleware
             // In asp.net core 3.0, middlewares must be registered before MapControllers

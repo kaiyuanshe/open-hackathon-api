@@ -24,8 +24,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region CreateTeam
         /// <summary>
-        /// Create a new team
+        /// Create a new team.
         /// </summary>
+        /// <remarks>
+        /// To create a new team, the following prerequisites must be met:
+        /// <ul>
+        ///     <li>The hackathon is online.</li>
+        ///     <li>The hackathon has started and is not ended.</li>
+        ///     <li>The current user has enrolled in the hackathon and the enrollment is approved.</li>
+        ///     <li>The current user is not a member of another team in the same hackathon.</li>
+        ///     <li>A team name must be unique in the same hackathon.</li>
+        /// </ul>
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -83,14 +93,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.creatorId = CurrentUserId;
             var teamEntity = await TeamManagement.CreateTeamAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.createTeam.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                TeamId = teamEntity.Id,
-                Message = teamEntity.DisplayName,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                teamName = teamEntity.DisplayName,
+                userName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, teamEntity.Id, CurrentUserId, ActivityLogType.createTeam, args, cancellationToken);
+
             var creator = await GetCurrentUserInfo(cancellationToken);
             return Ok(ResponseBuilder.BuildTeam(teamEntity, creator));
         }

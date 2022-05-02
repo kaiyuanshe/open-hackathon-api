@@ -106,6 +106,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A new team &apos;{teamName}&apos; is created by {userName}..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted by user: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteHackathon {
@@ -160,6 +169,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Team created by &apos;{userName}&apos;..
+        /// </summary>
+        internal static string ActivityLog_Team_createTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_createTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Approved and published hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_approveHackahton {
@@ -192,6 +210,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created a team &apos;{teamName}&apos; in hackathon: {hackathonName}..
+        /// </summary>
+        internal static string ActivityLog_User_createTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createTeam", resourceCulture);
             }
         }
         
