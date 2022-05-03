@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Text.Json;
@@ -66,7 +67,6 @@ namespace Kaiyuanshe.OpenHackathon.Server
                 options.SupportedUICultures = CultureInfos.SupportedCultures;
                 options.SetDefaultCulture(CultureInfos.en_US.Name);
                 options.DefaultRequestCulture = new RequestCulture(CultureInfos.en_US.Name);
-                options.AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider());
             });
             services.AddLocalization(options =>
             {
@@ -142,6 +142,16 @@ namespace Kaiyuanshe.OpenHackathon.Server
 
             // Configure Swagger
             SwaggerStartup.Configure(app, env);
+
+            var logger = app.ApplicationServices.GetService<ILoggerFactory>().CreateLogger("Assembly");
+            AppDomain.CurrentDomain.AssemblyLoad += (sender, args) =>
+            {
+                var assembly = args.LoadedAssembly;
+                if (assembly.FullName.Contains("Kaiyuanshe"))
+                {
+                    logger.TraceInformation($"Assembly loaded: {assembly.FullName}");
+                }
+            };
         }
 
         private void RegisterMiddlewares(IApplicationBuilder app)
