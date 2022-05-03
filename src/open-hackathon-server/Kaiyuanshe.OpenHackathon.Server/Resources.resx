@@ -348,6 +348,9 @@
   <data name="Team_NotFound" xml:space="preserve">
     <value>Team with specified id is not found.</value>
   </data>
+  <data name="Team_NotJoined" xml:space="preserve">
+    <value>The current user doesn't join a team. </value>
+  </data>
   <data name="Template_ExceedMax" xml:space="preserve">
     <value>Cannot create more than {0} templates in a hackathon.</value>
   </data>

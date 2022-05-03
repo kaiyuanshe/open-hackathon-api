@@ -114,7 +114,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region UpdateTeam
         /// <summary>
-        /// Update a new team
+        /// Update a team by teamId.
         /// </summary>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
@@ -181,12 +181,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region GetTeam
         /// <summary>
-        /// Get a team
+        /// Query a team by Id.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="teamId" example="d1e40c38-cc2a-445f-9eab-60c253256c57">unique Guid of the team. Auto-generated on server side.</param>
-        /// <returns>The updated team</returns>
+        /// <returns>The team info.</returns>
         /// <response code="200">Success. The response describes a team.</response>
         [HttpGet]
         [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
@@ -215,6 +215,58 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var teamOptions = new ValidateTeamOptions
             {
             };
+            if (!await ValidateTeam(team, teamOptions, cancellationToken))
+            {
+                return teamOptions.ValidateResult;
+            }
+
+            var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
+            return Ok(ResponseBuilder.BuildTeam(team, creator));
+        }
+        #endregion
+
+        #region GetCurrentTeam
+        /// <summary>
+        /// Query the team which the current user belongs to.
+        /// </summary>
+        /// <remarks>
+        /// Valid auth token is required. 
+        /// Will return the team info if user joined a team of the hackathon, otherwise 404 is returned.
+        /// </remarks>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <returns>The team info.</returns>
+        /// <response code="200">Success. The response describes a team.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(Team), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/team")]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
+        public async Task<object> GetCurrentTeam(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var options = new ValidateHackathonOptions
+            {
+                HackathonName = hackathonName,
+                UserId = CurrentUserId,
+                WritableRequired = false,
+            };
+            if (await ValidateHackathon(hackathon, options, cancellationToken) == false)
+            {
+                return options.ValidateResult;
+            }
+
+            // Query membership and team
+            var member = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), CurrentUserId, cancellationToken);
+            if (member == null)
+            {
+                return NotFound(Resources.Team_NotJoined);
+            }
+            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), member.TeamId, cancellationToken);
+            var teamOptions = new ValidateTeamOptions();
             if (!await ValidateTeam(team, teamOptions, cancellationToken))
             {
                 return teamOptions.ValidateResult;
