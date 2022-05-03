@@ -11,6 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
     {
         public static void Main(string[] args)
         {
+            // .resx files are not loaded on Azure for unknown reason. Load manually.
             LoadAssemblies();
             CreateHostBuilder(args).Build().Run();
         }

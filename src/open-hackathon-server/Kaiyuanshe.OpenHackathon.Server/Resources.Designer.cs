@@ -250,6 +250,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Login successfully..
+        /// </summary>
+        internal static string ActivityLog_User_login {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Requested to publish hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_publishHackathon {

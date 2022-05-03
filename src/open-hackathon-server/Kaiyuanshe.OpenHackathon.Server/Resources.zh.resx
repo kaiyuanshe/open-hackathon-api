@@ -180,6 +180,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>删除活动'{hackathonName}'的一位裁判：{judgeName}</value>
   </data>
+  <data name="ActivityLog_User_login" xml:space="preserve">
+    <value>登陆成功。</value>
+  </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>申请活动上线：{hackathonName}</value>
   </data>

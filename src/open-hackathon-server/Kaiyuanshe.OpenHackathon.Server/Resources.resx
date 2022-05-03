@@ -180,6 +180,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>Deleted judge '{judgeName}' of hackathon: {hackathonName}</value>
   </data>
+  <data name="ActivityLog_User_login" xml:space="preserve">
+    <value>Login successfully.</value>
+  </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>Requested to publish hackathon: {hackathonName}</value>
   </data>
