@@ -566,6 +566,87 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
+        #region GetCurrentTeam
+        [Test]
+        public async Task GetCurrentTeam_HackNotFound()
+        {
+            HackathonEntity hackathon = null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.GetCurrentTeam("Hack", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
+        }
+
+        [Test]
+        public async Task GetCurrentTeam_NotJoinTeam()
+        {
+            HackathonEntity hackathon = new HackathonEntity();
+            TeamMemberEntity member = null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", "", default)).ReturnsAsync(member);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.GetCurrentTeam("Hack", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Team_NotJoined);
+        }
+
+        [Test]
+        public async Task GetCurrentTeam_TeamNotFound()
+        {
+            HackathonEntity hackathon = new HackathonEntity();
+            TeamMemberEntity member = new TeamMemberEntity { TeamId = "tid" };
+            TeamEntity team = null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", "", default)).ReturnsAsync(member);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "tid", default)).ReturnsAsync(team);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.GetCurrentTeam("Hack", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Team_NotFound);
+        }
+
+        [Test]
+        public async Task GetCurrentTeam_Succeeded()
+        {
+            HackathonEntity hackathon = new HackathonEntity();
+            TeamMemberEntity member = new TeamMemberEntity { TeamId = "tid" };
+            TeamEntity team = new TeamEntity { CreatorId = "uid", DisplayName = "dn" };
+            UserInfo creator = new UserInfo { Name = "un" };
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", "", default)).ReturnsAsync(member);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "tid", default)).ReturnsAsync(team);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(creator);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.GetCurrentTeam("Hack", default);
+
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<Team>(result);
+            Assert.AreEqual("dn", resp.displayName);
+            Assert.AreEqual("un", resp.creator.Name);
+        }
+
+        #endregion
+
         #region ListTeams
         private static IEnumerable ListTeamsTestData()
         {

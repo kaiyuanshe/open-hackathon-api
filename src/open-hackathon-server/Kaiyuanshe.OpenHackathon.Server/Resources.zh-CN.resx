@@ -348,6 +348,9 @@
   <data name="Team_NotFound" xml:space="preserve">
     <value>团队不存在。</value>
   </data>
+  <data name="Team_NotJoined" xml:space="preserve">
+    <value>用户未加入任何团队。</value>
+  </data>
   <data name="Template_ExceedMax" xml:space="preserve">
     <value>每个活动最多只能创建 {0}个虚拟环境模板。</value>
   </data>

@@ -709,6 +709,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The current user doesn&apos;t join a team. .
+        /// </summary>
+        internal static string Team_NotJoined {
+            get {
+                return ResourceManager.GetString("Team_NotJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Member {0} is not allowed to perform this operation..
         /// </summary>
         internal static string TeamMember_AccessDenied {
