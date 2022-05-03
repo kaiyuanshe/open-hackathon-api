@@ -1,6 +1,9 @@
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Kaiyuanshe.OpenHackathon.Server
 {
@@ -8,6 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
     {
         public static void Main(string[] args)
         {
+            LoadAssemblies();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -21,5 +25,14 @@ namespace Kaiyuanshe.OpenHackathon.Server
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static void LoadAssemblies()
+        {
+            var assemblies = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, ".resources.dll", SearchOption.AllDirectories);
+            foreach (var assembly in assemblies)
+            {
+                Assembly.Load(assembly);
+            }
+        }
     }
 }
