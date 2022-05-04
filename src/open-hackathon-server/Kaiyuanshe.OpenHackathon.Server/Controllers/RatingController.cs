@@ -20,6 +20,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Create a new kind of rating.
         /// </summary>
+        /// <remarks>
+        /// A rating kind is a dimension for the judges to evaluate the works submitted by users.
+        /// For instance, you can create a rating kind named as "Innovation", 
+        /// to evaluate how good the competitors introduce new ideas or improvements. <br />
+        /// <b>A maximum of 100</b> rating kinds can be created for each hackathon.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -57,13 +63,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create rating kind
             parameter.hackathonName = hackathonName.ToLower();
             var ratingKindEntity = await RatingManagement.CreateRatingKindAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.createRatingKind.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = parameter.description,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                ratingKind = parameter.name,
+            };
+            await ActivityLogManagement.OnHackathonEvent(
+                hackathon.Name,
+                CurrentUserId,
+                ActivityLogType.createRatingKind,
+                logArgs,
+                cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
         }
         #endregion

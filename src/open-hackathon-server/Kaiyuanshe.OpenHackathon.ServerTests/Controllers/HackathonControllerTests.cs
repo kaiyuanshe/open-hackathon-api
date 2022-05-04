@@ -721,24 +721,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var role = new HackathonRoles { isAdmin = true };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(entity);
-            mockContext.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.online, default))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(m => m.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(entity);
+            moqs.HackathonManagement.Setup(m => m.UpdateHackathonStatusAsync(entity, HackathonStatus.online, default))
                 .Callback<HackathonEntity, HackathonStatus, CancellationToken>((e, s, c) =>
                 {
                     e.Status = s;
                 }).ReturnsAsync(entity);
-            mockContext.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
-            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
-            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
+            moqs.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.approveHackahton, It.IsAny<object>(), default));
 
             // test
             var controller = new HackathonController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.Publish(name, default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Hackathon>(result);
             Assert.AreEqual(HackathonStatus.online, resp.status);
         }
