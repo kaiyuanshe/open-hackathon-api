@@ -308,6 +308,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Create a new rating.
         /// </summary>
+        /// <remarks>
+        /// Rate a team on a particular rating kind. The teamId of a rating cannot updated once created. 
+        /// If need to update the teamId, please Delete the rating and create a new one.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -363,13 +367,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.judgeId = CurrentUserId;
             var ratingEntity = await RatingManagement.CreateRatingAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.createRating.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = kind.Name,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                judgeName = CurrentUserDisplayName,
+                teamName = team.DisplayName,
+                kindName = kind.Name,
+            };
+            await ActivityLogManagement.OnTeamEvent(
+                hackathon.Name,
+                team.Id,
+                CurrentUserId,
+                ActivityLogType.createRating,
+                logArgs,
+                cancellationToken);
+
             var ratingResponse = await BuildRatingResp(ratingEntity, null, team, kind, cancellationToken);
             return Ok(ratingResponse);
         }
