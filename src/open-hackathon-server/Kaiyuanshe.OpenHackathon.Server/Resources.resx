@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>Admin '{userName}' added a judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_createRating" xml:space="preserve">
+    <value>Hackathon judge "{judgeName}" rated team "{teamName}" on kind "{kindName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_createRatingKind" xml:space="preserve">
     <value>Admin "{userName}" created a new rating kind: {ratingKind}.</value>
   </data>
@@ -156,6 +159,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Team_createRating" xml:space="preserve">
+    <value>Rated on kind "{kindName}" by judge "{judgeName}".</value>
+  </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>Team created by '{userName}'.</value>
   </data>
@@ -170,6 +176,9 @@
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>Added a new judge '{judgeName}' for hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_createRating" xml:space="preserve">
+    <value>Rated team "{teamName}" on kind "{kindName}" of hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User_createRatingKind" xml:space="preserve">
     <value>Created a new rating kind '{ratingKind}' for hackathon "{hackathonName}".</value>

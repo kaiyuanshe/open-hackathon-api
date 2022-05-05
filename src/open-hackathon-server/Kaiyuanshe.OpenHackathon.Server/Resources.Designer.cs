@@ -106,6 +106,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hackathon judge &quot;{judgeName}&quot; rated team &quot;{teamName}&quot; on kind &quot;{kindName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createRating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Admin &quot;{userName}&quot; created a new rating kind: {ratingKind}..
         /// </summary>
         internal static string ActivityLog_Hackathon_createRatingKind {
@@ -178,6 +187,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rated on kind &quot;{kindName}&quot; by judge &quot;{judgeName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_createRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_createRating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Team created by &apos;{userName}&apos;..
         /// </summary>
         internal static string ActivityLog_Team_createTeam {
@@ -219,6 +237,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rated team &quot;{teamName}&quot; on kind &quot;{kindName}&quot; of hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_createRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createRating", resourceCulture);
             }
         }
         

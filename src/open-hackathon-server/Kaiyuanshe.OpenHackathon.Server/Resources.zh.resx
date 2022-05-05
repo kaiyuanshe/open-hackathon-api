@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>管理员'{userName}'添加了一名裁判：'{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_createRating" xml:space="preserve">
+    <value>裁判 "{judgeName}"给团队"{teamName}"的"{kindName}"打分。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createRatingKind" xml:space="preserve">
     <value>管理员"{userName}"添加了新的评分维度"{ratingKind}"。</value>
   </data>
@@ -156,6 +159,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Team_createRating" xml:space="preserve">
+    <value>裁判"{judgeName}"给团队的"{kindName}"打分。</value>
+  </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>团队创建成功，创建者：{userName}。</value>
   </data>
@@ -170,6 +176,9 @@
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>为活动'{hackathonName}'添加了一名裁判：'{judgeName}'</value>
+  </data>
+  <data name="ActivityLog_User_createRating" xml:space="preserve">
+    <value>给团队"{teamName}"的"{kindName}"打分。活动名称："{hackathonName}"。</value>
   </data>
   <data name="ActivityLog_User_createRatingKind" xml:space="preserve">
     <value>为活动"{hackathonName}"添加了新的评分维度"{ratingKind}"。</value>
