@@ -229,9 +229,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", "dn", default)).ReturnsAsync(new List<TeamEntity>());
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(teamMember);
             moqs.TeamManagement.Setup(t => t.CreateTeamAsync(parameter, default)).ReturnsAsync(teamEntity);
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createTeam, It.IsAny<object>(), null, default));
 
             // test
             var controller = new TeamController();

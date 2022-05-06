@@ -68,8 +68,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(authResult);
             moqs.RatingManagement.Setup(t => t.CreateRatingKindAsync(parameter, default)).ReturnsAsync(ratingKindEntity);
             moqs.RatingManagement.Setup(t => t.CanCreateRatingKindAsync("hack", default)).ReturnsAsync(true);
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createRatingKind, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createRatingKind, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createRatingKind, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createRatingKind, It.IsAny<object>(), null, default));
 
             // test
             var controller = new RatingController();
@@ -508,9 +508,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             ), default)).ReturnsAsync(ratingEntity);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("judge", default)).ReturnsAsync(judge);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(teamCreator);
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createRating, It.IsAny<object>(), null, default));
 
             // test
             var controller = new RatingController();

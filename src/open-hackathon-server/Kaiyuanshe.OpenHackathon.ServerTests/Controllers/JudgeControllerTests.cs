@@ -80,8 +80,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 j.hackathonName == "hack" &&
                 j.userId == "uid"), default)).ReturnsAsync(entity);
             moqs.JudgeManagement.Setup(j => j.CanCreateJudgeAsync("hack", default)).ReturnsAsync(true);
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.createJudge, It.IsAny<object>(), null, default));
 
             // test
             var controller = new JudgeController();
@@ -137,8 +137,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
             moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
             moqs.JudgeManagement.Setup(j => j.UpdateJudgeAsync(entity, parameter, default)).ReturnsAsync(entity);
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.updateJudge, It.IsAny<object>(), null, default));
 
             // test
             var controller = new JudgeController();
@@ -309,8 +309,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                         "hack",
                         It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == "uid" && o.TeamId == null),
                         default)).ReturnsAsync(false);
-                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), default));
-                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), default));
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteJudge, It.IsAny<object>(), null, default));
             }
 
             // test
