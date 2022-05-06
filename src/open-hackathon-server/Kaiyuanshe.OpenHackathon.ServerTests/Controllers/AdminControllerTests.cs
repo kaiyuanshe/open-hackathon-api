@@ -313,8 +313,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.HackathonAdminManagement.Setup(a => a.GetAdminAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
             moqs.HackathonAdminManagement.Setup(a => a.DeleteAdminAsync("hack", "uid", default));
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(new UserInfo());
-            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity(It.IsAny<string>(), "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), null, default));
 
             var controller = new AdminController();
             moqs.SetupController(controller);

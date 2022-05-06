@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             await UserManagement.AuthingAsync(parameter, cancellationToken);
             var args = new { userName = parameter.GetDisplayName() };
-            await ActivityLogManagement.LogUserActivity(parameter.Id, null, parameter.Id, ActivityLogType.login, args, cancellationToken);
+            await ActivityLogManagement.LogUserActivity(parameter.Id, null, parameter.Id, ActivityLogType.login, args, null, cancellationToken);
             return Ok(parameter);
         }
         #endregion

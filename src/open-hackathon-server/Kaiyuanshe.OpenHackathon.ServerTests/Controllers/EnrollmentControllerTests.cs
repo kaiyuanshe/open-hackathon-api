@@ -178,21 +178,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo userInfo = new UserInfo();
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
-            mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", "", default)).ReturnsAsync(default(EnrollmentEntity));
-            mockContext.EnrollmentManagement.Setup(p => p.CreateEnrollmentAsync(hackathonEntity, request, default)).ReturnsAsync(enrollment);
-            mockContext.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
-            mockContext.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), default));
-            mockContext.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
+            moqs.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", "", default)).ReturnsAsync(default(EnrollmentEntity));
+            moqs.EnrollmentManagement.Setup(p => p.CreateEnrollmentAsync(hackathonEntity, request, default)).ReturnsAsync(enrollment);
+            moqs.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.createEnrollment, It.IsAny<object>(), null, default));
 
             // test
             var controller = new EnrollmentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.Enroll(hackathonName, request, default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Enrollment>(result);
             Assert.AreEqual("pk", enrollment.HackathonName);
         }

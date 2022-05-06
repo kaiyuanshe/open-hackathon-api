@@ -61,15 +61,6 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} is added as Administrator of hackathon &apos;{1}&apos;  by {2}.
-        /// </summary>
-        internal static string ActivityLog_CreateHackathonAdmin {
-            get {
-                return ResourceManager.GetString("ActivityLog_CreateHackathonAdmin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Hackathon is approved by an admin and becomes online..
         /// </summary>
         internal static string ActivityLog_Hackathon_approveHackahton {
@@ -93,6 +84,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Hackathon_createHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_Hackathon_createHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is added as Administrator of hackathon &apos;{1}&apos;  by {2}.
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createHackathonAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createHackathonAdmin", resourceCulture);
             }
         }
         

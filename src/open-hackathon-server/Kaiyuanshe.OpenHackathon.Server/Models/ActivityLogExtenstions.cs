@@ -19,12 +19,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             return $"{ResourceKeyPrefix}_{entity.Category}_{entity.ActivityLogType}";
         }
 
-        public static void GenerateMessage(this ActivityLogEntity entity, object args)
+        public static void GenerateMessage(this ActivityLogEntity entity, object args, string resourceKey = null)
         {
             if (entity == null)
                 return;
 
-            var resourceKey = entity.GetResourceKey();
+            resourceKey ??= entity.GetResourceKey();
             Func<CultureInfo, string> messageByCulture = (culture) =>
             {
                 try
