@@ -127,7 +127,7 @@
     <value>Created by user: {userName}.</value>
   </data>
   <data name="ActivityLog_Hackathon_createHackathonAdmin" xml:space="preserve">
-    <value>{0} is added as Administrator of hackathon '{1}'  by {2}</value>
+    <value>"{adminUser}" is added as an administrator by "{userName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>Admin '{userName}' added a judge: '{judgeName}'</value>
@@ -165,6 +165,12 @@
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>Team created by '{userName}'.</value>
   </data>
+  <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
+    <value>Became an admin of hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
+    <value>No longer be an admin of hackathon "{hackathonName}".</value>
+  </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>Approved and published hackathon: {hackathonName}</value>
   </data>
@@ -173,6 +179,9 @@
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>Created a new hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_createHackathonAdmin" xml:space="preserve">
+    <value>Created or updated an admin "{adminName}" for hackathon: "{hackathonName}"</value>
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>Added a new judge '{judgeName}' for hackathon: {hackathonName}</value>

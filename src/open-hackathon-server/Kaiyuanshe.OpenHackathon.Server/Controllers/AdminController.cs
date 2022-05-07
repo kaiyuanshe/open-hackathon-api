@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,10 +19,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Add an user as hackathon admin.
         /// </summary>
+        /// <remarks>
+        /// The creator of a hackathon is added as admin by default, don't have to add again. <br />
+        /// Can use this API to update an existing admin by passing in the same userId.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="userId" example="1">Id of user</param>
-        /// <returns>The admin</returns>
+        /// <returns>The created or updated admin.</returns>
         /// <response code="200">Success. The response describes an admin.</response>
         [HttpPut]
         [ProducesResponseType(typeof(HackathonAdmin), StatusCodes.Status200OK)]
@@ -61,14 +64,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userId = userId,
             };
             var adminEntity = await HackathonAdminManagement.CreateAdminAsync(admin, cancellationToken);
-            var currentUser = await GetCurrentUserInfo(cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+
+            var updatedUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            var args = new
             {
-                ActivityLogType = ActivityLogType.createHackathonAdmin.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Args = new string[] { user.GetDisplayName(), hackathon.DisplayName, currentUser.GetDisplayName() },
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                adminName = updatedUser.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnHackathonAdminEvent(hackathon.Name, CurrentUserId, adminEntity.UserId, ActivityLogType.createHackathonAdmin, args, nameof(Resources.ActivityLog_User2_createHackathonAdmin), cancellationToken);
 
             var resp = ResponseBuilder.BuildHackathonAdmin(adminEntity, user);
             return Ok(resp);
@@ -231,7 +235,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userName = CurrentUserDisplayName,
                 adminName = deletedUser.GetDisplayName(),
             };
-            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.deleteHackathonAdmin, args, cancellationToken);
+            await ActivityLogManagement.OnHackathonAdminEvent(hackathon.Name, CurrentUserId, adminEntity.UserId, ActivityLogType.deleteHackathonAdmin, args, nameof(Resources.ActivityLog_User2_deleteHackathonAdmin), cancellationToken);
             return NoContent();
         }
         #endregion

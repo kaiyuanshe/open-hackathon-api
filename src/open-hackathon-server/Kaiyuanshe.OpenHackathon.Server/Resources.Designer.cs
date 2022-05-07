@@ -88,7 +88,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} is added as Administrator of hackathon &apos;{1}&apos;  by {2}.
+        ///   Looks up a localized string similar to &quot;{adminUser}&quot; is added as an administrator by &quot;{userName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_createHackathonAdmin {
             get {
@@ -232,6 +232,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created or updated an admin &quot;{adminName}&quot; for hackathon: &quot;{hackathonName}&quot;.
+        /// </summary>
+        internal static string ActivityLog_User_createHackathonAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Added a new judge &apos;{judgeName}&apos; for hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_createJudge {
@@ -327,6 +336,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Became an admin of hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User2_createHackathonAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_createHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No longer be an admin of hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User2_deleteHackathonAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_deleteHackathonAdmin", resourceCulture);
             }
         }
         
