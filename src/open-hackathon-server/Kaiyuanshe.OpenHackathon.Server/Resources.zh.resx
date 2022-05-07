@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ActivityLog_CreateHackathonAdmin" xml:space="preserve">
-    <value>{0}成为了活动'{1}'的管理员,由{2}操作。</value>
-  </data>
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
@@ -128,6 +125,9 @@
   </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
     <value>{userName}创建了活动。</value>
+  </data>
+  <data name="ActivityLog_Hackathon_createHackathonAdmin" xml:space="preserve">
+    <value>管理员"{userName}"添加或修改了另外一名管理员："{adminName}"</value>
   </data>
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>管理员'{userName}'添加了一名裁判：'{judgeName}'</value>
@@ -165,6 +165,12 @@
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>团队创建成功，创建者：{userName}。</value>
   </data>
+  <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
+    <value>成为了活动"{hackathonName}"的管理员。</value>
+  </data>
+  <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
+    <value>不再担任活动"{hackathonName}"的管理员。</value>
+  </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>批准并发布活动：{hackathonName}</value>
   </data>
@@ -173,6 +179,9 @@
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>创建了新活动：{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_createHackathonAdmin" xml:space="preserve">
+    <value>添加或修改了活动"{hackathonName}"的管理员："{adminName}"。</value>
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>为活动'{hackathonName}'添加了一名裁判：'{judgeName}'</value>
