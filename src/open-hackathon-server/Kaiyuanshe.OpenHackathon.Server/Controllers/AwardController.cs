@@ -20,8 +20,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
     {
         #region CreateAward
         /// <summary>
-        /// Create a new award
+        /// Create a new award.
         /// </summary>
+        /// <remarks>
+        /// A hackathon can create up to 100 awards. Each award can be assigned to individuals or teams. 
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -59,13 +62,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create award
             parameter.hackathonName = hackathonName.ToLower();
             var awardEntity = await AwardManagement.CreateAwardAsync(hackathonName.ToLower(), parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.createAward.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = awardEntity.Name,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                awardName = awardEntity.Name,
+            };
+            await ActivityLogManagement.OnHackathonEvent(
+                hackathon.Name,
+                CurrentUserId,
+                ActivityLogType.createAward,
+                logArgs,
+                cancellationToken);
+            
             return Ok(ResponseBuilder.BuildAward(awardEntity));
         }
         #endregion

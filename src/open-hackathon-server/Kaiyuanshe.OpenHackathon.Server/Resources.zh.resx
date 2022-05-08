@@ -120,6 +120,9 @@
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
+  <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
+    <value>管理员"{userName}"添加了新的奖项"{awardName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>用户报名成功：{userName}</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>批准并发布活动：{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_createAward" xml:space="preserve">
+    <value>为活动“{hackathonName}”添加了新奖项“{awardName}”。</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>报名参加活动：{hackathonName}</value>
