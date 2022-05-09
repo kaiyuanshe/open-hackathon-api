@@ -74,7 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 ActivityLogType.createAward,
                 logArgs,
                 cancellationToken);
-            
+
             return Ok(ResponseBuilder.BuildAward(awardEntity));
         }
         #endregion
@@ -304,8 +304,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region CreateAwardAssignment
         /// <summary>
-        /// Assign an award
+        /// Assign an award.
         /// </summary>
+        /// <remarks>
+        /// If target of the award is 'team', the assigneeId must be an id of a team. 
+        /// Similarly, must be a valid userId if 'indiviual'. <br />
+        /// In either case, can not assign more than the allowed maximum count. <br />
+        /// The same team/user cannot be awarded the same award more than once. 
+        /// Repeated calls have the same effect as an Update(Patch) operation.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -351,15 +358,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.awardId = awardId;
             var assignment = await AwardManagement.CreateOrUpdateAssignmentAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.createAwardAssignment.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = awardEntity.Name,
-                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? parameter.assigneeId : null,
-                TeamId = awardEntity.Target == AwardTarget.team ? parameter.assigneeId : null,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                operatorName = CurrentUserDisplayName,
+                awardName = awardEntity.Name,
+                teamName = validateAwardOptions.TeamToAssign?.DisplayName ?? "",
+                userName = validateAwardOptions.UserToAssign?.GetDisplayName() ?? "",
+            };
+            if (awardEntity.Target == AwardTarget.individual)
+            {
+                await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, parameter.assigneeId,
+                    ActivityLogType.createAwardAssignmentIndividual, logArgs, nameof(Resources.ActivityLog_User2_createAwardAssignmentIndividual), cancellationToken);
+            }
+            else
+            {
+                await ActivityLogManagement.OnTeamEvent(hackathon.Name, parameter.assigneeId, CurrentUserId,
+                    ActivityLogType.createAwardAssignmentTeam, logArgs, cancellationToken);
+            }
             return Ok(await BuildAwardAssignment(assignment, awardEntity, cancellationToken));
         }
         #endregion
@@ -662,7 +678,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 Message = awardEntity.Name,
                 CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
                 TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssignmentId : null,
-            }, cancellationToken); 
+            }, cancellationToken);
             return NoContent();
         }
         #endregion

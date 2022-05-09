@@ -53,7 +53,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         deleteJudge,
 
         // AwardAssignment
-        createAwardAssignment,
+        createAwardAssignmentTeam,
+        createAwardAssignmentIndividual,
         updateAwardAssignment,
         deleteAwardAssignment,
 

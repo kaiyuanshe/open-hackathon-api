@@ -123,6 +123,12 @@
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>A new award "{awardName}" is created by "{userName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>User "{userName}" is awarded "{awardName}".</value>
+  </data>
+  <data name="ActivityLog_Hackathon_createAwardAssignmentTeam" xml:space="preserve">
+    <value>Team "{teamName}" is awarded "{awardName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>user enrolled successfully: {userName}</value>
   </data>
@@ -162,11 +168,17 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Team_createAwardAssignmentTeam" xml:space="preserve">
+    <value>The team is awarded "{awardName}".</value>
+  </data>
   <data name="ActivityLog_Team_createRating" xml:space="preserve">
     <value>Rated on kind "{kindName}" by judge "{judgeName}".</value>
   </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>Team created by '{userName}'.</value>
+  </data>
+  <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>Awarded "{awardName}" in hackathon "{hackathonName}."</value>
   </data>
   <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
     <value>Became an admin of hackathon "{hackathonName}".</value>
@@ -179,6 +191,12 @@
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>Created a new award "{awardName}" for hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>Awards "{awardName}" to "{userName}" in hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User_createAwardAssignmentTeam" xml:space="preserve">
+    <value>Awards "{awardName}" to "{teamName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>enrolled in hackathon: {hackathonName}</value>

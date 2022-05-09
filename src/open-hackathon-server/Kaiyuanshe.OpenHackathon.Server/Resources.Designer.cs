@@ -79,6 +79,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User &quot;{userName}&quot; is awarded &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createAwardAssignmentIndividual {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createAwardAssignmentIndividual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; is awarded &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createAwardAssignmentTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createAwardAssignmentTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to user enrolled successfully: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_createEnrollment {
@@ -196,6 +214,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The team is awarded &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_createAwardAssignmentTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_createAwardAssignmentTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rated on kind &quot;{kindName}&quot; by judge &quot;{judgeName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_createRating {
@@ -228,6 +255,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createAward {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createAward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Awards &quot;{awardName}&quot; to &quot;{userName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_createAwardAssignmentIndividual {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createAwardAssignmentIndividual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Awards &quot;{awardName}&quot; to &quot;{teamName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_createAwardAssignmentTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createAwardAssignmentTeam", resourceCulture);
             }
         }
         
@@ -354,6 +399,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Awarded &quot;{awardName}&quot; in hackathon &quot;{hackathonName}.&quot;.
+        /// </summary>
+        internal static string ActivityLog_User2_createAwardAssignmentIndividual {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_createAwardAssignmentIndividual", resourceCulture);
             }
         }
         
