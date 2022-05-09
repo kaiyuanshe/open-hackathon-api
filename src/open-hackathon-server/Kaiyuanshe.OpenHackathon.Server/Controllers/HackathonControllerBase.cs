@@ -251,6 +251,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             public string AssigneeId { get; set; }
             public bool AssigneeExistRequired { get; set; }
+
+            #region output
+            public TeamEntity TeamToAssign { get; set; }
+            public UserInfo UserToAssign { get; set; }
+            #endregion
         }
 
         public class ValidateRatingKindOptions : ControllerValiationOptions
@@ -499,6 +504,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                             options.ValidateResult = NotFound(Resources.Team_NotFound);
                             return false;
                         }
+                        options.TeamToAssign = team;
                         break;
                     case AwardTarget.individual:
                         var enrollment = await EnrollmentManagement.GetEnrollmentAsync(award.HackathonName, options.AssigneeId, cancellationToken);
@@ -507,6 +513,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                             options.ValidateResult = NotFound(string.Format(Resources.Enrollment_NotFound, options.AssigneeId, award.HackathonName));
                             return false;
                         }
+                        var user = await UserManagement.GetUserByIdAsync(enrollment.UserId, cancellationToken);
+                        options.UserToAssign = user;
                         break;
                     default:
                         break;

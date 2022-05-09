@@ -123,6 +123,12 @@
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>管理员"{userName}"添加了新的奖项"{awardName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>用户"{userName}"获得了"{awardName}"。</value>
+  </data>
+  <data name="ActivityLog_Hackathon_createAwardAssignmentTeam" xml:space="preserve">
+    <value>团队"{teamName}"获得了"{awardName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>用户报名成功：{userName}</value>
   </data>
@@ -162,11 +168,17 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Team_createAwardAssignmentTeam" xml:space="preserve">
+    <value>团队获得了"{awardName}"。</value>
+  </data>
   <data name="ActivityLog_Team_createRating" xml:space="preserve">
     <value>裁判"{judgeName}"给团队的"{kindName}"打分。</value>
   </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>团队创建成功，创建者：{userName}。</value>
+  </data>
+  <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>参与活动"{hackathonName}"并获得了"{awardName}"。</value>
   </data>
   <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
     <value>成为了活动"{hackathonName}"的管理员。</value>
@@ -179,6 +191,12 @@
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>为活动“{hackathonName}”添加了新奖项“{awardName}”。</value>
+  </data>
+  <data name="ActivityLog_User_createAwardAssignmentIndividual" xml:space="preserve">
+    <value>给用户"{userName}"颁发奖项"{awardName}"，活动名：{hackathonName}。</value>
+  </data>
+  <data name="ActivityLog_User_createAwardAssignmentTeam" xml:space="preserve">
+    <value>给团队“{teamName}”颁发奖项"{awardName}", 活动名：{hackathonName}。</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>报名参加活动：{hackathonName}</value>

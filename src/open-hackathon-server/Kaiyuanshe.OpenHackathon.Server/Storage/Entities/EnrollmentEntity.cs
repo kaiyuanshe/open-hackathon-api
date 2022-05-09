@@ -20,7 +20,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                 return PartitionKey;
             }
         }
-
+        
+        /// <summary>
+        /// Id of User. RowKey.
+        /// </summary>
         [IgnoreEntityProperty]
         public string UserId
         {
