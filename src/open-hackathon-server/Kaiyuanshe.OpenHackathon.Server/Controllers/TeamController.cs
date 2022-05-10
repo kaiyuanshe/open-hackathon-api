@@ -409,8 +409,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region JoinTeam
         /// <summary>
-        /// Join a team after enrolled
+        /// Join a team.
         /// </summary>
+        /// <remarks>
+        /// Join a team. UserId is read from the auth token. Prerequisites: <br />
+        /// <ul>
+        ///     <li>The user must enroll the hackathon first before joining any team.</li>
+        ///     <li>An user can join only one team in each hackathon. Repeated request with same teamId ends up 
+        ///         with an Update request. Repeated request with different teamId ends with an error response. 
+        ///         Quit the current team first if want to join another team.</li>
+        /// </ul>
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -434,8 +443,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region AddTeamMember
         /// <summary>
-        /// Add a new member to a team by team admin
+        /// Add a new member to a team by team admin.
         /// </summary>
+        /// <remarks>
+        /// UserId of the new member is read from the path. Prerequisites: <br />
+        /// <ul>
+        ///     <li>The user in access token must have admin access to the team.</li>
+        ///     <li>The user must enroll the hackathon first before joining any team.</li>
+        ///     <li>An user can join only one team in each hackathon. Repeated request with same teamId ends up 
+        ///         with an Update request. Repeated request with different teamId ends with an error response. 
+        ///         Quit the current team first if want to join another team.</li>
+        /// </ul>
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -499,6 +518,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // join team
+            var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
             if (teamMember == null)
             {
@@ -511,37 +531,55 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     parameter.status = TeamMemberStatus.approved;
                 }
                 teamMember = await TeamManagement.CreateTeamMemberAsync(parameter, cancellationToken);
-                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                var args = new
                 {
-                    ActivityLogType = ActivityLogType.createTeamMember.ToString(),
-                    HackathonName = hackathonName.ToLower(),
-                    OperatorId = userId,
-                    TeamId = teamId,
-                    Message = team.DisplayName,
-                }, cancellationToken);
+                    hackathonName = hackathon.DisplayName,
+                    teamName = team.DisplayName,
+                    memberName = memberInfo.GetDisplayName(),
+                    adminName = CurrentUserDisplayName,
+                };
+                if (teamAdminRequired)
+                {
+                    await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
+                        CurrentUserId, ActivityLogType.addTeamMember, args,
+                        nameof(Resources.ActivityLog_User2_addTeamMember), cancellationToken);
+                }
+                else
+                {
+                    await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
+                        ActivityLogType.joinTeam, args, cancellationToken);
+                }
             }
             else
             {
-                teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
-                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                if (teamMember.TeamId != teamId)
                 {
-                    ActivityLogType = ActivityLogType.updateTeamMember.ToString(),
-                    HackathonName = hackathonName.ToLower(),
-                    OperatorId = userId,
-                    TeamId = teamId,
-                    Message = team.DisplayName,
-                }, cancellationToken);
+                    return PreconditionFailed(Resources.TeamMember_CannotChangeTeam);
+                }
+
+                teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
+                var args = new
+                {
+                    memberName = memberInfo.GetDisplayName(),
+                    teamName = team.DisplayName,
+                };
+                await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
+                    CurrentUserId, ActivityLogType.updateTeamMember, args,
+                    nameof(Resources.ActivityLog_User2_updateTeamMember), cancellationToken);
             }
 
-            var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
+            return Ok(ResponseBuilder.BuildTeamMember(teamMember, memberInfo));
         }
         #endregion
 
         #region UpdateTeamMember
         /// <summary>
-        /// Update a team member information. Not including the Role/Status. Call other APIs to update Role/Status.
+        /// Update a team member information.
         /// </summary>
+        /// <remarks>
+        /// This API is eligible for all team members. <br />
+        /// The Role/Status cannot be updated. Call other APIs to update Role/Status.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -589,15 +627,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Update team member
+            var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.updateTeamMember.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = userId,
-                TeamId = teamId,
-                Message = team.DisplayName,
-            }, cancellationToken); var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+                memberName = user.GetDisplayName(),
+                teamName = team.DisplayName,
+            };
+            await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
+                CurrentUserId, ActivityLogType.updateTeamMember, args,
+                nameof(Resources.ActivityLog_User2_updateTeamMember), cancellationToken);
+            
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
         #endregion

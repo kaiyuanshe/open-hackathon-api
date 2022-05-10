@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivityLog_Hackathon_addTeamMember" xml:space="preserve">
+    <value>Team "{teamName}" has a new member "{memberName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>Hackathon is approved by an admin and becomes online.</value>
   </data>
@@ -159,6 +162,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>Judge '{judgeName}' is deleted by admin '{userName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
+    <value>User "{memberName}" requested to join team "{teamName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>Ready to go online, waiting for approval. Requested by: {userName}</value>
   </data>
@@ -167,6 +173,12 @@
   </data>
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
+  </data>
+  <data name="ActivityLog_Hackathon_updateTeamMember" xml:space="preserve">
+    <value>Info of member "{memberName}" in team "{teamName}" updated.</value>
+  </data>
+  <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
+    <value>Invited a new team member "{memberName}" by admin "{adminName}".</value>
   </data>
   <data name="ActivityLog_Team_createAwardAssignmentTeam" xml:space="preserve">
     <value>The team is awarded "{awardName}".</value>
@@ -177,6 +189,15 @@
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>Team created by '{userName}'.</value>
   </data>
+  <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
+    <value>User "{memberName}" requested to join team.</value>
+  </data>
+  <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
+    <value>Info of member "{memberName}" is updated.</value>
+  </data>
+  <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
+    <value>Added as a new member to team "{teamName}" by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
     <value>Awarded "{awardName}" in hackathon "{hackathonName}."</value>
   </data>
@@ -185,6 +206,12 @@
   </data>
   <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
     <value>No longer be an admin of hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
+    <value>Info of membership in team "{teamName}" is updated.</value>
+  </data>
+  <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
+    <value>Added a new memeber "{memberName}" to team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>Approved and published hackathon: {hackathonName}</value>
@@ -228,6 +255,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>Deleted judge '{judgeName}' of hackathon: {hackathonName}</value>
   </data>
+  <data name="ActivityLog_User_joinTeam" xml:space="preserve">
+    <value>Requested to join team "{teamName}" in hackathon "{hackathonName}".</value>
+  </data>
   <data name="ActivityLog_User_login" xml:space="preserve">
     <value>Login successfully.</value>
   </data>
@@ -239,6 +269,9 @@
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>Updated judge '{judgeName}' for hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
+    <value>Updated the info of member "{memberName}" in team "{teamName}".</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>
@@ -368,6 +401,9 @@
   </data>
   <data name="TeamMember_AccessDenied" xml:space="preserve">
     <value>Member {0} is not allowed to perform this operation.</value>
+  </data>
+  <data name="TeamMember_CannotChangeTeam" xml:space="preserve">
+    <value>The user is in a different team. Please leave the current team if want to change a team.</value>
   </data>
   <data name="TeamMember_LastAdmin" xml:space="preserve">
     <value>The user cannot be removed since there are more than 1 members and the user is the only admin with admin access.</value>

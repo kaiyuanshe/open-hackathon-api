@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivityLog_Hackathon_addTeamMember" xml:space="preserve">
+    <value>团队"{teamName}"添加了新成员"{memberName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
@@ -159,6 +162,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>管理员'{userName}'删除了活动裁判'{judgeName}'。</value>
   </data>
+  <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
+    <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
+  </data>
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>活动正在上线，等待审核中。提交者：{userName}</value>
   </data>
@@ -167,6 +173,12 @@
   </data>
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
+  </data>
+  <data name="ActivityLog_Hackathon_updateTeamMember" xml:space="preserve">
+    <value>成员“{memberName}”的信息已更新，所在团队:"{teamName}".</value>
+  </data>
+  <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
+    <value>管理员"{adminName}"添加了新团队成员"{memberName}"。</value>
   </data>
   <data name="ActivityLog_Team_createAwardAssignmentTeam" xml:space="preserve">
     <value>团队获得了"{awardName}"。</value>
@@ -177,6 +189,15 @@
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>团队创建成功，创建者：{userName}。</value>
   </data>
+  <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
+    <value>用户"{memberName}"请求加入团队。</value>
+  </data>
+  <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
+    <value>成员“{memberName}”的信息已更新。</value>
+  </data>
+  <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
+    <value>成为了团队"{teamName}"的一员。</value>
+  </data>
   <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
     <value>参与活动"{hackathonName}"并获得了"{awardName}"。</value>
   </data>
@@ -185,6 +206,12 @@
   </data>
   <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
     <value>不再担任活动"{hackathonName}"的管理员。</value>
+  </data>
+  <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
+    <value>在团队“{teamName}”的个人信息已更新。</value>
+  </data>
+  <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
+    <value>为团队"{teamName}"添加了新成员"{memberName}"。</value>
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>批准并发布活动：{hackathonName}</value>
@@ -228,6 +255,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>删除活动'{hackathonName}'的一位裁判：{judgeName}</value>
   </data>
+  <data name="ActivityLog_User_joinTeam" xml:space="preserve">
+    <value>参与活动“{hackathonName}”并申请加入团队"{teamName}".</value>
+  </data>
   <data name="ActivityLog_User_login" xml:space="preserve">
     <value>登陆成功。</value>
   </data>
@@ -239,6 +269,9 @@
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>修改了活动'{hackathonName}'的裁判员信息: {judgeName}</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
+    <value>更新了成员“{memberName}”的信息，团队名:"{teamName}"。</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>活动的创建者不能被删除</value>
@@ -368,6 +401,9 @@
   </data>
   <data name="TeamMember_AccessDenied" xml:space="preserve">
     <value>团队成员{0}无权执行该操作，请联系团队管理员。</value>
+  </data>
+  <data name="TeamMember_CannotChangeTeam" xml:space="preserve">
+    <value>用户已加入别的团队。如需更换团队，请先离开当前团队。</value>
   </data>
   <data name="TeamMember_LastAdmin" xml:space="preserve">
     <value>无法删除：您正在试图删除团队最后一位管理员，而团队中尚有其他成员。</value>

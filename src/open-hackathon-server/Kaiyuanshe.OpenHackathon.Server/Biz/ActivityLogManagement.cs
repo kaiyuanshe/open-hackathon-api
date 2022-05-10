@@ -194,6 +194,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
         }
 
+        public static async Task OnTeamMemberEvent(this IActivityLogManagement activityLogManagement,
+            string hackathonName, string teamId, string memberId, string operatorId, ActivityLogType logType, object args, string resourceKeyForMember, CancellationToken cancellationToken)
+        {
+            await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
+            await activityLogManagement.LogTeamActivity(hackathonName, teamId, operatorId, logType, args, null, cancellationToken);
+            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
+            await activityLogManagement.LogUserActivity(memberId, hackathonName, operatorId, logType, args, resourceKeyForMember ?? "placeholder", cancellationToken);
+        }
+
         public static async Task OnUserEvent(this IActivityLogManagement activityLogManagement,
            string hackathonName, string operatorId, string anotherUserId, ActivityLogType logType,
            object args, string resourceKeyForAnotherUser = null, CancellationToken cancellationToken = default)
