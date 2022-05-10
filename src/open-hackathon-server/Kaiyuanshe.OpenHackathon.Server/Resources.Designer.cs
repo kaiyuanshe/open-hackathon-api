@@ -61,6 +61,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; has a new member &quot;{memberName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_addTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_addTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hackathon is approved by an admin and becomes online..
         /// </summary>
         internal static string ActivityLog_Hackathon_approveHackahton {
@@ -187,6 +196,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User &quot;{memberName}&quot; requested to join team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_joinTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_joinTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready to go online, waiting for approval. Requested by: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_publishHackathon {
@@ -214,6 +232,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Info of member &quot;{memberName}&quot; in team &quot;{teamName}&quot; updated..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invited a new team member &quot;{memberName}&quot; by admin &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_addTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_addTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The team is awarded &quot;{awardName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_createAwardAssignmentTeam {
@@ -237,6 +273,33 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_createTeam {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_createTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User &quot;{memberName}&quot; requested to join team..
+        /// </summary>
+        internal static string ActivityLog_Team_joinTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_joinTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Info of member &quot;{memberName}&quot; is updated..
+        /// </summary>
+        internal static string ActivityLog_Team_updateTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_updateTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added a new memeber &quot;{memberName}&quot; to team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_addTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_addTeamMember", resourceCulture);
             }
         }
         
@@ -367,6 +430,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested to join team &quot;{teamName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_joinTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_joinTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Login successfully..
         /// </summary>
         internal static string ActivityLog_User_login {
@@ -403,6 +475,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updated the info of member &quot;{memberName}&quot; in team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added as a new member to team &quot;{teamName}&quot; by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User2_addTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_addTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Awarded &quot;{awardName}&quot; in hackathon &quot;{hackathonName}.&quot;.
         /// </summary>
         internal static string ActivityLog_User2_createAwardAssignmentIndividual {
@@ -426,6 +516,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User2_deleteHackathonAdmin {
             get {
                 return ResourceManager.GetString("ActivityLog_User2_deleteHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Info of membership in team &quot;{teamName}&quot; is updated..
+        /// </summary>
+        internal static string ActivityLog_User2_updateTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_updateTeamMember", resourceCulture);
             }
         }
         
@@ -876,6 +975,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string TeamMember_AccessDenied {
             get {
                 return ResourceManager.GetString("TeamMember_AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user is in a different team. Please leave the current team if want to change a team..
+        /// </summary>
+        internal static string TeamMember_CannotChangeTeam {
+            get {
+                return ResourceManager.GetString("TeamMember_CannotChangeTeam", resourceCulture);
             }
         }
         
