@@ -17,6 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IHackathonTable> HackathonTable { get; } = new();
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
+        public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
         #endregion
 
         #region Biz
@@ -31,6 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<ITeamManagement> TeamManagement { get; } = new();
         public Mock<IHackathonAdminManagement> HackathonAdminManagement { get; } = new();
         public Mock<IAwardManagement> AwardManagement { get; } = new();
+        public Mock<IWorkManagement> WorkManagement { get; } = new();
         #endregion
 
         public Mock<ICacheProvider> CacheProvider { get; } = new();
@@ -43,13 +45,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
+            StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
         }
 
         public void VerifyAll()
         {
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AwardAssignmentTable, ExperimentTable, HackathonTable,
-                HackathonAdminTable, JudgeTable);
+                HackathonAdminTable, JudgeTable, TeamWorkTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
@@ -57,12 +60,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonTable.VerifyNoOtherCalls();
             HackathonAdminTable?.VerifyNoOtherCalls();
             JudgeTable.VerifyNoOtherCalls();
+            TeamWorkTable.VerifyNoOtherCalls();
             #endregion
 
             #region Biz
-            Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement,
-                ActivityLogManagement, AuthorizationService, ExperimentManagement, JudgeManagement,
-                RatingManagement, TeamManagement, HackathonAdminManagement, AwardManagement);
+            Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement, ActivityLogManagement,
+                AuthorizationService, ExperimentManagement, JudgeManagement, RatingManagement,
+                TeamManagement, HackathonAdminManagement, AwardManagement, WorkManagement);
 
             HackathonManagement.VerifyNoOtherCalls();
             EnrollmentManagement.VerifyNoOtherCalls();
@@ -75,6 +79,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             RatingManagement.VerifyNoOtherCalls();
             HackathonAdminManagement.VerifyNoOtherCalls();
             AwardManagement.VerifyNoOtherCalls();
+            WorkManagement.VerifyNoOtherCalls();
             #endregion
 
             Mock.VerifyAll(CacheProvider);

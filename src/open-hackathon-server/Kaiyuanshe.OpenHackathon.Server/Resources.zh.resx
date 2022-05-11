@@ -153,6 +153,9 @@
   <data name="ActivityLog_Hackathon_createTeam" xml:space="preserve">
     <value>用户'{userName}'创建了团队'{teamName}'。</value>
   </data>
+  <data name="ActivityLog_Hackathon_createTeamWork" xml:space="preserve">
+    <value>用户“{userName}”为团队“{teamName}”上传了一件新作品。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>活动被{userName}删除。</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>团队创建成功，创建者：{userName}。</value>
+  </data>
+  <data name="ActivityLog_Team_createTeamWork" xml:space="preserve">
+    <value>用户“{userName}”上传了一件新作品。</value>
   </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队。</value>
@@ -245,6 +251,9 @@
   </data>
   <data name="ActivityLog_User_createTeam" xml:space="preserve">
     <value>在活动'{hackathonName}'中创建了团队'{teamName}'。</value>
+  </data>
+  <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
+    <value>在活动"{hackathonName}"中为团队“{teamName}”上传了一件新作品。</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>删除活动:{hackathonName}</value>
