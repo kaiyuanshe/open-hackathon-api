@@ -2015,37 +2015,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
-            teamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
-
-            var workManagement = new Mock<IWorkManagement>();
-            workManagement.Setup(w => w.CanCreateTeamWorkAsync("hack", "teamId", default)).ReturnsAsync(false);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
+            moqs.WorkManagement.Setup(w => w.CanCreateTeamWorkAsync("hack", "teamId", default)).ReturnsAsync(false);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
                 .ReturnsAsync(authResult);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                TeamManagement = teamManagement.Object,
-                WorkManagement = workManagement.Object,
-                AuthorizationService = authorizationService.Object,
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.CreateTeamWork("Hack", "teamId", request, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, workManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            workManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.TeamWork_TooMany);
         }
 
@@ -2053,48 +2037,33 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task CreateTeamWork()
         {
             // input
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
-            TeamEntity teamEntity = new TeamEntity { };
-            TeamMemberEntity memberEntity = new TeamMemberEntity { };
+            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "rk" };
+            TeamMemberEntity memberEntity = new TeamMemberEntity { TeamId = "rk" };
             TeamWork request = new TeamWork { };
             TeamWorkEntity teamWorkEntity = new TeamWorkEntity { Description = "desc" };
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
-            teamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
-
-            var workManagement = new Mock<IWorkManagement>();
-            workManagement.Setup(w => w.CreateTeamWorkAsync(It.Is<TeamWork>(work => work.hackathonName == "hack" && work.teamId == "teamId"), default)).ReturnsAsync(teamWorkEntity);
-            workManagement.Setup(w => w.CanCreateTeamWorkAsync("hack", "teamId", default)).ReturnsAsync(true);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
+            moqs.WorkManagement.Setup(w => w.CreateTeamWorkAsync(It.Is<TeamWork>(work => work.hackathonName == "hack" && work.teamId == "teamId"), default)).ReturnsAsync(teamWorkEntity);
+            moqs.WorkManagement.Setup(w => w.CanCreateTeamWorkAsync("hack", "teamId", default)).ReturnsAsync(true);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
                 .ReturnsAsync(authResult);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createTeamWork, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.createTeamWork, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.createTeamWork, It.IsAny<object>(), null, default));
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                TeamManagement = teamManagement.Object,
-                WorkManagement = workManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.CreateTeamWork("Hack", "teamId", request, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, workManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            workManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             TeamWork output = AssertHelper.AssertOKResult<TeamWork>(result);
             Assert.AreEqual("desc", output.description);
         }

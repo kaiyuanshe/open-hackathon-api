@@ -153,6 +153,9 @@
   <data name="ActivityLog_Hackathon_createTeam" xml:space="preserve">
     <value>A new team '{teamName}' is created by {userName}.</value>
   </data>
+  <data name="ActivityLog_Hackathon_createTeamWork" xml:space="preserve">
+    <value>User "{userName}" added a new work for team "{teamName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>Deleted by user: {userName}</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="ActivityLog_Team_createTeam" xml:space="preserve">
     <value>Team created by '{userName}'.</value>
+  </data>
+  <data name="ActivityLog_Team_createTeamWork" xml:space="preserve">
+    <value>User "{userName}" added a new work.</value>
   </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team.</value>
@@ -245,6 +251,9 @@
   </data>
   <data name="ActivityLog_User_createTeam" xml:space="preserve">
     <value>Created a team '{teamName}' in hackathon: {hackathonName}.</value>
+  </data>
+  <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
+    <value>Added a new work for team "{teamName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>Deleted hackathon: {hackathonName}</value>

@@ -1100,8 +1100,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region CreateTeamWork
         /// <summary>
-        /// Create a new team work
+        /// Create a new team work.
         /// </summary>
+        /// <remarks>
+        /// Create a team work for demonstration. All approved team members are allowed to create or update a work. <br />
+        /// A team work can be an image, a website, a PPT/Doc and so on. Be sure to input an valid URI. <br />
+        /// A <b>maximum of 100</b> works is allowed for each team.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -1157,6 +1162,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.teamId = teamId;
             var teamWorkEntity = await WorkManagement.CreateTeamWorkAsync(parameter, cancellationToken);
+            var args = new
+            {
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                userName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.createTeamWork, args, cancellationToken);
+
             return Ok(ResponseBuilder.BuildTeamWork(teamWorkEntity));
         }
         #endregion
