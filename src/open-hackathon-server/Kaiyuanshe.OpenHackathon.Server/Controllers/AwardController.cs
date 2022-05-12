@@ -623,13 +623,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteAwardAssignment
         /// <summary>
-        /// Delete an award assignment by assignmentId
+        /// Delete an award assignment by assignmentId.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="awardId" example="c877c675-4c97-4deb-9e48-97d079fa4b72">unique Guid of the award. Auto-generated on server side.</param>
         /// <param name="assignmentId" example="270d61b3-c676-403b-b582-cc38dfe122e4">unique Guid of the assignment. Auto-generated on server side.</param>
-        /// <returns>The award assignment</returns>
+        /// <returns></returns>
         /// <response code="204">Deleted. </response>
         [HttpDelete]
         [SwaggerErrorResponse(400, 404)]
@@ -670,15 +670,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
             await AwardManagement.DeleteAssignmentAsync(hackathonName.ToLower(), assignmentId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.deleteAwardAssignment.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = awardEntity.Name,
-                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
-                TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssignmentId : null,
-            }, cancellationToken);
+                hackathonName = hackathon.Name,
+                adminName = CurrentUserDisplayName,
+                awardName = awardEntity.Name,
+            };
+            if (awardEntity.Target == AwardTarget.individual)
+            {
+                await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, assignment.AssigneeId,
+                    ActivityLogType.deleteAwardAssignment, logArgs, nameof(Resources.ActivityLog_User2_deleteAwardAssignment), cancellationToken);
+            }
+            else
+            {
+                await ActivityLogManagement.OnTeamEvent(hackathon.Name, assignment.AssigneeId, CurrentUserId,
+                    ActivityLogType.deleteAwardAssignment, logArgs, cancellationToken);
+            }
             return NoContent();
         }
         #endregion

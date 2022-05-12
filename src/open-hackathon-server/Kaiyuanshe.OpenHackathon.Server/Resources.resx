@@ -156,6 +156,9 @@
   <data name="ActivityLog_Hackathon_createTeamWork" xml:space="preserve">
     <value>User "{userName}" added a new work for team "{teamName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
+    <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>Deleted by user: {userName}</value>
   </data>
@@ -195,6 +198,9 @@
   <data name="ActivityLog_Team_createTeamWork" xml:space="preserve">
     <value>User "{userName}" added a new work.</value>
   </data>
+  <data name="ActivityLog_Team_deleteAwardAssignment" xml:space="preserve">
+    <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team.</value>
   </data>
@@ -209,6 +215,9 @@
   </data>
   <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
     <value>Became an admin of hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User2_deleteAwardAssignment" xml:space="preserve">
+    <value>An assignment on award "{awardName}" is revoked by "{adminName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
     <value>No longer be an admin of hackathon "{hackathonName}".</value>
@@ -254,6 +263,9 @@
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
     <value>Added a new work for team "{teamName}" in hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
+    <value>Revoked an assignment on award "{awardName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>Deleted hackathon: {hackathonName}</value>

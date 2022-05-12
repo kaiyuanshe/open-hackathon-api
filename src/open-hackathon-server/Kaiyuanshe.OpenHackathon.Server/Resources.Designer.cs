@@ -178,6 +178,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An assignment on award &quot;{awardName}&quot; is revoked by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted by user: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteHackathon {
@@ -291,6 +300,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_createTeamWork {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_createTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An assignment on award &quot;{awardName}&quot; is revoked by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_deleteAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_deleteAwardAssignment", resourceCulture);
             }
         }
         
@@ -430,6 +448,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Revoked an assignment on award &quot;{awardName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_deleteAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_deleteHackathon {
@@ -534,6 +561,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User2_createHackathonAdmin {
             get {
                 return ResourceManager.GetString("ActivityLog_User2_createHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An assignment on award &quot;{awardName}&quot; is revoked by &quot;{adminName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User2_deleteAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_deleteAwardAssignment", resourceCulture);
             }
         }
         

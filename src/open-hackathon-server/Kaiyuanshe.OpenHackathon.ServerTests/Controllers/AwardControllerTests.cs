@@ -743,50 +743,48 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region DeleteAwardAssignment
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task DeleteAwardAssignment(bool firstTime)
+        [TestCase(true, AwardTarget.team)]
+        [TestCase(true, AwardTarget.individual)]
+        [TestCase(false, AwardTarget.team)]
+        [TestCase(false, AwardTarget.individual)]
+        public async Task DeleteAwardAssignment(bool firstTime, AwardTarget target)
         {
-            var hackathon = new HackathonEntity { };
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
-            var awardEntity = new AwardEntity { PartitionKey = "hack" };
-            AwardAssignmentEntity assignment = firstTime ? new AwardAssignmentEntity() : null;
+            var awardEntity = new AwardEntity { PartitionKey = "hack", Target = target };
+            AwardAssignmentEntity assignment = firstTime ? new AwardAssignmentEntity
+            {
+                AssigneeId = target == AwardTarget.team ? "tid" : "uid"
+            } : null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
-
-            var activityLogManagement = new Mock<IActivityLogManagement>();
-
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(t => t.GetAwardByIdAsync("hack", "award", default)).ReturnsAsync(awardEntity);
-            awardManagement.Setup(t => t.GetAssignmentAsync("hack", "assignid", default)).ReturnsAsync(assignment);
+            moqs.AwardManagement.Setup(t => t.GetAwardByIdAsync("hack", "award", default)).ReturnsAsync(awardEntity);
+            moqs.AwardManagement.Setup(t => t.GetAssignmentAsync("hack", "assignid", default)).ReturnsAsync(assignment);
             if (firstTime)
             {
-                awardManagement.Setup(t => t.DeleteAssignmentAsync("hack", "assignid", default));
-                activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                      && a.ActivityLogType == ActivityLogType.deleteAwardAssignment.ToString()), default));
+                moqs.AwardManagement.Setup(t => t.DeleteAssignmentAsync("hack", "assignid", default));
+                if (target == AwardTarget.team)
+                {
+                    moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
+                    moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
+                    moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
+                }
+                else
+                {
+                    moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
+                    moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
+                    moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_deleteAwardAssignment), default));
+                }
             }
 
-            var controller = new AwardController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ActivityLogManagement = activityLogManagement.Object,
-            };
+            var controller = new AwardController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteAwardAssignment("Hack", "award", "assignid", default);
 
-            Mock.VerifyAll(hackathonManagement, awardManagement, authorizationService, activityLogManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            activityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
         #endregion
