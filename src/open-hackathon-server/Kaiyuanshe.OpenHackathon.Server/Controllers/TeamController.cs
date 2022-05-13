@@ -637,7 +637,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
                 CurrentUserId, ActivityLogType.updateTeamMember, args,
                 nameof(Resources.ActivityLog_User2_updateTeamMember), cancellationToken);
-            
+
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
         #endregion
@@ -708,7 +708,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region UpdateTeamMemberRole
         /// <summary>
-        /// Change role of a team member
+        /// Change the role of a team member.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -765,9 +765,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // update status
+            var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             teamMember = await TeamManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
-            var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
+            var args = new
+            {
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                memberName = memberInfo.GetDisplayName(),
+                teamName = team.DisplayName,
+            };
+            await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
+                CurrentUserId, ActivityLogType.updateTeamMemberRole, args,
+                nameof(Resources.ActivityLog_User2_updateTeamMemberRole), cancellationToken);
+
+            return Ok(ResponseBuilder.BuildTeamMember(teamMember, memberInfo));
         }
         #endregion
 

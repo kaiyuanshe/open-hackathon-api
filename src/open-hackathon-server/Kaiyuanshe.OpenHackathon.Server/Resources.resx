@@ -183,6 +183,9 @@
   <data name="ActivityLog_Hackathon_updateTeamMember" xml:space="preserve">
     <value>Info of member "{memberName}" in team "{teamName}" updated.</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateTeamMemberRole" xml:space="preserve">
+    <value>"{adminName}" updated the role of team member "{memberName}".</value>
+  </data>
   <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
     <value>Invited a new team member "{memberName}" by admin "{adminName}".</value>
   </data>
@@ -207,6 +210,9 @@
   <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
     <value>Info of member "{memberName}" is updated.</value>
   </data>
+  <data name="ActivityLog_Team_updateTeamMemberRole" xml:space="preserve">
+    <value>"{adminName}" updated the role of team member "{memberName}".</value>
+  </data>
   <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
     <value>Added as a new member to team "{teamName}" by "{adminName}".</value>
   </data>
@@ -224,6 +230,9 @@
   </data>
   <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
     <value>Info of membership in team "{teamName}" is updated.</value>
+  </data>
+  <data name="ActivityLog_User2_updateTeamMemberRole" xml:space="preserve">
+    <value>User "{adminName}" updated your role in team "{teamName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
     <value>Added a new memeber "{memberName}" to team "{teamName}".</value>
@@ -293,6 +302,9 @@
   </data>
   <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
     <value>Updated the info of member "{memberName}" in team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMemberRole" xml:space="preserve">
+    <value>Updated the role of team member "{memberName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>

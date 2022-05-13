@@ -183,6 +183,9 @@
   <data name="ActivityLog_Hackathon_updateTeamMember" xml:space="preserve">
     <value>成员“{memberName}”的信息已更新，所在团队:"{teamName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateTeamMemberRole" xml:space="preserve">
+    <value>"{adminName}"调整了团队成员"{memberName}"的角色。</value>
+  </data>
   <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
     <value>管理员"{adminName}"添加了新团队成员"{memberName}"。</value>
   </data>
@@ -207,6 +210,9 @@
   <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
     <value>成员“{memberName}”的信息已更新。</value>
   </data>
+  <data name="ActivityLog_Team_updateTeamMemberRole" xml:space="preserve">
+    <value>"{adminName}"调整了团队成员"{memberName}"的角色。</value>
+  </data>
   <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
     <value>成为了团队"{teamName}"的一员。</value>
   </data>
@@ -224,6 +230,9 @@
   </data>
   <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
     <value>在团队“{teamName}”的个人信息已更新。</value>
+  </data>
+  <data name="ActivityLog_User2_updateTeamMemberRole" xml:space="preserve">
+    <value>用户"{adminName}"调整了您在团队"{teamName}"中的角色。</value>
   </data>
   <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
     <value>为团队"{teamName}"添加了新成员"{memberName}"。</value>
@@ -293,6 +302,9 @@
   </data>
   <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
     <value>更新了成员“{memberName}”的信息，团队名:"{teamName}"。</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMemberRole" xml:space="preserve">
+    <value>调整了团队成员"{memberName}"的角色。活动："{hackathonName}"。</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>活动的创建者不能被删除</value>
