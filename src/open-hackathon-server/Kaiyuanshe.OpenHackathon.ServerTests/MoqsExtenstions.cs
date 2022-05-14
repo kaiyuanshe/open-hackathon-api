@@ -21,6 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.HackathonAdminManagement = moqs.HackathonAdminManagement.Object;
             controller.AwardManagement = moqs.AwardManagement.Object;
             controller.WorkManagement = moqs.WorkManagement.Object;
+            controller.FileManagement = moqs.FileManagement.Object;
         }
 
     }

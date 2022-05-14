@@ -143,19 +143,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var uploaded = new FileUpload { expiration = 10, filename = "user/avatar.jpg" };
 
             // mock
-            var fileManagement = new Mock<IFileManagement>();
-            fileManagement.Setup(u => u.GetUploadUrlAsync(It.IsAny<ClaimsPrincipal>(), parameter, default)).ReturnsAsync(uploaded);
+            var moqs = new Moqs();
+            moqs.FileManagement.Setup(u => u.GetUploadUrlAsync(It.IsAny<ClaimsPrincipal>(), parameter, default)).ReturnsAsync(uploaded);
+            moqs.ActivityLogManagement.Setup(u => u.LogUserActivity("", null, "", ActivityLogType.fileUpload, It.IsAny<object>(), null, default));
 
             // test
-            var controller = new UserController
-            {
-                FileManagement = fileManagement.Object,
-            };
+            var controller = new UserController();
+            moqs.SetupController(controller);
             var result = await controller.GetUploadUrl(parameter, default);
 
             // verify
-            Mock.VerifyAll(fileManagement);
-            fileManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             FileUpload resp = AssertHelper.AssertOKResult<FileUpload>(result);
             Assert.AreEqual(10, resp.expiration.Value);
             Assert.AreEqual("user/avatar.jpg", resp.filename);
