@@ -285,6 +285,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>删除活动'{hackathonName}'的一位裁判：{judgeName}</value>
   </data>
+  <data name="ActivityLog_User_fileUpload" xml:space="preserve">
+    <value>上传了一个文件。</value>
+  </data>
   <data name="ActivityLog_User_joinTeam" xml:space="preserve">
     <value>参与活动“{hackathonName}”并申请加入团队"{teamName}".</value>
   </data>

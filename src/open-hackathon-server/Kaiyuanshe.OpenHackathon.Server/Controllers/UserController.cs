@@ -105,9 +105,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #region GetUploadUrl
         /// <summary>
         /// Get file URLs including a readOnly url and a writable URL to upload.
-        /// Follow https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob to upload the file after get Sas Token.
-        /// Basically PUT the file content to `uploadUrl`with required headers.
         /// </summary>
+        /// <remarks>
+        /// The readOnly `url` is for website rendering. The `uploadUrl` which contains a SAS token is for client to upload the file.
+        /// Follow https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob to upload the file after get Sas Token.
+        /// Basically PUT the file content to `uploadUrl`with required headers. 
+        /// </remarks>
         /// <returns>an object contains and URL for upload and an URL for anonymous read.</returns>
         /// <response code="200">Success. The response contains and URL for upload and an URL for anonymous read.</response>
         [HttpPost]
@@ -120,6 +123,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             var result = await FileManagement.GetUploadUrlAsync(User, parameter, cancellationToken);
+            var args = new
+            {
+                userName = CurrentUserDisplayName
+            };
+            await ActivityLogManagement.LogUserActivity(CurrentUserId, null, CurrentUserId, ActivityLogType.fileUpload, args, null, cancellationToken);
             return Ok(result);
         }
         #endregion

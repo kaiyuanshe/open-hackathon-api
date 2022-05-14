@@ -502,6 +502,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uploaded a new file..
+        /// </summary>
+        internal static string ActivityLog_User_fileUpload {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_fileUpload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Requested to join team &quot;{teamName}&quot; in hackathon &quot;{hackathonName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_joinTeam {
