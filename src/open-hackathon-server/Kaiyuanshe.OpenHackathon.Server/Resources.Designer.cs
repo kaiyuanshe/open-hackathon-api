@@ -79,6 +79,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The hackathon becomes ReadOnly..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_archiveHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_archiveHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A new award &quot;{awardName}&quot; is created by &quot;{userName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_createAward {
@@ -232,6 +241,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The hackathon becomes Writable..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_unarchiveHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_unarchiveHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updated by user: {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateHackathon {
@@ -363,6 +381,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_approveHackahton {
             get {
                 return ResourceManager.GetString("ActivityLog_User_approveHackahton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated hackathon &quot;{hackathonName}&quot; as ReadOnly..
+        /// </summary>
+        internal static string ActivityLog_User_archiveHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_archiveHackathon", resourceCulture);
             }
         }
         
@@ -534,6 +561,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_publishHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_publishHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated hackathon &quot;{hackathonName}&quot; as Writable..
+        /// </summary>
+        internal static string ActivityLog_User_unarchiveHackathon {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_unarchiveHackathon", resourceCulture);
             }
         }
         
