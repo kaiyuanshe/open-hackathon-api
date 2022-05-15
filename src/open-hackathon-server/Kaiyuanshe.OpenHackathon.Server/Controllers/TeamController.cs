@@ -1189,6 +1189,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Update an existing team work
         /// </summary>
+        /// /// <remarks>
+        /// Update a team work. All approved team members are allowed to create or update a work. <br />
+        /// A team work can be an image, a website, a PPT/Doc and so on. Be sure to input an valid URI. <br />
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -1242,6 +1246,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.TeamWork_NotFound);
             }
             teamWorkEntity = await WorkManagement.UpdateTeamWorkAsync(teamWorkEntity, parameter, cancellationToken);
+            var args = new
+            {
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                memberName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.updateTeamWork, args, cancellationToken);
+
             return Ok(ResponseBuilder.BuildTeamWork(teamWorkEntity));
         }
         #endregion
