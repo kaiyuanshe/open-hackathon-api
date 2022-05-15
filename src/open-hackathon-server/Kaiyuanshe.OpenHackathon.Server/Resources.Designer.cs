@@ -286,6 +286,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; updated a work..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invited a new team member &quot;{memberName}&quot; by admin &quot;{adminName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_addTeamMember {
@@ -363,6 +372,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_updateTeamMemberRole {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_updateTeamMemberRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member &quot;{memberName}&quot; updated a team work..
+        /// </summary>
+        internal static string ActivityLog_Team_updateTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_updateTeamWork", resourceCulture);
             }
         }
         
@@ -606,6 +624,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateTeamMemberRole {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateTeamMemberRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated a work of team &quot;{teamName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateTeamWork", resourceCulture);
             }
         }
         
