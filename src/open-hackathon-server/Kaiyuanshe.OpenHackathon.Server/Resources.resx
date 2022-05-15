@@ -180,6 +180,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>The hackathon becomes Writable.</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateEnrollment" xml:space="preserve">
+    <value>Enrollment info of user "{userName}" updated.</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>Updated by user: {userName}.</value>
   </data>
@@ -239,6 +242,9 @@
   </data>
   <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
     <value>No longer be an admin of hackathon "{hackathonName}".</value>
+  </data>
+  <data name="ActivityLog_User2_updateEnrollment" xml:space="preserve">
+    <value>Updated enrollment info of user "{userName}" in hackathon "{hackathonName}".</value>
   </data>
   <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
     <value>Info of membership in team "{teamName}" is updated.</value>
@@ -314,6 +320,9 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>Updated hackathon "{hackathonName}" as Writable.</value>
+  </data>
+  <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
+    <value>Enrollment info in hackathon "{hackathonName}" updated.</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
     <value>Updated hackathon: {hackathonName}</value>

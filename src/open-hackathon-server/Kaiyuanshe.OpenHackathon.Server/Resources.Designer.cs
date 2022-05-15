@@ -250,6 +250,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enrollment info of user &quot;{userName}&quot; updated..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updated by user: {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateHackathon {
@@ -592,6 +601,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enrollment info in hackathon &quot;{hackathonName}&quot; updated..
+        /// </summary>
+        internal static string ActivityLog_User_updateEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updated hackathon: {hackathonName}.
         /// </summary>
         internal static string ActivityLog_User_updateHackathon {
@@ -678,6 +696,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User2_deleteHackathonAdmin {
             get {
                 return ResourceManager.GetString("ActivityLog_User2_deleteHackathonAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated enrollment info of user &quot;{userName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User2_updateEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User2_updateEnrollment", resourceCulture);
             }
         }
         

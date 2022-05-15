@@ -69,15 +69,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             else
             {
                 // update
-                return await UpdateInternalAsync(enrollment, parameter, cancellationToken);
+                return await UpdateInternalAsync(hackathon, enrollment, parameter, cancellationToken);
             }
         }
         #endregion
 
         #region Update
         /// <summary>
-        /// Update a enrollment. Cannot update the status, must call approve/reject API to update the status.
+        /// Update a enrollment. 
         /// </summary>
+        /// <remarks>
+        /// Update a enrollment. The enrolled user or hackathon admins can update a enrollment.
+        /// Note that the status cannot be updated by this API, must call approve/reject API to update the status.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -115,11 +119,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(string.Format(Resources.Enrollment_NotFound, userId, hackathonName));
             }
 
-            return await UpdateInternalAsync(enrollment, parameter, cancellationToken);
+            return await UpdateInternalAsync(hackathon, enrollment, parameter, cancellationToken);
         }
 
 
-        private async Task<object> UpdateInternalAsync(EnrollmentEntity existing, Enrollment request, CancellationToken cancellationToken)
+        private async Task<object> UpdateInternalAsync(HackathonEntity hackathon, EnrollmentEntity existing, Enrollment request, CancellationToken cancellationToken)
         {
             var extensions = existing.Extensions.Merge(request.extensions);
             if (extensions.Length > Enrollment.MaxExtensions)
@@ -128,12 +132,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             var enrollment = await EnrollmentManagement.UpdateEnrollmentAsync(existing, request, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var args = new
             {
-                ActivityLogType = ActivityLogType.updateEnrollment.ToString(),
-                HackathonName = enrollment.HackathonName,
-                OperatorId = CurrentUserId,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+            };
+            if (enrollment.UserId == CurrentUserId)
+            {
+                await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.updateEnrollment, args, cancellationToken);
+            }
+            else
+            {
+                await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.updateEnrollment, args, null, cancellationToken);
+                await ActivityLogManagement.LogUserActivity(CurrentUserId, hackathon.Name, CurrentUserId, ActivityLogType.updateEnrollment, args, nameof(Resources.ActivityLog_User2_updateEnrollment), cancellationToken);
+                await ActivityLogManagement.LogUserActivity(enrollment.UserId, hackathon.Name, CurrentUserId, ActivityLogType.updateEnrollment, args, null, cancellationToken);
+            }
             var user = await UserManagement.GetUserByIdAsync(existing.UserId, cancellationToken);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
