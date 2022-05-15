@@ -180,6 +180,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>活动进入可读写状态。</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateEnrollment" xml:space="preserve">
+    <value>更新了用户"{userName}"的注册信息。</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>{userName}修改了活动。</value>
   </data>
@@ -239,6 +242,9 @@
   </data>
   <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
     <value>不再担任活动"{hackathonName}"的管理员。</value>
+  </data>
+  <data name="ActivityLog_User2_updateEnrollment" xml:space="preserve">
+    <value>更新了用户"{userName}"在活动"{hackathonName}"的注册信息。</value>
   </data>
   <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
     <value>在团队“{teamName}”的个人信息已更新。</value>
@@ -314,6 +320,9 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>修改活动"{hackathonName}"为可读写。</value>
+  </data>
+  <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
+    <value>活动"{hackathonName}"的注册信息已更新。</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
     <value>修改了活动：{hackathonName}</value>
