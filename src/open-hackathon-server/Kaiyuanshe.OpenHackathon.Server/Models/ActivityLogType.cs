@@ -23,6 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         publishHackathon, // request publish
         approveHackahton, // approve the publish request
         archiveHackathon, // make it read-only
+        unarchiveHackathon, // make it writable
 
         // hackathon Admin
         createHackathonAdmin,

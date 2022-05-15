@@ -746,7 +746,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [TestCase(false)]
         public async Task UpdateReadonly(bool readOnly)
         {
-            HackathonEntity entity = new HackathonEntity { DisplayName = "dpn" };
+            HackathonEntity entity = new HackathonEntity { DisplayName = "dpn", PartitionKey = "pk" };
             var role = new HackathonRoles { isAdmin = true };
 
             // mock
@@ -759,9 +759,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 })
                 .ReturnsAsync(entity);
             moqs.HackathonManagement.Setup(h => h.GetHackathonRolesAsync(entity, null, default)).ReturnsAsync(role);
-            moqs.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.archiveHackathon.ToString()
-                && a.Message == "dpn"), default));
+            var logType = readOnly ? ActivityLogType.archiveHackathon : ActivityLogType.unarchiveHackathon;
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("pk", "", logType, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "pk", "", logType, It.IsAny<object>(), null, default));
 
             // test
             var controller = new HackathonController();
@@ -769,10 +769,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.UpdateReadonly("Hack", readOnly, default);
 
             // verify
-            Mock.VerifyAll(moqs.HackathonManagement, moqs.ActivityLogManagement);
-            moqs.HackathonManagement.VerifyNoOtherCalls();
-            moqs.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Hackathon>(result);
             Assert.AreEqual(readOnly, resp.readOnly);
         }

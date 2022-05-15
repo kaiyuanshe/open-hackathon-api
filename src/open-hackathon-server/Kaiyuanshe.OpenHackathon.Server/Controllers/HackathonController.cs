@@ -424,12 +424,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region UpdateReadOnly
         /// <summary>
-        /// Mark a hackathon as Readnly or not Readonly. 
-        /// If a hackathon is Readonly, it cannot be updated any more. All PUT/PATCH/DELETE operations on hackathon and its teams, awards, templates etc are forbidden.
-        /// The GET APIs are still available.  Open hackathon platform admins can call this API again to remove the Readonly mode.
+        /// Mark a hackathon as Readnly or Writable. 
         /// </summary>
+        /// <remarks>
+        /// A hackathon is writable by default.
+        /// If a hackathon is updated to Readonly, it cannot be updated any more. 
+        /// All PUT/PATCH/DELETE operations on hackathon and its teams, awards, templates etc are forbidden.
+        /// The GET APIs are still available.  Open hackathon platform admins can call this API again to remove the Readonly mode.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="readOnly">true(default) or false. Set to true to make it read-only. false to remove the read-only state.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>the hackathon</returns>
         [HttpPost]
@@ -439,8 +444,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [Authorize(Policy = AuthConstant.Policy.PlatformAdministrator)]
         public async Task<object> UpdateReadonly(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
-            [FromQuery, Required] bool readOnly,
-            CancellationToken cancellationToken)
+            [FromQuery] bool readOnly = true,
+            CancellationToken cancellationToken = default)
         {
             // validate hackathon
             HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
@@ -457,13 +462,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonReadOnlyAsync(hackathon, readOnly, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.archiveHackathon.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = hackathon.DisplayName,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+            };
+            ActivityLogType logType = readOnly ? ActivityLogType.archiveHackathon : ActivityLogType.unarchiveHackathon;
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, logType, logArgs, cancellationToken);
 
             // resp
             var roles = await HackathonManagement.GetHackathonRolesAsync(hackathon, User, cancellationToken);

@@ -123,6 +123,9 @@
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
+  <data name="ActivityLog_Hackathon_archiveHackathon" xml:space="preserve">
+    <value>活动进入只读状态。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>管理员"{userName}"添加了新的奖项"{awardName}"。</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>活动正在上线，等待审核中。提交者：{userName}</value>
+  </data>
+  <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
+    <value>活动进入可读写状态。</value>
   </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>{userName}修改了活动。</value>
@@ -240,6 +246,9 @@
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>批准并发布活动：{hackathonName}</value>
   </data>
+  <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
+    <value>修改活动"{hackathonName}"为只读。</value>
+  </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>为活动“{hackathonName}”添加了新奖项“{awardName}”。</value>
   </data>
@@ -296,6 +305,9 @@
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>申请活动上线：{hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
+    <value>修改活动"{hackathonName}"为可读写。</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
     <value>修改了活动：{hackathonName}</value>

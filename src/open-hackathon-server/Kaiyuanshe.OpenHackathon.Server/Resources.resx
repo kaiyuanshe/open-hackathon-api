@@ -123,6 +123,9 @@
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>Hackathon is approved by an admin and becomes online.</value>
   </data>
+  <data name="ActivityLog_Hackathon_archiveHackathon" xml:space="preserve">
+    <value>The hackathon becomes ReadOnly.</value>
+  </data>
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>A new award "{awardName}" is created by "{userName}".</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>Ready to go online, waiting for approval. Requested by: {userName}</value>
+  </data>
+  <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
+    <value>The hackathon becomes Writable.</value>
   </data>
   <data name="ActivityLog_Hackathon_updateHackathon" xml:space="preserve">
     <value>Updated by user: {userName}.</value>
@@ -240,6 +246,9 @@
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>Approved and published hackathon: {hackathonName}</value>
   </data>
+  <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
+    <value>Updated hackathon "{hackathonName}" as ReadOnly.</value>
+  </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>Created a new award "{awardName}" for hackathon "{hackathonName}".</value>
   </data>
@@ -296,6 +305,9 @@
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>Requested to publish hackathon: {hackathonName}</value>
+  </data>
+  <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
+    <value>Updated hackathon "{hackathonName}" as Writable.</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
     <value>Updated hackathon: {hackathonName}</value>
