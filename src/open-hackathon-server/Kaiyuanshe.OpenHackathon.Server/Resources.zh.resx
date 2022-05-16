@@ -174,6 +174,9 @@
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
   </data>
+  <data name="ActivityLog_Hackathon_leaveTeam" xml:space="preserve">
+    <value>成员"{memberName}"离开了团队"{teamName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>活动正在上线，等待审核中。提交者：{userName}</value>
   </data>
@@ -219,6 +222,9 @@
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队。</value>
   </data>
+  <data name="ActivityLog_Team_leaveTeam" xml:space="preserve">
+    <value>成员"{memberName}"离开了团队。</value>
+  </data>
   <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
     <value>成员“{memberName}”的信息已更新。</value>
   </data>
@@ -229,7 +235,7 @@
     <value>成员"{memberName}"修改了上传的作品。</value>
   </data>
   <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
-    <value>成为了团队"{teamName}"的一员。</value>
+    <value>[{hackathonName}]成为了团队"{teamName}"的一员。</value>
   </data>
   <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
     <value>参与活动"{hackathonName}"并获得了"{awardName}"。</value>
@@ -289,7 +295,7 @@
     <value>为活动"{hackathonName}"添加了新的评分维度"{ratingKind}"。</value>
   </data>
   <data name="ActivityLog_User_createTeam" xml:space="preserve">
-    <value>在活动'{hackathonName}'中创建了团队'{teamName}'。</value>
+    <value>[{hackathonName}]创建了新团队'{teamName}'。</value>
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
     <value>在活动"{hackathonName}"中为团队“{teamName}”上传了一件新作品。</value>
@@ -310,7 +316,10 @@
     <value>上传了一个文件。</value>
   </data>
   <data name="ActivityLog_User_joinTeam" xml:space="preserve">
-    <value>参与活动“{hackathonName}”并申请加入团队"{teamName}".</value>
+    <value>[{hackathonName}]申请加入团队"{teamName}"。</value>
+  </data>
+  <data name="ActivityLog_User_leaveTeam" xml:space="preserve">
+    <value>[{hackathonName}]离开了团队"{teamName}"。</value>
   </data>
   <data name="ActivityLog_User_login" xml:space="preserve">
     <value>登陆成功。</value>

@@ -37,6 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         addTeamMember,
         updateTeamMember,
         updateTeamMemberRole,
+        leaveTeam,
         deleteTeamMember,
         createTeamWork,
         updateTeamWork,
