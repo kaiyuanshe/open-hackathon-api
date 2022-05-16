@@ -177,15 +177,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
     }
 
+    [Obsolete]
     public static class IActivityLogManagementExtensions
     {
+        [Obsolete]
         public static async Task OnHackathonEvent(this IActivityLogManagement activityLogManagement,
             string hackathonName, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
         }
-
+        
+        [Obsolete]
         public static async Task OnTeamEvent(this IActivityLogManagement activityLogManagement,
             string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
         {
@@ -194,6 +197,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
         }
 
+        [Obsolete]
         public static async Task OnTeamMemberEvent(this IActivityLogManagement activityLogManagement,
             string hackathonName, string teamId, string memberId, string operatorId, ActivityLogType logType, object args, string resourceKeyForMember, CancellationToken cancellationToken)
         {
@@ -203,6 +207,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             await activityLogManagement.LogUserActivity(memberId, hackathonName, operatorId, logType, args, resourceKeyForMember ?? "placeholder", cancellationToken);
         }
 
+        [Obsolete]
         public static async Task OnUserEvent(this IActivityLogManagement activityLogManagement,
            string hackathonName, string operatorId, string anotherUserId, ActivityLogType logType,
            object args, string resourceKeyForAnotherUser = null, CancellationToken cancellationToken = default)

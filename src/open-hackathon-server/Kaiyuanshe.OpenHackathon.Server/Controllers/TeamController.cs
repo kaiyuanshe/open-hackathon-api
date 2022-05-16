@@ -99,7 +99,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 teamName = teamEntity.DisplayName,
                 userName = CurrentUserDisplayName,
             };
-            await ActivityLogManagement.OnTeamEvent(hackathon.Name, teamEntity.Id, CurrentUserId, ActivityLogType.createTeam, args, cancellationToken);
+            await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
+            await ActivityLogManagement.LogTeamActivity(hackathon.Name, teamEntity.Id, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
+            await ActivityLogManagement.LogUserActivity(CurrentUserId, hackathon.Name, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
 
             var creator = await GetCurrentUserInfo(cancellationToken);
             return Ok(ResponseBuilder.BuildTeam(teamEntity, creator));
@@ -546,8 +548,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 }
                 else
                 {
-                    await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
-                        ActivityLogType.joinTeam, args, cancellationToken);
+                    await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
+                    await ActivityLogManagement.LogTeamActivity(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
+                    await ActivityLogManagement.LogUserActivity(CurrentUserId, hackathon.Name, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
                 }
             }
             else
@@ -784,7 +787,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region LeaveTeam
         /// <summary>
-        /// Leave a team
+        /// Leave a team.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -814,7 +817,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Validate team
-            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
+            var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);
             var teamValidateOptions = new ValidateTeamOptions
             {
             };
@@ -824,7 +827,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Delete team member
-            return await DeleteMemberInternalAsync(hackathonName.ToLower(), teamId.ToLower(), CurrentUserId, cancellationToken);
+            return await DeleteMemberInternalAsync(hackathon, team, CurrentUserId, cancellationToken);
         }
         #endregion
 
@@ -873,20 +876,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Delete team member
-            return await DeleteMemberInternalAsync(hackathonName.ToLower(), teamId.ToLower(), userId, cancellationToken);
+            return await DeleteMemberInternalAsync(hackathon, team, userId, cancellationToken);
         }
 
-        private async Task<object> DeleteMemberInternalAsync(string hackathonName, string teamId, string userId, CancellationToken cancellationToken)
+        private async Task<object> DeleteMemberInternalAsync(HackathonEntity hackathon, TeamEntity team, string userId, CancellationToken cancellationToken)
         {
-            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName, userId, cancellationToken);
+            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathon.Name, userId, cancellationToken);
             if (teamMember == null)
             {
                 // deleted already
                 return NoContent();
             }
 
-            // one of the admins must be the last person who leaves the team, to ensure there is at least one admin at any time.
-            var members = await TeamManagement.ListTeamMembersAsync(hackathonName, teamId, cancellationToken);
+            // Admin must be the last person who leaves the team, to ensure there is at least one admin at any time.
+            var members = await TeamManagement.ListTeamMembersAsync(hackathon.Name, team.Id, cancellationToken);
             var admins = members.Where(m => m.Role == TeamMemberRole.Admin && m.Status == TeamMemberStatus.approved);
             if (admins.Count() == 1 && members.Count() > 1 && admins.Single().UserId == userId)
             {
@@ -895,6 +898,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // remove it
             await TeamManagement.DeleteTeamMemberAsync(teamMember, cancellationToken);
+            var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            var logArgs = new
+            {
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                memberName = memberInfo.GetDisplayName(),
+            };
+            if (userId == CurrentUserId)
+            {
+                await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
+                await ActivityLogManagement.LogTeamActivity(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
+                await ActivityLogManagement.LogUserActivity(userId, hackathon.Name, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
+            }
+
             return NoContent();
         }
         #endregion

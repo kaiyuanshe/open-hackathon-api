@@ -232,6 +232,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Member &quot;{memberName}&quot; left team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_leaveTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_leaveTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready to go online, waiting for approval. Requested by: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_publishHackathon {
@@ -367,6 +376,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Member &quot;{memberName}&quot; left the team..
+        /// </summary>
+        internal static string ActivityLog_Team_leaveTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_leaveTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Info of member &quot;{memberName}&quot; is updated..
         /// </summary>
         internal static string ActivityLog_Team_updateTeamMember {
@@ -394,7 +412,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Added a new memeber &quot;{memberName}&quot; to team &quot;{teamName}&quot;..
+        ///   Looks up a localized string similar to [{hackathonName}]Added a new memeber &quot;{memberName}&quot; to team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_addTeamMember {
             get {
@@ -502,7 +520,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created a team &apos;{teamName}&apos; in hackathon: {hackathonName}..
+        ///   Looks up a localized string similar to [{hackathonName}]Created a new team &apos;{teamName}&apos;..
         /// </summary>
         internal static string ActivityLog_User_createTeam {
             get {
@@ -565,11 +583,20 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Requested to join team &quot;{teamName}&quot; in hackathon &quot;{hackathonName}&quot;..
+        ///   Looks up a localized string similar to [{hackathonName}]Requested to join team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_joinTeam {
             get {
                 return ResourceManager.GetString("ActivityLog_User_joinTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Left team &quot;{memberName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_leaveTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_leaveTeam", resourceCulture);
             }
         }
         

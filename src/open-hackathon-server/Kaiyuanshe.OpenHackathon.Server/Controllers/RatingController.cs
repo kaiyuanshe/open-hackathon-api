@@ -276,6 +276,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region BuildRatingResp
         private async Task<Rating> BuildRatingResp(RatingEntity ratingEntity,
             UserInfo judge = null,
             TeamEntity teamEntity = null,
@@ -303,6 +304,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var rating = ResponseBuilder.BuildRating(ratingEntity, judge, team, kind);
             return rating;
         }
+        #endregion
 
         #region CreateRating
         /// <summary>
