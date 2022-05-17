@@ -56,7 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(adminEntity);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createHackathonAdmin, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.createHackathonAdmin, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("rk", "foo", It.IsAny<string>(), ActivityLogType.createHackathonAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_createHackathonAdmin), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("rk", "foo", It.IsAny<string>(), ActivityLogType.createHackathonAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User_createHackathonAdmin2), default));
 
             var controller = new AdminController();
             moqs.SetupController(controller);
@@ -301,7 +301,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(new UserInfo());
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_deleteHackathonAdmin), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", It.IsAny<string>(), ActivityLogType.deleteHackathonAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteHackathonAdmin2), default));
 
             var controller = new AdminController();
             moqs.SetupController(controller);

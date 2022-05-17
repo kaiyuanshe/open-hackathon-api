@@ -368,8 +368,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             };
             if (awardEntity.Target == AwardTarget.individual)
             {
-                await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, parameter.assigneeId,
-                    ActivityLogType.createAwardAssignmentIndividual, logArgs, nameof(Resources.ActivityLog_User2_createAwardAssignmentIndividual), cancellationToken);
+                await ActivityLogManagement.OnUserEvent(hackathon.Name, parameter.assigneeId, CurrentUserId,
+                    ActivityLogType.createAwardAssignmentIndividual, logArgs,
+                    nameof(Resources.ActivityLog_User_createAwardAssignmentIndividual2), null, cancellationToken);
             }
             else
             {
@@ -679,8 +680,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             };
             if (awardEntity.Target == AwardTarget.individual)
             {
-                await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, assignment.AssigneeId,
-                    ActivityLogType.deleteAwardAssignment, logArgs, nameof(Resources.ActivityLog_User2_deleteAwardAssignment), cancellationToken);
+                await ActivityLogManagement.OnUserEvent(hackathon.Name, assignment.AssigneeId, CurrentUserId,
+                    ActivityLogType.deleteAwardAssignment, logArgs,
+                    nameof(Resources.ActivityLog_User_deleteAwardAssignment2), null, cancellationToken);
             }
             else
             {

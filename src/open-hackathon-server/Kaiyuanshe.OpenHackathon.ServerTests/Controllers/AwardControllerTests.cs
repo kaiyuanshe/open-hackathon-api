@@ -630,7 +630,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("euid", default)).ReturnsAsync(user);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.createAwardAssignmentIndividual, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.createAwardAssignmentIndividual, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("userId", "foo", It.IsAny<string>(), ActivityLogType.createAwardAssignmentIndividual, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_createAwardAssignmentIndividual), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("userId", "foo", It.IsAny<string>(), ActivityLogType.createAwardAssignmentIndividual, It.IsAny<object>(), nameof(Resources.ActivityLog_User_createAwardAssignmentIndividual2), default));
 
             var controller = new AwardController();
             moqs.SetupController(controller);
@@ -776,7 +776,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 {
                     moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
                     moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), null, default));
-                    moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_deleteAwardAssignment), default));
+                    moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", It.IsAny<string>(), ActivityLogType.deleteAwardAssignment, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteAwardAssignment2), default));
                 }
             }
 

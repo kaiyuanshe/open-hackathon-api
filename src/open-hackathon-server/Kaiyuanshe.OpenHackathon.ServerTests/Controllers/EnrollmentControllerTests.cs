@@ -220,7 +220,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.EnrollmentManagement.Setup(p => p.UpdateEnrollmentAsync(enrollment, request, default)).ReturnsAsync(enrollment);
             moqs.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateEnrollment), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateEnrollment2), default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("rk", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), null, default));
 
             // test
@@ -333,7 +333,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateEnrollment), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateEnrollment2), default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "test2", "", ActivityLogType.updateEnrollment, It.IsAny<object>(), null, default));
 
             // test
