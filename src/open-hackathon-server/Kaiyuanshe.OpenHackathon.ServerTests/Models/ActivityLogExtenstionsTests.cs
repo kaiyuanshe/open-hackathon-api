@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.User,
                 },
                 new { hackathonName = "hack" },
-                "Created a new hackathon: hack");
+                "[hack]Created a new hackathon: hack");
         }
 
         [Test, TestCaseSource(nameof(GenerateMessageTestData))]

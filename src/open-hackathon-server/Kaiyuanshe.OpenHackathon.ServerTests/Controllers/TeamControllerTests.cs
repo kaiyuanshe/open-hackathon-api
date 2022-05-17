@@ -847,7 +847,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateTeamMember), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateTeamMember2), default));
 
             // test
             var controller = new TeamController();
@@ -894,7 +894,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.addTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.addTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.addTeamMember, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.addTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_addTeamMember), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.addTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_addTeamMember2), default));
 
             // test
             var controller = new TeamController();
@@ -970,7 +970,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateTeamMember), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateTeamMember2), default));
 
             // test
             var controller = new TeamController();
@@ -1103,7 +1103,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", It.IsAny<string>(), ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateTeamMember), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateTeamMember2), default));
 
             // run
             var controller = new TeamController();
@@ -1456,9 +1456,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
             moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
             moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(memberEntity, default));
-            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator))
-                .ReturnsAsync(authResult);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(memberInfo);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteTeamMember2), default));
 
             // run
             var controller = new TeamController();

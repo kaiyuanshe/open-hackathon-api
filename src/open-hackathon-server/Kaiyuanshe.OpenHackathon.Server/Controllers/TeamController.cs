@@ -99,9 +99,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 teamName = teamEntity.DisplayName,
                 userName = CurrentUserDisplayName,
             };
-            await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
-            await ActivityLogManagement.LogTeamActivity(hackathon.Name, teamEntity.Id, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
-            await ActivityLogManagement.LogUserActivity(CurrentUserId, hackathon.Name, CurrentUserId, ActivityLogType.createTeam, args, null, cancellationToken);
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, teamEntity.Id, CurrentUserId,
+                 ActivityLogType.createTeam, args, cancellationToken);
 
             var creator = await GetCurrentUserInfo(cancellationToken);
             return Ok(ResponseBuilder.BuildTeam(teamEntity, creator));
@@ -540,17 +539,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     memberName = memberInfo.GetDisplayName(),
                     adminName = CurrentUserDisplayName,
                 };
-                if (teamAdminRequired)
+                if (userId != CurrentUserId)
                 {
-                    await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
-                        CurrentUserId, ActivityLogType.addTeamMember, args,
-                        nameof(Resources.ActivityLog_User2_addTeamMember), cancellationToken);
+                    await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId, CurrentUserId,
+                         ActivityLogType.addTeamMember, args,
+                         nameof(Resources.ActivityLog_User_addTeamMember2), null, cancellationToken);
                 }
                 else
                 {
-                    await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
-                    await ActivityLogManagement.LogTeamActivity(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
-                    await ActivityLogManagement.LogUserActivity(CurrentUserId, hackathon.Name, CurrentUserId, ActivityLogType.joinTeam, args, null, cancellationToken);
+                    await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.joinTeam, args, cancellationToken);
                 }
             }
             else
@@ -568,7 +565,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 };
                 await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
                     CurrentUserId, ActivityLogType.updateTeamMember, args,
-                    nameof(Resources.ActivityLog_User2_updateTeamMember), cancellationToken);
+                    nameof(Resources.ActivityLog_User_updateTeamMember2), null, cancellationToken);
             }
 
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, memberInfo));
@@ -634,12 +631,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
             var args = new
             {
+                hackathonName = hackathon.DisplayName,
                 memberName = user.GetDisplayName(),
                 teamName = team.DisplayName,
             };
-            await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
-                CurrentUserId, ActivityLogType.updateTeamMember, args,
-                nameof(Resources.ActivityLog_User2_updateTeamMember), cancellationToken);
+
+            await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId, CurrentUserId,
+                ActivityLogType.updateTeamMember, args,
+                nameof(Resources.ActivityLog_User_updateTeamMember2), null, cancellationToken);
 
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
@@ -779,7 +778,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             };
             await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
                 CurrentUserId, ActivityLogType.updateTeamMemberRole, args,
-                nameof(Resources.ActivityLog_User2_updateTeamMemberRole), cancellationToken);
+                nameof(Resources.ActivityLog_User2_updateTeamMemberRole), null, cancellationToken);
 
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, memberInfo));
         }
@@ -865,7 +864,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Validate team
-            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
+            var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);
             var teamValidateOptions = new ValidateTeamOptions
             {
                 TeamAdminRequired = true,
@@ -904,12 +903,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 hackathonName = hackathon.DisplayName,
                 teamName = team.DisplayName,
                 memberName = memberInfo.GetDisplayName(),
+                operatorName = CurrentUserDisplayName,
             };
             if (userId == CurrentUserId)
             {
-                await ActivityLogManagement.LogHackathonActivity(hackathon.Name, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
-                await ActivityLogManagement.LogTeamActivity(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
-                await ActivityLogManagement.LogUserActivity(userId, hackathon.Name, CurrentUserId, ActivityLogType.leaveTeam, logArgs, null, cancellationToken);
+                await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
+                     ActivityLogType.leaveTeam, logArgs, cancellationToken);
+            }
+            else
+            {
+                await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId, CurrentUserId,
+                     ActivityLogType.deleteTeamMember, logArgs,
+                     nameof(Resources.ActivityLog_User_deleteTeamMember2), null, cancellationToken);
             }
 
             return NoContent();

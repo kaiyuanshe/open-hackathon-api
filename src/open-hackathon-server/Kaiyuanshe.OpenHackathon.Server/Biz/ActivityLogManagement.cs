@@ -180,41 +180,41 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     [Obsolete]
     public static class IActivityLogManagementExtensions
     {
-        [Obsolete]
         public static async Task OnHackathonEvent(this IActivityLogManagement activityLogManagement,
-            string hackathonName, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
+            string hackathonName, string operatorId, ActivityLogType logType,
+            object args, CancellationToken cancellationToken)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
         }
-        
-        [Obsolete]
+
         public static async Task OnTeamEvent(this IActivityLogManagement activityLogManagement,
-            string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, CancellationToken cancellationToken)
+            string hackathonName, string teamId, string operatorId,
+            ActivityLogType logType, object args, CancellationToken cancellationToken)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogTeamActivity(hackathonName, teamId, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
         }
 
-        [Obsolete]
         public static async Task OnTeamMemberEvent(this IActivityLogManagement activityLogManagement,
-            string hackathonName, string teamId, string memberId, string operatorId, ActivityLogType logType, object args, string resourceKeyForMember, CancellationToken cancellationToken)
+            string hackathonName, string teamId, string memberId,
+            string operatorId, ActivityLogType logType, object args,
+            string resourceKeyOfMember = null, string resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogTeamActivity(hackathonName, teamId, operatorId, logType, args, null, cancellationToken);
-            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
-            await activityLogManagement.LogUserActivity(memberId, hackathonName, operatorId, logType, args, resourceKeyForMember ?? "placeholder", cancellationToken);
+            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, resourceKeyOfOperator, cancellationToken);
+            await activityLogManagement.LogUserActivity(memberId, hackathonName, operatorId, logType, args, resourceKeyOfMember, cancellationToken);
         }
 
-        [Obsolete]
         public static async Task OnUserEvent(this IActivityLogManagement activityLogManagement,
-           string hackathonName, string operatorId, string anotherUserId, ActivityLogType logType,
-           object args, string resourceKeyForAnotherUser = null, CancellationToken cancellationToken = default)
+           string hackathonName, string userId, string operatorId, ActivityLogType logType, object args,
+           string resourceKeyOfUser = null, string resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
-            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, null, cancellationToken);
-            await activityLogManagement.LogUserActivity(anotherUserId, hackathonName, operatorId, logType, args, resourceKeyForAnotherUser ?? "placeholder", cancellationToken);
+            await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, resourceKeyOfOperator, cancellationToken);
+            await activityLogManagement.LogUserActivity(userId, hackathonName, operatorId, logType, args, resourceKeyOfUser, cancellationToken);
         }
     }
 }

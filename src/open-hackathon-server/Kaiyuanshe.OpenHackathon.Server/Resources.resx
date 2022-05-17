@@ -171,6 +171,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>Judge '{judgeName}' is deleted by admin '{userName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
+    <value>One of the admins removed member "{memberName}" from team "{teamName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team "{teamName}".</value>
   </data>
@@ -219,6 +222,9 @@
   <data name="ActivityLog_Team_deleteAwardAssignment" xml:space="preserve">
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
   </data>
+  <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
+    <value>Removed team member "{memberName}" or rejected the membership request.</value>
+  </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team.</value>
   </data>
@@ -234,83 +240,83 @@
   <data name="ActivityLog_Team_updateTeamWork" xml:space="preserve">
     <value>Member "{memberName}" updated a team work.</value>
   </data>
-  <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
-    <value>Added as a new member to team "{teamName}" by "{adminName}".</value>
-  </data>
-  <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
-    <value>Awarded "{awardName}" in hackathon "{hackathonName}."</value>
-  </data>
-  <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
-    <value>Became an admin of hackathon "{hackathonName}".</value>
-  </data>
-  <data name="ActivityLog_User2_deleteAwardAssignment" xml:space="preserve">
-    <value>An assignment on award "{awardName}" is revoked by "{adminName}" in hackathon "{hackathonName}".</value>
-  </data>
-  <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
-    <value>No longer be an admin of hackathon "{hackathonName}".</value>
-  </data>
-  <data name="ActivityLog_User2_updateEnrollment" xml:space="preserve">
-    <value>Updated enrollment info of user "{userName}" in hackathon "{hackathonName}".</value>
-  </data>
-  <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
-    <value>Info of membership in team "{teamName}" is updated.</value>
-  </data>
   <data name="ActivityLog_User2_updateTeamMemberRole" xml:space="preserve">
-    <value>User "{adminName}" updated your role in team "{teamName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]User "{adminName}" updated your role in team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Added a new memeber "{memberName}" to team "{teamName}".</value>
   </data>
+  <data name="ActivityLog_User_addTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]Added as a new member to team "{teamName}" by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
-    <value>Approved and published hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Approved and published hackathon.</value>
   </data>
   <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
-    <value>Updated hackathon "{hackathonName}" as ReadOnly.</value>
+    <value>[{hackathonName}]Updated hackathon to ReadOnly.</value>
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
-    <value>Created a new award "{awardName}" for hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Created a new award "{awardName}".</value>
   </data>
   <data name="ActivityLog_User_createAwardAssignmentIndividual" xml:space="preserve">
-    <value>Awards "{awardName}" to "{userName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Awards "{awardName}" to "{userName}".</value>
+  </data>
+  <data name="ActivityLog_User_createAwardAssignmentIndividual2" xml:space="preserve">
+    <value>[{hackathonName}]Awarded "{awardName}".</value>
   </data>
   <data name="ActivityLog_User_createAwardAssignmentTeam" xml:space="preserve">
-    <value>Awards "{awardName}" to "{teamName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Awards "{awardName}" to "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
-    <value>enrolled in hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]enrolled in hackathon.</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
-    <value>Created a new hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Created a new hackathon: {hackathonName}</value>
   </data>
   <data name="ActivityLog_User_createHackathonAdmin" xml:space="preserve">
-    <value>Created or updated an admin "{adminName}" for hackathon: "{hackathonName}"</value>
+    <value>[{hackathonName}]Created or updated an admin "{adminName}".</value>
+  </data>
+  <data name="ActivityLog_User_createHackathonAdmin2" xml:space="preserve">
+    <value>[{hackathonName}]Became an admin of the hackathon.</value>
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
-    <value>Added a new judge '{judgeName}' for hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Added a new judge '{judgeName}'.</value>
   </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
-    <value>Rated team "{teamName}" on kind "{kindName}" of hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Rated team "{teamName}" on kind "{kindName}".</value>
   </data>
   <data name="ActivityLog_User_createRatingKind" xml:space="preserve">
-    <value>Created a new rating kind '{ratingKind}' for hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Created a new rating kind '{ratingKind}'.</value>
   </data>
   <data name="ActivityLog_User_createTeam" xml:space="preserve">
     <value>[{hackathonName}]Created a new team '{teamName}'.</value>
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
-    <value>Added a new work for team "{teamName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Added a new work for team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
-    <value>Revoked an assignment on award "{awardName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Revoked an assignment on award "{awardName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteAwardAssignment2" xml:space="preserve">
+    <value>[{hackathonName}]An assignment on award "{awardName}" is revoked by "{adminName}".</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
-    <value>Deleted hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Deleted hackathon.</value>
   </data>
   <data name="ActivityLog_User_deleteHackathonAdmin" xml:space="preserve">
-    <value>Deleted an admin '{adminName}' from hackathon '{hackathonName}'</value>
+    <value>[{hackathonName}]Deleted an admin '{adminName}' from hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_deleteHackathonAdmin2" xml:space="preserve">
+    <value>[{hackathonName}]No longer be an admin of the hackathon.</value>
   </data>
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
-    <value>Deleted judge '{judgeName}' of hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Deleted judge '{judgeName}' of the hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
+    <value>[{hackathonName}]Removed member "{memberName}" from team "{teamName}" or rejected the membership request.</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]Removed from team "{teamName}" by user "{operatorName}".</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>Uploaded a new file.</value>
@@ -325,28 +331,34 @@
     <value>Login successfully.</value>
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
-    <value>Requested to publish hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Requested to publish hackathon.</value>
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
-    <value>Updated hackathon "{hackathonName}" as Writable.</value>
+    <value>[{hackathonName}]Updated hackathon as Writable.</value>
   </data>
   <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
-    <value>Enrollment info in hackathon "{hackathonName}" updated.</value>
+    <value>[{hackathonName}]Enrollment info in hackathon "{hackathonName}" updated.</value>
+  </data>
+  <data name="ActivityLog_User_updateEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]Updated enrollment info of user "{userName}".</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
-    <value>Updated hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Updated hackathon.</value>
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
-    <value>Updated judge '{judgeName}' for hackathon: {hackathonName}</value>
+    <value>[{hackathonName}]Updated judge '{judgeName}' for the hackathon.</value>
   </data>
   <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
-    <value>Updated the info of member "{memberName}" in team "{teamName}".</value>
+    <value>[{hackathonName}]Updated the info of member "{memberName}" in team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]Info of membership in team "{teamName}" is updated.</value>
   </data>
   <data name="ActivityLog_User_updateTeamMemberRole" xml:space="preserve">
-    <value>Updated the role of team member "{memberName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Updated the role of team member "{memberName}".</value>
   </data>
   <data name="ActivityLog_User_updateTeamWork" xml:space="preserve">
-    <value>Updated a work of team "{teamName}" in hackathon "{hackathonName}".</value>
+    <value>[{hackathonName}]Updated a work of team "{teamName}".</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>

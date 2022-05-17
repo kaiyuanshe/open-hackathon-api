@@ -171,6 +171,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>管理员'{userName}'删除了活动裁判'{judgeName}'。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
+    <value>管理员移除了团队“{teamName}”的成员"{memberName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
   </data>
@@ -219,6 +222,9 @@
   <data name="ActivityLog_Team_deleteAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
   </data>
+  <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
+    <value>移除了团队成员“{memberName}”或者拒绝了其加入团队的请求。</value>
+  </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队。</value>
   </data>
@@ -234,38 +240,20 @@
   <data name="ActivityLog_Team_updateTeamWork" xml:space="preserve">
     <value>成员"{memberName}"修改了上传的作品。</value>
   </data>
-  <data name="ActivityLog_User2_addTeamMember" xml:space="preserve">
-    <value>[{hackathonName}]成为了团队"{teamName}"的一员。</value>
-  </data>
-  <data name="ActivityLog_User2_createAwardAssignmentIndividual" xml:space="preserve">
-    <value>参与活动"{hackathonName}"并获得了"{awardName}"。</value>
-  </data>
-  <data name="ActivityLog_User2_createHackathonAdmin" xml:space="preserve">
-    <value>成为了活动"{hackathonName}"的管理员。</value>
-  </data>
-  <data name="ActivityLog_User2_deleteAwardAssignment" xml:space="preserve">
-    <value>活动"{hackathonName}"的管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
-  </data>
-  <data name="ActivityLog_User2_deleteHackathonAdmin" xml:space="preserve">
-    <value>不再担任活动"{hackathonName}"的管理员。</value>
-  </data>
-  <data name="ActivityLog_User2_updateEnrollment" xml:space="preserve">
-    <value>更新了用户"{userName}"在活动"{hackathonName}"的注册信息。</value>
-  </data>
-  <data name="ActivityLog_User2_updateTeamMember" xml:space="preserve">
-    <value>在团队“{teamName}”的个人信息已更新。</value>
-  </data>
   <data name="ActivityLog_User2_updateTeamMemberRole" xml:space="preserve">
     <value>用户"{adminName}"调整了您在团队"{teamName}"中的角色。</value>
   </data>
   <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
-    <value>为团队"{teamName}"添加了新成员"{memberName}"。</value>
+    <value>[{hackathonName}]为团队"{teamName}"添加了新成员"{memberName}"。</value>
+  </data>
+  <data name="ActivityLog_User_addTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]成为了团队"{teamName}"的一员。</value>
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
-    <value>批准并发布活动：{hackathonName}</value>
+    <value>[{hackathonName}]批准并发布活动.</value>
   </data>
   <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
-    <value>修改活动"{hackathonName}"为只读。</value>
+    <value>[{hackathonName}]修改活动为只读。</value>
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>为活动“{hackathonName}”添加了新奖项“{awardName}”。</value>
@@ -273,44 +261,62 @@
   <data name="ActivityLog_User_createAwardAssignmentIndividual" xml:space="preserve">
     <value>给用户"{userName}"颁发奖项"{awardName}"，活动名：{hackathonName}。</value>
   </data>
+  <data name="ActivityLog_User_createAwardAssignmentIndividual2" xml:space="preserve">
+    <value>[{hackathonName}]获得了"{awardName}"。</value>
+  </data>
   <data name="ActivityLog_User_createAwardAssignmentTeam" xml:space="preserve">
     <value>给团队“{teamName}”颁发奖项"{awardName}", 活动名：{hackathonName}。</value>
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
-    <value>报名参加活动：{hackathonName}</value>
+    <value>[{hackathonName}]报名参加活动。</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
-    <value>创建了新活动：{hackathonName}</value>
+    <value>[{hackathonName}]创建了新活动：{hackathonName}</value>
   </data>
   <data name="ActivityLog_User_createHackathonAdmin" xml:space="preserve">
-    <value>添加或修改了活动"{hackathonName}"的管理员："{adminName}"。</value>
+    <value>[{hackathonName}]添加或修改了活动的管理员："{adminName}"。</value>
+  </data>
+  <data name="ActivityLog_User_createHackathonAdmin2" xml:space="preserve">
+    <value>[{hackathonName}]成为了活动的管理员。</value>
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
-    <value>为活动'{hackathonName}'添加了一名裁判：'{judgeName}'</value>
+    <value>[{hackathonName}]为活动添加了一名裁判：'{judgeName}'</value>
   </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>给团队"{teamName}"的"{kindName}"打分。活动名称："{hackathonName}"。</value>
   </data>
   <data name="ActivityLog_User_createRatingKind" xml:space="preserve">
-    <value>为活动"{hackathonName}"添加了新的评分维度"{ratingKind}"。</value>
+    <value>[{hackathonName}]为活动添加了新的评分维度"{ratingKind}"。</value>
   </data>
   <data name="ActivityLog_User_createTeam" xml:space="preserve">
     <value>[{hackathonName}]创建了新团队'{teamName}'。</value>
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
-    <value>在活动"{hackathonName}"中为团队“{teamName}”上传了一件新作品。</value>
+    <value>[{hackathonName}]为团队“{teamName}”上传了一件新作品。</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
-    <value>撤销了活动"{hackathonName}"的一项授奖记录："{awardName}"。</value>
+    <value>[{hackathonName}]撤销了活动的一项授奖记录："{awardName}"。</value>
+  </data>
+  <data name="ActivityLog_User_deleteAwardAssignment2" xml:space="preserve">
+    <value>[{hackathonName}]活动管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
-    <value>删除活动:{hackathonName}</value>
+    <value>[{hackathonName}]删除活动。</value>
   </data>
   <data name="ActivityLog_User_deleteHackathonAdmin" xml:space="preserve">
-    <value>删除活动'{hackathonName}'的一名管理员：{adminName}</value>
+    <value>[{hackathonName}]删除活动的一名管理员：{adminName}</value>
+  </data>
+  <data name="ActivityLog_User_deleteHackathonAdmin2" xml:space="preserve">
+    <value>[{hackathonName}]不再担任活动的管理员。</value>
   </data>
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
-    <value>删除活动'{hackathonName}'的一位裁判：{judgeName}</value>
+    <value>[{hackathonName}]删除活动的一位裁判：{judgeName}</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
+    <value>[{hackathonName}]移除了团队"{teamName}"的成员“{memberName}”或者拒绝了其加入团队的请求。</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]被"{operatorName}"移除团队"{teamName}"或者申请加入团队的请求被拒绝。</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>上传了一个文件。</value>
@@ -325,25 +331,31 @@
     <value>登陆成功。</value>
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
-    <value>申请活动上线：{hackathonName}</value>
+    <value>[{hackathonName}]申请活动上线</value>
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
-    <value>修改活动"{hackathonName}"为可读写。</value>
+    <value>[{hackathonName}]修改活动为可读写。</value>
   </data>
   <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
-    <value>活动"{hackathonName}"的注册信息已更新。</value>
+    <value>[{hackathonName}]活动的注册信息已更新。</value>
+  </data>
+  <data name="ActivityLog_User_updateEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]更新了用户"{userName}"的注册信息。</value>
   </data>
   <data name="ActivityLog_User_updateHackathon" xml:space="preserve">
-    <value>修改了活动：{hackathonName}</value>
+    <value>[{hackathonName}]修改了活动信息。</value>
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
-    <value>修改了活动'{hackathonName}'的裁判员信息: {judgeName}</value>
+    <value>[{hackathonName}]修改了裁判员信息: {judgeName}</value>
   </data>
   <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
-    <value>更新了成员“{memberName}”的信息，团队名:"{teamName}"。</value>
+    <value>[{hackathonName}]更新了成员“{memberName}”的信息，团队名:"{teamName}"。</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]在团队“{teamName}”的个人信息已更新。</value>
   </data>
   <data name="ActivityLog_User_updateTeamMemberRole" xml:space="preserve">
-    <value>调整了团队成员"{memberName}"的角色。活动："{hackathonName}"。</value>
+    <value>[{hackathonName}]调整了团队成员"{memberName}"的角色。</value>
   </data>
   <data name="ActivityLog_User_updateTeamWork" xml:space="preserve">
     <value>更新了团队"{teamName}"的作品。</value>

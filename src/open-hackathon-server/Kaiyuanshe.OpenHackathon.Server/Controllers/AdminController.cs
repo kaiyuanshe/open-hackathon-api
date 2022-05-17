@@ -72,7 +72,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userName = CurrentUserDisplayName,
                 adminName = updatedUser.GetDisplayName(),
             };
-            await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, adminEntity.UserId, ActivityLogType.createHackathonAdmin, args, nameof(Resources.ActivityLog_User2_createHackathonAdmin), cancellationToken);
+            await ActivityLogManagement.OnUserEvent(hackathon.Name, adminEntity.UserId, CurrentUserId,
+                ActivityLogType.createHackathonAdmin, args, nameof(Resources.ActivityLog_User_createHackathonAdmin2), null, cancellationToken);
 
             var resp = ResponseBuilder.BuildHackathonAdmin(adminEntity, user);
             return Ok(resp);
@@ -235,7 +236,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userName = CurrentUserDisplayName,
                 adminName = deletedUser.GetDisplayName(),
             };
-            await ActivityLogManagement.OnUserEvent(hackathon.Name, CurrentUserId, adminEntity.UserId, ActivityLogType.deleteHackathonAdmin, args, nameof(Resources.ActivityLog_User2_deleteHackathonAdmin), cancellationToken);
+            await ActivityLogManagement.OnUserEvent(hackathon.Name, adminEntity.UserId, CurrentUserId,
+                ActivityLogType.deleteHackathonAdmin, args,
+                nameof(Resources.ActivityLog_User_deleteHackathonAdmin2), null, cancellationToken);
             return NoContent();
         }
         #endregion
