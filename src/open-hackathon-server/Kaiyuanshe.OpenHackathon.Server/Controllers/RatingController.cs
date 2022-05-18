@@ -627,13 +627,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 }
             }
             await RatingManagement.DeleteRatingAsync(hackathonName.ToLower(), ratingId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.deleteRating.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = ratingEntity.Description,
-            }, cancellationToken);
+                hackathonName = hackathon.Name,
+                judgeName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                 ActivityLogType.deleteRating, logArgs, cancellationToken);
+
             return NoContent();
         }
         #endregion

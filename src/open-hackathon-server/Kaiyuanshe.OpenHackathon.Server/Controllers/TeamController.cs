@@ -778,7 +778,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             };
             await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId,
                 CurrentUserId, ActivityLogType.updateTeamMemberRole, args,
-                nameof(Resources.ActivityLog_User2_updateTeamMemberRole), null, cancellationToken);
+                nameof(Resources.ActivityLog_User_updateTeamMemberRole2), null, cancellationToken);
 
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, memberInfo));
         }
