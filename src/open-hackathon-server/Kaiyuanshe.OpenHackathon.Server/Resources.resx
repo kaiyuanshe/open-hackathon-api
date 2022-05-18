@@ -171,6 +171,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>Judge '{judgeName}' is deleted by admin '{userName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteRating" xml:space="preserve">
+    <value>Judge "{judgeName}" removed a rating.</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>One of the admins removed member "{memberName}" from team "{teamName}".</value>
   </data>
@@ -239,9 +242,6 @@
   </data>
   <data name="ActivityLog_Team_updateTeamWork" xml:space="preserve">
     <value>Member "{memberName}" updated a team work.</value>
-  </data>
-  <data name="ActivityLog_User2_updateTeamMemberRole" xml:space="preserve">
-    <value>[{hackathonName}]User "{adminName}" updated your role in team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_addTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Added a new memeber "{memberName}" to team "{teamName}".</value>
@@ -312,6 +312,9 @@
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>[{hackathonName}]Deleted judge '{judgeName}' of the hackathon.</value>
   </data>
+  <data name="ActivityLog_User_deleteRating" xml:space="preserve">
+    <value>[{hackathonName}]Removed a rating in hackathon.</value>
+  </data>
   <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Removed member "{memberName}" from team "{teamName}" or rejected the membership request.</value>
   </data>
@@ -356,6 +359,9 @@
   </data>
   <data name="ActivityLog_User_updateTeamMemberRole" xml:space="preserve">
     <value>[{hackathonName}]Updated the role of team member "{memberName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateTeamMemberRole2" xml:space="preserve">
+    <value>[{hackathonName}]User "{adminName}" updated your role in team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_updateTeamWork" xml:space="preserve">
     <value>[{hackathonName}]Updated a work of team "{teamName}".</value>

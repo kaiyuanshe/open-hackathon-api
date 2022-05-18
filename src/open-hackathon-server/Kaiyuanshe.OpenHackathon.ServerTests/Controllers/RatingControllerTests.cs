@@ -952,29 +952,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             RatingEntity ratingEntity = null;
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge))
-               .ReturnsAsync(authResult);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge)).ReturnsAsync(authResult);
+            moqs.RatingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
 
             // test
-            var controller = new RatingController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                RatingManagement = ratingManagement.Object,
-            };
+            var controller = new RatingController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteRating("Hack", "rid", default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, authorizationService, ratingManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
 
@@ -986,72 +975,46 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             RatingEntity ratingEntity = new RatingEntity { JudgeId = "user" };
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge))
-               .ReturnsAsync(authResult);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
-            var adminManagement = new Mock<IHackathonAdminManagement>();
-            adminManagement.Setup(a => a.IsHackathonAdmin("hack", It.IsAny<ClaimsPrincipal>(), default)).ReturnsAsync(false);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge)).ReturnsAsync(authResult);
+            moqs.RatingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
+            moqs.HackathonAdminManagement.Setup(a => a.IsHackathonAdmin("hack", It.IsAny<ClaimsPrincipal>(), default)).ReturnsAsync(false);
 
             // test
-            var controller = new RatingController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                RatingManagement = ratingManagement.Object,
-                HackathonAdminManagement = adminManagement.Object,
-            };
+            var controller = new RatingController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteRating("Hack", "rid", default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, authorizationService, ratingManagement, adminManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
-            adminManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 403, Resources.Rating_OnlyCreator);
         }
 
         [Test]
         public async Task DeleteRating_Delete()
         {
-            HackathonEntity hackathon = new HackathonEntity { };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             RatingEntity ratingEntity = new RatingEntity { JudgeId = "user", Description = "desc" };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge))
-               .ReturnsAsync(authResult);
-            mockContext.RatingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
-            mockContext.RatingManagement.Setup(r => r.DeleteRatingAsync("hack", "rid", default));
-            mockContext.HackathonAdminManagement.Setup(a => a.IsHackathonAdmin("hack", It.IsAny<ClaimsPrincipal>(), default)).ReturnsAsync(true);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.deleteRating.ToString()
-                && a.Message == "desc"), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonJudge)).ReturnsAsync(authResult);
+            moqs.RatingManagement.Setup(r => r.GetRatingAsync("hack", "rid", default)).ReturnsAsync(ratingEntity);
+            moqs.RatingManagement.Setup(r => r.DeleteRatingAsync("hack", "rid", default));
+            moqs.HackathonAdminManagement.Setup(a => a.IsHackathonAdmin("hack", It.IsAny<ClaimsPrincipal>(), default)).ReturnsAsync(true);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteRating, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteRating, It.IsAny<object>(), null, default));
 
             // test
             var controller = new RatingController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteRating("Hack", "rid", default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.AuthorizationService,
-                mockContext.RatingManagement,
-                mockContext.HackathonAdminManagement,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.RatingManagement.VerifyNoOtherCalls();
-            mockContext.HackathonAdminManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
         #endregion

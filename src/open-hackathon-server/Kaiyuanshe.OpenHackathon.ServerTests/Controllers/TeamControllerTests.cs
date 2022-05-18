@@ -1253,7 +1253,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), null, default));
-            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), nameof(Resources.ActivityLog_User2_updateTeamMemberRole), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateTeamMemberRole2), default));
 
             // run
             var controller = new TeamController();
