@@ -2257,48 +2257,34 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task DeleteTeamWork(bool firstTime)
         {
             // input
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
-            TeamEntity teamEntity = new TeamEntity { };
-            TeamMemberEntity memberEntity = new TeamMemberEntity { };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "tid" };
+            TeamMemberEntity memberEntity = new TeamMemberEntity { TeamId = "tid" };
             TeamWorkEntity teamWorkEntity = firstTime ? new TeamWorkEntity() : null;
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
-            teamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
-                .ReturnsAsync(authResult);
-
-            var workManagement = new Mock<IWorkManagement>();
-            workManagement.Setup(w => w.GetTeamWorkAsync("hack", "workId", default)).ReturnsAsync(teamWorkEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember)).ReturnsAsync(authResult);
+            moqs.WorkManagement.Setup(w => w.GetTeamWorkAsync("hack", "workId", default)).ReturnsAsync(teamWorkEntity);
             if (firstTime)
             {
-                workManagement.Setup(w => w.DeleteTeamWorkAsync("hack", "workId", default));
+                moqs.WorkManagement.Setup(w => w.DeleteTeamWorkAsync("hack", "workId", default));
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamWork, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamWork, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamWork, It.IsAny<object>(), null, default));
             }
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                TeamManagement = teamManagement.Object,
-                WorkManagement = workManagement.Object,
-                AuthorizationService = authorizationService.Object,
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteTeamWork("Hack", "teamId", "workId", default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, workManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            workManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
         #endregion
