@@ -177,6 +177,9 @@
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>管理员移除了团队“{teamName}”的成员"{memberName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeamWork" xml:space="preserve">
+    <value>团队"{teamName}"删除了一件作品。</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
     <value>移除了团队成员“{memberName}”或者拒绝了其加入团队的请求。</value>
+  </data>
+  <data name="ActivityLog_Team_deleteTeamWork" xml:space="preserve">
+    <value>团队成员"{memberName}"删除了意见作品。</value>
   </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队。</value>
@@ -320,6 +326,9 @@
   </data>
   <data name="ActivityLog_User_deleteTeamMember2" xml:space="preserve">
     <value>[{hackathonName}]被"{operatorName}"移除团队"{teamName}"或者申请加入团队的请求被拒绝。</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamWork" xml:space="preserve">
+    <value>[{hackathonName}]删除了团队"{teamName}"的一件作品。</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>上传了一个文件。</value>

@@ -1402,6 +1402,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Delete an team work by workId
         /// </summary>
+        /// <remarks>
+        /// All approved team members can create/update/delete works of team.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="teamId" example="d1e40c38-cc2a-445f-9eab-60c253256c57">unique Guid of the team. Auto-generated on server side.</param>
@@ -1450,7 +1453,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return NoContent();
             }
+
             await WorkManagement.DeleteTeamWorkAsync(hackathonName.ToLower(), workId, cancellationToken);
+            var args = new
+            {
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                memberName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId, ActivityLogType.deleteTeamWork, args, cancellationToken);
+
             return NoContent();
         }
         #endregion

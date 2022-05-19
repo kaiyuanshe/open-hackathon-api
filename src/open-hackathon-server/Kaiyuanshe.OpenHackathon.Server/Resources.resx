@@ -177,6 +177,9 @@
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>One of the admins removed member "{memberName}" from team "{teamName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeamWork" xml:space="preserve">
+    <value>A team work is removed from team "{teamName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team "{teamName}".</value>
   </data>
@@ -227,6 +230,9 @@
   </data>
   <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
     <value>Removed team member "{memberName}" or rejected the membership request.</value>
+  </data>
+  <data name="ActivityLog_Team_deleteTeamWork" xml:space="preserve">
+    <value>Member "{memberName}" deleted a team work.</value>
   </data>
   <data name="ActivityLog_Team_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team.</value>
@@ -320,6 +326,9 @@
   </data>
   <data name="ActivityLog_User_deleteTeamMember2" xml:space="preserve">
     <value>[{hackathonName}]Removed from team "{teamName}" by user "{operatorName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeamWork" xml:space="preserve">
+    <value>[{hackathonName}]Deleted a team work from from team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>Uploaded a new file.</value>

@@ -241,6 +241,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A team work is removed from team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User &quot;{memberName}&quot; requested to join team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_joinTeam {
@@ -390,6 +399,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_deleteTeamMember {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_deleteTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member &quot;{memberName}&quot; deleted a team work..
+        /// </summary>
+        internal static string ActivityLog_Team_deleteTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_deleteTeamWork", resourceCulture);
             }
         }
         
@@ -669,6 +687,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteTeamMember2 {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteTeamMember2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Deleted a team work from from team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_deleteTeamWork {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteTeamWork", resourceCulture);
             }
         }
         
