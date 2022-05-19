@@ -201,6 +201,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateTeam" xml:space="preserve">
+    <value>Team "{teamName}" updated by user "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateTeamMember" xml:space="preserve">
     <value>Info of member "{memberName}" in team "{teamName}" updated.</value>
   </data>
@@ -239,6 +242,9 @@
   </data>
   <data name="ActivityLog_Team_leaveTeam" xml:space="preserve">
     <value>Member "{memberName}" left the team.</value>
+  </data>
+  <data name="ActivityLog_Team_updateTeam" xml:space="preserve">
+    <value>Team info updated by user "{adminName}".</value>
   </data>
   <data name="ActivityLog_Team_updateTeamMember" xml:space="preserve">
     <value>Info of member "{memberName}" is updated.</value>
@@ -359,6 +365,9 @@
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>[{hackathonName}]Updated judge '{judgeName}' for the hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_updateTeam" xml:space="preserve">
+    <value>[{hackathonName}]Updated team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_updateTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Updated the info of member "{memberName}" in team "{teamName}".</value>
