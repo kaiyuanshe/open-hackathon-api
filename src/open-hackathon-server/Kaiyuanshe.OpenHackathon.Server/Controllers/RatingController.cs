@@ -250,15 +250,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return options.ValidateResult;
             }
 
-            // query and delete judge
-            var entity = await RatingManagement.GetRatingKindAsync(hackathonName.ToLower(), kindId, cancellationToken);
-            if (entity == null)
+            // query and delete ratingKind
+            var ratingKind = await RatingManagement.GetRatingKindAsync(hackathonName.ToLower(), kindId, cancellationToken);
+            if (ratingKind == null)
             {
                 return NoContent();
             }
 
             // valiate no ratings
-            var ratingOptions = new RatingQueryOptions { RatingKindId = entity.Id };
+            var ratingOptions = new RatingQueryOptions { RatingKindId = ratingKind.Id };
             var hasRating = await RatingManagement.IsRatingCountGreaterThanZero(hackathonName.ToLower(), ratingOptions, cancellationToken);
             if (hasRating)
             {
@@ -266,12 +266,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             await RatingManagement.DeleteRatingKindAsync(hackathonName.ToLower(), kindId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.deleteRatingKind.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                ratingKind = ratingKind.Name,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                ActivityLogType.deleteRatingKind, logArgs, cancellationToken);
             return NoContent();
         }
         #endregion
