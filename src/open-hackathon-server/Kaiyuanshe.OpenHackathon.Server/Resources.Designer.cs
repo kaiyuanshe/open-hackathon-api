@@ -70,6 +70,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enrollment request of user &quot;{enrolledUser}&quot; is approved by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_approveEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_approveEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hackathon is approved by an admin and becomes online..
         /// </summary>
         internal static string ActivityLog_Hackathon_approveHackahton {
@@ -286,6 +295,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enrollment request of user &quot;{enrolledUser}&quot; is rejected by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_rejectEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_rejectEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The hackathon becomes Writable..
         /// </summary>
         internal static string ActivityLog_Hackathon_unarchiveHackathon {
@@ -498,6 +516,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_addTeamMember2 {
             get {
                 return ResourceManager.GetString("ActivityLog_User_addTeamMember2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Approved enrollment of user &quot;{enrolledUser}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_approveEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_approveEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Enrollment approved by admin &quot;{adminName}&quot;.
+        /// </summary>
+        internal static string ActivityLog_User_approveEnrollment2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_approveEnrollment2", resourceCulture);
             }
         }
         
@@ -777,6 +813,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_publishHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_publishHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Rejected enrollment of user &quot;{enrolledUser}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_rejectEnrollment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_rejectEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Enrollment rejected by admin &quot;{adminName}&quot;.
+        /// </summary>
+        internal static string ActivityLog_User_rejectEnrollment2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_rejectEnrollment2", resourceCulture);
             }
         }
         

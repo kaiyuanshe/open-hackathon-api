@@ -414,23 +414,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hack = "Hack";
             string userId = "Uid";
             HackathonEntity hackathonEntity = null;
-            CancellationToken cancellationToken = default;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(hackathonEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
-            var result = await func(hack, userId, null, cancellationToken);
+            var result = await func(hack, userId, null, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404);
         }
 
@@ -441,28 +434,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string userId = "Uid";
             HackathonEntity hackathonEntity = new HackathonEntity();
             var authResult = AuthorizationResult.Failed();
-            CancellationToken cancellationToken = default;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(hackathonEntity);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                AuthorizationService = authorizationService.Object,
-            };
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
-            var result = await func(hack, userId, null, cancellationToken);
+            var result = await func(hack, userId, null, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 403);
         }
 
@@ -474,32 +457,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathonEntity = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
             EnrollmentEntity participant = null;
-            CancellationToken cancellationToken = default;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(hackathonEntity);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", "uid", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(participant);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", "uid", default)).ReturnsAsync(participant);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                AuthorizationService = authorizationService.Object,
-            };
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
-            var result = await func(hack, userId, null, cancellationToken);
+            var result = await func(hack, userId, null, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404);
         }
 
@@ -508,7 +478,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             string hack = "Hack";
             string userId = "Uid";
-            HackathonEntity hackathonEntity = new HackathonEntity();
+            HackathonEntity hackathonEntity = new HackathonEntity { PartitionKey = "test2" };
             var authResult = AuthorizationResult.Success();
             EnrollmentEntity enrollment = new EnrollmentEntity
             {
@@ -518,40 +488,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo userInfo = new UserInfo();
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
-            mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", "uid", default)).ReturnsAsync(enrollment);
-            mockContext.EnrollmentManagement.Setup(p => p.UpdateEnrollmentStatusAsync(hackathonEntity, It.IsAny<EnrollmentEntity>(), It.IsAny<EnrollmentStatus>(), default))
-                            .Callback<HackathonEntity, EnrollmentEntity, EnrollmentStatus, CancellationToken>((h, p, e, c) =>
-                            {
-                                p.Status = e;
-                            })
-                            .ReturnsAsync(enrollment);
-            mockContext.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
+            moqs.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", "uid", default)).ReturnsAsync(enrollment);
+            moqs.EnrollmentManagement.Setup(p => p.UpdateEnrollmentStatusAsync(hackathonEntity, It.IsAny<EnrollmentEntity>(), It.IsAny<EnrollmentStatus>(), default))
+                .Callback<HackathonEntity, EnrollmentEntity, EnrollmentStatus, CancellationToken>((h, p, e, c) =>
+                {
+                    p.Status = e;
+                })
+                .ReturnsAsync(enrollment);
+            moqs.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default)).ReturnsAsync(userInfo);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathonEntity, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
             var activityLogType = status == EnrollmentStatus.approved ? ActivityLogType.approveEnrollment : ActivityLogType.rejectEnrollment;
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "pk"
-                && a.ActivityLogType == activityLogType.ToString()), default));
+            var resKeyOfUser = status == EnrollmentStatus.approved ? nameof(Resources.ActivityLog_User_approveEnrollment2) : nameof(Resources.ActivityLog_User_rejectEnrollment2);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("test2", "", activityLogType, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "test2", "", activityLogType, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "test2", "", activityLogType, It.IsAny<object>(), resKeyOfUser, default));
 
             // test
             var controller = new EnrollmentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
             var result = await func(hack, userId, null, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.UserManagement,
-                mockContext.EnrollmentManagement,
-                mockContext.ActivityLogManagement,
-                mockContext.AuthorizationService);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.UserManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Enrollment>(result);
             Assert.AreEqual(status, resp.status);
         }

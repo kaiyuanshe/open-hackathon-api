@@ -120,6 +120,9 @@
   <data name="ActivityLog_Hackathon_addTeamMember" xml:space="preserve">
     <value>Team "{teamName}" has a new member "{memberName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_approveEnrollment" xml:space="preserve">
+    <value>Enrollment request of user "{enrolledUser}" is approved by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>Hackathon is approved by an admin and becomes online.</value>
   </data>
@@ -192,6 +195,9 @@
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>Ready to go online, waiting for approval. Requested by: {userName}</value>
   </data>
+  <data name="ActivityLog_Hackathon_rejectEnrollment" xml:space="preserve">
+    <value>Enrollment request of user "{enrolledUser}" is rejected by "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>The hackathon becomes Writable.</value>
   </data>
@@ -263,6 +269,12 @@
   </data>
   <data name="ActivityLog_User_addTeamMember2" xml:space="preserve">
     <value>[{hackathonName}]Added as a new member to team "{teamName}" by "{adminName}".</value>
+  </data>
+  <data name="ActivityLog_User_approveEnrollment" xml:space="preserve">
+    <value>[{hackathonName}]Approved enrollment of user "{enrolledUser}".</value>
+  </data>
+  <data name="ActivityLog_User_approveEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]Enrollment approved by admin "{adminName}"</value>
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>[{hackathonName}]Approved and published hackathon.</value>
@@ -356,6 +368,12 @@
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>[{hackathonName}]Requested to publish hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_rejectEnrollment" xml:space="preserve">
+    <value>[{hackathonName}]Rejected enrollment of user "{enrolledUser}".</value>
+  </data>
+  <data name="ActivityLog_User_rejectEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]Enrollment rejected by admin "{adminName}"</value>
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]Updated hackathon as Writable.</value>
