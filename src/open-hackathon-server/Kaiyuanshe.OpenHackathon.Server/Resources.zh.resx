@@ -120,6 +120,9 @@
   <data name="ActivityLog_Hackathon_addTeamMember" xml:space="preserve">
     <value>团队"{teamName}"添加了新成员"{memberName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_approveEnrollment" xml:space="preserve">
+    <value>管理员"{adminName}"批准了用户“{enrolledUser}”的报名申请。</value>
+  </data>
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
@@ -192,6 +195,9 @@
   <data name="ActivityLog_Hackathon_publishHackathon" xml:space="preserve">
     <value>活动正在上线，等待审核中。提交者：{userName}</value>
   </data>
+  <data name="ActivityLog_Hackathon_rejectEnrollment" xml:space="preserve">
+    <value>管理员"{adminName}"拒绝了用户“{enrolledUser}”的报名申请。</value>
+  </data>
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>活动进入可读写状态。</value>
   </data>
@@ -263,6 +269,12 @@
   </data>
   <data name="ActivityLog_User_addTeamMember2" xml:space="preserve">
     <value>[{hackathonName}]成为了团队"{teamName}"的一员。</value>
+  </data>
+  <data name="ActivityLog_User_approveEnrollment" xml:space="preserve">
+    <value>[{hackathonName}]批准了用户“{enrolledUser}”的报名申请。</value>
+  </data>
+  <data name="ActivityLog_User_approveEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]管理员"{adminName}"批准了您的报名申请。</value>
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>[{hackathonName}]批准并发布活动.</value>
@@ -356,6 +368,12 @@
   </data>
   <data name="ActivityLog_User_publishHackathon" xml:space="preserve">
     <value>[{hackathonName}]申请活动上线</value>
+  </data>
+  <data name="ActivityLog_User_rejectEnrollment" xml:space="preserve">
+    <value>[{hackathonName}]拒绝了用户“{enrolledUser}”的报名申请。</value>
+  </data>
+  <data name="ActivityLog_User_rejectEnrollment2" xml:space="preserve">
+    <value>[{hackathonName}]管理员"{adminName}"拒绝了您的报名申请。</value>
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]修改活动为可读写。</value>

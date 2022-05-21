@@ -246,15 +246,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(string.Format(Resources.Enrollment_NotFound, userId, hackathonName));
             }
 
-            enrollment = await EnrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, enrollment, status);
+            enrollment = await EnrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, enrollment, status, cancellationToken);
+            var enrolledUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             var activityLogType = status == EnrollmentStatus.approved ? ActivityLogType.approveEnrollment : ActivityLogType.rejectEnrollment;
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var resKeyOfUser = status == EnrollmentStatus.approved ? nameof(Resources.ActivityLog_User_approveEnrollment2) : nameof(Resources.ActivityLog_User_rejectEnrollment2);
+            var logArgs = new
             {
-                ActivityLogType = activityLogType.ToString(),
-                HackathonName = enrollment.HackathonName,
-                OperatorId = CurrentUserId,
-                CorrelatedUserId = enrollment.UserId,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                enrolledUser = enrolledUser.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnUserEvent(hackathon.Name, userId, CurrentUserId,
+                activityLogType, logArgs, resKeyOfUser, null, cancellationToken);
+
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
