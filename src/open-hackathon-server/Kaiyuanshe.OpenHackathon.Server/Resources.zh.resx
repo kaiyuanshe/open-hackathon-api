@@ -126,6 +126,9 @@
   <data name="ActivityLog_Hackathon_approveHackahton" xml:space="preserve">
     <value>活动正式上线。</value>
   </data>
+  <data name="ActivityLog_Hackathon_approveTeamMember" xml:space="preserve">
+    <value>用户"{memberName}"加入团队"{teamName}"的请求已被批准。</value>
+  </data>
   <data name="ActivityLog_Hackathon_archiveHackathon" xml:space="preserve">
     <value>活动进入只读状态。</value>
   </data>
@@ -225,6 +228,9 @@
   <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
     <value>管理员"{adminName}"添加了新团队成员"{memberName}"。</value>
   </data>
+  <data name="ActivityLog_Team_approveTeamMember" xml:space="preserve">
+    <value>用户"{memberName}"加入团队的请求已被"{adminName}"批准。</value>
+  </data>
   <data name="ActivityLog_Team_createAwardAssignmentTeam" xml:space="preserve">
     <value>团队获得了"{awardName}"。</value>
   </data>
@@ -278,6 +284,12 @@
   </data>
   <data name="ActivityLog_User_approveHackahton" xml:space="preserve">
     <value>[{hackathonName}]批准并发布活动.</value>
+  </data>
+  <data name="ActivityLog_User_approveTeamMember" xml:space="preserve">
+    <value>[{hackathonName}]批准了用户"{memberName}"加入团队"{teamName}"的请求。</value>
+  </data>
+  <data name="ActivityLog_User_approveTeamMember2" xml:space="preserve">
+    <value>[{hackathonName}]申请加入团队"{teamName}"的请求被团队管理员"{adminName}"批准。</value>
   </data>
   <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]修改活动为只读。</value>

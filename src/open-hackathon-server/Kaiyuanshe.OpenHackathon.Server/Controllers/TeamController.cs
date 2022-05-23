@@ -703,8 +703,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // update status
-            teamMember = await TeamManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            teamMember = await TeamManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
+            var logArgs = new
+            {
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                adminName = CurrentUserDisplayName,
+                memberName = user.GetDisplayName(),
+            };
+            await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId, CurrentUserId,
+                ActivityLogType.approveTeamMember, logArgs,
+                nameof(Resources.ActivityLog_User_approveTeamMember2), null, cancellationToken);
+
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
         #endregion
