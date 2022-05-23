@@ -88,6 +88,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Membership request of user &quot;{memberName}&quot; to join team &quot;{teamName}&quot; is approved..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_approveTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_approveTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The hackathon becomes ReadOnly..
         /// </summary>
         internal static string ActivityLog_Hackathon_archiveHackathon {
@@ -385,6 +394,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Membership request of user &quot;{memberName}&quot; is approved by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_approveTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_approveTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The team is awarded &quot;{awardName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_createAwardAssignmentTeam {
@@ -543,6 +561,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_approveHackahton {
             get {
                 return ResourceManager.GetString("ActivityLog_User_approveHackahton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Approved membership request of user &quot;{memberName}&quot; to join team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_approveTeamMember {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_approveTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Membership request to join team &quot;{teamName}&quot; is approved by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_approveTeamMember2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_approveTeamMember2", resourceCulture);
             }
         }
         
