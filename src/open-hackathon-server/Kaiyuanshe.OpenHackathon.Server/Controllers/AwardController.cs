@@ -385,6 +385,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <summary>
         /// Update an award assignment. AwardId and AssigneeId will not be updated. 
         /// </summary>
+        /// <remarks>
+        /// Note that the AwardId and AssigneeId cannot not be updated. 
+        /// To update AwardId/AssigneeId, please delete the assignment and assign again with a different AwardId/AssigneeId.
+        /// </remarks>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -433,15 +437,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.AwardAssignment_NotFound);
             }
             assignment = await AwardManagement.UpdateAssignmentAsync(assignment, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateAwardAssignment.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = awardEntity.Name,
-                CorrelatedUserId = awardEntity.Target == AwardTarget.individual ? assignment.AssigneeId : null,
-                TeamId = awardEntity.Target == AwardTarget.team ? assignment.AssigneeId : null,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                awardName = awardEntity.Name,
+            };
+            if (awardEntity.Target == AwardTarget.team)
+            {
+                await ActivityLogManagement.OnTeamEvent(hackathon.Name, assignment.AssigneeId, CurrentUserId,
+                     ActivityLogType.updateAwardAssignment, logArgs, cancellationToken);
+            }
+            else
+            {
+                await ActivityLogManagement.OnUserEvent(hackathon.Name, assignment.AssigneeId, CurrentUserId,
+                     ActivityLogType.updateAwardAssignment, logArgs,
+                     nameof(Resources.ActivityLog_User_updateAwardAssignment2), null, cancellationToken);
+            }
+
             return Ok(await BuildAwardAssignment(assignment, awardEntity, cancellationToken));
         }
         #endregion

@@ -204,6 +204,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>活动进入可读写状态。</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateAwardAssignment" xml:space="preserve">
+    <value>管理员"{adminName}"修改了奖项“{awardName}”的一项授奖。</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateEnrollment" xml:space="preserve">
     <value>更新了用户"{userName}"的注册信息。</value>
   </data>
@@ -257,6 +260,9 @@
   </data>
   <data name="ActivityLog_Team_leaveTeam" xml:space="preserve">
     <value>成员"{memberName}"离开了团队。</value>
+  </data>
+  <data name="ActivityLog_Team_updateAwardAssignment" xml:space="preserve">
+    <value>管理员"{adminName}"修改了奖项“{awardName}”的一项授奖。</value>
   </data>
   <data name="ActivityLog_Team_updateTeam" xml:space="preserve">
     <value>用户"{adminName}"修改了团队信息。</value>
@@ -389,6 +395,12 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]修改活动为可读写。</value>
+  </data>
+  <data name="ActivityLog_User_updateAwardAssignment" xml:space="preserve">
+    <value>[{hackathonName}]修改了奖项“{awardName}”的一项授奖。</value>
+  </data>
+  <data name="ActivityLog_User_updateAwardAssignment2" xml:space="preserve">
+    <value>[{hackathonName}]所获奖项“{awardName}”已更新。</value>
   </data>
   <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
     <value>[{hackathonName}]活动的注册信息已更新。</value>
