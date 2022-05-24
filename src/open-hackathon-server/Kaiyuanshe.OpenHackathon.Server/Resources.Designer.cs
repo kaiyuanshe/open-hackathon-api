@@ -322,6 +322,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated an assignment on award &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enrollment info of user &quot;{userName}&quot; updated..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateEnrollment {
@@ -480,6 +489,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_leaveTeam {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_leaveTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated an assignment on award &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_updateAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_updateAwardAssignment", resourceCulture);
             }
         }
         
@@ -876,6 +894,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_unarchiveHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_unarchiveHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Updated an assignment on award &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateAwardAssignment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Assignment on award &quot;{awardName}&quot; is updated by &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateAwardAssignment2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateAwardAssignment2", resourceCulture);
             }
         }
         

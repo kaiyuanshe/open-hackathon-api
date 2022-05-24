@@ -204,6 +204,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>The hackathon becomes Writable.</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateAwardAssignment" xml:space="preserve">
+    <value>Admin "{adminName}" updated an assignment on award "{awardName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateEnrollment" xml:space="preserve">
     <value>Enrollment info of user "{userName}" updated.</value>
   </data>
@@ -257,6 +260,9 @@
   </data>
   <data name="ActivityLog_Team_leaveTeam" xml:space="preserve">
     <value>Member "{memberName}" left the team.</value>
+  </data>
+  <data name="ActivityLog_Team_updateAwardAssignment" xml:space="preserve">
+    <value>Admin "{adminName}" updated an assignment on award "{awardName}".</value>
   </data>
   <data name="ActivityLog_Team_updateTeam" xml:space="preserve">
     <value>Team info updated by user "{adminName}".</value>
@@ -389,6 +395,12 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]Updated hackathon as Writable.</value>
+  </data>
+  <data name="ActivityLog_User_updateAwardAssignment" xml:space="preserve">
+    <value>[{hackathonName}]Updated an assignment on award "{awardName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateAwardAssignment2" xml:space="preserve">
+    <value>[{hackathonName}]Assignment on award "{awardName}" is updated by "{adminName}".</value>
   </data>
   <data name="ActivityLog_User_updateEnrollment" xml:space="preserve">
     <value>[{hackathonName}]Enrollment info in hackathon "{hackathonName}" updated.</value>

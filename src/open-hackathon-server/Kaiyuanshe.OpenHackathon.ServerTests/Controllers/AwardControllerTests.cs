@@ -647,66 +647,59 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region UpdateAwardAssignment
-        [Test]
-        public async Task UpdateAwardAssignment()
+        [TestCase(AwardTarget.team)]
+        [TestCase(AwardTarget.individual)]
+        public async Task UpdateAwardAssignment(AwardTarget target)
         {
-            var hackathon = new HackathonEntity { };
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var authResult = AuthorizationResult.Success();
-            var awardEntity = new AwardEntity { PartitionKey = "hack" };
+            var awardEntity = new AwardEntity { PartitionKey = "hack", Target = target };
             var parameter = new AwardAssignment { description = "desc" };
             TeamEntity team = new TeamEntity { CreatorId = "creator" };
-            var assignment = new AwardAssignmentEntity { RowKey = "rk", AssigneeId = "teamId" };
-            var creator = new UserInfo { LastIp = "ip" };
+            var assignment = new AwardAssignmentEntity { RowKey = "rk", AssigneeId = "assignee" };
+            var creator = new UserInfo { Name = "un" };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
-                .ReturnsAsync(authResult);
-
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(t => t.GetAwardByIdAsync("hack", "award", default)).ReturnsAsync(awardEntity);
-            awardManagement.Setup(t => t.GetAssignmentAsync("hack", "assignid", default)).ReturnsAsync(assignment);
-            awardManagement.Setup(t => t.UpdateAssignmentAsync(assignment, parameter, default)).ReturnsAsync(assignment);
-
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(team);
-
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(creator);
-
-            var activityLogManagement = new Mock<IActivityLogManagement>();
-            activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.updateAwardAssignment.ToString()
-                && a.TeamId == "teamId"), default));
-
-            var controller = new AwardController
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.AwardManagement.Setup(t => t.GetAwardByIdAsync("hack", "award", default)).ReturnsAsync(awardEntity);
+            moqs.AwardManagement.Setup(t => t.GetAssignmentAsync("hack", "assignid", default)).ReturnsAsync(assignment);
+            moqs.AwardManagement.Setup(t => t.UpdateAssignmentAsync(assignment, parameter, default)).ReturnsAsync(assignment);
+            if (target == AwardTarget.team)
             {
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                TeamManagement = teamManagement.Object,
-                UserManagement = userManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ActivityLogManagement = activityLogManagement.Object,
-            };
+                moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "assignee", default)).ReturnsAsync(team);
+                moqs.UserManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(creator);
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("hack", "assignee", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), null, default));
+            }
+            else
+            {
+                moqs.UserManagement.Setup(u => u.GetUserByIdAsync("assignee", default)).ReturnsAsync(creator);
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("assignee", "hack", "", ActivityLogType.updateAwardAssignment, It.IsAny<object>(), nameof(Resources.ActivityLog_User_updateAwardAssignment2), default));
+            }
+
+            var controller = new AwardController();
+            moqs.SetupController(controller);
             var result = await controller.UpdateAwardAssignment("Hack", "award", "assignid", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, authorizationService, awardManagement, teamManagement, userManagement, activityLogManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            activityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<AwardAssignment>(result);
             Assert.AreEqual("rk", resp.assignmentId);
-            Assert.AreEqual("teamId", resp.assigneeId);
-            Assert.IsNull(resp.user);
-            Assert.AreEqual("creator", resp.team.creatorId);
-            Assert.AreEqual("ip", resp.team.creator.LastIp);
+            Assert.AreEqual("assignee", resp.assigneeId);
+            if (target == AwardTarget.team)
+            {
+                Assert.IsNull(resp.user);
+                Assert.AreEqual("creator", resp.team.creatorId);
+                Assert.AreEqual("un", resp.team.creator.Name);
+            }
+            else
+            {
+                Assert.IsNull(resp.team);
+                Assert.AreEqual("un", resp.user.Name);
+            }
         }
         #endregion
 
