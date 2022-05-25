@@ -69,12 +69,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userName = CurrentUserDisplayName,
                 ratingKind = parameter.name,
             };
-            await ActivityLogManagement.OnHackathonEvent(
-                hackathon.Name,
-                CurrentUserId,
-                ActivityLogType.createRatingKind,
-                logArgs,
-                cancellationToken);
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                ActivityLogType.createRatingKind, logArgs, cancellationToken);
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
         }
         #endregion
@@ -121,13 +117,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // Update rating kind
             ratingKindEntity = await RatingManagement.UpdateRatingKindAsync(ratingKindEntity, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateRatingKind.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = parameter.description,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                ratingKind = parameter.name,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                ActivityLogType.updateRatingKind, logArgs, cancellationToken);
+
             return Ok(ResponseBuilder.BuildRatingKind(ratingKindEntity));
         }
         #endregion
