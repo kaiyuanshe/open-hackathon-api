@@ -216,6 +216,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateRatingKind" xml:space="preserve">
+    <value>Admin "{adminName}" updated rating kind "{ratingKind}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateTeam" xml:space="preserve">
     <value>Team "{teamName}" updated by user "{adminName}".</value>
   </data>
@@ -413,6 +416,9 @@
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>[{hackathonName}]Updated judge '{judgeName}' for the hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_updateRatingKind" xml:space="preserve">
+    <value>[{hackathonName}]Updated rating kind "{ratingKind}".</value>
   </data>
   <data name="ActivityLog_User_updateTeam" xml:space="preserve">
     <value>[{hackathonName}]Updated team "{teamName}".</value>

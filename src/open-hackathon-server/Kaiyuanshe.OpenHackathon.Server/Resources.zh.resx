@@ -216,6 +216,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateRatingKind" xml:space="preserve">
+    <value>管理员"{adminName}"更新了评分维度"{ratingKind}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateTeam" xml:space="preserve">
     <value>用户"{adminName}"修改了团队"{teamName}"的信息。</value>
   </data>
@@ -413,6 +416,9 @@
   </data>
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>[{hackathonName}]修改了裁判员信息: {judgeName}</value>
+  </data>
+  <data name="ActivityLog_User_updateRatingKind" xml:space="preserve">
+    <value>[{hackathonName}]更新了评分维度"{ratingKind}"</value>
   </data>
   <data name="ActivityLog_User_updateTeam" xml:space="preserve">
     <value>[{hackathonName}]修改了团队"{teamName}"的信息。</value>
