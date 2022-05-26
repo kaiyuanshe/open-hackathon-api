@@ -183,6 +183,9 @@
   <data name="ActivityLog_Hackathon_deleteRatingKind" xml:space="preserve">
     <value>Admin "{adminName}" deleted rating kind "{ratingKind}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeam" xml:space="preserve">
+    <value>Team "{teamName}" dismissed by user "{adminName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>One of the admins removed member "{memberName}" from team "{teamName}".</value>
   </data>
@@ -251,6 +254,9 @@
   </data>
   <data name="ActivityLog_Team_deleteAwardAssignment" xml:space="preserve">
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
+  </data>
+  <data name="ActivityLog_Team_deleteTeam" xml:space="preserve">
+    <value>Team dismissed by user "{adminName}".</value>
   </data>
   <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
     <value>Removed team member "{memberName}" or rejected the membership request.</value>
@@ -365,6 +371,9 @@
   </data>
   <data name="ActivityLog_User_deleteRatingKind" xml:space="preserve">
     <value>[{hackathonName}]Deleted rating kind "{ratingKind}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteTeam" xml:space="preserve">
+    <value>[{hackathonName}]Dismissed team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Removed member "{memberName}" from team "{teamName}" or rejected the membership request.</value>

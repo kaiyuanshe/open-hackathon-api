@@ -259,6 +259,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; dismissed by user &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteTeam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to One of the admins removed member &quot;{memberName}&quot; from team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteTeamMember {
@@ -462,6 +471,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_deleteAwardAssignment {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_deleteAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team dismissed by user &quot;{adminName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Team_deleteTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_deleteTeam", resourceCulture);
             }
         }
         
@@ -804,6 +822,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteRatingKind {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteRatingKind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_deleteTeam {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteTeam", resourceCulture);
             }
         }
         
