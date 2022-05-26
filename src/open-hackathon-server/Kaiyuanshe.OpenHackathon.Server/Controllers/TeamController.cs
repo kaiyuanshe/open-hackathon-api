@@ -335,8 +335,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteTeam
         /// <summary>
-        /// Delete a team
+        /// Delete a team.
         /// </summary>
+        /// <remarks>
+        /// Delete a team by a team admin. <br />
+        /// All team members will be removed from the team.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="teamId" example="d1e40c38-cc2a-445f-9eab-60c253256c57">unique Guid of the team. Auto-generated on server side.</param>
@@ -386,25 +390,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             foreach (var member in members)
             {
                 await TeamManagement.DeleteTeamMemberAsync(member, cancellationToken);
-                await ActivityLogManagement.LogActivity(new ActivityLogEntity
+                var logArgs = new
                 {
-                    ActivityLogType = ActivityLogType.deleteTeamMember.ToString(),
-                    HackathonName = hackathonName.ToLower(),
-                    OperatorId = CurrentUserId,
-                    TeamId = teamId,
-                    Message = team.DisplayName,
-                    CorrelatedUserId = member.UserId,
-                }, cancellationToken);
+                    hackathonName = hackathon.DisplayName,
+                    teamName = team.DisplayName,
+                    operatorName = CurrentUserDisplayName,
+                    memberName = member.UserId,
+                };
+                await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, member.UserId, CurrentUserId,
+                     ActivityLogType.deleteTeamMember, logArgs,
+                     nameof(Resources.ActivityLog_User_deleteTeamMember2), null, cancellationToken);
             }
             await TeamManagement.DeleteTeamAsync(team, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs2 = new
             {
-                ActivityLogType = ActivityLogType.deleteTeam.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                TeamId = teamId,
-                Message = team.DisplayName,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                teamName = team.DisplayName,
+                adminName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
+                ActivityLogType.deleteTeam, logArgs2, cancellationToken);
+
             return NoContent();
         }
         #endregion

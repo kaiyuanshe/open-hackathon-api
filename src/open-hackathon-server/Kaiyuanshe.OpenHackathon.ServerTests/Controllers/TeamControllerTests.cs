@@ -1413,26 +1413,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             TeamEntity teamEntity = null;
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default))
-                .ReturnsAsync(teamEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                TeamManagement = teamManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteTeam(hackName, teamId, default);
-            // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
 
+            // verify
+            moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
         }
 
@@ -1454,36 +1445,20 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default))
-                .ReturnsAsync(teamEntity);
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "rk", default))
-                .ReturnsAsync(assignments);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.AwardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "rk", default)).ReturnsAsync(assignments);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator))
                 .ReturnsAsync(authResult);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                TeamManagement = teamManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteTeam(hackName, teamId, default);
-            // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, awardManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
 
+            // verify
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Team_HasAward);
         }
 
@@ -1499,42 +1474,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default))
-                .ReturnsAsync(hackathon);
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default))
-                .ReturnsAsync(teamEntity);
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "rk", default))
-                .ReturnsAsync(assignments);
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.AwardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "rk", default)).ReturnsAsync(assignments);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator))
                 .ReturnsAsync(authResult);
-            var ratingManagement = new Mock<IRatingManagement>();
-            ratingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+            moqs.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                 "foo",
                 It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == null && o.TeamId == "rk"),
                 default)).ReturnsAsync(true);
 
             // run
-            var controller = new TeamController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                TeamManagement = teamManagement.Object,
-                AuthorizationService = authorizationService.Object,
-                RatingManagement = ratingManagement.Object,
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.DeleteTeam(hackName, teamId, default);
-            // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, ratingManagement, awardManagement, authorizationService);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            ratingManagement.VerifyNoOtherCalls();
 
+            // verify
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, string.Format(Resources.Rating_HasRating, nameof(Team)));
         }
 
@@ -1542,7 +1499,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task DeleteTeam_Succeeded()
         {
             // input
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
             TeamEntity teamEntity = new TeamEntity { PartitionKey = "foo", RowKey = "tid" };
             var authResult = AuthorizationResult.Success();
             var assignments = new List<AwardAssignmentEntity>();
@@ -1553,48 +1510,37 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
-            mockContext.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
-            mockContext.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(members);
-            mockContext.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(It.Is<TeamMemberEntity>(m => m.HackathonName == "foo"), default));
-            mockContext.TeamManagement.Setup(t => t.DeleteTeamAsync(teamEntity, default));
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
-            mockContext.AwardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "tid", default)).ReturnsAsync(assignments);
-            mockContext.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(members);
+            moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(It.Is<TeamMemberEntity>(m => m.HackathonName == "foo"), default));
+            moqs.TeamManagement.Setup(t => t.DeleteTeamAsync(teamEntity, default));
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
+            moqs.AwardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "tid", default)).ReturnsAsync(assignments);
+            moqs.RatingManagement.Setup(j => j.IsRatingCountGreaterThanZero(
                 "foo",
                 It.Is<RatingQueryOptions>(o => o.RatingKindId == null && o.JudgeId == null && o.TeamId == "tid"),
                 default)).ReturnsAsync(false);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
-                && a.ActivityLogType == ActivityLogType.deleteTeam.ToString()
-                && a.TeamId == "tid"), default));
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
-                && a.ActivityLogType == ActivityLogType.deleteTeamMember.ToString()
-                && a.TeamId == "tid"
-                && a.CorrelatedUserId == "u1"), default));
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "foo"
-                && a.ActivityLogType == ActivityLogType.deleteTeamMember.ToString()
-                && a.TeamId == "tid"
-                && a.CorrelatedUserId == "u2"), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("u1", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteTeamMember2), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("u2", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteTeamMember2), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
 
             // test
             var controller = new TeamController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteTeam("Foo", "tid", default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.TeamManagement,
-                mockContext.AwardManagement,
-                mockContext.RatingManagement,
-                mockContext.AuthorizationService,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.TeamManagement.VerifyNoOtherCalls();
-            mockContext.AwardManagement.VerifyNoOtherCalls();
-            mockContext.RatingManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
+            moqs.ActivityLogManagement.Verify(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default), Times.Exactly(2));
+            moqs.ActivityLogManagement.Verify(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default), Times.Exactly(2));
+            moqs.ActivityLogManagement.Verify(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default), Times.Exactly(2));
 
             AssertHelper.AssertNoContentResult(result);
         }

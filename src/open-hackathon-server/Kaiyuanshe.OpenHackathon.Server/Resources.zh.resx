@@ -183,6 +183,9 @@
   <data name="ActivityLog_Hackathon_deleteRatingKind" xml:space="preserve">
     <value>管理员"{adminName}"删除了评分维度"{ratingKind}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTeam" xml:space="preserve">
+    <value>用户“{adminName}”解散了团队"{teamName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>管理员移除了团队“{teamName}”的成员"{memberName}"。</value>
   </data>
@@ -251,6 +254,9 @@
   </data>
   <data name="ActivityLog_Team_deleteAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
+  </data>
+  <data name="ActivityLog_Team_deleteTeam" xml:space="preserve">
+    <value>用户“{adminName}”解散了团队。</value>
   </data>
   <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
     <value>移除了团队成员“{memberName}”或者拒绝了其加入团队的请求。</value>
@@ -366,6 +372,9 @@
   <data name="ActivityLog_User_deleteRatingKind" xml:space="preserve">
     <value>[{hackathonName}]删除了评分维度"{ratingKind}"。</value>
   </data>
+  <data name="ActivityLog_User_deleteTeam" xml:space="preserve">
+    <value>[{hackathonName}]解散了团队"{teamName}"。</value>
+  </data>
   <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
     <value>[{hackathonName}]移除了团队"{teamName}"的成员“{memberName}”或者拒绝了其加入团队的请求。</value>
   </data>
@@ -418,7 +427,7 @@
     <value>[{hackathonName}]修改了裁判员信息: {judgeName}</value>
   </data>
   <data name="ActivityLog_User_updateRatingKind" xml:space="preserve">
-    <value>[{hackathonName}]更新了评分维度"{ratingKind}"</value>
+    <value>[{hackathonName}]更新了评分维度"{ratingKind}"。</value>
   </data>
   <data name="ActivityLog_User_updateTeam" xml:space="preserve">
     <value>[{hackathonName}]修改了团队"{teamName}"的信息。</value>
