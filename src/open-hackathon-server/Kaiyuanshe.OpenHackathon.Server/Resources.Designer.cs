@@ -763,7 +763,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Removed award &quot;{awardName}&quot;..
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_deleteAward {
             get {

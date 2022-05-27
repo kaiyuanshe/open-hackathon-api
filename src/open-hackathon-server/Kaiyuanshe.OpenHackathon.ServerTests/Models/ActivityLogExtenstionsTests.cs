@@ -10,6 +10,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
 {
     internal class ActivityLogExtenstionsTests
     {
+        #region GetResourceKey
         [TestCase(ActivityLogType.createAward, ActivityLogCategory.User, "ActivityLog_User_createAward")]
         [TestCase(ActivityLogType.createHackathon, ActivityLogCategory.Hackathon, "ActivityLog_Hackathon_createHackathon")]
         public void GetResourceKey(ActivityLogType type, ActivityLogCategory category, string expectedKey)
@@ -21,13 +22,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             };
             Assert.AreEqual(expectedKey, entity.GetResourceKey());
         }
+        #endregion
 
+        #region GenerateMessage
         private static IEnumerable GenerateMessageTestData()
         {
             // arg0: ActivityLogEntity
             // arg1: dynamic args
-            // arg2: expected message in zh-CN
-            // arg3: expected message in en-US
+            // arg2: resourceKey
+            // arg3: expected message in en-US(zh-CN cannot be tested on Github Actions, the resource files cannot be loaded)
+            // arg4: expected resourceKey
 
             // unknown log type
             yield return new TestCaseData(
@@ -36,7 +40,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     ActivityLogType = "unknown",
                 },
                 null,
-                null);
+                null,
+                null,
+                "ActivityLog_Hackathon_unknown");
 
             // malformat
             yield return new TestCaseData(
@@ -45,7 +51,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     ActivityLogType = "createHackathon",
                 },
                 new { },
-                null);
+                null,
+                null,
+                "ActivityLog_Hackathon_createHackathon");
 
             // formated, catetory=Hackathon
             yield return new TestCaseData(
@@ -55,7 +63,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.Hackathon,
                 },
                 new { userName = "un", unknown = "any" },
-                "Created by user: un.");
+                null,
+                "Created by user: un.",
+                "ActivityLog_Hackathon_createHackathon");
 
             // formated, catetory=User
             yield return new TestCaseData(
@@ -65,21 +75,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                     Category = ActivityLogCategory.User,
                 },
                 new { hackathonName = "hack" },
-                "[hack]Created a new hackathon: hack");
+                null,
+                "[hack]Created a new hackathon: hack",
+                "ActivityLog_User_createHackathon");
+
+            // formated, resourceKey
+            yield return new TestCaseData(
+                new ActivityLogEntity
+                {
+                    ActivityLogType = "createHackathon",
+                    Category = ActivityLogCategory.User,
+                },
+                new { hackathonName = "hack" },
+                "User_NotFound",
+                "The specified user is not found.",
+                "User_NotFound");
         }
 
         [Test, TestCaseSource(nameof(GenerateMessageTestData))]
-        public void GenerateMessage(ActivityLogEntity entity, object args, string en)
+        public void GenerateMessage(ActivityLogEntity entity, object args, string resourceKey, string expectedEn, string expectedKey)
         {
-            entity.GenerateMessage(args);
+            entity.GenerateMessage(args, resourceKey);
+
             Assert.IsTrue(entity.Messages.ContainsKey("zh-CN"));
-            if (en != null)
+            Assert.AreEqual(expectedKey, entity.MessageResourceKey);
+            if (expectedEn != null)
                 Assert.IsNotNull(entity.Messages["zh-CN"]);
             // CultureInfo unable to set/get on Github actions
             Assert.IsTrue(entity.Messages.ContainsKey("en-US"));
-            Assert.AreEqual(en, entity.Messages["en-US"]);
+            Assert.AreEqual(expectedEn, entity.Messages["en-US"]);
         }
+        #endregion
 
+        #region GetMessage
         private static IEnumerable GetMessageTestData()
         {
             yield return new TestCaseData(new Dictionary<string, string>
@@ -110,7 +138,52 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             var entity = new ActivityLogEntity { Messages = messages };
             return entity.GetMessage();
         }
+        #endregion
 
+        #region GetMessageFormat
+        private static IEnumerable GetMessageFormatTestData()
+        {
+            // null entity
+            yield return new TestCaseData(null).Returns(null);
+
+            // null resource key
+            yield return new TestCaseData(new ActivityLogEntity
+            {
+                Messages = new Dictionary<string, string>
+                {
+                    ["en-US"] = "en"
+                }
+            }).Returns("en");
+
+            // resource key doesn't exist
+            yield return new TestCaseData(new ActivityLogEntity
+            {
+                MessageResourceKey = "abcdef",
+                Messages = new Dictionary<string, string>
+                {
+                    ["en-US"] = "en"
+                }
+            }).Returns("en");
+
+            // got from resources
+            yield return new TestCaseData(new ActivityLogEntity
+            {
+                MessageResourceKey = "User_NotFound",
+                Messages = new Dictionary<string, string>
+                {
+                    ["en-US"] = "en"
+                }
+            }).Returns("The specified user is not found.");
+        }
+
+        [Test, TestCaseSource(nameof(GetMessageFormatTestData))]
+        public string GetMessageFormat(ActivityLogEntity entity)
+        {
+            return entity.GetMessageFormat();
+        }
+        #endregion
+
+        #region EnsureResources
         /// <summary>
         /// Keep updating this Test for more cases whenever we add a new combination of category+type
         /// </summary>
@@ -130,5 +203,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                 Assert.IsNotNull(messageFormat);
             }
         }
+        #endregion
     }
 }

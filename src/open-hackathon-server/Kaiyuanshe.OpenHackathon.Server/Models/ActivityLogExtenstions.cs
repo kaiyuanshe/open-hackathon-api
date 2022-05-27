@@ -25,6 +25,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
                 return;
 
             resourceKey ??= entity.GetResourceKey();
+            entity.MessageResourceKey = resourceKey;
             Func<CultureInfo, string> messageByCulture = (culture) =>
             {
                 try
@@ -62,6 +63,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             }
 
             return entity.Messages.Values.FirstOrDefault(m => m != null);
+        }
+
+        public static string GetMessageFormat(this ActivityLogEntity entity)
+        {
+            if (entity == null)
+                return null;
+
+            if (entity.MessageResourceKey == null)
+            {
+                // fall back to message if key is null
+                return GetMessage(entity);
+            }
+
+            string format = Resources.ResourceManager.GetString(entity.MessageResourceKey);
+            return format ?? GetMessage(entity);
         }
     }
 }

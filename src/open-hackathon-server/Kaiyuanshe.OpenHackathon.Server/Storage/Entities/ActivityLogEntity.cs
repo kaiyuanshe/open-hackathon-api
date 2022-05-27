@@ -46,17 +46,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         public string ActivityLogType { get; set; }
 
         /// <summary>
-        /// Args to format the message.
-        /// </summary>
-        [ConvertableEntityProperty]
-        [Obsolete]
-        public string[] Args { get; set; } = new string[0];
-
-        /// <summary>
         /// Default message of the activity, will used if cannot find the message in Resource file.
         /// </summary>
         [Obsolete]
         public string Message { get; set; }
+
+        /// <summary>
+        /// ResourceKey to lookup resource files.
+        /// </summary>
+        public string MessageResourceKey { get; set; }
 
         /// <summary>
         /// Messages for all cultures. Use CultureInfo.Name as key.

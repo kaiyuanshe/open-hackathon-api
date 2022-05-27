@@ -352,7 +352,7 @@
     <value>[{hackathonName}]Added a new work for team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAward" xml:space="preserve">
-    <value>[{hackathonName}]Removed award "{awardName}".</value>
+    <value>[{hackathonName}]Dismissed team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]Revoked an assignment on award "{awardName}".</value>

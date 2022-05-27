@@ -29,6 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 RowKey = "rk",
                 Timestamp = DateTimeOffset.UtcNow,
                 OperatorId = "uid",
+                MessageResourceKey = "User_NotFound",
                 Messages = new Dictionary<string, string>
                 {
                     ["en-US"] = "en"
@@ -43,6 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual(entity.Timestamp.DateTime, resp.updatedAt);
             Assert.AreEqual("uid", resp.operatorId);
             Assert.AreEqual("en", resp.message);
+            Assert.AreEqual("The specified user is not found.", resp.messageFormat);
         }
         #endregion
 
