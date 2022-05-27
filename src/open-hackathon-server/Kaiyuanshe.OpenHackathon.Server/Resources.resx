@@ -165,6 +165,9 @@
   <data name="ActivityLog_Hackathon_createTeamWork" xml:space="preserve">
     <value>User "{userName}" added a new work for team "{teamName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
+    <value>Admin "{adminName}" removed award "{awardName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
   </data>
@@ -347,6 +350,9 @@
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
     <value>[{hackathonName}]Added a new work for team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteAward" xml:space="preserve">
+    <value>[{hackathonName}]Removed award "{awardName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]Revoked an assignment on award "{awardName}".</value>
