@@ -165,6 +165,9 @@
   <data name="ActivityLog_Hackathon_createTeamWork" xml:space="preserve">
     <value>用户“{userName}”为团队“{teamName}”上传了一件新作品。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
+    <value>管理员"{adminName}"删除了奖项“{awardName}”。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
   </data>
@@ -347,6 +350,9 @@
   </data>
   <data name="ActivityLog_User_createTeamWork" xml:space="preserve">
     <value>[{hackathonName}]为团队“{teamName}”上传了一件新作品。</value>
+  </data>
+  <data name="ActivityLog_User_deleteAward" xml:space="preserve">
+    <value>[{hackathonName}]删除了奖项“{awardName}”。</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]撤销了活动的一项授奖记录："{awardName}"。</value>

@@ -68,12 +68,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 userName = CurrentUserDisplayName,
                 awardName = awardEntity.Name,
             };
-            await ActivityLogManagement.OnHackathonEvent(
-                hackathon.Name,
-                CurrentUserId,
-                ActivityLogType.createAward,
-                logArgs,
-                cancellationToken);
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                ActivityLogType.createAward, logArgs, cancellationToken);
 
             return Ok(ResponseBuilder.BuildAward(awardEntity));
         }
@@ -228,8 +224,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteAward
         /// <summary>
-        /// Delete an award
+        /// Delete an award.
         /// </summary>
+        /// <remarks>
+        /// Delete a award that is not assigned to any individual or team. 
+        /// If assigned, must delete the assignment(s) first.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="awardId" example="c877c675-4c97-4deb-9e48-97d079fa4b72">unique Guid of the award. Auto-generated on server side.</param>
@@ -269,13 +269,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // delete award
             await AwardManagement.DeleteAwardAsync(award, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.deleteAward.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = award.Name,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                awardName = award.Name,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                ActivityLogType.deleteAward, logArgs, cancellationToken);
+
             return NoContent();
         }
         #endregion
