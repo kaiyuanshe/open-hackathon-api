@@ -30,6 +30,14 @@
         public string message { get; internal set; }
 
         /// <summary>
+        /// message format which contains placeholders and can be replaced in frontend for better display. 
+        /// For example, if a message format is "Something updated by {userName}", client side can replace "{userName}" 
+        /// with a link. The <seealso cref="message"/> in response if formatted using this same message format with default values.
+        /// </summary>
+        /// <example>Something updated by {userName}.</example>
+        public string messageFormat { get; internal set; }
+
+        /// <summary>
         /// type of the activity log.
         /// </summary>
         public string activityLogType { get; internal set; }
