@@ -376,13 +376,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 teamName = team.DisplayName,
                 kindName = kind.Name,
             };
-            await ActivityLogManagement.OnTeamEvent(
-                hackathon.Name,
-                team.Id,
-                CurrentUserId,
-                ActivityLogType.createRating,
-                logArgs,
-                cancellationToken);
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
+                ActivityLogType.createRating, logArgs, cancellationToken);
 
             var ratingResponse = await BuildRatingResp(ratingEntity, null, team, kind, cancellationToken);
             return Ok(ratingResponse);
@@ -452,13 +447,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update
             ratingEntity = await RatingManagement.UpdateRatingAsync(ratingEntity, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateRating.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = kind.Name,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                judgeName = CurrentUserDisplayName,
+                ratingKindName = kind.Name,
+            };
+            await ActivityLogManagement.OnTeamEvent(hackathon.Name, ratingEntity.TeamId, CurrentUserId,
+                 ActivityLogType.updateRating, logArgs, cancellationToken);
+
             var ratingResponse = await BuildRatingResp(ratingEntity, null, null, kind, cancellationToken);
             return Ok(ratingResponse);
         }
