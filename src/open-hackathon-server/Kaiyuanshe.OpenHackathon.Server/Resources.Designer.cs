@@ -205,7 +205,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; removed award &quot;{awardName}&quot;..
+        ///   Looks up a localized string similar to Admin {adminName} removed award {awardName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteAward {
             get {
@@ -268,7 +268,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; dismissed by user &quot;{adminName}&quot;..
+        ///   Looks up a localized string similar to Team {teamName} dismissed by user {adminName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteTeam {
             get {
@@ -372,6 +372,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Hackathon_updateJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_Hackathon_updateJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Judge {judgeName} updated a rating on kind {ratingKindName}..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateRating", resourceCulture);
             }
         }
         
@@ -484,7 +493,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team dismissed by user &quot;{adminName}&quot;..
+        ///   Looks up a localized string similar to Team dismissed by user {adminName}..
         /// </summary>
         internal static string ActivityLog_Team_deleteTeam {
             get {
@@ -534,6 +543,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Team_updateAwardAssignment {
             get {
                 return ResourceManager.GetString("ActivityLog_Team_updateAwardAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Judge {judgeName} updated the rating on kind {ratingKindName}..
+        /// </summary>
+        internal static string ActivityLog_Team_updateRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_Team_updateRating", resourceCulture);
             }
         }
         
@@ -763,7 +781,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team {teamName}..
         /// </summary>
         internal static string ActivityLog_User_deleteAward {
             get {
@@ -844,7 +862,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team {teamName}..
         /// </summary>
         internal static string ActivityLog_User_deleteTeam {
             get {
@@ -1002,6 +1020,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Updated a rating on kind {ratingKindName}..
+        /// </summary>
+        internal static string ActivityLog_User_updateRating {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateRating", resourceCulture);
             }
         }
         
