@@ -205,7 +205,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin {adminName} removed award {awardName}..
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; removed award &quot;{awardName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteAward {
             get {
@@ -268,7 +268,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team {teamName} dismissed by user {adminName}..
+        ///   Looks up a localized string similar to Team &quot;{teamName}&quot; dismissed by user &quot;{adminName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteTeam {
             get {
@@ -291,6 +291,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_Hackathon_deleteTeamWork {
             get {
                 return ResourceManager.GetString("ActivityLog_Hackathon_deleteTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; deleted experiment template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteTemplate {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteTemplate", resourceCulture);
             }
         }
         
@@ -376,7 +385,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Judge {judgeName} updated a rating on kind {ratingKindName}..
+        ///   Looks up a localized string similar to Judge &quot;{judgeName}&quot; updated a rating on kind &quot;{ratingKindName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateRating {
             get {
@@ -493,7 +502,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Team dismissed by user {adminName}..
+        ///   Looks up a localized string similar to Team dismissed by user &quot;{adminName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_deleteTeam {
             get {
@@ -547,7 +556,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Judge {judgeName} updated the rating on kind {ratingKindName}..
+        ///   Looks up a localized string similar to Judge &quot;{judgeName}&quot; updated the rating on kind &quot;{ratingKindName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_updateRating {
             get {
@@ -781,7 +790,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team {teamName}..
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_deleteAward {
             get {
@@ -862,7 +871,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team {teamName}..
+        ///   Looks up a localized string similar to [{hackathonName}]Dismissed team &quot;{teamName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_deleteTeam {
             get {
@@ -894,6 +903,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteTeamWork {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Deleted experiment template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_deleteTemplate {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteTemplate", resourceCulture);
             }
         }
         
@@ -1024,7 +1042,7 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{hackathonName}]Updated a rating on kind {ratingKindName}..
+        ///   Looks up a localized string similar to [{hackathonName}]Updated a rating on kind &quot;{ratingKindName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_updateRating {
             get {

@@ -166,7 +166,7 @@
     <value>用户“{userName}”为团队“{teamName}”上传了一件新作品。</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
-    <value>管理员{adminName}删除了奖项{awardName}。</value>
+    <value>管理员"{adminName}"删除了奖项"{awardName}"。</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
@@ -195,6 +195,9 @@
   <data name="ActivityLog_Hackathon_deleteTeamWork" xml:space="preserve">
     <value>团队"{teamName}"删除了一件作品。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteTemplate" xml:space="preserve">
+    <value>管理员"{adminName}"删除了实验环境模板"{templateName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
   </data>
@@ -205,13 +208,13 @@
     <value>活动正在上线，等待审核中。提交者：{userName}</value>
   </data>
   <data name="ActivityLog_Hackathon_rejectEnrollment" xml:space="preserve">
-    <value>管理员"{adminName}"拒绝了用户“{enrolledUser}”的报名申请。</value>
+    <value>管理员"{adminName}"拒绝了用户"{enrolledUser}"的报名申请。</value>
   </data>
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>活动进入可读写状态。</value>
   </data>
   <data name="ActivityLog_Hackathon_updateAwardAssignment" xml:space="preserve">
-    <value>管理员"{adminName}"修改了奖项“{awardName}”的一项授奖。</value>
+    <value>管理员"{adminName}"修改了奖项"{awardName}"的一项授奖。</value>
   </data>
   <data name="ActivityLog_Hackathon_updateEnrollment" xml:space="preserve">
     <value>更新了用户"{userName}"的注册信息。</value>
@@ -223,7 +226,7 @@
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
   </data>
   <data name="ActivityLog_Hackathon_updateRating" xml:space="preserve">
-    <value>裁判员{judgeName}修改了奖项{ratingKindName}的一项评分。</value>
+    <value>裁判"{judgeName}"修改了奖项"{ratingKindName}"的一项评分。</value>
   </data>
   <data name="ActivityLog_Hackathon_updateRatingKind" xml:space="preserve">
     <value>管理员"{adminName}"更新了评分维度"{ratingKind}"。</value>
@@ -277,10 +280,10 @@
     <value>成员"{memberName}"离开了团队。</value>
   </data>
   <data name="ActivityLog_Team_updateAwardAssignment" xml:space="preserve">
-    <value>管理员"{adminName}"修改了奖项“{awardName}”的一项授奖。</value>
+    <value>管理员"{adminName}"修改了奖项"{awardName}"的一项授奖。</value>
   </data>
   <data name="ActivityLog_Team_updateRating" xml:space="preserve">
-    <value>裁判员{judgeName}修改了奖项{ratingKindName}的一项评分。</value>
+    <value>裁判员"{judgeName}"修改了奖项"{ratingKindName}"的一项评分。</value>
   </data>
   <data name="ActivityLog_Team_updateTeam" xml:space="preserve">
     <value>用户"{adminName}"修改了团队信息。</value>
@@ -358,7 +361,7 @@
     <value>[{hackathonName}]为团队“{teamName}”上传了一件新作品。</value>
   </data>
   <data name="ActivityLog_User_deleteAward" xml:space="preserve">
-    <value>[{hackathonName}]删除了奖项{awardName}。</value>
+    <value>[{hackathonName}]删除了奖项"{awardName}"。</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]撤销了活动的一项授奖记录："{awardName}"。</value>
@@ -385,7 +388,7 @@
     <value>[{hackathonName}]删除了评分维度"{ratingKind}"。</value>
   </data>
   <data name="ActivityLog_User_deleteTeam" xml:space="preserve">
-    <value>[{hackathonName}]解散了团队{teamName}。</value>
+    <value>[{hackathonName}]解散了团队"{teamName}"。</value>
   </data>
   <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
     <value>[{hackathonName}]移除了团队"{teamName}"的成员“{memberName}”或者拒绝了其加入团队的请求。</value>
@@ -395,6 +398,9 @@
   </data>
   <data name="ActivityLog_User_deleteTeamWork" xml:space="preserve">
     <value>[{hackathonName}]删除了团队"{teamName}"的一件作品。</value>
+  </data>
+  <data name="ActivityLog_User_deleteTemplate" xml:space="preserve">
+    <value>[{hackathonName}]删除了实验环境模板"{templateName}"。</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>上传了一个文件。</value>
@@ -421,7 +427,7 @@
     <value>[{hackathonName}]修改活动为可读写。</value>
   </data>
   <data name="ActivityLog_User_updateAwardAssignment" xml:space="preserve">
-    <value>[{hackathonName}]修改了奖项“{awardName}”的一项授奖。</value>
+    <value>[{hackathonName}]修改了奖项"{awardName}"的一项授奖。</value>
   </data>
   <data name="ActivityLog_User_updateAwardAssignment2" xml:space="preserve">
     <value>[{hackathonName}]所获奖项“{awardName}”已更新。</value>
@@ -439,7 +445,7 @@
     <value>[{hackathonName}]修改了裁判员信息: {judgeName}</value>
   </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
-    <value>[{hackathonName}]修改了奖项{ratingKindName}的一项评分。</value>
+    <value>[{hackathonName}]修改了奖项"{ratingKindName}"的一项评分。</value>
   </data>
   <data name="ActivityLog_User_updateRatingKind" xml:space="preserve">
     <value>[{hackathonName}]更新了评分维度"{ratingKind}"。</value>

@@ -1,4 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
@@ -242,8 +243,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region DeleteTemplate
         /// <summary>
-        /// Delete a hackathon template. Make sure delete all experiments created using it first.
+        /// Delete a hackathon template. 
         /// </summary>
+        /// <remarks>
+        /// Make sure delete all experiments created using it first.
+        /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="templateId" example="1009bb6-be04-4ba1-901b-21e2b5b0f714">Auto-generated Id of the template. Clients can get the Id in a Create, Update or List request.</param>
@@ -278,13 +282,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // delete template
             var context = await ExperimentManagement.DeleteTemplateAsync(hackathonName.ToLower(), templateId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            if (context?.TemplateEntity != null)
             {
-                ActivityLogType = ActivityLogType.deleteTemplate.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = context?.TemplateEntity?.Id,
-            }, cancellationToken);
+                var logsArgs = new
+                {
+                    hackathonName = hackathon.DisplayName,
+                    adminName = CurrentUserDisplayName,
+                    templateName = context.TemplateEntity.DisplayName,
+                };
+                await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                     ActivityLogType.deleteTemplate, logsArgs, cancellationToken);
+            }
 
             if (context?.Status != null && context.Status.IsFailed())
             {
