@@ -456,18 +456,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(experiments);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(experiments);
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteTemplate("Hack", "tpl", default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Template_HasExperiment);
         }
 
@@ -484,7 +484,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null
                 );
 
-            // no status
+            // no entity/status
             yield return new TestCaseData(
                     new TemplateContext { },
                     204,
@@ -509,6 +509,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     500,
                     "error"
                 );
+
+            // with entity -> trigger activity logs
+            yield return new TestCaseData(
+                    new TemplateContext { TemplateEntity = new(), Status = new V1Status { Code = 500, Message = "error" } },
+                    500,
+                    "error"
+                );
         }
 
         [Test, TestCaseSource(nameof(DeleteTemplateTestData))]
@@ -518,29 +525,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.ExperimentManagement.Setup(j => j.DeleteTemplateAsync("hack", "tpl", default)).ReturnsAsync(templateContext);
-            mockContext.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(new ExperimentContext[0]);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.deleteTemplate.ToString()), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.ExperimentManagement.Setup(j => j.DeleteTemplateAsync("hack", "tpl", default)).ReturnsAsync(templateContext);
+            moqs.ExperimentManagement.Setup(j => j.ListExperimentsAsync(hackathon, "tpl", default)).ReturnsAsync(new ExperimentContext[0]);
+            if (templateContext?.TemplateEntity != null)
+            {
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.deleteTemplate, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.deleteTemplate, It.IsAny<object>(), null, default));
+            }
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteTemplate("Hack", "tpl", default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.ExperimentManagement,
-                mockContext.AuthorizationService,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ExperimentManagement.VerifyNoOtherCalls();
-            mockContext.AuthorizationService.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             if (expectedCode == 204)
             {
                 AssertHelper.AssertNoContentResult(result);

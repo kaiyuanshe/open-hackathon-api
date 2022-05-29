@@ -166,7 +166,7 @@
     <value>User "{userName}" added a new work for team "{teamName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
-    <value>Admin {adminName} removed award {awardName}.</value>
+    <value>Admin "{adminName}" removed award "{awardName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
@@ -187,13 +187,16 @@
     <value>Admin "{adminName}" deleted rating kind "{ratingKind}".</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteTeam" xml:space="preserve">
-    <value>Team {teamName} dismissed by user {adminName}.</value>
+    <value>Team "{teamName}" dismissed by user "{adminName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteTeamMember" xml:space="preserve">
     <value>One of the admins removed member "{memberName}" from team "{teamName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_deleteTeamWork" xml:space="preserve">
     <value>A team work is removed from team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_Hackathon_deleteTemplate" xml:space="preserve">
+    <value>Admin "{adminName}" deleted experiment template "{templateName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team "{teamName}".</value>
@@ -223,7 +226,7 @@
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
   <data name="ActivityLog_Hackathon_updateRating" xml:space="preserve">
-    <value>Judge {judgeName} updated a rating on kind {ratingKindName}.</value>
+    <value>Judge "{judgeName}" updated a rating on kind "{ratingKindName}".</value>
   </data>
   <data name="ActivityLog_Hackathon_updateRatingKind" xml:space="preserve">
     <value>Admin "{adminName}" updated rating kind "{ratingKind}".</value>
@@ -262,7 +265,7 @@
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
   </data>
   <data name="ActivityLog_Team_deleteTeam" xml:space="preserve">
-    <value>Team dismissed by user {adminName}.</value>
+    <value>Team dismissed by user "{adminName}".</value>
   </data>
   <data name="ActivityLog_Team_deleteTeamMember" xml:space="preserve">
     <value>Removed team member "{memberName}" or rejected the membership request.</value>
@@ -280,7 +283,7 @@
     <value>Admin "{adminName}" updated an assignment on award "{awardName}".</value>
   </data>
   <data name="ActivityLog_Team_updateRating" xml:space="preserve">
-    <value>Judge {judgeName} updated the rating on kind {ratingKindName}.</value>
+    <value>Judge "{judgeName}" updated the rating on kind "{ratingKindName}".</value>
   </data>
   <data name="ActivityLog_Team_updateTeam" xml:space="preserve">
     <value>Team info updated by user "{adminName}".</value>
@@ -358,7 +361,7 @@
     <value>[{hackathonName}]Added a new work for team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAward" xml:space="preserve">
-    <value>[{hackathonName}]Dismissed team {teamName}.</value>
+    <value>[{hackathonName}]Dismissed team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]Revoked an assignment on award "{awardName}".</value>
@@ -385,7 +388,7 @@
     <value>[{hackathonName}]Deleted rating kind "{ratingKind}".</value>
   </data>
   <data name="ActivityLog_User_deleteTeam" xml:space="preserve">
-    <value>[{hackathonName}]Dismissed team {teamName}.</value>
+    <value>[{hackathonName}]Dismissed team "{teamName}".</value>
   </data>
   <data name="ActivityLog_User_deleteTeamMember" xml:space="preserve">
     <value>[{hackathonName}]Removed member "{memberName}" from team "{teamName}" or rejected the membership request.</value>
@@ -395,6 +398,9 @@
   </data>
   <data name="ActivityLog_User_deleteTeamWork" xml:space="preserve">
     <value>[{hackathonName}]Deleted a team work from from team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteTemplate" xml:space="preserve">
+    <value>[{hackathonName}]Deleted experiment template "{templateName}".</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>Uploaded a new file.</value>
@@ -439,7 +445,7 @@
     <value>[{hackathonName}]Updated judge '{judgeName}' for the hackathon.</value>
   </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
-    <value>[{hackathonName}]Updated a rating on kind {ratingKindName}.</value>
+    <value>[{hackathonName}]Updated a rating on kind "{ratingKindName}".</value>
   </data>
   <data name="ActivityLog_User_updateRatingKind" xml:space="preserve">
     <value>[{hackathonName}]Updated rating kind "{ratingKind}".</value>
