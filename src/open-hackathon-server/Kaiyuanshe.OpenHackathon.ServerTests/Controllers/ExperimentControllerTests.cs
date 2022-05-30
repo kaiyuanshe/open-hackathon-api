@@ -1033,16 +1033,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var expContext = new ExperimentContext { };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            var moqs = new Moqs();
+            moqs.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.ResetExperiment("Hack", "expr", default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, Resources.Experiment_NotFound);
         }
 
@@ -1053,17 +1053,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = null;
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
-            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            var moqs = new Moqs();
+            moqs.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.ResetExperiment("Hack", "expr", default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
         }
 
@@ -1081,18 +1081,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Failed();
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
-            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            var moqs = new Moqs();
+            moqs.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.ResetExperiment("Hack", "expr", default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 403, Resources.Hackathon_NotAdmin);
         }
 
@@ -1113,28 +1113,30 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     Message = "error",
                 }
             };
-            HackathonEntity hackathon = new();
+            HackathonEntity hackathon = new() { PartitionKey = "hack" };
             var authResult = AuthorizationResult.Success();
             var user = new UserInfo { Name = "un" };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
-            mockContext.ExperimentManagement.Setup(e => e.ResetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
-            mockContext.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            var moqs = new Moqs();
+            moqs.ExperimentManagement.Setup(e => e.GetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            moqs.ExperimentManagement.Setup(e => e.ResetExperimentAsync("hack", "expr", default)).ReturnsAsync(expContext);
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             if (statusFromK8s < 400)
             {
-                mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+                moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
             }
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.resetExperiment, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.resetExperiment, It.IsAny<object>(), null, default));
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.ResetExperiment("Hack", "expr", default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
             if (statusFromK8s >= 400)
             {
                 AssertHelper.AssertObjectResult(result, statusFromK8s, "error");

@@ -210,6 +210,9 @@
   <data name="ActivityLog_Hackathon_rejectEnrollment" xml:space="preserve">
     <value>Enrollment request of user "{enrolledUser}" is rejected by "{adminName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_resetExperiment" xml:space="preserve">
+    <value>User "{userName}" reset the experiment "{experiment}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>The hackathon becomes Writable.</value>
   </data>
@@ -422,6 +425,9 @@
   </data>
   <data name="ActivityLog_User_rejectEnrollment2" xml:space="preserve">
     <value>[{hackathonName}]Enrollment rejected by admin "{adminName}"</value>
+  </data>
+  <data name="ActivityLog_User_resetExperiment" xml:space="preserve">
+    <value>[{hackathonName}]Reset the experiment "{experiment}".</value>
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]Updated hackathon as Writable.</value>
