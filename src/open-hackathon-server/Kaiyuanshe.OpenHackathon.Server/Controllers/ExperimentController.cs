@@ -569,6 +569,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // reset
             context = await ExperimentManagement.ResetExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
+            if (context?.ExperimentEntity != null)
+            {
+                var logsArgs = new
+                {
+                    hackathonName = hackathon.DisplayName,
+                    userName = CurrentUserDisplayName,
+                    experiment = experimentId,
+                };
+                await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                     ActivityLogType.resetExperiment, logsArgs, cancellationToken);
+            }
 
             // build resp
             if (context.Status.IsFailed())

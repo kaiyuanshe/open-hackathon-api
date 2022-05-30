@@ -340,6 +340,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User &quot;{userName}&quot; reset the experiment &quot;{experiment}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_resetExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_resetExperiment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The hackathon becomes Writable..
         /// </summary>
         internal static string ActivityLog_Hackathon_unarchiveHackathon {
@@ -975,6 +984,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_rejectEnrollment2 {
             get {
                 return ResourceManager.GetString("ActivityLog_User_rejectEnrollment2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Reset the experiment &quot;{experiment}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_resetExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_resetExperiment", resourceCulture);
             }
         }
         
