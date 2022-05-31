@@ -216,6 +216,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>活动进入可读写状态。</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateAward" xml:space="preserve">
+    <value>管理员"{adminName}"更新了奖项"{awardName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"修改了奖项"{awardName}"的一项授奖。</value>
   </data>
@@ -431,6 +434,9 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]修改活动为可读写。</value>
+  </data>
+  <data name="ActivityLog_User_updateAward" xml:space="preserve">
+    <value>[{hackathonName}]更新了奖项"{awardName}"。</value>
   </data>
   <data name="ActivityLog_User_updateAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]修改了奖项"{awardName}"的一项授奖。</value>

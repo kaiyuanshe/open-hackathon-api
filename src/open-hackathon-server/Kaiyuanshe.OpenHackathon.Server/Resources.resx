@@ -216,6 +216,9 @@
   <data name="ActivityLog_Hackathon_unarchiveHackathon" xml:space="preserve">
     <value>The hackathon becomes Writable.</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateAward" xml:space="preserve">
+    <value>Admin "{adminName}" updated the award "{awardName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateAwardAssignment" xml:space="preserve">
     <value>Admin "{adminName}" updated an assignment on award "{awardName}".</value>
   </data>
@@ -431,6 +434,9 @@
   </data>
   <data name="ActivityLog_User_unarchiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]Updated hackathon as Writable.</value>
+  </data>
+  <data name="ActivityLog_User_updateAward" xml:space="preserve">
+    <value>[{hackathonName}]Updated the award "{awardName}".</value>
   </data>
   <data name="ActivityLog_User_updateAwardAssignment" xml:space="preserve">
     <value>[{hackathonName}]Updated an assignment on award "{awardName}".</value>
