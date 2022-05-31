@@ -202,7 +202,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             string hackName = "hack";
             string awardId = "aid";
-            HackathonEntity hackathon = new HackathonEntity { };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo" };
             Award parameter = new Award
             {
                 target = update,
@@ -223,49 +223,29 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
 
             // moq
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default))
-                .ReturnsAsync(hackathon);
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(t => t.GetAwardByIdAsync("hack", awardId, default))
-                .ReturnsAsync(awardEntity);
-            var activityLogManagement = new Mock<IActivityLogManagement>();
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AwardManagement.Setup(t => t.GetAwardByIdAsync("hack", awardId, default)).ReturnsAsync(awardEntity);
             if (expectedSuccess)
             {
-                awardManagement.Setup(t => t.UpdateAwardAsync(awardEntity, parameter, default))
-                    .ReturnsAsync(awardEntity);
-                activityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                    && a.ActivityLogType == ActivityLogType.updateAward.ToString()
-                    && a.Message == "n"), default));
+                moqs.AwardManagement.Setup(t => t.UpdateAwardAsync(awardEntity, parameter, default)).ReturnsAsync(awardEntity);
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.updateAward, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.updateAward, It.IsAny<object>(), null, default));
             }
             if (exiting != update)
             {
-                awardManagement.Setup(t => t.GetAssignmentCountAsync("hack", "rk", default))
-                    .ReturnsAsync(assignmentCount);
+                moqs.AwardManagement.Setup(t => t.GetAssignmentCountAsync("hack", "rk", default)).ReturnsAsync(assignmentCount);
             }
-            var authorizationService = new Mock<IAuthorizationService>();
-            authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(authResult);
 
             // run
-            var controller = new AwardController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-                ResponseBuilder = new DefaultResponseBuilder(),
-                AuthorizationService = authorizationService.Object,
-                ActivityLogManagement = activityLogManagement.Object,
-            };
+            var controller = new AwardController();
+            moqs.SetupController(controller);
             var result = await controller.UpdateAward(hackName, awardId, parameter, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, awardManagement, authorizationService, activityLogManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            authorizationService.VerifyNoOtherCalls();
-            activityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             if (!expectedSuccess)
             {
                 AssertHelper.AssertObjectResult(result, 412, Resources.Award_CannotUpdateTarget);

@@ -358,6 +358,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated the award &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateAward {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateAward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated an assignment on award &quot;{awardName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateAwardAssignment {
@@ -1002,6 +1011,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_unarchiveHackathon {
             get {
                 return ResourceManager.GetString("ActivityLog_User_unarchiveHackathon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Updated the award &quot;{awardName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateAward {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateAward", resourceCulture);
             }
         }
         

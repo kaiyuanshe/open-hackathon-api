@@ -118,7 +118,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region UpdateAward
         /// <summary>
-        /// Update an award
+        /// Update an award.
         /// </summary>
         /// <param name="parameter"></param>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
@@ -163,13 +163,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update award
             var updated = await AwardManagement.UpdateAwardAsync(award, parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateAward.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = updated.Name,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                awardName = updated.Name
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                 ActivityLogType.updateAward, logArgs, cancellationToken);
+
             return Ok(ResponseBuilder.BuildAward(updated));
         }
         #endregion
