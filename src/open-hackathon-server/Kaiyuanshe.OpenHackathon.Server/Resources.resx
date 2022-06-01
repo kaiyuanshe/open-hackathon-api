@@ -249,6 +249,9 @@
   <data name="ActivityLog_Hackathon_updateTeamWork" xml:space="preserve">
     <value>Team "{teamName}" updated a work.</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateTemplate" xml:space="preserve">
+    <value>Admin "{adminName}" updated the template "{templateName}".</value>
+  </data>
   <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
     <value>Invited a new team member "{memberName}" by admin "{adminName}".</value>
   </data>
@@ -479,6 +482,9 @@
   </data>
   <data name="ActivityLog_User_updateTeamWork" xml:space="preserve">
     <value>[{hackathonName}]Updated a work of team "{teamName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateTemplate" xml:space="preserve">
+    <value>[{hackathonName}]Updated the template "{templateName}".</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>The creator of a hackathon cannot be deleted.</value>

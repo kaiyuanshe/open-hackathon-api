@@ -128,14 +128,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.id = templateId;
             var context = await ExperimentManagement.CreateOrUpdateTemplateAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.updateTemplate.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = context?.Status?.Message,
-            }, cancellationToken);
-            var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                adminName = CurrentUserDisplayName,
+                templateName = context?.TemplateEntity?.DisplayName ?? "default",
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                 ActivityLogType.updateTemplate, logArgs, cancellationToken);
             if (context.Status.IsFailed())
             {
                 return Problem(
