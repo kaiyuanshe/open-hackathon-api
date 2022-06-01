@@ -249,6 +249,9 @@
   <data name="ActivityLog_Hackathon_updateTeamWork" xml:space="preserve">
     <value>团队"{teamName}"更新了作品。</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateTemplate" xml:space="preserve">
+    <value>管理员"{adminName}"更新了实验环境模板"{templateName}"。</value>
+  </data>
   <data name="ActivityLog_Team_addTeamMember" xml:space="preserve">
     <value>管理员"{adminName}"添加了新团队成员"{memberName}"。</value>
   </data>
@@ -479,6 +482,9 @@
   </data>
   <data name="ActivityLog_User_updateTeamWork" xml:space="preserve">
     <value>更新了团队"{teamName}"的作品。</value>
+  </data>
+  <data name="ActivityLog_User_updateTemplate" xml:space="preserve">
+    <value>[{hackathonName}]更新了实验环境模板"{templateName}"。</value>
   </data>
   <data name="Admin_CannotDeleteCreator" xml:space="preserve">
     <value>活动的创建者不能被删除</value>

@@ -457,6 +457,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated the template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateTemplate {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invited a new team member &quot;{memberName}&quot; by admin &quot;{adminName}&quot;..
         /// </summary>
         internal static string ActivityLog_Team_addTeamMember {
@@ -1146,6 +1155,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateTeamWork {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateTeamWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Updated the template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateTemplate {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateTemplate", resourceCulture);
             }
         }
         
