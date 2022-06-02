@@ -223,6 +223,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; deleted an experiment..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteExperiment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted by user: {userName}.
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteHackathon {
@@ -840,6 +849,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteAwardAssignment2 {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteAwardAssignment2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Deleted an experiment..
+        /// </summary>
+        internal static string ActivityLog_User_deleteExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteExperiment", resourceCulture);
             }
         }
         

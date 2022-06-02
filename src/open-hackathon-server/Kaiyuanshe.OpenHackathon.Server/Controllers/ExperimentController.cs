@@ -676,13 +676,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // delete experiment
             var context = await ExperimentManagement.DeleteExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            if (context?.ExperimentEntity != null)
             {
-                ActivityLogType = ActivityLogType.deleteExperiment.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = experimentId,
-            }, cancellationToken);
+                var logArgs = new
+                {
+                    hackathonName = hackathon.Name,
+                    adminName = CurrentUserDisplayName,
+                };
+                await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                     ActivityLogType.deleteExperiment, logArgs, cancellationToken);
+            }
 
             if (context?.Status != null && context.Status.IsFailed())
             {

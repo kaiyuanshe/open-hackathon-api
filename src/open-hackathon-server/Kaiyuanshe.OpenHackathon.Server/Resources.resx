@@ -171,6 +171,9 @@
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>An assignment on award "{awardName}" is revoked by "{adminName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteExperiment" xml:space="preserve">
+    <value>Admin "{adminName}" deleted an experiment.</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>Deleted by user: {userName}</value>
   </data>
@@ -377,6 +380,9 @@
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment2" xml:space="preserve">
     <value>[{hackathonName}]An assignment on award "{awardName}" is revoked by "{adminName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteExperiment" xml:space="preserve">
+    <value>[{hackathonName}]Deleted an experiment.</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>[{hackathonName}]Deleted hackathon.</value>

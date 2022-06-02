@@ -171,6 +171,9 @@
   <data name="ActivityLog_Hackathon_deleteAwardAssignment" xml:space="preserve">
     <value>管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteExperiment" xml:space="preserve">
+    <value>管理员"{adminName}"删除了一个实验环境。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteHackathon" xml:space="preserve">
     <value>活动被{userName}删除。</value>
   </data>
@@ -377,6 +380,9 @@
   </data>
   <data name="ActivityLog_User_deleteAwardAssignment2" xml:space="preserve">
     <value>[{hackathonName}]活动管理员"{adminName}"撤销了一项授奖记录："{awardName}"。</value>
+  </data>
+  <data name="ActivityLog_User_deleteExperiment" xml:space="preserve">
+    <value>[{hackathonName}]删除了一个实验环境。</value>
   </data>
   <data name="ActivityLog_User_deleteHackathon" xml:space="preserve">
     <value>[{hackathonName}]删除活动。</value>
