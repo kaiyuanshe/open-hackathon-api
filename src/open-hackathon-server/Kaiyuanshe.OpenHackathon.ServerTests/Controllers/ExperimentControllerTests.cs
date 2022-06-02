@@ -1192,6 +1192,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     null
                 );
 
+            // status < 400 and entity found
+            yield return new TestCaseData(
+                    new ExperimentContext
+                    {
+                        Status = new ExperimentStatus { Code = 200 },
+                        ExperimentEntity = new ExperimentEntity(),
+                    },
+                    204,
+                    null
+                );
+
             // status >= 400
             yield return new TestCaseData(
                     new ExperimentContext { Status = new ExperimentStatus { Code = 400, Message = "error" } },
@@ -1206,28 +1217,29 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
 
         [Test, TestCaseSource(nameof(DeleteExperimentTestData))]
-        public async Task DeleteExperiment(ExperimentContext templateContext, int expectedCode, string expectedMessage)
+        public async Task DeleteExperiment(ExperimentContext context, int expectedCode, string expectedMessage)
         {
-            var hackathon = new HackathonEntity { };
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var authResult = AuthorizationResult.Success();
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            mockContext.ExperimentManagement.Setup(j => j.DeleteExperimentAsync("hack", "expr", default)).ReturnsAsync(templateContext);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.deleteExperiment.ToString()
-                && a.Message == "expr"), default));
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.ExperimentManagement.Setup(j => j.DeleteExperimentAsync("hack", "expr", default)).ReturnsAsync(context);
+            if (context?.ExperimentEntity != null)
+            {
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.deleteExperiment, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.deleteExperiment, It.IsAny<object>(), null, default));
+            }
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.DeleteExperiment("Hack", "expr", default);
 
             // verify
-            mockContext.VerifyAll();
-
+            moqs.VerifyAll();
             if (expectedCode == 204)
             {
                 AssertHelper.AssertNoContentResult(result);
