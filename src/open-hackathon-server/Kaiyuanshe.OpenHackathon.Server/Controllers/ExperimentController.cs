@@ -372,13 +372,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             parameter.hackathonName = hackathonName.ToLower();
             parameter.userId = CurrentUserId;
             var experimentContext = await ExperimentManagement.CreateOrUpdateExperimentAsync(parameter, cancellationToken);
-            await ActivityLogManagement.LogActivity(new ActivityLogEntity
+            var logArgs = new
             {
-                ActivityLogType = ActivityLogType.createExperiment.ToString(),
-                HackathonName = hackathonName.ToLower(),
-                OperatorId = CurrentUserId,
-                Message = experimentContext?.Status?.Message,
-            }, cancellationToken);
+                hackathonName = hackathon.DisplayName,
+                userName = CurrentUserDisplayName,
+                templateName = templateContext.TemplateEntity.DisplayName,
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
+                 ActivityLogType.createExperiment, logArgs, cancellationToken);
 
             // build resp
             var userInfo = await GetCurrentUserInfo(cancellationToken);

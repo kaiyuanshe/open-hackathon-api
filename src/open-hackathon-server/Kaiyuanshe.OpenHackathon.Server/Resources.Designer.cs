@@ -142,6 +142,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User &quot;{userName}&quot; created a new experiment on template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createExperiment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created by user: {userName}..
         /// </summary>
         internal static string ActivityLog_Hackathon_createHackathon {
@@ -759,6 +768,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createEnrollment {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createEnrollment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Created a new experiment on template &quot;{templateName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_createExperiment {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createExperiment", resourceCulture);
             }
         }
         
