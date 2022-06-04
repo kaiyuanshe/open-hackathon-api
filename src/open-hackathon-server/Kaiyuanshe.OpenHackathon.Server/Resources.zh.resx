@@ -144,6 +144,9 @@
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>用户报名成功：{userName}</value>
   </data>
+  <data name="ActivityLog_Hackathon_createExperiment" xml:space="preserve">
+    <value>用户"{userName}"基于模板"{templateName}"创建了新的虚拟环境。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
     <value>{userName}创建了活动。</value>
   </data>
@@ -350,6 +353,9 @@
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>[{hackathonName}]报名参加活动。</value>
+  </data>
+  <data name="ActivityLog_User_createExperiment" xml:space="preserve">
+    <value>[{hackathonName}]基于模板"{templateName}"创建了新的虚拟环境。</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>[{hackathonName}]创建了新活动：{hackathonName}</value>

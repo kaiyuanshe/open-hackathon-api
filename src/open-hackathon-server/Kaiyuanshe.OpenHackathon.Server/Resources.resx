@@ -144,6 +144,9 @@
   <data name="ActivityLog_Hackathon_createEnrollment" xml:space="preserve">
     <value>user enrolled successfully: {userName}</value>
   </data>
+  <data name="ActivityLog_Hackathon_createExperiment" xml:space="preserve">
+    <value>User "{userName}" created a new experiment on template "{templateName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_createHackathon" xml:space="preserve">
     <value>Created by user: {userName}.</value>
   </data>
@@ -350,6 +353,9 @@
   </data>
   <data name="ActivityLog_User_createEnrollment" xml:space="preserve">
     <value>[{hackathonName}]enrolled in hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_createExperiment" xml:space="preserve">
+    <value>[{hackathonName}]Created a new experiment on template "{templateName}".</value>
   </data>
   <data name="ActivityLog_User_createHackathon" xml:space="preserve">
     <value>[{hackathonName}]Created a new hackathon: {hackathonName}</value>

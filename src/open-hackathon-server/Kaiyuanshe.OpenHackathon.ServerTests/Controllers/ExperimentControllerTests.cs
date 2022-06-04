@@ -514,22 +514,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 Status = new ExperimentStatus { Reason = "reason" }
             };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
 
-            var controller = new ExperimentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-            };
+            var controller = new ExperimentController();
+            moqs.SetupController(controller);
             var result = await controller.CreateExperiment("Hack", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Enrollment_NotFound, "", "Hack"));
         }
 
@@ -546,22 +539,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 Status = new ExperimentStatus { Reason = "reason" }
             };
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
 
-            var controller = new ExperimentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-            };
+            var controller = new ExperimentController();
+            moqs.SetupController(controller);
             var result = await controller.CreateExperiment("Hack", parameter, default);
 
-            Mock.VerifyAll(hackathonManagement, enrollmentManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            enrollmentManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 412, Resources.Enrollment_NotApproved);
         }
 
@@ -576,24 +562,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var templateContext = new TemplateContext { Status = new V1Status { Code = 422, Message = "bad" } };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
-            mockContext.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            moqs.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateExperiment("Hack", parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.ExperimentManagement,
-                mockContext.EnrollmentManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ExperimentManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 422, "bad");
         }
 
@@ -601,7 +581,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task CreateExperiment_K8SFailure()
         {
             var parameter = new Experiment { templateId = "tplId" };
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var experiment = new ExperimentEntity { RowKey = "rk" };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             var context = new ExperimentContext
@@ -614,36 +594,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 }
             };
             UserInfo userInfo = new UserInfo { Region = "region" };
-            var templateContext = new TemplateContext { Status = new V1Status { Code = 200 } };
+            var templateContext = new TemplateContext { TemplateEntity = new(), Status = new V1Status { Code = 200 } };
 
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
-            mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            moqs.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
                 j.templateId == "tplId" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
-            mockContext.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
-                && a.Message == "msg"), default));
+            moqs.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.createExperiment, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.createExperiment, It.IsAny<object>(), null, default));
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateExperiment("Hack", parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.ExperimentManagement,
-                mockContext.EnrollmentManagement,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ExperimentManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 500, "msg");
         }
 
@@ -651,7 +622,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task CreateExperiment_Success()
         {
             var parameter = new Experiment { templateId = "tplId" };
-            var hackathon = new HackathonEntity();
+            var hackathon = new HackathonEntity { PartitionKey = "hack" };
             var experiment = new ExperimentEntity { RowKey = "rk" };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             var context = new ExperimentContext
@@ -660,35 +631,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 Status = new ExperimentStatus { Reason = "reason" }
             };
             UserInfo userInfo = new UserInfo { Region = "region" };
-            var templateContext = new TemplateContext { Status = new V1Status { Code = 200 } };
+            var templateContext = new TemplateContext { TemplateEntity = new(), Status = new V1Status { Code = 200 } };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            mockContext.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
-            mockContext.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.EnrollmentManagement.Setup(e => e.GetEnrollmentAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(enrollment);
+            moqs.ExperimentManagement.Setup(j => j.CreateOrUpdateExperimentAsync(It.Is<Experiment>(j =>
                 j.templateId == "tplId" &&
                 j.hackathonName == "hack"), default)).ReturnsAsync(context);
-            mockContext.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
-            mockContext.ActivityLogManagement.Setup(a => a.LogActivity(It.Is<ActivityLogEntity>(a => a.HackathonName == "hack"
-                && a.ActivityLogType == ActivityLogType.createExperiment.ToString()
-                && a.Message == null), default));
+            moqs.ExperimentManagement.Setup(e => e.GetTemplateAsync("hack", "tplId", default)).ReturnsAsync(templateContext);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "", ActivityLogType.createExperiment, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "hack", "", ActivityLogType.createExperiment, It.IsAny<object>(), null, default));
 
             // test
             var controller = new ExperimentController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.CreateExperiment("Hack", parameter, default);
 
             // verify
-            Mock.VerifyAll(mockContext.HackathonManagement,
-                mockContext.ExperimentManagement,
-                mockContext.EnrollmentManagement,
-                mockContext.ActivityLogManagement);
-            mockContext.HackathonManagement.VerifyNoOtherCalls();
-            mockContext.ExperimentManagement.VerifyNoOtherCalls();
-            mockContext.EnrollmentManagement.VerifyNoOtherCalls();
-            mockContext.ActivityLogManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Experiment resp = AssertHelper.AssertOKResult<Experiment>(result);
             Assert.AreEqual("rk", resp.id);
             Assert.AreEqual("reason", resp.status.reason);
