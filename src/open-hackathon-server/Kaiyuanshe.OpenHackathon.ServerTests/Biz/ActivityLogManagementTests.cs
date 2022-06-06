@@ -206,6 +206,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 10,
                 new Pagination { top = 10, np = "np2", nr = "nr2" }
                 );
+
+            // Category=hackathon, with all other options
+            yield return new TestCaseData(
+                new ActivityLogQueryOptions
+                {
+                    Category = ActivityLogCategory.Hackathon,
+                    HackathonName = "hack",
+                    TeamId = "tid",
+                    UserId = "uid",
+                    Pagination = new Pagination { top = 10, np = "np", nr = "nr" }
+                },
+                "np2 nr2",
+                "(PartitionKey eq 'hack') and (Category eq 0)",
+                "np nr",
+                10,
+                new Pagination { top = 10, np = "np2", nr = "nr2" }
+                );
         }
 
         [Test, TestCaseSource(nameof(ListActivityLogsTestData))]
