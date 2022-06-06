@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
-using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
@@ -129,45 +128,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             };
             await ActivityLogManagement.LogUserActivity(CurrentUserId, null, CurrentUserId, ActivityLogType.fileUpload, args, null, cancellationToken);
             return Ok(result);
-        }
-        #endregion
-
-        #region ListAcitivitiesByUser
-        /// <summary>
-        /// View activities of a user.
-        /// </summary>
-        /// <param name="userId" example="1">unique id of the user</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>A list of activitiy logs.</returns>
-        /// <response code="200">Success. The response describes a list of activity logs and a nullable link to query more results.</response>
-        [HttpGet]
-        [ProducesResponseType(typeof(ActivityLogList), StatusCodes.Status200OK)]
-        [SwaggerErrorResponse(404)]
-        [Route("user/{userId}/activityLogs")]
-        public async Task<object> ListAcitivitiesByUser(
-            [FromRoute, Required] string userId,
-            [FromQuery] Pagination pagination,
-            CancellationToken cancellationToken)
-        {
-            var userInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            if (userInfo == null)
-            {
-                return NotFound(Resources.User_NotFound);
-            }
-
-            // query logs
-            var options = new ActivityLogQueryOptions
-            {
-                Pagination = pagination,
-                UserId = userId,
-                Category = ActivityLogCategory.User,
-            };
-            var logs = await ActivityLogManagement.ListActivityLogs(options, cancellationToken);
-
-            // resp
-            var nextLink = BuildNextLinkUrl(null, options.NextPage);
-            var resp = ResponseBuilder.BuildResourceList<ActivityLogEntity, ActivityLog, ActivityLogList>(logs, ResponseBuilder.BuildActivityLog, nextLink);
-            return Ok(resp);
         }
         #endregion
     }

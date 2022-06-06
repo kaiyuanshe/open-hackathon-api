@@ -59,7 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return;
 
             // override any input
-            entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0, 8)}";
+            entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow)}-{Guid.NewGuid().ToString().Substring(0, 8)}";
             entity.CreatedAt = DateTime.UtcNow;
 
             var ltype = Enum.Parse<ActivityLogType>(entity.ActivityLogType);
@@ -113,7 +113,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         private string GenerateRowKey()
         {
-            return $"{StorageUtils.InversedTimeKey(DateTime.UtcNow) }-{Guid.NewGuid().ToString().Substring(0, 8)}";
+            return $"{StorageUtils.InversedTimeKey(DateTime.UtcNow)}-{Guid.NewGuid().ToString().Substring(0, 8)}";
         }
 
         private async Task CustomizeAndSave(string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
@@ -155,12 +155,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         private string GenerateFilter(ActivityLogQueryOptions options)
         {
-            var catetory = TableQueryHelper.FilterForInt(nameof(ActivityLogEntity.Category), ComparisonOperator.Equal, (int)ActivityLogCategory.User);
+            var catetory = TableQueryHelper.FilterForInt(nameof(ActivityLogEntity.Category), ComparisonOperator.Equal, (int)options.Category);
 
             switch (options.Category)
             {
                 case ActivityLogCategory.Hackathon:
-                    return null;
+                    if (string.IsNullOrWhiteSpace(options.HackathonName))
+                    {
+                        return null;
+                    }
+                    var hackPk = TableQueryHelper.PartitionKeyFilter(options.HackathonName);
+                    return TableQueryHelper.And(hackPk, catetory);
                 case ActivityLogCategory.Team:
                     return null;
                 case ActivityLogCategory.User:
