@@ -167,7 +167,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                     var hackPk = TableQueryHelper.PartitionKeyFilter(options.HackathonName);
                     return TableQueryHelper.And(hackPk, catetory);
                 case ActivityLogCategory.Team:
-                    return null;
+                    if (string.IsNullOrEmpty(options.TeamId))
+                    {
+                        return null;
+                    }
+                    var teamPk = TableQueryHelper.PartitionKeyFilter(options.TeamId);
+                    return TableQueryHelper.And(teamPk, catetory);
                 case ActivityLogCategory.User:
                     if (string.IsNullOrEmpty(options.UserId))
                     {
