@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 {
@@ -18,18 +17,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         public string OperatorId { get; set; }
 
         /// <summary>
-        /// The user id on whom the operation perferms.
-        /// </summary>
-        [Obsolete]
-        public string CorrelatedUserId { get; set; }
-
-        /// <summary>
-        /// related team id. might be null.
-        /// </summary>
-        [Obsolete]
-        public string TeamId { get; set; }
-
-        /// <summary>
         /// auto-generated. RowKey.  Any input will be ignored.
         /// </summary>
         [IgnoreEntityProperty]
@@ -44,12 +31,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// type of the activity log. <see cref="ActivityLogType"/>
         /// </summary>
         public string ActivityLogType { get; set; }
-
-        /// <summary>
-        /// Default message of the activity, will used if cannot find the message in Resource file.
-        /// </summary>
-        [Obsolete]
-        public string Message { get; set; }
 
         /// <summary>
         /// ResourceKey to lookup resource files.
