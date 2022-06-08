@@ -11,9 +11,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface IActivityLogManagement
     {
-        [Obsolete]
-        Task LogActivity(ActivityLogEntity entity, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Log activity related to a hackathon.
         /// </summary>
@@ -53,28 +50,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public class ActivityLogManagement : ManagementClientBase<ActivityLogManagement>, IActivityLogManagement
     {
         #region LogActivity
-        public async Task LogActivity(ActivityLogEntity entity, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrEmpty(entity?.ActivityLogType))
-                return;
-
-            // override any input
-            entity.RowKey = $"{StorageUtils.InversedTimeKey(DateTime.UtcNow)}-{Guid.NewGuid().ToString().Substring(0, 8)}";
-            entity.CreatedAt = DateTime.UtcNow;
-
-            var ltype = Enum.Parse<ActivityLogType>(entity.ActivityLogType);
-            var largs = new { hackathonName = entity.HackathonName, userName = entity.OperatorId };
-            if (!string.IsNullOrEmpty(entity.OperatorId))
-            {
-                await LogHackathonActivity(entity.HackathonName, entity.OperatorId, ltype, largs);
-            }
-
-            if (!string.IsNullOrEmpty(entity.HackathonName))
-            {
-                await LogUserActivity(entity.OperatorId, entity.HackathonName, entity.OperatorId, ltype, largs);
-            }
-        }
-
         public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(hackathonName))
@@ -187,7 +162,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
     }
 
-    [Obsolete]
     public static class IActivityLogManagementExtensions
     {
         public static async Task OnHackathonEvent(this IActivityLogManagement activityLogManagement,
