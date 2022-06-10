@@ -1,14 +1,18 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+﻿using k8s;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
     internal class Moqs
     {
+        public Mock<ILogger> Logger = new();
+
         #region Storage
         public Mock<IStorageContext> StorageContext { get; } = new();
         public Mock<IActivityLogTable> ActivityLogTable { get; } = new();
@@ -36,6 +40,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IFileManagement> FileManagement { get; } = new();
         #endregion
 
+        #region K8s
+        public Mock<IKubernetes> Kubernetes = new();
+        public Mock<ICustomObjectsOperations> CustomObjects = new();
+        #endregion
+
         public Mock<ICacheProvider> CacheProvider { get; } = new();
 
         public Moqs()
@@ -47,6 +56,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
+
+            Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
         }
 
         public void VerifyAll()
@@ -83,6 +94,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             AwardManagement.VerifyNoOtherCalls();
             WorkManagement.VerifyNoOtherCalls();
             FileManagement.VerifyNoOtherCalls();
+            #endregion
+
+            #region k8s
+            Mock.VerifyAll(CustomObjects);
+            CustomObjects.VerifyNoOtherCalls();
             #endregion
 
             Mock.VerifyAll(CacheProvider);
