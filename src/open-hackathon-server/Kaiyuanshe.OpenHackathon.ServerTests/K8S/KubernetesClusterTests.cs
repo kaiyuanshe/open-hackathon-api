@@ -21,11 +21,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task CreateOrUpdateTemplateAsync_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-
             string content = "{\"code\": 422}";
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                "rk",
                null, default))
@@ -38,21 +37,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
 
         [Test]
         public async Task CreateOrUpdateTemplateAsync_Create()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-
             string content = "{\"code\": 404}";
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                "rk",
                null, default))
@@ -60,7 +57,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                {
                    Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
                });
-            kubernetes.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
+            moqs.CustomObjects.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<TemplateResource>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 null, null, null, null, default))
@@ -77,12 +74,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(201, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -90,9 +85,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task CreateOrUpdateTemplateAsync_Patch()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
                 null, default))
@@ -100,7 +94,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 {
                     Body = "{\"kind\":\"template\"}"
                 });
-            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+            moqs.CustomObjects.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<V1Patch>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
@@ -118,12 +112,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -133,9 +125,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task UpdateTemplateAsync()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<V1Patch>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
@@ -153,12 +144,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.UpdateTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -168,9 +157,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task GetTemplateAsync()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
                 null, default))
@@ -183,12 +171,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             var result = await kubernetesCluster.GetTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual("template", result.Kind);
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Status);
@@ -199,9 +185,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task ListTemplatesAsync()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 null, null, null, "hackathonName=hack",
                 null, null, null, null, null, null, null, default))
@@ -210,12 +195,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Body = "{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"items\":[{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"data\":{\"ingressPort\":5901,\"ingressProtocol\":\"vnc\",\"type\":\"Pod\"},\"kind\":\"Template\",\"metadata\":{\"labels\":{\"hackathonName\":\"hack\"},\"name\":\"abc\",\"namespace\":\"default\"}}],\"kind\":\"TemplateList\"}"
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             var result = await kubernetesCluster.ListTemplatesAsync("hack", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(5901, result.First().data.ingressPort);
             Assert.AreEqual("Template", result.First().Kind);
@@ -227,9 +210,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task DeleteTemplateAsync_NotFound()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
                 null, null, null, null, null, null, default))
@@ -242,29 +224,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes, logger);
-            kubernetes.VerifyNoOtherCalls();
-            logger.Verify(
+            moqs.VerifyAll();
+            moqs.Logger.Verify(
                x => x.Log(
                    LogLevel.Information,
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
-            logger.VerifyNoOtherCalls();
-
+            moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(204, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteTemplateAsync_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
                 null, null, null, null, null, null, default))
@@ -277,29 +256,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes, logger);
-            kubernetes.VerifyNoOtherCalls();
-            logger.Verify(
+            moqs.VerifyAll();
+            moqs.Logger.Verify(
                x => x.Log(
                    LogLevel.Information,
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
-            logger.VerifyNoOtherCalls();
-
+            moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(400, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteTemplateAsync_Success()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "rk",
                 null, null, null, null, null, null, default));
@@ -308,21 +284,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 TemplateEntity = new TemplateEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteTemplateAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(204, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteTemplateAsync2_404()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "name",
                 null, null, null, null, null, null, default)).Throws(new HttpOperationException
@@ -330,19 +303,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteTemplateAsync("name", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
+
         }
 
         [Test]
         public void DeleteTemplateAsync2_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "name",
                 null, null, null, null, null, null, default)).Throws(new HttpOperationException
@@ -350,28 +322,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.InternalServerError), "{\"code\":404}")
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             Assert.ThrowsAsync<HttpOperationException>(() => kubernetesCluster.DeleteTemplateAsync("name", default));
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
+
         }
 
         [Test]
         public async Task DeleteTemplateAsync2_Success()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "templates",
                 "name",
                 null, null, null, null, null, null, default));
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteTemplateAsync("name", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
+
         }
         #endregion
 
@@ -379,11 +350,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task CreateOrUpdateExperimentAsync_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-
             string content = "{\"code\": 422}";
+
+            var moqs = new Moqs();
             var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                "rk",
                null, default))
@@ -402,21 +373,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
+            moqs.VerifyAll();
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
         }
 
         [Test]
         public async Task CreateOrUpdateExperimentAsync_Create()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-
             string content = "{\"code\": 404}";
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                "rk",
                null, default))
@@ -424,7 +393,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                {
                    Response = new HttpResponseMessageWrapper(new System.Net.Http.HttpResponseMessage(), content)
                });
-            kubernetes.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
+            moqs.CustomObjects.Setup(k => k.CreateNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<ExperimentResource>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 null, null, null, null, default))
@@ -447,12 +416,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(201, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -460,7 +427,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task CreateOrUpdateExperimentAsync_Update()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
             var context = new ExperimentContext
             {
                 ExperimentEntity = new ExperimentEntity
@@ -472,8 +438,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 }
             };
 
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                "rk",
                null, default))
@@ -481,7 +447,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                {
                    Body = "{\"kind\":\"experiment\",\"status\": {}}"
                });
-            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+            moqs.CustomObjects.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                  It.IsAny<V1Patch>(),
                  "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                  "rk",
@@ -495,12 +461,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                      },
                  });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.CreateOrUpdateExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -510,9 +474,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task UpdateExperimentAsync()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.PatchNamespacedCustomObjectWithHttpMessagesAsync(
                 It.IsAny<V1Patch>(),
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "rk",
@@ -530,12 +493,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.UpdateExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Reason);
         }
@@ -545,9 +506,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task GetExperimentAsync()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.GetNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "rk",
                 null, default))
@@ -560,12 +520,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             var result = await kubernetesCluster.GetExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual("experiment", result.Kind);
             Assert.AreEqual(204, context.Status.Code);
         }
@@ -575,9 +533,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task ListTemplatesAsync_ByHackathon()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 null, null, null, "hackathonName=hack",
                 null, null, null, null, null, null, null, default))
@@ -586,12 +543,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Body = "{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"items\":[{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"status\":{\"ingressPort\":5901,\"ingressProtocol\":\"vnc\",\"type\":\"Pod\"},\"kind\":\"Experiment\",\"metadata\":{\"labels\":{\"hackathonName\":\"hack\"},\"name\":\"abc\",\"namespace\":\"default\"}}],\"kind\":\"ExperimentList\"}"
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             var result = await kubernetesCluster.ListExperimentsAsync("hack", null, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(5901, result.First().Status.ingressPort);
             Assert.AreEqual("Experiment", result.First().Kind);
@@ -601,9 +556,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task ListTemplatesAsync_ByTemplate()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.ListNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 null, null, null, "hackathonName=hack,templateId=tpl",
                 null, null, null, null, null, null, null, default))
@@ -612,12 +566,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Body = "{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"items\":[{\"apiVersion\":\"hackathon.kaiyuanshe.cn/v1\",\"status\":{\"ingressPort\":5901,\"ingressProtocol\":\"vnc\",\"type\":\"Pod\"},\"kind\":\"Experiment\",\"metadata\":{\"labels\":{\"hackathonName\":\"hack\"},\"name\":\"abc\",\"namespace\":\"default\"}}],\"kind\":\"ExperimentList\"}"
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             var result = await kubernetesCluster.ListExperimentsAsync("hack", "tpl", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(5901, result.First().Status.ingressPort);
             Assert.AreEqual("Experiment", result.First().Kind);
@@ -629,9 +581,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public async Task DeleteExperimentAsync_NotFound()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "rk",
                 null, null, null, null, null, null, default))
@@ -644,29 +595,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes, logger);
-            kubernetes.VerifyNoOtherCalls();
-            logger.Verify(
+            moqs.VerifyAll();
+            moqs.Logger.Verify(
                x => x.Log(
                    LogLevel.Information,
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
-            logger.VerifyNoOtherCalls();
-
+            moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(204, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteExperimentAsync_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "rk",
                 null, null, null, null, null, null, default))
@@ -679,29 +627,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes, logger);
-            kubernetes.VerifyNoOtherCalls();
-            logger.Verify(
+            moqs.VerifyAll();
+            moqs.Logger.Verify(
                x => x.Log(
                    LogLevel.Information,
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
                    It.IsAny<Func<It.IsAnyType, Exception, string>>()));
-            logger.VerifyNoOtherCalls();
-
+            moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(400, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteExperimentAsync_Success()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "rk",
                 null, null, null, null, null, null, default));
@@ -710,21 +655,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                 ExperimentEntity = new ExperimentEntity { PartitionKey = "pk", RowKey = "rk" }
             };
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteExperimentAsync(context, default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(204, context.Status.Code);
         }
 
         [Test]
         public async Task DeleteExperimentAsync2_404()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "name",
                 null, null, null, null, null, null, default)).Throws(new HttpOperationException
@@ -732,19 +674,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.NotFound), "{\"code\":404}")
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteExperimentAsync("name", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
 
         [Test]
         public void DeleteExperimentAsync2_OtherError()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "name",
                 null, null, null, null, null, null, default)).Throws(new HttpOperationException
@@ -752,28 +692,25 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                     Response = new HttpResponseMessageWrapper(new HttpResponseMessage(HttpStatusCode.InternalServerError), "{\"code\":404}")
                 });
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             Assert.ThrowsAsync<HttpOperationException>(() => kubernetesCluster.DeleteExperimentAsync("name", default));
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
 
         [Test]
         public async Task DeleteExperimentAsync2_Success()
         {
-            var logger = new Mock<ILogger<KubernetesCluster>>();
-            var kubernetes = new Mock<IKubernetes>();
-            kubernetes.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
+            var moqs = new Moqs();
+            moqs.CustomObjects.Setup(k => k.DeleteNamespacedCustomObjectWithHttpMessagesAsync(
                 "hackathon.kaiyuanshe.cn", "v1", "default", "experiments",
                 "name",
                 null, null, null, null, null, null, default));
 
-            var kubernetesCluster = new KubernetesCluster(kubernetes.Object, logger.Object);
+            var kubernetesCluster = new KubernetesCluster(moqs.Kubernetes.Object, moqs.Logger.Object);
             await kubernetesCluster.DeleteExperimentAsync("name", default);
 
-            Mock.VerifyAll(kubernetes);
-            kubernetes.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
         #endregion
     }
