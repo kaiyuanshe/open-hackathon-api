@@ -1,6 +1,7 @@
 using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;

@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
