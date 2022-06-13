@@ -55,17 +55,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> IsUserEnrolledAsync(HackathonEntity hackathon, string userId, CancellationToken cancellationToken = default);
     }
 
-    public class EnrollmentManagement : ManagementClientBaseV0, IEnrollmentManagement
+    public class EnrollmentManagement : ManagementClientBase<EnrollmentManagement>, IEnrollmentManagement
     {
         // only cache enrollments when its count is <=1000, to avoid too many memory being used.
         private static readonly int CACHE_THRESHOLD = 1000;
-
-        private readonly ILogger logger;
-
-        public EnrollmentManagement(ILogger<EnrollmentManagement> logger)
-        {
-            this.logger = logger;
-        }
 
         #region Cache
         private void InvalidateCachedEnrollment(string hackathonName)
@@ -112,7 +105,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             await StorageContext.EnrollmentTable.InsertAsync(entity, cancellationToken);
             InvalidateCachedEnrollment(hackathonName);
-            logger.TraceInformation($"user {request.userId} enrolled in hackathon {hackathon}, status: {entity.Status.ToString()}");
+            Logger?.TraceInformation($"user {request.userId} enrolled in hackathon {hackathon}, status: {entity.Status.ToString()}");
 
             if (entity.Status == EnrollmentStatus.approved)
             {
@@ -167,7 +160,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 hackathon.Enrollment += enrollmentIncreasement;
                 await StorageContext.HackathonTable.MergeAsync(hackathon, cancellationToken);
             }
-            logger.TraceInformation($"Pariticipant {enrollment.HackathonName}/{enrollment.UserId} stastus updated to: {status} ");
+            Logger?.TraceInformation($"Pariticipant {enrollment.HackathonName}/{enrollment.UserId} stastus updated to: {status} ");
 
             return enrollment;
         }
