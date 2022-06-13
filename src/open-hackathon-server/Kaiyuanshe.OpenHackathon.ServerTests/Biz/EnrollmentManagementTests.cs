@@ -6,7 +6,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections;
@@ -39,11 +38,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 }
             };
             EnrollmentEntity enrollment = null;
-            CancellationToken cancellation = CancellationToken.None;
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
 
             var enrollmentTable = new Mock<IEnrollmentTable>();
-            enrollmentTable.Setup(p => p.InsertAsync(It.IsAny<EnrollmentEntity>(), cancellation))
+            enrollmentTable.Setup(p => p.InsertAsync(It.IsAny<EnrollmentEntity>(), default))
                 .Callback<EnrollmentEntity, CancellationToken>((p, c) =>
                 {
                     enrollment = p;
@@ -53,23 +50,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
             if (autoApprove)
             {
-                hackathonTable.Setup(h => h.MergeAsync(hackathon, cancellation));
+                hackathonTable.Setup(h => h.MergeAsync(hackathon, default));
                 storageContext.SetupGet(s => s.HackathonTable).Returns(hackathonTable.Object);
             }
             var cache = new Mock<ICacheProvider>();
 
-            var enrollmentManagement = new EnrollmentManagement(logger.Object)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
             };
-            await enrollmentManagement.CreateEnrollmentAsync(hackathon, request, cancellation);
+            await enrollmentManagement.CreateEnrollmentAsync(hackathon, request, default);
 
             Mock.VerifyAll(storageContext, enrollmentTable, hackathonTable);
             enrollmentTable.VerifyNoOtherCalls();
             if (autoApprove)
             {
-                hackathonTable.Verify(h => h.MergeAsync(It.Is<HackathonEntity>(h => h.Enrollment == 6), cancellation), Times.Once);
+                hackathonTable.Verify(h => h.MergeAsync(It.Is<HackathonEntity>(h => h.Enrollment == 6), default), Times.Once);
             }
             hackathonTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
@@ -99,7 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("Enrollment-hack"));
 
-            var enrollmentManagement = new EnrollmentManagement(null)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -126,13 +123,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             HackathonEntity hackathon = null;
             EnrollmentEntity participant = null;
             CancellationToken cancellation = CancellationToken.None;
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
 
-            var enrollmentManagement = new EnrollmentManagement(logger.Object);
+            var enrollmentManagement = new EnrollmentManagement();
             await enrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, participant, EnrollmentStatus.approved, cancellation);
 
-            Mock.VerifyAll(logger);
-            logger.VerifyNoOtherCalls();
             Assert.IsNull(participant);
         }
 
@@ -155,7 +149,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             CancellationToken cancellation = CancellationToken.None;
 
             // setup
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
             var storageContext = new Mock<IStorageContext>();
             var enrollmentTable = new Mock<IEnrollmentTable>();
             var cache = new Mock<ICacheProvider>();
@@ -173,7 +166,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
 
             // test
-            var enrollmentManagement = new EnrollmentManagement(logger.Object)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -182,7 +175,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             await enrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, enrollment, targetStatus, cancellation);
 
             // verify
-            Mock.VerifyAll(storageContext, enrollmentTable, hackathonTable, logger, cache);
+            Mock.VerifyAll(storageContext, enrollmentTable, hackathonTable, cache);
             if (currentStatus != targetStatus)
             {
                 enrollmentTable.Verify(p => p.MergeAsync(It.Is<EnrollmentEntity>(p => p.Status == targetStatus), cancellation), Times.Once);
@@ -211,14 +204,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                      new EnrollmentEntity{  PartitionKey="pk" }
                  }, "np nr", null);
 
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
             var enrollmentTable = new Mock<IEnrollmentTable>();
             enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", null, 100, null, default))
                 .ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
 
-            var enrollmentManagement = new EnrollmentManagement(logger.Object)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object
             };
@@ -252,7 +244,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     new EnrollmentEntity{  PartitionKey="pk" }
                 }, "np2 nr2", null);
 
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
 
             var enrollmentTable = new Mock<IEnrollmentTable>();
             enrollmentTable.Setup(p => p.ExecuteQuerySegmentedAsync("(PartitionKey eq 'foo') and (Status eq 2)", "np nr", expectedTop, null, default))
@@ -261,7 +252,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
 
-            var enrollmentManagement = new EnrollmentManagement(logger.Object)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object
             };
@@ -285,7 +276,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase("hack", null)]
         public async Task GetEnrollmentAsyncTest_NotFound(string hackathon, string userId)
         {
-            var enrollmentManagement = new EnrollmentManagement(null);
+            var enrollmentManagement = new EnrollmentManagement();
             var enrollment = await enrollmentManagement.GetEnrollmentAsync(hackathon, userId);
             Assert.IsNull(enrollment);
         }
@@ -295,14 +286,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             EnrollmentEntity participant = new EnrollmentEntity { Status = EnrollmentStatus.rejected };
             CancellationToken cancellation = CancellationToken.None;
-            var logger = new Mock<ILogger<EnrollmentManagement>>();
 
             var enrollmentTable = new Mock<IEnrollmentTable>();
             enrollmentTable.Setup(p => p.RetrieveAsync("hack", "uid", cancellation)).ReturnsAsync(participant);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
 
-            var enrollmentManagement = new EnrollmentManagement(logger.Object)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -335,7 +325,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var storageContext = new Mock<IStorageContext>();
 
             // test
-            var enrollmentManagement = new EnrollmentManagement(null)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -399,7 +389,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storageContext.SetupGet(p => p.EnrollmentTable).Returns(enrollmentTable.Object);
 
             // test
-            var enrollmentManagement = new EnrollmentManagement(null)
+            var enrollmentManagement = new EnrollmentManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
