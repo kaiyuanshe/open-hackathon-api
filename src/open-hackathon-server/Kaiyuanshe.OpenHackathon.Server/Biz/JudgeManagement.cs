@@ -2,7 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +21,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken);
     }
 
-    public class JudgeManagement : ManagementClientBaseV0, IJudgeManagement
+    public class JudgeManagement : ManagementClientBase<JudgeManagement>, IJudgeManagement
     {
         static readonly int MaxJudgeCount = 100;
-
-        private readonly ILogger Logger;
-
-        public JudgeManagement(ILogger<JudgeManagement> logger)
-        {
-            Logger = logger;
-        }
 
         #region Cache
         private string CacheKeyByHackathon(string hackathonName)

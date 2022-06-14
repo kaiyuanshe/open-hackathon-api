@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -24,9 +23,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase(5, 5)]
         public void GetSASExpirationMinitues(int? requestedExpiration, int expectedExpiration)
         {
-            var logger = new Mock<ILogger<FileManagement>>();
             var request = new FileUpload { expiration = requestedExpiration };
-            var fileManagement = new FileManagement(logger.Object);
+            var fileManagement = new FileManagement();
             Assert.AreEqual(expectedExpiration, fileManagement.GetSASExpirationMinitues(request));
         }
         #endregion
@@ -54,10 +52,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             userBlobContainer.SetupGet(u => u.BlobContainerUri).Returns("https://contoso.com");
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(s => s.UserBlobContainer).Returns(userBlobContainer.Object);
-            var logger = new Mock<ILogger<FileManagement>>();
 
             // test
-            var fileManagement = new FileManagement(logger.Object)
+            var fileManagement = new FileManagement()
             {
                 StorageContext = storageContext.Object,
             };

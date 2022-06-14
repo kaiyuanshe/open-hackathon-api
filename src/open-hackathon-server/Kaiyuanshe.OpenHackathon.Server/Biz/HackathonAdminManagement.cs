@@ -3,7 +3,6 @@ using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,15 +36,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> IsPlatformAdmin(string userId, CancellationToken cancellationToken = default);
     }
 
-    public class HackathonAdminManagement : ManagementClientBaseV0, IHackathonAdminManagement
+    public class HackathonAdminManagement : ManagementClientBase<HackathonAdminManagement>, IHackathonAdminManagement
     {
-        private readonly ILogger logger;
-
-        public HackathonAdminManagement(ILogger<HackathonAdminManagement> logger)
-        {
-            this.logger = logger;
-        }
-
         #region cache
 
         private void InvalidateAdminCache(string hackathonName)
