@@ -31,7 +31,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 userId = "uid"
             };
 
-            var logger = new Mock<ILogger<HackathonAdminManagement>>();
             var hackathonAdminTable = new Mock<IHackathonAdminTable>();
             hackathonAdminTable.Setup(a => a.InsertOrMergeAsync(It.Is<HackathonAdminEntity>(a =>
                     a.HackathonName == "hack" && a.UserId == "uid"),
@@ -43,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("HackathonAdmin-hack"));
 
-            var management = new HackathonAdminManagement(logger.Object)
+            var management = new HackathonAdminManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -76,9 +75,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var hackAdminTable = new Mock<IHackathonAdminTable>();
             storageContext.SetupGet(p => p.HackathonAdminTable).Returns(hackAdminTable.Object);
             hackAdminTable.Setup(p => p.ListByHackathonAsync(name, cancellationToken)).ReturnsAsync(data);
-            var cache = new DefaultCacheProvider(null);
+            var cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
 
-            var hackathonAdminManagement = new HackathonAdminManagement(null)
+            var hackathonAdminManagement = new HackathonAdminManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache,
@@ -181,11 +180,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "hack";
 
-            var logger = new Mock<ILogger<HackathonAdminManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<HackathonAdminEntity>>>(c => c.CacheKey == "HackathonAdmin-hack"), default)).ReturnsAsync(all);
 
-            var adminManagement = new HackathonAdminManagement(logger.Object)
+            var adminManagement = new HackathonAdminManagement()
             {
                 Cache = cache.Object,
             };
@@ -218,14 +216,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var adminEntity = new HackathonAdminEntity { PartitionKey = "pk" };
 
-            var logger = new Mock<ILogger<HackathonAdminManagement>>();
             var hackathonAdminTable = new Mock<IHackathonAdminTable>();
             hackathonAdminTable.Setup(a => a.RetrieveAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
 
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.HackathonAdminTable).Returns(hackathonAdminTable.Object);
 
-            var management = new HackathonAdminManagement(logger.Object)
+            var management = new HackathonAdminManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -243,12 +240,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteAdminAsync()
         {
-            var logger = new Mock<ILogger<HackathonAdminManagement>>();
             var moqs = new Moqs();
             moqs.HackathonAdminTable.Setup(a => a.DeleteAsync("hack", "uid", default));
             moqs.CacheProvider.Setup(c => c.Remove("HackathonAdmin-hack"));
 
-            var management = new HackathonAdminManagement(logger.Object)
+            var management = new HackathonAdminManagement()
             {
                 StorageContext = moqs.StorageContext.Object,
                 Cache = moqs.CacheProvider.Object,
@@ -319,7 +315,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 cache.Setup(h => h.GetOrAddAsync(It.IsAny<CacheEntry<IEnumerable<HackathonAdminEntity>>>(), default)).ReturnsAsync(admins);
             }
 
-            var hackathonAdminManagement = new Mock<HackathonAdminManagement>(null) { CallBase = true };
+            var hackathonAdminManagement = new Mock<HackathonAdminManagement>() { CallBase = true };
             hackathonAdminManagement.Object.Cache = cache.Object;
 
             var result = await hackathonAdminManagement.Object.IsHackathonAdmin("hack", user, default);
@@ -352,7 +348,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var moqs = new Moqs();
             moqs.HackathonAdminTable.Setup(p => p.GetPlatformRole("uid", default)).ReturnsAsync(admin);
 
-            var adminManagement = new HackathonAdminManagement(null)
+            var adminManagement = new HackathonAdminManagement()
             {
                 StorageContext = moqs.StorageContext.Object,
             };

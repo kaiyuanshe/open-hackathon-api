@@ -5,7 +5,6 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -45,12 +44,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(CanCreateJudgeAsyncTestData))]
         public async Task CanCreateJudgeAsync(List<JudgeEntity> judges, bool expectedResult)
         {
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<JudgeEntity>>>(c => c.CacheKey == "Judge-hack"), default))
                 .ReturnsAsync(judges);
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 Cache = cache.Object,
             };
@@ -74,7 +72,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 userId = "uid"
             };
 
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var judgeTable = new Mock<IJudgeTable>();
             judgeTable.Setup(j => j.InsertOrReplaceAsync(It.Is<JudgeEntity>(en =>
                 en.Description == "desc" &&
@@ -87,7 +84,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("Judge-hack"));
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -113,7 +110,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             JudgeEntity existing = new JudgeEntity { Description = "desc" };
             Judge parameter = new Judge { hackathonName = "hack", description = requestedDesc };
 
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var judgeTable = new Mock<IJudgeTable>();
             judgeTable.Setup(j => j.MergeAsync(It.Is<JudgeEntity>(en => en.Description == expectedDesc), default));
             var storageContext = new Mock<IStorageContext>();
@@ -121,7 +117,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.Remove("Judge-hack"));
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 StorageContext = storageContext.Object,
                 Cache = cache.Object,
@@ -143,13 +139,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var judge = new JudgeEntity { PartitionKey = "pk" };
 
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var judgeTable = new Mock<IJudgeTable>();
             judgeTable.Setup(j => j.RetrieveAsync("hack", "uid", default)).ReturnsAsync(judge);
             var storageContext = new Mock<IStorageContext>();
             storageContext.Setup(s => s.JudgeTable).Returns(judgeTable.Object);
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 StorageContext = storageContext.Object,
             };
@@ -188,11 +183,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(IsJudgeAsyncTestData))]
         public async Task IsJudgeAsync(List<JudgeEntity> judges, string userId, bool expectedResult)
         {
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<JudgeEntity>>>(c => c.CacheKey == "Judge-hack"), default)).ReturnsAsync(judges);
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 Cache = cache.Object,
             };
@@ -292,11 +286,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "hack";
 
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<JudgeEntity>>>(c => c.CacheKey == "Judge-hack"), default)).ReturnsAsync(all);
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 Cache = cache.Object,
             };
@@ -327,12 +320,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteJudgeAsync()
         {
-            var logger = new Mock<ILogger<JudgeManagement>>();
             var moqs = new Moqs();
             moqs.JudgeTable.Setup(j => j.DeleteAsync("hack", "uid", default));
             moqs.CacheProvider.Setup(c => c.Remove("Judge-hack"));
 
-            var judgeManagement = new JudgeManagement(logger.Object)
+            var judgeManagement = new JudgeManagement()
             {
                 StorageContext = moqs.StorageContext.Object,
                 Cache = moqs.CacheProvider.Object,

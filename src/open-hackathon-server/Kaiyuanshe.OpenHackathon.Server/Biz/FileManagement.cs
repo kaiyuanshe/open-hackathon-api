@@ -19,11 +19,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload request, CancellationToken cancellationToken = default);
     }
 
-    public class FileManagement : ManagementClientBaseV0, IFileManagement
+    public class FileManagement : ManagementClientBase<FileManagement>, IFileManagement
     {
         public static readonly string HackathonApiStaticSite = "https://hackathon-api.static.kaiyuanshe.cn";
-
-        private readonly ILogger Logger;
 
         /// <summary>
         /// The minimum SAS expiration time in minutes
@@ -39,11 +37,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// The default SAS expiration time in minutes
         /// </summary>
         static readonly int BlobContainerDefaultSasExpiration = 5; // minutes
-
-        public FileManagement(ILogger<FileManagement> logger)
-        {
-            Logger = logger;
-        }
 
         #region GetUploadUrlAsync
         internal int GetSASExpirationMinitues(FileUpload fileUpload)

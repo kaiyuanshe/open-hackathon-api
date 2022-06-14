@@ -35,16 +35,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
-    public class ExperimentManagement : ManagementClientBaseV0, IExperimentManagement
+    public class ExperimentManagement : ManagementClientBase<ExperimentManagement>, IExperimentManagement
     {
-        private readonly ILogger logger;
-
         public IKubernetesClusterFactory KubernetesClusterFactory { get; set; }
-
-        public ExperimentManagement(ILogger<ExperimentManagement> logger)
-        {
-            this.logger = logger;
-        }
 
         #region CreateOrUpdateTemplateAsync
         public async Task<TemplateContext> CreateOrUpdateTemplateAsync(Template request, CancellationToken cancellationToken)
@@ -97,7 +90,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             catch (Exception e)
             {
-                logger.TraceError($"Internal error: {e.Message}", e);
+                Logger?.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new k8s.Models.V1Status
                 {
                     Code = 500,
@@ -130,7 +123,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             catch (Exception e)
             {
-                logger.TraceError($"Internal error: {e.Message}", e);
+                Logger?.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new ExperimentStatus
                 {
                     Code = 500,
@@ -269,7 +262,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             catch (Exception e)
             {
-                logger.TraceError($"Internal error: {e.Message}", e);
+                Logger?.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new ExperimentStatus
                 {
                     Code = 500,
@@ -300,7 +293,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             catch (Exception e)
             {
-                logger.TraceError($"Internal error: {e.Message}", e);
+                Logger?.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new ExperimentStatus
                 {
                     Code = 500,
@@ -330,7 +323,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             catch (Exception e)
             {
-                logger.TraceError($"Internal error: {e.Message}", e);
+                Logger?.TraceError($"Internal error: {e.Message}", e);
                 context.Status = new ExperimentStatus
                 {
                     Code = 500,
