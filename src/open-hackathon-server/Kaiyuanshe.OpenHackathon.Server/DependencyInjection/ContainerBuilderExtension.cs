@@ -53,7 +53,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
         public static void RegisterManagementClients(this ContainerBuilder builder)
         {
             builder.RegisterSubTypesAsDirectInterfaces(typeof(IManagementClient));
-            builder.RegisterSubTypesAsDirectInterfaces(typeof(ManagementClientBaseV0));
         }
     }
 }

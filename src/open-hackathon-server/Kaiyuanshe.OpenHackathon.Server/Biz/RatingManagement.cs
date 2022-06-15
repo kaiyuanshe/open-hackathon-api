@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,16 +30,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteRatingAsync(string hackathonName, string ratingId, CancellationToken cancellationToken);
     }
 
-    public class RatingManagement : ManagementClientBaseV0, IRatingManagement
+    public class RatingManagement : ManagementClientBase<RatingManagement>, IRatingManagement
     {
         static readonly int MaxRatingKindCount = 100;
-
-        private readonly ILogger Logger;
-
-        public RatingManagement(ILogger<RatingManagement> logger)
-        {
-            Logger = logger;
-        }
 
         #region Cache
         private string CacheKeyRatingKinds(string hackathonName)

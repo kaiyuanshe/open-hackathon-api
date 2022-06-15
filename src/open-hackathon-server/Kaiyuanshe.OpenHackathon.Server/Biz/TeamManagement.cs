@@ -104,15 +104,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="ITeamManagement"/>
-    public class TeamManagement : ManagementClientBaseV0, ITeamManagement
+    public class TeamManagement : ManagementClientBase<TeamManagement>, ITeamManagement
     {
-        private readonly ILogger Logger;
-
-        public TeamManagement(ILogger<TeamManagement> logger)
-        {
-            Logger = logger;
-        }
-
         #region Cache
         private string TeamCacheKey(string teamId)
         {
@@ -132,7 +125,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (string.IsNullOrWhiteSpace(request.hackathonName)
                 || string.IsNullOrWhiteSpace(request.creatorId))
             {
-                Logger.LogInformation($"cannot create team. hackathonName or creatorId is empty");
+                Logger?.LogInformation($"cannot create team. hackathonName or creatorId is empty");
                 return null;
             }
 
