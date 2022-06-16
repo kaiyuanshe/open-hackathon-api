@@ -2,7 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -17,11 +16,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             var entity = new UserEntity();
             var userInfo = new UserInfo { Name = "name" };
 
-            var logger = new Mock<ILogger<UserTable>>();
             var responseBuilder = new Mock<IResponseBuilder>();
             responseBuilder.Setup(b => b.BuildUser(entity)).Returns(userInfo);
 
-            var userTable = new Mock<UserTable>(logger.Object);
+            var userTable = new Mock<UserTable>();
             userTable.Setup(t => t.RetrieveAsync("uid", string.Empty, default)).ReturnsAsync(entity);
             userTable.Object.ResponseBuilder = responseBuilder.Object;
 
@@ -43,8 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             };
             var entity = new UserEntity { Username = "username" };
 
-            var logger = new Mock<ILogger<UserTable>>();
-            var userTable = new Mock<UserTable>(logger.Object);
+            var userTable = new Mock<UserTable>();
             userTable.Setup(t => t.InsertOrReplaceAsync(It.Is<UserEntity>(u =>
                 u.Name == "name"
                 && u.PartitionKey == "uid"

@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -15,9 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string hackathonName = "hack";
             string teamId = "tid";
 
-            var logger = new Mock<ILogger<TeamMemberTable>>();
-
-            var awardTable = new Mock<TeamMemberTable>(logger.Object) { };
+            var awardTable = new Mock<TeamMemberTable>() { };
             await awardTable.Object.GetMemberCountAsync(hackathonName, teamId, default);
 
             awardTable.Verify(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')",

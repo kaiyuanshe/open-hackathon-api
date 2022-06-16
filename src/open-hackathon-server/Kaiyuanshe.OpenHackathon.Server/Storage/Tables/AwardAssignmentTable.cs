@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,12 +18,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public class AwardAssignmentTable : AzureTableV2<AwardAssignmentEntity>, IAwardAssignmentTable
     {
         override protected string TableName => TableNames.AwardAssignment;
-
-        public AwardAssignmentTable(ILogger<AwardAssignmentTable> logger)
-            : base(logger)
-        {
-        }
-
 
         #region ListByHackathonAsync
         public async Task<IEnumerable<AwardAssignmentEntity>> ListByHackathonAsync(string hackathonName, CancellationToken cancellationToken = default)

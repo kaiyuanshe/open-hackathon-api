@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
@@ -10,9 +9,5 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public class RatingTable : AzureTableV2<RatingEntity>, IRatingTable
     {
         protected override string TableName => TableNames.Rating;
-
-        public RatingTable(ILogger<RatingTable> logger) : base(logger)
-        {
-        }
     }
 }

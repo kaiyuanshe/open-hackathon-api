@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -17,8 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string hackathonName = "hack";
             var list = new List<AwardEntity> { new AwardEntity() };
 
-            var logger = new Mock<ILogger<AwardTable>>();
-            var awardTable = new Mock<AwardTable>(logger.Object);
+            var awardTable = new Mock<AwardTable>();
             awardTable.Setup(a => a.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default)).ReturnsAsync(list);
 
             var resp = await awardTable.Object.ListAllAwardsAsync(hackathonName, default);

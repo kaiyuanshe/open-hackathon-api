@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,10 +27,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public class HackathonAdminTable : AzureTableV2<HackathonAdminEntity>, IHackathonAdminTable
     {
         protected override string TableName => TableNames.HackathonAdmin;
-
-        public HackathonAdminTable(ILogger<HackathonAdminTable> logger) : base(logger)
-        {
-        }
 
         public async Task<HackathonAdminEntity> GetPlatformRole(string userId, CancellationToken cancellationToken)
         {

@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -15,8 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         [Test]
         public async Task ListParticipantsByHackathonAsyncTest()
         {
-            var logger = new Mock<ILogger<HackathonAdminTable>>();
-            var table = new Mock<HackathonAdminTable>(logger.Object) { CallBase = true };
+            var table = new Mock<HackathonAdminTable>() { CallBase = true };
 
             List<HackathonAdminEntity> participants = new List<HackathonAdminEntity>
             {
