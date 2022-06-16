@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -18,8 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string hackathonName = "hack";
             var list = new List<RatingKindEntity> { new RatingKindEntity() };
 
-            var logger = new Mock<ILogger<RatingKindTable>>();
-            var ratingKindTable = new Mock<RatingKindTable>(logger.Object) { };
+            var ratingKindTable = new Mock<RatingKindTable>() { };
             ratingKindTable.Setup(a => a.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default)).ReturnsAsync(list);
 
             var resp = await ratingKindTable.Object.ListRatingKindsAsync(hackathonName, default);

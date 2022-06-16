@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,10 +17,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public class TeamMemberTable : AzureTableV2<TeamMemberEntity>, ITeamMemberTable
     {
         protected override string TableName => TableNames.TeamMember;
-
-        public TeamMemberTable(ILogger<TeamMemberTable> logger) : base(logger)
-        {
-        }
 
         #region GetMemberCountAsync
         public async Task<int> GetMemberCountAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)

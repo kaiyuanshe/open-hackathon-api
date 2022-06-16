@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -18,8 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string hackathonName = "hack";
             var list = new List<AwardAssignmentEntity> { new AwardAssignmentEntity() };
 
-            var logger = new Mock<ILogger<AwardAssignmentTable>>();
-            var awardTable = new Mock<AwardAssignmentTable>(logger.Object) { };
+            var awardTable = new Mock<AwardAssignmentTable>() { };
             awardTable.Setup(t => t.QueryEntitiesAsync("PartitionKey eq 'hack'", null, default)).ReturnsAsync(list);
 
             var resp = await awardTable.Object.ListByHackathonAsync(hackathonName, default);
@@ -38,8 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string awardId = "aid";
             var list = new List<AwardAssignmentEntity> { new AwardAssignmentEntity() };
 
-            var logger = new Mock<ILogger<AwardAssignmentTable>>();
-            var awardTable = new Mock<AwardAssignmentTable>(logger.Object) { };
+            var awardTable = new Mock<AwardAssignmentTable>() { };
             awardTable.Setup(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (AwardId eq 'aid')", null, default)).ReturnsAsync(list);
            
             var resp = await awardTable.Object.ListByAwardAsync(hackathonName, awardId, default);
@@ -58,8 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
             string assigneeId = "assid";
             var list = new List<AwardAssignmentEntity> { new AwardAssignmentEntity() };
 
-            var logger = new Mock<ILogger<AwardAssignmentTable>>();
-            var awardTable = new Mock<AwardAssignmentTable>(logger.Object) { };
+            var awardTable = new Mock<AwardAssignmentTable>() { };
             awardTable.Setup(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (AssigneeId eq 'assid')", null, default)).ReturnsAsync(list);
           
             var resp = await awardTable.Object.ListByAssigneeAsync(hackathonName, assigneeId, default);

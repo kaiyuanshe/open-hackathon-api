@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -18,8 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
                 new TeamWorkEntity{ },
             };
 
-            var logger = new Mock<ILogger<TeamWorkTable>>();
-            var teamWorkTable = new Mock<TeamWorkTable>(logger.Object) { };
+            var teamWorkTable = new Mock<TeamWorkTable>() { };
             teamWorkTable.Setup(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')", null, default)).ReturnsAsync(entities);
 
             await teamWorkTable.Object.ListByTeamAsync("hack", "tid", default);

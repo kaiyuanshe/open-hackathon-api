@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,10 +13,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     public class TeamWorkTable : AzureTableV2<TeamWorkEntity>, ITeamWorkTable
     {
         protected override string TableName => TableNames.TeamWork;
-
-        public TeamWorkTable(ILogger<TeamWorkTable> logger) : base(logger)
-        {
-        }
 
         public async Task<IEnumerable<TeamWorkEntity>> ListByTeamAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)
         {

@@ -1,7 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,10 +18,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         protected override string TableName => TableNames.User;
 
         public IResponseBuilder ResponseBuilder { get; set; }
-
-        public UserTable(ILogger<UserTable> logger) : base(logger)
-        {
-        }
 
         public async Task<UserInfo> GetUserByIdAsync(string id, CancellationToken cancellationToken = default)
         {

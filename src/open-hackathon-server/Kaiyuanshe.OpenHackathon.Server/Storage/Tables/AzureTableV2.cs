@@ -38,15 +38,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         public override string StorageName => tableClient?.AccountName;
         public ILogger<TEntity> Logger { get; set; }
 
-        public AzureTableV2()
-        {
-
-        }
-
-        protected AzureTableV2(ILogger logger)
-        {
-        }
-
         public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
