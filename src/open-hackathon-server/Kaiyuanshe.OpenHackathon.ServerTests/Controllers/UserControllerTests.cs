@@ -116,17 +116,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             };
 
             // mock
-            var mockContext = new MockControllerContext();
-            mockContext.UserManagement.Setup(p => p.SearchUserAsync(It.Is<UserQueryOptions>(o => o.Search == "s" && o.Top == 3), default)).ReturnsAsync(entities);
+            var moqs = new Moqs();
+            moqs.UserManagement.Setup(p => p.SearchUserAsync(It.Is<UserQueryOptions>(o => o.Search == "s" && o.Top == 3), default)).ReturnsAsync(entities);
 
             // test
             var controller = new UserController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.SearchUser("s", 3, default);
 
             // verify
-            Mock.VerifyAll(mockContext.UserManagement);
-            mockContext.UserManagement.VerifyNoOtherCalls();
+            Mock.VerifyAll(moqs.UserManagement);
+            moqs.UserManagement.VerifyNoOtherCalls();
 
             var users = AssertHelper.AssertOKResult<UserInfoList>(result);
             Assert.AreEqual(1, users.value.Length);

@@ -510,26 +510,26 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             };
 
             // mock and capture
-            var mockContext = new MockControllerContext();
+            var moqs = new Moqs();
             HackathonQueryOptions optionsCaptured = null;
-            mockContext.HackathonManagement.Setup(p => p.ListPaginatedHackathonsAsync(It.IsAny<HackathonQueryOptions>(), default))
+            moqs.HackathonManagement.Setup(p => p.ListPaginatedHackathonsAsync(It.IsAny<HackathonQueryOptions>(), default))
                 .Callback<HackathonQueryOptions, CancellationToken>((o, t) =>
                  {
                      optionsCaptured = o;
                      optionsCaptured.NextPage = next;
                  })
                 .ReturnsAsync(hackathons);
-            mockContext.HackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, It.IsAny<ClaimsPrincipal>(), default))
+            moqs.HackathonManagement.Setup(h => h.ListHackathonRolesAsync(hackathons, It.IsAny<ClaimsPrincipal>(), default))
                 .ReturnsAsync(hackWithRoles);
-            mockContext.HackathonAdminManagement.Setup(a => a.IsPlatformAdmin(It.IsAny<string>(), default)).ReturnsAsync(true);
+            moqs.HackathonAdminManagement.Setup(a => a.IsPlatformAdmin(It.IsAny<string>(), default)).ReturnsAsync(true);
 
             // run
             var controller = new HackathonController();
-            mockContext.SetupController(controller);
+            moqs.SetupController(controller);
             var result = await controller.ListHackathon(pagination, search, userId, orderBy, listType, default);
 
             // verify
-            mockContext.VerifyAll();
+            moqs.VerifyAll();
 
             var list = AssertHelper.AssertOKResult<HackathonList>(result);
             Assert.AreEqual(expectedLink, list.nextLink);
