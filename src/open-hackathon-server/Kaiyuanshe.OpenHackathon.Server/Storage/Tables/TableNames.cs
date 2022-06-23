@@ -9,6 +9,7 @@
         public const string Hackathon = "kyshackathon";
         public const string HackathonAdmin = "kyshackadmin";
         public const string Judge = "kysjudge";
+        public const string Organizer = "kysorganizer";
         public const string Rating = "kysrating";
         public const string RatingKind = "kysratingkind";
         public const string Team = "kysteam";

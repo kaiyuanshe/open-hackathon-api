@@ -13,6 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         IHackathonTable HackathonTable { get; set; }
         IHackathonAdminTable HackathonAdminTable { get; set; }
         IJudgeTable JudgeTable { get; set; }
+        IOrganizerTable OrganizerTable { get; set; }
         IRatingTable RatingTable { get; set; }
         IRatingKindTable RatingKindTable { get; set; }
         ITeamTable TeamTable { get; set; }
@@ -25,7 +26,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         IKubernetesBlobContainer KubernetesBlobContainer { get; set; }
     }
 
-
     public class StorageContext : IStorageContext
     {
         public IActivityLogTable ActivityLogTable { get; set; }
@@ -36,6 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public IHackathonAdminTable HackathonAdminTable { get; set; }
         public IHackathonTable HackathonTable { get; set; }
         public IJudgeTable JudgeTable { get; set; }
+        public IOrganizerTable OrganizerTable { get; set; }
         public IRatingTable RatingTable { get; set; }
         public IRatingKindTable RatingKindTable { get; set; }
         public ITeamTable TeamTable { get; set; }
