@@ -20,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles);
         HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo);
         Judge BuildJudge(JudgeEntity judgeEntity, UserInfo userInfo);
+        Organizer BuildOrganizer(OrganizerEntity organizerEntity);
         Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind);
         RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity);
         Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
@@ -158,6 +159,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             {
                 p.updatedAt = judgeEntity.Timestamp.UtcDateTime;
                 p.user = userInfo;
+            });
+        }
+
+        public Organizer BuildOrganizer(OrganizerEntity organizerEntity)
+        {
+            return organizerEntity.As<Organizer>(p =>
+            {
+                p.updatedAt = organizerEntity.Timestamp.UtcDateTime;
             });
         }
 
