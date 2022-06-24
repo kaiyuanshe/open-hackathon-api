@@ -33,7 +33,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 
         public string Name { get; set; }
         public string Description { get; set; }
-        public OrganizerType target { get; set; }
-        public PictureInfo logo { get; set; }
+        public OrganizerType Type { get; set; }
+        public PictureInfo Logo { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     /// <summary>
     /// Represents an organizer who organizes/sponsors the hackathon.
     /// </summary>
-    public class Organizer
+    public class Organizer : ModelBase
     {
         /// <summary>
         /// name of hackathon
@@ -40,13 +40,24 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>team</example>
         [RequiredIfPut]
-        public OrganizerType? target { get; set; }
+        public OrganizerType? type { get; set; }
 
         /// <summary>
         /// A logo picture.
         /// </summary>
         [RequiredIfPut]
         public PictureInfo logo { get; set; }
+    }
+
+    /// <summary>
+    /// a list of Organizer
+    /// </summary>
+    public class OrganizerList : ResourceList<Organizer>
+    {
+        /// <summary>
+        /// a list of Organizer
+        /// </summary>
+        public override Organizer[] value { get; set; }
     }
 
     /// <summary>

@@ -320,6 +320,43 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
+        #region BuildOrganizer
+        [Test]
+        public void BuildOrganizer()
+        {
+            OrganizerEntity entity = new OrganizerEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Description = "desc",
+                Name = "kaiyuanshe",
+                Type = OrganizerType.host,
+                Logo = new PictureInfo
+                {
+                    description = "logodesc",
+                    name = "logoname",
+                    uri = "logouri"
+                },
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildOrganizer(entity);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.id);
+            Assert.AreEqual("desc", result.description);
+            Assert.AreEqual("kaiyuanshe", result.name);
+            Assert.AreEqual(OrganizerType.host, result.type);
+            Assert.AreEqual("logoname", result.logo.name);
+            Assert.AreEqual("logodesc", result.logo.description);
+            Assert.AreEqual("logouri", result.logo.uri);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
         #region BuildRating
         [Test]
         public void BuildRating()
