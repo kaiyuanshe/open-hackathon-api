@@ -9,11 +9,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
         public ITraceIdHttpPipelinePolicyFactory TraceIdHttpPipelinePolicyFactory { get; set; }
 
-        public abstract string StorageName { get; }
+        public abstract string? StorageName { get; }
 
-        protected IDictionary<string, object> GetMessageProperties()
+        protected IDictionary<string, object?> GetMessageProperties()
         {
-            Dictionary<string, object> properties = new Dictionary<string, object>();
+            Dictionary<string, object?> properties = new();
             string traceId = Activity.Current?.Id ?? string.Empty;
             properties.Add(HttpHeaderNames.TraceId, traceId);
             return properties;

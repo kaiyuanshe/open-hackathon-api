@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="args">the args to format message of the log. Can be dynamic and created by `new { p = "value" }`. MUST match the format defined in resource files.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task LogUserActivity(string userId, string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default);
+        Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<ActivityLogEntity>> ListActivityLogs(ActivityLogQueryOptions options, CancellationToken cancellationToken = default);
     }
@@ -74,7 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, cancellationToken);
         }
 
-        public async Task LogUserActivity(string userId, string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(userId))
                 return;

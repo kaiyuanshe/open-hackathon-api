@@ -121,7 +121,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             [FromBody] FileUpload parameter,
             CancellationToken cancellationToken)
         {
-            var result = await FileManagement.GetUploadUrlAsync(User, parameter, cancellationToken);
+            var result = FileManagement.GetUploadUrl(User, parameter);
             var args = new
             {
                 userName = CurrentUserDisplayName

@@ -21,6 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IHackathonTable> HackathonTable { get; } = new();
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
+        public Mock<IOrganizerTable> OrganizerTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
         #endregion
 
@@ -55,6 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
+            StorageContext.Setup(p => p.OrganizerTable).Returns(OrganizerTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
@@ -64,7 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         {
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AwardAssignmentTable, ExperimentTable, HackathonTable,
-                HackathonAdminTable, JudgeTable, TeamWorkTable);
+                HackathonAdminTable, JudgeTable, OrganizerTable, TeamWorkTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
@@ -72,6 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonTable.VerifyNoOtherCalls();
             HackathonAdminTable?.VerifyNoOtherCalls();
             JudgeTable.VerifyNoOtherCalls();
+            OrganizerTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
             #endregion
 

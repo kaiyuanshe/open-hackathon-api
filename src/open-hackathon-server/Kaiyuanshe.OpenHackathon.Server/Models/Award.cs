@@ -32,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>Apple Watch, 3 teams</example>
         [MaxLength(256)]
-        public string description { get; set; }
+        public string? description { get; set; }
 
         /// <summary>
         /// quantity of the award. 1 by default.

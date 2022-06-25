@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +23,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task InsertOrReplaceAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task ReplaceAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task DeleteAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
-        Task<TEntity> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
-        Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
+        Task<TEntity?> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
@@ -32,10 +33,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
     {
-        TableClient tableClient = null;
+        TableClient? tableClient;
         protected abstract string TableName { get; }
 
-        public override string StorageName => tableClient?.AccountName;
+        public override string? StorageName => tableClient?.AccountName;
         public ILogger<TEntity> Logger { get; set; }
 
         public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -147,7 +148,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task<TEntity> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity?> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))

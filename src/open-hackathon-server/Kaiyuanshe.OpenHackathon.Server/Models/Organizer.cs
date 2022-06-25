@@ -65,10 +65,25 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     /// </summary>
     public enum OrganizerType
     {
+        /// <summary>
+        /// 主办
+        /// </summary>
         host,
+        /// <summary>
+        /// 承办
+        /// </summary>
         organizer,
+        /// <summary>
+        /// 协办
+        /// </summary>
         coorganizer,
+        /// <summary>
+        /// 赞助
+        /// </summary>
         sponsor,
+        /// <summary>
+        /// 冠名
+        /// </summary>
         titleSponsor,
     }
 }

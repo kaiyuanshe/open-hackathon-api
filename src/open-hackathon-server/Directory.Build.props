@@ -1,0 +1,21 @@
+<Project>
+    <PropertyGroup>
+      <LangVersion>9.0</LangVersion>
+      <Nullable>enable</Nullable>
+      <NoWarn>CS1591,CS1573,CS1570</NoWarn>
+    </PropertyGroup>
+  
+    <PropertyGroup>
+      <Platforms>x64</Platforms>
+      <PlatformTarget>x64</PlatformTarget>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+  
+    <PropertyGroup>
+       <Company>Kaiyuanshe</Company>
+       <Copyright>©Microsoft 2022</Copyright>
+       <Product>Open Hackathon</Product>
+    </PropertyGroup>
+  
+  </Project>
+  

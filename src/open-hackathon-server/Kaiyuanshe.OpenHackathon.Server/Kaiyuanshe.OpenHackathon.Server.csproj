@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591;1573;CS0414</NoWarn>
+    <NoWarn>$(NoWarn);1591;1573;CS0414;CS8618</NoWarn>
   </PropertyGroup>
 	
   <ItemGroup>
@@ -42,5 +42,9 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 </Project>
