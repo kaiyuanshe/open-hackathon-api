@@ -2,11 +2,8 @@
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
@@ -16,7 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// Get the upload URL.
         /// </summary>
         /// <returns></returns>
-        Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload request, CancellationToken cancellationToken = default);
+        FileUpload GetUploadUrl(ClaimsPrincipal user, FileUpload request);
     }
 
     public class FileManagement : ManagementClientBase<FileManagement>, IFileManagement
@@ -74,7 +71,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return (readUrlBase, writeUrlBase);
         }
 
-        public async Task<FileUpload> GetUploadUrlAsync(ClaimsPrincipal user, FileUpload fileUpload, CancellationToken cancellationToken = default)
+        public FileUpload GetUploadUrl(ClaimsPrincipal user, FileUpload fileUpload)
         {
             var expiration = GetSASExpirationMinitues(fileUpload);
             var leadingTime = BlobContainerMinSasExpiration; // avoid inconsistent timestamp between client and server

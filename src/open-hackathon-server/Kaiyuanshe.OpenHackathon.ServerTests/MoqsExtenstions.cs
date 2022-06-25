@@ -1,5 +1,9 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Controllers;
+﻿using DotLiquid.Util;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
@@ -24,5 +28,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.FileManagement = moqs.FileManagement.Object;
         }
 
+        public static void SetupManagement<T>(this Moqs moqs, ManagementClientBase<T> management)
+        {
+            management.Logger = new Mock<ILogger<T>>().Object;
+            management.StorageContext = moqs.StorageContext.Object;
+            management.Cache = moqs.CacheProvider.Object;
+        }
     }
 }

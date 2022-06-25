@@ -144,7 +144,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             // mock
             var moqs = new Moqs();
-            moqs.FileManagement.Setup(u => u.GetUploadUrlAsync(It.IsAny<ClaimsPrincipal>(), parameter, default)).ReturnsAsync(uploaded);
+            moqs.FileManagement.Setup(u => u.GetUploadUrl(It.IsAny<ClaimsPrincipal>(), parameter)).Returns(uploaded);
             moqs.ActivityLogManagement.Setup(u => u.LogUserActivity("", null, "", ActivityLogType.fileUpload, It.IsAny<object>(), null, default));
 
             // test

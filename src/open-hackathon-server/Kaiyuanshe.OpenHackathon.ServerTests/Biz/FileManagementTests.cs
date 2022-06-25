@@ -9,7 +9,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
@@ -31,7 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         #region GetUploadUrlAsync
         [Test]
-        public async Task GetUploadUrlAsync()
+        public void GetUploadUrlAsync()
         {
             var user = new ClaimsPrincipal(
                new ClaimsIdentity(new List<Claim>
@@ -58,7 +57,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object,
             };
-            var result = await fileManagement.GetUploadUrlAsync(user, request, default);
+            var result = fileManagement.GetUploadUrl(user, request);
 
             // verify
             Mock.VerifyAll(userBlobContainer, storageContext);
