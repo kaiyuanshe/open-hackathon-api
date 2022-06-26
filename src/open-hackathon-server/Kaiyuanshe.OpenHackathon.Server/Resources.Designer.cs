@@ -178,6 +178,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; added an organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_createOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_createOrganizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hackathon judge &quot;{judgeName}&quot; rated team &quot;{teamName}&quot; on kind &quot;{kindName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_createRating {
@@ -813,6 +822,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_createJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_createJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Added an organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_createOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createOrganizer", resourceCulture);
             }
         }
         

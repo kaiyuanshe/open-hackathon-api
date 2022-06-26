@@ -34,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public OrganizerType Type { get; set; }
+        [ConvertableEntityProperty]
         public PictureInfo Logo { get; set; }
     }
 }

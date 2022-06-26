@@ -26,29 +26,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         public IResponseBuilder ResponseBuilder { get; set; }
 
-        public IHackathonManagement HackathonManagement { get; set; }
-
-        public IHackathonAdminManagement HackathonAdminManagement { get; set; }
-
-        public IUserManagement UserManagement { get; set; }
-
-        public IEnrollmentManagement EnrollmentManagement { get; set; }
-
-        public IAwardManagement AwardManagement { get; set; }
-
-        public ITeamManagement TeamManagement { get; set; }
-
-        public IFileManagement FileManagement { get; set; }
-
-        public IWorkManagement WorkManagement { get; set; }
-
-        public IJudgeManagement JudgeManagement { get; set; }
-
-        public IRatingManagement RatingManagement { get; set; }
-
         public IActivityLogManagement ActivityLogManagement { get; set; }
-
+        public IAwardManagement AwardManagement { get; set; }
+        public IEnrollmentManagement EnrollmentManagement { get; set; }
         public IExperimentManagement ExperimentManagement { get; set; }
+        public IFileManagement FileManagement { get; set; }
+        public IHackathonAdminManagement HackathonAdminManagement { get; set; }
+        public IHackathonManagement HackathonManagement { get; set; }
+        public IJudgeManagement JudgeManagement { get; set; }
+        public IOrganizerManagement OrganizerManagement { get; set; }
+        public IRatingManagement RatingManagement { get; set; }
+        public ITeamManagement TeamManagement { get; set; }
+        public IUserManagement UserManagement { get; set; }
+        public IWorkManagement WorkManagement { get; set; }
 
         /// <summary>
         /// Id of current User. Return string.Empty if token is not required or invalid.
@@ -69,7 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
         }
 
-        protected async Task<UserInfo> GetCurrentUserInfo(CancellationToken cancellationToken = default)
+        protected async Task<UserInfo?> GetCurrentUserInfo(CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(CurrentUserId))
                 return null;
@@ -83,7 +73,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
         /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
         /// <returns></returns>
-        protected string BuildNextLinkUrl(RouteValueDictionary routeValues, string continuationToken)
+        protected string? BuildNextLinkUrl(RouteValueDictionary routeValues, string continuationToken)
         {
             var nextPage = Pagination.FromContinuationToken(continuationToken);
             return BuildNextLinkUrl(routeValues, nextPage);
@@ -95,7 +85,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
         /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
         /// <returns></returns>
-        protected string BuildNextLinkUrl(RouteValueDictionary routeValues, Pagination nextPage)
+        protected string? BuildNextLinkUrl(RouteValueDictionary routeValues, Pagination nextPage)
         {
             if (nextPage?.np == null || nextPage?.nr == null)
                 return null;

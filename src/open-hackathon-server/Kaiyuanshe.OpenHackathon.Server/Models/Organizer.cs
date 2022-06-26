@@ -38,7 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// target whom the award is given. team or individual. team by default.
         /// </summary>
-        /// <example>team</example>
+        /// <example>sponsor</example>
         [RequiredIfPut]
         public OrganizerType? type { get; set; }
 

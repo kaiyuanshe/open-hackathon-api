@@ -39,6 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IAwardManagement> AwardManagement { get; } = new();
         public Mock<IWorkManagement> WorkManagement { get; } = new();
         public Mock<IFileManagement> FileManagement { get; } = new();
+        public Mock<IOrganizerManagement> OrganizerManagement { get; } = new();
         #endregion
 
         #region K8s

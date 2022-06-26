@@ -4,6 +4,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="resourceKey">key in Resources files. Will follow the naming convention if null.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default);
+        Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Log activity related to a team.
@@ -31,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="args">the args to format message of the log. Can be dynamic and created by `new { p = "value" }`. MUST match the format defined in resource files.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default);
+        Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Log activity of a user. Call twice if two different uesrs involved. For example, add a new member(first call) to a team by team admin(second call).
@@ -42,7 +43,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="args">the args to format message of the log. Can be dynamic and created by `new { p = "value" }`. MUST match the format defined in resource files.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default);
+        Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<ActivityLogEntity>> ListActivityLogs(ActivityLogQueryOptions options, CancellationToken cancellationToken = default);
     }
@@ -50,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public class ActivityLogManagement : ManagementClientBase<ActivityLogManagement>, IActivityLogManagement
     {
         #region LogActivity
-        public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(hackathonName))
                 return;
@@ -62,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, cancellationToken);
         }
 
-        public async Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(teamId))
                 return;
@@ -74,7 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, cancellationToken);
         }
 
-        public async Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(userId))
                 return;
@@ -91,7 +92,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return $"{StorageUtils.InversedTimeKey(DateTime.UtcNow)}-{Guid.NewGuid().ToString().Substring(0, 8)}";
         }
 
-        private async Task CustomizeAndSave(string hackathonName, string operatorId, ActivityLogType logType, object args, string resourceKey, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
+        private async Task CustomizeAndSave(string? hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
         {
             var entity = new ActivityLogEntity
             {
@@ -128,6 +129,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return page.Values;
         }
 
+        [return: MaybeNull]
         private string GenerateFilter(ActivityLogQueryOptions options)
         {
             var catetory = TableQueryHelper.FilterForInt(nameof(ActivityLogEntity.Category), ComparisonOperator.Equal, (int)options.Category);
@@ -184,7 +186,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public static async Task OnTeamMemberEvent(this IActivityLogManagement activityLogManagement,
             string hackathonName, string teamId, string memberId,
             string operatorId, ActivityLogType logType, object args,
-            string resourceKeyOfMember = null, string resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
+            string? resourceKeyOfMember = null, string? resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogTeamActivity(hackathonName, teamId, operatorId, logType, args, null, cancellationToken);
@@ -194,7 +196,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         public static async Task OnUserEvent(this IActivityLogManagement activityLogManagement,
            string hackathonName, string userId, string operatorId, ActivityLogType logType, object args,
-           string resourceKeyOfUser = null, string resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
+           string? resourceKeyOfUser = null, string? resourceKeyOfOperator = null, CancellationToken cancellationToken = default)
         {
             await activityLogManagement.LogHackathonActivity(hackathonName, operatorId, logType, args, null, cancellationToken);
             await activityLogManagement.LogUserActivity(operatorId, hackathonName, operatorId, logType, args, resourceKeyOfOperator, cancellationToken);

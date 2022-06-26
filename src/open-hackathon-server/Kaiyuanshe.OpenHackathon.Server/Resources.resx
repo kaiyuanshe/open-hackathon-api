@@ -156,6 +156,9 @@
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>Admin '{userName}' added a judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_createOrganizer" xml:space="preserve">
+    <value>Admin "{adminName}" added an organizer "{organizerName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_createRating" xml:space="preserve">
     <value>Hackathon judge "{judgeName}" rated team "{teamName}" on kind "{kindName}".</value>
   </data>
@@ -368,6 +371,9 @@
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>[{hackathonName}]Added a new judge '{judgeName}'.</value>
+  </data>
+  <data name="ActivityLog_User_createOrganizer" xml:space="preserve">
+    <value>[{hackathonName}]Added an organizer "{organizerName}".</value>
   </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>[{hackathonName}]Rated team "{teamName}" on kind "{kindName}".</value>

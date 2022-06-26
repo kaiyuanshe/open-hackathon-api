@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         }
 
         private static readonly char[] ContinuationTokenSplit = new char[1] { ' ' };
-        public static Pagination FromContinuationToken(string continuationToken, int? top = null)
+        public static Pagination FromContinuationToken(string? continuationToken, int? top = null)
         {
             if (continuationToken == null || continuationToken.Length <= 1)
             {

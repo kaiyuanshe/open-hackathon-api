@@ -156,6 +156,9 @@
   <data name="ActivityLog_Hackathon_createJudge" xml:space="preserve">
     <value>管理员'{userName}'添加了一名裁判：'{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_createOrganizer" xml:space="preserve">
+    <value>管理员"{adminName}"添加了活动的组织者"{organizerName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createRating" xml:space="preserve">
     <value>裁判 "{judgeName}"给团队"{teamName}"的"{kindName}"打分。</value>
   </data>
@@ -368,6 +371,9 @@
   </data>
   <data name="ActivityLog_User_createJudge" xml:space="preserve">
     <value>[{hackathonName}]为活动添加了一名裁判：'{judgeName}'</value>
+  </data>
+  <data name="ActivityLog_User_createOrganizer" xml:space="preserve">
+    <value>[{hackathonName}]添加了活动的组织者"{organizerName}"。</value>
   </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>给团队"{teamName}"的"{kindName}"打分。活动名称："{hackathonName}"。</value>
