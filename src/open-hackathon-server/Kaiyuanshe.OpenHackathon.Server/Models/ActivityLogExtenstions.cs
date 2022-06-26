@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             return $"{ResourceKeyPrefix}_{entity.Category}_{entity.ActivityLogType}";
         }
 
-        public static void GenerateMessage(this ActivityLogEntity entity, object args, string resourceKey = null)
+        public static void GenerateMessage(this ActivityLogEntity entity, object args, string? resourceKey = null)
         {
             if (entity == null)
                 return;

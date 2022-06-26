@@ -26,6 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.AwardManagement = moqs.AwardManagement.Object;
             controller.WorkManagement = moqs.WorkManagement.Object;
             controller.FileManagement = moqs.FileManagement.Object;
+            controller.OrganizerManagement = moqs.OrganizerManagement.Object;
         }
 
         public static void SetupManagement<T>(this Moqs moqs, ManagementClientBase<T> management)

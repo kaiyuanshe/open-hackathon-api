@@ -9,7 +9,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     /// </summary>
     public class ActivityLogEntity : BaseTableEntity
     {
-        public string HackathonName { get; set; }
+        public string? HackathonName { get; set; }
 
         /// <summary>
         /// Id of User who performs the operation.

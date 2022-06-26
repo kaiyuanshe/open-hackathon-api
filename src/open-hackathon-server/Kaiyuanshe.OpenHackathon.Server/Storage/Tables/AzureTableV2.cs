@@ -25,10 +25,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task DeleteAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
         Task<TEntity?> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
         Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
-        Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
-        Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
-        Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
-        Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default);
+        Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
+        Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
+        Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
+        Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
     }
 
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
@@ -47,7 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var resp = await client.AddEntityAsync(entity.ToTableEntity(), cancellationToken);
-                    entity.ETag = resp.Headers.ETag.Value.ToString();
+                    entity.ETag = resp.Headers.ETag.GetValueOrDefault().ToString();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -64,7 +64,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var resp = await client.UpdateEntityAsync(entity.ToTableEntity(), new ETag(entity.ETag), TableUpdateMode.Merge, cancellationToken);
-                    entity.ETag = resp.Headers.ETag.Value.ToString();
+                    entity.ETag = resp.Headers.ETag.GetValueOrDefault().ToString();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -81,7 +81,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var resp = await client.UpsertEntityAsync(entity.ToTableEntity(), TableUpdateMode.Merge, cancellationToken);
-                    entity.ETag = resp.Headers.ETag.Value.ToString();
+                    entity.ETag = resp.Headers.ETag.GetValueOrDefault().ToString();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -93,8 +93,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         public virtual async Task RetrieveAndMergeAsync(string partitionKey, string rowKey, Action<TEntity> func, CancellationToken cancellationToken = default)
         {
             var entity = await RetrieveAsync(partitionKey, rowKey, cancellationToken);
-            func(entity);
-            await MergeAsync(entity, cancellationToken);
+            if (entity != null)
+            {
+                func(entity);
+                await MergeAsync(entity, cancellationToken);
+            }
         }
 
         public virtual async Task InsertOrReplaceAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -105,7 +108,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var resp = await client.UpsertEntityAsync(entity.ToTableEntity(), TableUpdateMode.Replace, cancellationToken);
-                    entity.ETag = resp.Headers.ETag.Value.ToString();
+                    entity.ETag = resp.Headers.ETag.GetValueOrDefault().ToString();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -122,7 +125,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var resp = await client.UpdateEntityAsync(entity.ToTableEntity(), new ETag(entity.ETag), TableUpdateMode.Replace, cancellationToken);
-                    entity.ETag = resp.Headers.ETag.Value.ToString();
+                    entity.ETag = resp.Headers.ETag.GetValueOrDefault().ToString();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -170,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             List<TEntity> entities = new List<TEntity>();
             var client = await GetTableClientAsync(cancellationToken);
@@ -189,7 +192,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             return entities;
         }
 
-        public virtual async Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
@@ -206,7 +209,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
@@ -223,7 +226,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
@@ -240,7 +243,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string> select = null, CancellationToken cancellationToken = default)
+        public virtual async Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
@@ -258,7 +261,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                             current.ContinuationToken,
                             current.GetRawResponse());
                     }
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                     return Page<TEntity>.FromValues(new List<TEntity>(), null, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 catch (RequestFailedException ex)
                 {

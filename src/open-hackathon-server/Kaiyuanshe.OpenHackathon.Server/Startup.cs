@@ -47,6 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             services.AddMvc(mvcOptions =>
                 {
                     mvcOptions.EnableEndpointRouting = false;
+                    mvcOptions.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
                 })
                 .AddControllersAsServices()
                 .AddJsonOptions(options =>

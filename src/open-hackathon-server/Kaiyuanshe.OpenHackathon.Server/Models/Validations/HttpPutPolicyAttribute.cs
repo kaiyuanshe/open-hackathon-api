@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
@@ -21,7 +22,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
     [AttributeUsage(AttributeTargets.Parameter)]
     public class HttpPutPolicyAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        [return: MaybeNull]
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {
