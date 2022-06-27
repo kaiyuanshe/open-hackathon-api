@@ -7,7 +7,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
     [AttributeUsage(AttributeTargets.Class)]
     public class RemoteConfigPolicyAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {

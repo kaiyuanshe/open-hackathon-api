@@ -6,7 +6,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
     public class GuidAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {

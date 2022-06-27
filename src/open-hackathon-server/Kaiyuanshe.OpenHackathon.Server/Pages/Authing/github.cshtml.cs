@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Text;
-using System.Net;
-using Authing.ApiClient.Types;
+using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Pages.Authing
 {
@@ -54,6 +48,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Pages.Authing
             if (response.IsSuccessStatusCode)
             {
                 var user = JsonConvert.DeserializeObject<Models.UserInfo>(responseBody);
+                if (user == null)
+                {
+                    return;
+                }
+
                 Token = user.Token;
                 UserName = user.Name;
             }

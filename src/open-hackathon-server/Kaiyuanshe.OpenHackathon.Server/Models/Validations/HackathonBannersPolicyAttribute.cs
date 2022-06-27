@@ -8,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
     {
         public static readonly int MaxBannerCount = 10;
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {
