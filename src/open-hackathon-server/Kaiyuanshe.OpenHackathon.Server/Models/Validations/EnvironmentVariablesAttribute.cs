@@ -12,7 +12,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
         private static readonly int ValueMaxLength = 256;
         private static readonly int MaxEnvs = 32;
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {
@@ -20,7 +20,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
                 return ValidationResult.Success;
             }
 
-            Dictionary<string, string> envs = value as Dictionary<string, string>;
+            Dictionary<string, string>? envs = value as Dictionary<string, string>;
+            if (envs == null)
+            {
+                return new ValidationResult($"invalid format. It must be a valid dict.");
+            }
+
             if (envs.Count > MaxEnvs)
             {
                 return new ValidationResult($"a maximum of {MaxEnvs} environment variables are allowed.");

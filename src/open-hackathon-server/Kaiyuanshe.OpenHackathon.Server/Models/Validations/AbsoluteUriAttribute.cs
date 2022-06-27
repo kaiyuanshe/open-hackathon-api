@@ -6,7 +6,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
     [AttributeUsage(AttributeTargets.Property)]
     public class AbsoluteUriAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
             {
@@ -14,10 +14,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models.Validations
                 return ValidationResult.Success;
             }
 
-            string uri = value.ToString();
-            if (Uri.TryCreate(uri, UriKind.Absolute, out Uri temp))
+            string? uri = value.ToString();
+            if (Uri.TryCreate(uri, UriKind.Absolute, out Uri? temp))
             {
-                if(temp.Scheme.ToUpper() != "HTTPS" && temp.Scheme.ToUpper() != "HTTP")
+                if (temp.Scheme.ToUpper() != "HTTPS" && temp.Scheme.ToUpper() != "HTTP")
                 {
                     return new ValidationResult($"invalid Uri: {uri}");
                 }

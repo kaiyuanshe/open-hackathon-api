@@ -128,7 +128,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            var options = app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>();
             app.UseRequestLocalization(options.Value);
 
             // middleware
@@ -144,11 +144,11 @@ namespace Kaiyuanshe.OpenHackathon.Server
             // Configure Swagger
             SwaggerStartup.Configure(app, env);
 
-            var logger = app.ApplicationServices.GetService<ILoggerFactory>().CreateLogger("Assembly");
+            var logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateLogger("Assembly");
             AppDomain.CurrentDomain.AssemblyLoad += (sender, args) =>
             {
                 var assembly = args.LoadedAssembly;
-                if (assembly.FullName.Contains("Kaiyuanshe"))
+                if (assembly.FullName != null && assembly.FullName.Contains("Kaiyuanshe"))
                 {
                     logger.TraceInformation($"Assembly loaded: {assembly.FullName}");
                 }
