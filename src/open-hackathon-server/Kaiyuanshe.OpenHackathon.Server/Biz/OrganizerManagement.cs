@@ -12,6 +12,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         [return: NotNull]
         Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken);
         Task<OrganizerEntity?> UpdateOrganizer(OrganizerEntity? entity, Organizer organizer, CancellationToken cancellationToken);
+        Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
     }
 
     public class OrganizerManagement : ManagementClientBase<OrganizerManagement>, IOrganizerManagement
@@ -57,6 +58,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
             await StorageContext.OrganizerTable.MergeAsync(entity, cancellationToken);
             return entity;
+        }
+        #endregion
+
+        #region GetOrganizerById
+        public async Task<OrganizerEntity?> GetOrganizerById(
+            [DisallowNull] string hackathonName,
+            [DisallowNull] string organizerId,
+            CancellationToken cancellationToken)
+        {
+            return await StorageContext.OrganizerTable.RetrieveAsync(hackathonName, organizerId, cancellationToken);
         }
         #endregion
     }

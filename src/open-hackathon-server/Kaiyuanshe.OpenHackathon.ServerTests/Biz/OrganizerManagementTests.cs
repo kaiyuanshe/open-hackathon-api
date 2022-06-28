@@ -103,5 +103,20 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             moqs.VerifyAll();
         }
         #endregion
+
+        #region GetOrganizerById
+        [Test]
+        public async Task GetOrganizerById()
+        {
+            var moqs = new Moqs();
+            moqs.OrganizerTable.Setup(o => o.RetrieveAsync("hack", "oid", default));
+
+            var management = new OrganizerManagement();
+            moqs.SetupManagement(management);
+            await management.GetOrganizerById("hack", "oid", default);
+
+            moqs.VerifyAll();
+        }
+        #endregion
     }
 }
