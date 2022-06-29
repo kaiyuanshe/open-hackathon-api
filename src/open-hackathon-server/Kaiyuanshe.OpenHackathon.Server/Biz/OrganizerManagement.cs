@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         [return: NotNull]
         Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken);
-        Task<OrganizerEntity?> UpdateOrganizer(OrganizerEntity? entity, Organizer organizer, CancellationToken cancellationToken);
+        Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer organizer, CancellationToken cancellationToken);
         Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
     }
 
@@ -37,11 +37,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region UpdateOrganizer
-        public async Task<OrganizerEntity?> UpdateOrganizer(OrganizerEntity? entity, Organizer parameter, CancellationToken cancellationToken)
+        public async Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer parameter, CancellationToken cancellationToken)
         {
-            if (entity == null || parameter == null)
-                return entity;
-
             entity.Name = parameter.name ?? entity.Name;
             entity.Description = parameter.description ?? entity.Description;
             entity.Type = parameter.type.GetValueOrDefault(entity.Type);

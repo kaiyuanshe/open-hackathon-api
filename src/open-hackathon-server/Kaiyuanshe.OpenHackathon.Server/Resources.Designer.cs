@@ -439,6 +439,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; updated organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_updateOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_updateOrganizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Judge &quot;{judgeName}&quot; updated a rating on kind &quot;{ratingKindName}&quot;..
         /// </summary>
         internal static string ActivityLog_Hackathon_updateRating {
@@ -1159,6 +1168,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Updated organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_updateOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateOrganizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{hackathonName}]Updated a rating on kind &quot;{ratingKindName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_updateRating {
@@ -1551,6 +1569,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string Judge_TooMany {
             get {
                 return ResourceManager.GetString("Judge_TooMany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The organizer is not found..
+        /// </summary>
+        internal static string Organizer_NotFound {
+            get {
+                return ResourceManager.GetString("Organizer_NotFound", resourceCulture);
             }
         }
         

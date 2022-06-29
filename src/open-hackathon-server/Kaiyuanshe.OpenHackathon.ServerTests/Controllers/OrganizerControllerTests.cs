@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+﻿using Kaiyuanshe.OpenHackathon.Server;
+using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -43,5 +44,52 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
+        #region UpdateOrganizer
+        [Test]
+        public async Task UpdateOrganizer_NotFound()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Organizer();
+            OrganizerEntity? organizerEntity = null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.OrganizerManagement.Setup(o => o.GetOrganizerById("pk", "oid", default)).ReturnsAsync(organizerEntity);
+
+            var controller = new OrganizerController();
+            moqs.SetupController(controller);
+            var result = await controller.UpdateOrganizer("Hack", "oid", parameter, default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Organizer_NotFound);
+        }
+
+        [Test]
+        public async Task UpdateOrganizer_Updated()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Organizer();
+            OrganizerEntity? organizerEntity = new OrganizerEntity { Name = "name" };
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.OrganizerManagement.Setup(o => o.GetOrganizerById("pk", "oid", default)).ReturnsAsync(organizerEntity);
+            moqs.OrganizerManagement.Setup(o => o.UpdateOrganizer(organizerEntity, parameter, default)).ReturnsAsync(organizerEntity);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("pk", "", ActivityLogType.updateOrganizer, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "pk", "", ActivityLogType.updateOrganizer, It.IsAny<object>(), null, default));
+
+            var controller = new OrganizerController();
+            moqs.SetupController(controller);
+            var result = await controller.UpdateOrganizer("Hack", "oid", parameter, default);
+
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<Organizer>(result);
+            Assert.AreEqual("name", resp.name);
+        }
+        #endregion
     }
 }
