@@ -243,6 +243,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>管理员'{userName}'修改了活动裁判信息: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateOrganizer" xml:space="preserve">
+    <value>管理员"{adminName}"修改了活动的组织者"{organizerName}"。</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateRating" xml:space="preserve">
     <value>裁判"{judgeName}"修改了奖项"{ratingKindName}"的一项评分。</value>
   </data>
@@ -483,6 +486,9 @@
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>[{hackathonName}]修改了裁判员信息: {judgeName}</value>
   </data>
+  <data name="ActivityLog_User_updateOrganizer" xml:space="preserve">
+    <value>[{hackathonName}]更新了活动组织者"{organizerName}"。</value>
+  </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
     <value>[{hackathonName}]修改了奖项"{ratingKindName}"的一项评分。</value>
   </data>
@@ -614,6 +620,9 @@
   </data>
   <data name="Judge_TooMany" xml:space="preserve">
     <value>最多添加100位裁判或评审。</value>
+  </data>
+  <data name="Organizer_NotFound" xml:space="preserve">
+    <value>指定的组织者不存在。</value>
   </data>
   <data name="Parameter_Required" xml:space="preserve">
     <value>参数 {0}不能为空。</value>

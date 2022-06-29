@@ -243,6 +243,9 @@
   <data name="ActivityLog_Hackathon_updateJudge" xml:space="preserve">
     <value>Admin '{userName}' updated judge: '{judgeName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_updateOrganizer" xml:space="preserve">
+    <value>Admin "{adminName}" updated organizer "{organizerName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_updateRating" xml:space="preserve">
     <value>Judge "{judgeName}" updated a rating on kind "{ratingKindName}".</value>
   </data>
@@ -483,6 +486,9 @@
   <data name="ActivityLog_User_updateJudge" xml:space="preserve">
     <value>[{hackathonName}]Updated judge '{judgeName}' for the hackathon.</value>
   </data>
+  <data name="ActivityLog_User_updateOrganizer" xml:space="preserve">
+    <value>[{hackathonName}]Updated organizer "{organizerName}".</value>
+  </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
     <value>[{hackathonName}]Updated a rating on kind "{ratingKindName}".</value>
   </data>
@@ -614,6 +620,9 @@
   </data>
   <data name="Judge_TooMany" xml:space="preserve">
     <value>A maximum of 100 judges are allowed.</value>
+  </data>
+  <data name="Organizer_NotFound" xml:space="preserve">
+    <value>The organizer is not found.</value>
   </data>
   <data name="Parameter_Required" xml:space="preserve">
     <value>Required parameter {0} is null or empty.</value>
