@@ -91,5 +91,42 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("name", resp.name);
         }
         #endregion
+
+        #region GetOrganizer
+        [Test]
+        public async Task GetOrganizer_NotFound()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+
+            var controller = new OrganizerController();
+            moqs.SetupController(controller);
+            var result = await controller.GetOrganizer("Hack", "oid", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Organizer_NotFound);
+        }
+
+        [Test]
+        public async Task GetOrganizer_Succeeded()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+            OrganizerEntity organizerEntity = new OrganizerEntity { Name = "orgname" };
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.OrganizerManagement.Setup(o => o.GetOrganizerById("pk", "oid", default)).ReturnsAsync(organizerEntity);
+
+            var controller = new OrganizerController();
+            moqs.SetupController(controller);
+            var result = await controller.GetOrganizer("Hack", "oid", default);
+
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<Organizer>(result);
+            Assert.AreEqual("orgname", resp.name);
+        }
+        #endregion
     }
 }
