@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -13,6 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken);
         Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer organizer, CancellationToken cancellationToken);
         Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
+        //Task ListOrganizers(string hackathonName, OrganizerQueryOptions options, CancellationToken cancellationToken);
     }
 
     public class OrganizerManagement : ManagementClientBase<OrganizerManagement>, IOrganizerManagement
