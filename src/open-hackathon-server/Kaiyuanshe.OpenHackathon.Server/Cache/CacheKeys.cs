@@ -24,5 +24,6 @@
         TeamWork,
         Judge,
         RatingKind,
+        Organizer,
     }
 }

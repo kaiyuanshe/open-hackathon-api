@@ -31,6 +31,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && e.Logo.description == "d2"
                 && e.Logo.name == "n2"
                 && e.Logo.uri == "u2"), default));
+            moqs.CacheProvider.Setup(c => c.Remove("Organizer-hack"));
 
             var management = new OrganizerManagement();
             moqs.SetupManagement(management);
@@ -46,6 +47,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var entity = new OrganizerEntity
             {
+                PartitionKey = "pk",
                 Name = "name1",
                 Description = "desc1",
                 Type = OrganizerType.coorganizer,
@@ -61,6 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && e.Logo.description == "ld1"
                 && e.Logo.name == "ln1"
                 && e.Logo.uri == "lu1"), default));
+            moqs.CacheProvider.Setup(c => c.Remove("Organizer-pk"));
 
             var management = new OrganizerManagement();
             moqs.SetupManagement(management);
@@ -74,6 +77,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var entity = new OrganizerEntity
             {
+                PartitionKey = "pk",
                 Name = "name1",
                 Description = "desc1",
                 Type = OrganizerType.coorganizer,
@@ -95,6 +99,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && e.Logo.description == "ld2"
                 && e.Logo.name == "ln2"
                 && e.Logo.uri == "lu2"), default));
+            moqs.CacheProvider.Setup(c => c.Remove("Organizer-pk"));
 
             var management = new OrganizerManagement();
             moqs.SetupManagement(management);

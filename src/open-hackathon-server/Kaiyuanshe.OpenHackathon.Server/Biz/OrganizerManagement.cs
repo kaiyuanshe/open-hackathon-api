@@ -1,7 +1,8 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
     public class OrganizerManagement : ManagementClientBase<OrganizerManagement>, IOrganizerManagement
     {
+        #region Cache
+        private string CacheKeyByHackathon(string hackathonName)
+        {
+            return CacheKeys.GetCacheKey(CacheEntryType.Organizer, hackathonName);
+        }
+
+        private void InvalidateCachedOrganizers(string hackathonName)
+        {
+            Cache.Remove(CacheKeyByHackathon(hackathonName));
+        }
+
+        private async Task<IEnumerable<OrganizerEntity>> GetCachedOrganizers(string hackathonName, CancellationToken cancellationToken)
+        {
+            string cacheKey = CacheKeyByHackathon(hackathonName);
+            return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), (ct) =>
+            {
+                return StorageContext.OrganizerTable.ListByHackathonAsync(hackathonName, ct);
+            }, true, cancellationToken);
+        }
+        #endregion
+
         #region CreateOrganizer
         [return: NotNull]
         public async Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken)
@@ -34,6 +56,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 Type = parameter.type.GetValueOrDefault(OrganizerType.host),
             };
             await StorageContext.OrganizerTable.InsertAsync(entity, cancellationToken);
+            InvalidateCachedOrganizers(hackathonName);
+
             return entity;
         }
         #endregion
@@ -56,6 +80,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 }
             }
             await StorageContext.OrganizerTable.MergeAsync(entity, cancellationToken);
+            InvalidateCachedOrganizers(entity.HackathonName);
             return entity;
         }
         #endregion
@@ -68,6 +93,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         {
             return await StorageContext.OrganizerTable.RetrieveAsync(hackathonName, organizerId, cancellationToken);
         }
+        #endregion
+
+        #region ListOrganizers
+
         #endregion
     }
 }
