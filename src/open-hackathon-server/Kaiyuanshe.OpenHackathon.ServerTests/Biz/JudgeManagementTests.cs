@@ -129,7 +129,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storageContext.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
 
-            Assert.AreEqual(expectedDesc, result.Description);
+            Assert.AreEqual(expectedDesc, result?.Description);
         }
         #endregion
 
@@ -154,7 +154,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             judgeTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
 
-            Assert.AreEqual("pk", result.HackathonName);
+            Assert.AreEqual("pk", result?.HackathonName);
         }
         #endregion
 
@@ -310,8 +310,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             else
             {
                 Assert.IsNotNull(options.NextPage);
-                Assert.AreEqual(expectedNext.np, options.NextPage.np);
-                Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
+                Assert.AreEqual(expectedNext.np, options.NextPage?.np);
+                Assert.AreEqual(expectedNext.nr, options.NextPage?.nr);
             }
         }
         #endregion

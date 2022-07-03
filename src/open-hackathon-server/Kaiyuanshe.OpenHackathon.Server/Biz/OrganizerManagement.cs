@@ -1,9 +1,11 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken);
         Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer organizer, CancellationToken cancellationToken);
         Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
-        //Task ListOrganizers(string hackathonName, OrganizerQueryOptions options, CancellationToken cancellationToken);
+        Task<IEnumerable<OrganizerEntity>> ListPaginatedOrganizersAsync(string hackathonName, OrganizerQueryOptions options, CancellationToken cancellationToken = default);
     }
 
     public class OrganizerManagement : ManagementClientBase<OrganizerManagement>, IOrganizerManagement
@@ -95,8 +97,29 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region ListOrganizers
+        #region ListPaginatedOrganizersAsync
+        public async Task<IEnumerable<OrganizerEntity>> ListPaginatedOrganizersAsync(string hackathonName, OrganizerQueryOptions options, CancellationToken cancellationToken = default)
+        {
+            var allOrganizers = await GetCachedOrganizers(hackathonName, cancellationToken);
 
+            // paging
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
+            var organizers = allOrganizers.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
+
+            // next paging
+            options.NextPage = null;
+            if (np + top < allOrganizers.Count())
+            {
+                options.NextPage = new Pagination
+                {
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
+                };
+            }
+
+            return organizers;
+        }
         #endregion
     }
 }

@@ -1,8 +1,14 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
@@ -121,6 +127,123 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             await management.GetOrganizerById("hack", "oid", default);
 
             moqs.VerifyAll();
+        }
+        #endregion
+
+        #region ListPaginatedOrganizersAsync
+        private static IEnumerable ListPaginatedOrganizersAsyncTestData()
+        {
+            var a1 = new OrganizerEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(1),
+            };
+            var a2 = new OrganizerEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(3),
+            };
+            var a3 = new OrganizerEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(2),
+            };
+            var a4 = new OrganizerEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(4),
+            };
+
+            // arg0: options
+            // arg1: awards
+            // arg2: expected result
+            // arg3: expected Next
+
+            // by Award
+            yield return new TestCaseData(
+                new OrganizerQueryOptions { },
+                new List<OrganizerEntity> { a1, a2, a3, a4 },
+                new List<OrganizerEntity> { a4, a2, a3, a1 },
+                null
+                );
+
+            // by Team
+            yield return new TestCaseData(
+                new OrganizerQueryOptions { },
+                new List<OrganizerEntity> { a1, a2, a3, a4 },
+                new List<OrganizerEntity> { a4, a2, a3, a1 },
+                null
+                );
+
+            // by Hackathon
+            yield return new TestCaseData(
+                new OrganizerQueryOptions { },
+                new List<OrganizerEntity> { a1, a2, a3, a4 },
+                new List<OrganizerEntity> { a4, a2, a3, a1 },
+                null
+                );
+
+            // top
+            yield return new TestCaseData(
+                new OrganizerQueryOptions { Pagination = new Pagination { top = 2, } },
+                new List<OrganizerEntity> { a1, a2, a3, a4 },
+                new List<OrganizerEntity> { a4, a2, },
+                new Pagination { np = "2", nr = "2" }
+                );
+
+            // paging
+            yield return new TestCaseData(
+                new OrganizerQueryOptions
+                {
+                    Pagination = new Pagination
+                    {
+                        np = "1",
+                        nr = "1",
+                        top = 2,
+                    },
+                },
+                new List<OrganizerEntity> { a1, a2, a3, a4 },
+                new List<OrganizerEntity> { a2, a3, },
+                new Pagination { np = "3", nr = "3" }
+                );
+        }
+
+        [Test, TestCaseSource(nameof(ListPaginatedOrganizersAsyncTestData))]
+        public async Task ListPaginatedAssignmentsAsync(
+            OrganizerQueryOptions options,
+            IEnumerable<OrganizerEntity> all,
+            IEnumerable<OrganizerEntity> expectedResult,
+            Pagination expectedNext)
+        {
+            string hackName = "hack";
+
+            var cache = new Mock<ICacheProvider>();
+            cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<OrganizerEntity>>>(c => c.CacheKey == "Organizer-hack"), default)).ReturnsAsync(all);
+
+            var organizerManagement = new OrganizerManagement()
+            {
+                Cache = cache.Object,
+            };
+            var result = await organizerManagement.ListPaginatedOrganizersAsync(hackName, options, default);
+
+            Mock.VerifyAll(cache);
+            cache.VerifyNoOtherCalls();
+
+            Assert.AreEqual(expectedResult.Count(), result.Count());
+            for (int i = 0; i < expectedResult.Count(); i++)
+            {
+                Assert.AreEqual(expectedResult.ElementAt(i).Id, result.ElementAt(i).Id);
+            }
+            if (expectedNext == null)
+            {
+                Assert.IsNull(options.NextPage);
+            }
+            else
+            {
+                Assert.IsNotNull(options.NextPage);
+                Assert.AreEqual(expectedNext.np, options.NextPage?.np);
+                Assert.AreEqual(expectedNext.nr, options.NextPage?.nr);
+            }
         }
         #endregion
     }
