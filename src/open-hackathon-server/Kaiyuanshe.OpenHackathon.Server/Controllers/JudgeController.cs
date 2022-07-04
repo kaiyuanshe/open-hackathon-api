@@ -223,7 +223,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, judgeQueryOptions.NextPage);
+            var nextLink = BuildNextLinkUrl(routeValues, judgeQueryOptions?.NextPage);
 
             // build resp
             var resp = await ResponseBuilder.BuildResourceListAsync<JudgeEntity, Judge, JudgeList>(

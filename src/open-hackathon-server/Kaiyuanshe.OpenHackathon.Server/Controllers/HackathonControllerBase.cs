@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
@@ -85,7 +86,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
         /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
         /// <returns></returns>
-        protected string? BuildNextLinkUrl(RouteValueDictionary routeValues, Pagination nextPage)
+        protected string? BuildNextLinkUrl(RouteValueDictionary routeValues, Pagination? nextPage)
         {
             if (nextPage?.np == null || nextPage?.nr == null)
                 return null;
@@ -121,7 +122,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
 
         #region ObjectResult with ProblemDetails
-        protected ObjectResult BadRequest(string detail, string instance = null)
+        protected ObjectResult BadRequest(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 400,
@@ -129,7 +130,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 instance: instance);
         }
 
-        protected ObjectResult Unauthorized(string detail, string instance = null)
+        protected ObjectResult Unauthorized(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 401,
@@ -137,7 +138,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 instance: instance);
         }
 
-        protected ObjectResult Forbidden(string detail, string instance = null)
+        protected ObjectResult Forbidden(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 403,
@@ -145,7 +146,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 instance: instance);
         }
 
-        protected ObjectResult NotFound(string detail, string instance = null)
+        protected ObjectResult NotFound(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 404,
@@ -153,7 +154,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 instance: instance);
         }
 
-        protected ObjectResult Conflict(string detail, string instance = null)
+        protected ObjectResult Conflict(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 409,
@@ -161,7 +162,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 instance: instance);
         }
 
-        protected ObjectResult PreconditionFailed(string detail, string instance = null)
+        protected ObjectResult PreconditionFailed(string detail, string? instance = null)
         {
             return Problem(
                 statusCode: 412,

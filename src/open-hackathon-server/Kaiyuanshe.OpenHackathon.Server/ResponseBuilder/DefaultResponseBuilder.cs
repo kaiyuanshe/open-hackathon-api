@@ -32,32 +32,32 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         TResult BuildResourceList<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
             Func<TSrcItem, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
             where TResult : IResourceList<TResultItem>, new();
 
         TResult BuildResourceList<TSrcItem1, TSrcItem2, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2>> items,
             Func<TSrcItem1, TSrcItem2, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
             where TResult : IResourceList<TResultItem>, new();
 
         TResult BuildResourceList<TSrcItem1, TSrcItem2, TSrcItem3, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2, TSrcItem3>> items,
             Func<TSrcItem1, TSrcItem2, TSrcItem3, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
             where TResult : IResourceList<TResultItem>, new();
 
         Task<TResult> BuildResourceListAsync<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
             Func<TSrcItem, CancellationToken, Task<TResultItem>> converter,
-            string nextLink,
+            string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new();
 
         Task<TResult> BuildResourceListAsync<TSrcItem1, TSrcItem2, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2>> items,
             Func<TSrcItem1, TSrcItem2, CancellationToken, Task<TResultItem>> converter,
-            string nextLink,
+            string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new();
     }
@@ -238,7 +238,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public TResult BuildResourceList<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
             Func<TSrcItem, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
             where TResult : IResourceList<TResultItem>, new()
         {
             return new TResult
@@ -251,7 +251,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public TResult BuildResourceList<TSrcItem1, TSrcItem2, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2>> items,
             Func<TSrcItem1, TSrcItem2, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
            where TResult : IResourceList<TResultItem>, new()
         {
             return new TResult
@@ -264,7 +264,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public TResult BuildResourceList<TSrcItem1, TSrcItem2, TSrcItem3, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2, TSrcItem3>> items,
             Func<TSrcItem1, TSrcItem2, TSrcItem3, TResultItem> converter,
-            string nextLink)
+            string? nextLink)
            where TResult : IResourceList<TResultItem>, new()
         {
             return new TResult
@@ -277,7 +277,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public async Task<TResult> BuildResourceListAsync<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
             Func<TSrcItem, CancellationToken, Task<TResultItem>> converter,
-            string nextLink,
+            string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new()
         {
@@ -301,7 +301,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         public async Task<TResult> BuildResourceListAsync<TSrcItem1, TSrcItem2, TResultItem, TResult>(
             IEnumerable<Tuple<TSrcItem1, TSrcItem2>> items,
             Func<TSrcItem1, TSrcItem2, CancellationToken, Task<TResultItem>> converter,
-            string nextLink,
+            string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new()
         {

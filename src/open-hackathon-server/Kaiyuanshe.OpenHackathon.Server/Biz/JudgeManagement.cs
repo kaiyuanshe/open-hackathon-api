@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<bool> CanCreateJudgeAsync(string hackathonName, CancellationToken cancellationToken);
         Task<JudgeEntity> CreateJudgeAsync(Judge parameter, CancellationToken cancellationToken);
-        Task<JudgeEntity?> UpdateJudgeAsync(JudgeEntity exising, Judge parameter, CancellationToken cancellationToken);
+        Task<JudgeEntity> UpdateJudgeAsync(JudgeEntity exising, Judge parameter, CancellationToken cancellationToken);
         Task<JudgeEntity?> GetJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken);
         Task<bool> IsJudgeAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
         Task<IEnumerable<JudgeEntity>> ListPaginatedJudgesAsync(string hackathonName, JudgeQueryOptions options, CancellationToken cancellationToken = default);
@@ -70,12 +70,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region Task<JudgeEntity> UpdateJudgeAsync(JudgeEntity exising, Judge parameter, CancellationToken cancellationToken);
-        public async Task<JudgeEntity?> UpdateJudgeAsync(JudgeEntity exising, Judge parameter, CancellationToken cancellationToken)
+        #region UpdateJudgeAsync
+        public async Task<JudgeEntity> UpdateJudgeAsync(JudgeEntity exising, Judge parameter, CancellationToken cancellationToken)
         {
-            if (exising == null || parameter == null)
-                return exising;
-
             exising.Description = parameter.description ?? exising.Description;
             await StorageContext.JudgeTable.MergeAsync(exising, cancellationToken);
             InvalidateCachedJudges(parameter.hackathonName);
