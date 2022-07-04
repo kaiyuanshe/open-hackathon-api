@@ -92,7 +92,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             return false;
         }
 
-        public static TDestination As<TDestination>(this object src, Action<TDestination> configure = null)
+        public static TDestination? As<TDestination>(this object src, Action<TDestination> configure = null)
             where TDestination : new()
         {
             if (src == null)
@@ -137,10 +137,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
 
         private static Type GetRealType(Type type)
         {
-            if (Nullable.GetUnderlyingType(type) != null)
-                return Nullable.GetUnderlyingType(type);
-
-            return type;
+            return Nullable.GetUnderlyingType(type) ?? type;
         }
 
         private static object ConvertType(Type srcType, Type objectType, object value)

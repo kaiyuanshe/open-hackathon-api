@@ -15,7 +15,7 @@
         /// No more results if it's null or empty.
         /// </summary>
         /// <example>https://hackathon-api.kaiyuanshe.cn/...pathToMoreResults...</example>
-        string nextLink { get; set; }
+        string? nextLink { get; set; }
     }
 
     public abstract class ResourceList<T> : IResourceList<T>
@@ -30,6 +30,6 @@
         /// No more results if it's null or empty.
         /// </summary>
         /// <example>https://hackathon-api.kaiyuanshe.cn/...pathToMoreResults...</example>
-        public string nextLink { get; set; }
+        public string? nextLink { get; set; }
     }
 }
