@@ -261,7 +261,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             ValidateHackathonOptions options,
             CancellationToken cancellationToken = default)
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             options.ValidateResult = null; // make sure it's not set by caller
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             if (hackathon == null)
             {
@@ -457,7 +459,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #endregion
 
         #region ValidateAward
-        protected async Task<bool> ValidateAward(AwardEntity award, ValidateAwardOptions options, CancellationToken cancellationToken = default)
+        protected async Task<bool> ValidateAward(AwardEntity? award, ValidateAwardOptions options, CancellationToken cancellationToken = default)
         {
             if (award == null)
             {
