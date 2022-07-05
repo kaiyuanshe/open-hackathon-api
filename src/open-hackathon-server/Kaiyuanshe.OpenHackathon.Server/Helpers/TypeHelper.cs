@@ -92,7 +92,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
             return false;
         }
 
-        public static TDestination? As<TDestination>(this object src, Action<TDestination> configure = null)
+        public static TDestination? As<TDestination>(this object src, Action<TDestination>? configure = null)
             where TDestination : new()
         {
             if (src == null)

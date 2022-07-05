@@ -108,10 +108,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // get award
             var award = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
-            var awardOptions = new ValidateAwardOptions { };
-            if (await ValidateAward(award, awardOptions, cancellationToken) == false)
+            if (award == null)
             {
-                return awardOptions.ValidateResult;
+                return NotFound(Resources.Award_NotFound);
             }
             return Ok(ResponseBuilder.BuildAward(award));
         }
@@ -152,6 +151,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var award = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
+            if (award == null)
+            {
+                return NotFound(Resources.Award_NotFound);
+            }
             var awardOptions = new ValidateAwardOptions
             {
                 TargetChangableRequired = true,
@@ -302,7 +305,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     var user = await UserManagement.GetUserByIdAsync(awardAssignmentEntity.AssigneeId, cancellationToken);
                     return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, null, user);
                 default:
-                    return null;
+                    throw new ArgumentOutOfRangeException("Unknown Award target.");
             }
         }
         #endregion
@@ -349,6 +352,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var awardEntity = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
+            if (awardEntity == null)
+            {
+                return NotFound(Resources.Award_NotFound);
+            }
             var validateAwardOptions = new ValidateAwardOptions
             {
                 QuantityCheckRequired = true,
@@ -427,12 +434,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var awardEntity = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
-            var validateAwardOptions = new ValidateAwardOptions
+            if (awardEntity == null)
             {
-            };
-            if (await ValidateAward(awardEntity, validateAwardOptions, cancellationToken) == false)
-            {
-                return validateAwardOptions.ValidateResult;
+                return NotFound(Resources.Award_NotFound);
             }
 
             // update assignment
@@ -498,12 +502,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var awardEntity = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
-            var validateAwardOptions = new ValidateAwardOptions
+            if (awardEntity == null)
             {
-            };
-            if (await ValidateAward(awardEntity, validateAwardOptions, cancellationToken) == false)
-            {
-                return validateAwardOptions.ValidateResult;
+                return NotFound(Resources.Award_NotFound);
             }
 
             // update assignment
@@ -549,12 +550,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var awardEntity = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
-            var validateAwardOptions = new ValidateAwardOptions
+            if (awardEntity == null)
             {
-            };
-            if (await ValidateAward(awardEntity, validateAwardOptions, cancellationToken) == false)
-            {
-                return validateAwardOptions.ValidateResult;
+                return NotFound(Resources.Award_NotFound);
             }
 
             // query
@@ -674,12 +672,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // validate award
             var awardEntity = await AwardManagement.GetAwardByIdAsync(hackathonName.ToLower(), awardId, cancellationToken);
-            var validateAwardOptions = new ValidateAwardOptions
+            if (awardEntity == null)
             {
-            };
-            if (await ValidateAward(awardEntity, validateAwardOptions, cancellationToken) == false)
-            {
-                return validateAwardOptions.ValidateResult;
+                return NotFound(Resources.Award_NotFound);
             }
 
             // Delete assignment

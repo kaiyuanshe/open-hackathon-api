@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         }
 
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public int Quantity { get; set; }
         public AwardTarget Target { get; set; }
 

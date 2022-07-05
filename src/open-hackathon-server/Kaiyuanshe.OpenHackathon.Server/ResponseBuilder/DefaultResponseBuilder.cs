@@ -13,7 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
     {
         ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity);
         Award BuildAward(AwardEntity awardEntity);
-        AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team team, UserInfo user);
+        AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user);
         Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
         Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
         GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template);
@@ -23,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         Organizer BuildOrganizer(OrganizerEntity organizerEntity);
         Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind);
         RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity);
-        Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
+        Team? BuildTeam(TeamEntity teamEntity, UserInfo creator);
         TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
         TeamWork BuildTeamWork(TeamWorkEntity teamWorkEntity);
         Template BuildTemplate(TemplateContext context);
@@ -82,7 +82,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team team, UserInfo user)
+        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user)
         {
             return awardAssignmentEntity.As<AwardAssignment>((p) =>
             {
@@ -189,7 +189,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public Team BuildTeam(TeamEntity teamEntity, UserInfo creator)
+        public Team? BuildTeam(TeamEntity teamEntity, UserInfo creator)
         {
             return teamEntity.As<Team>(p =>
             {

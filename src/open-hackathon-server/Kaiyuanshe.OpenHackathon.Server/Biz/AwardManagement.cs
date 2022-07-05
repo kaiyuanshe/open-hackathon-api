@@ -15,7 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get a Award by Id
         /// </summary>
-        Task<AwardEntity> GetAwardByIdAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default);
+        Task<AwardEntity?> GetAwardByIdAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default);
 
         Task<bool> CanCreateNewAward(string hackathonName, CancellationToken cancellationToken = default);
 
@@ -57,12 +57,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get count of assignment of an award
         /// </summary>
-        Task<int> GetAssignmentCountAsync(string hackathonName, string awardId = null, CancellationToken cancellationToken = default);
+        Task<int> GetAssignmentCountAsync(string hackathonName, string? awardId = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get assignment by Id
         /// </summary>
-        Task<AwardAssignmentEntity> GetAssignmentAsync(string hackathonName, string assignmentId, CancellationToken cancellationToken = default);
+        Task<AwardAssignmentEntity?> GetAssignmentAsync(string hackathonName, string assignmentId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List paginated assignments by award
@@ -125,9 +125,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region CreateAwardAsync
         public async Task<AwardEntity> CreateAwardAsync(string hackathonName, Award award, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(hackathonName) || award == null)
-                return null;
-
             var awardEnity = new AwardEntity
             {
                 PartitionKey = hackathonName.ToLower(),
@@ -157,7 +154,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetAwardByIdAsync
-        public async Task<AwardEntity> GetAwardByIdAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default)
+        public async Task<AwardEntity?> GetAwardByIdAsync(string hackathonName, string awardId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(awardId))
                 return null;
@@ -186,7 +183,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // paging
             int np = 0;
             int.TryParse(options?.Pagination?.np, out np);
+#pragma warning disable CS8604 // Possible null reference argument.
             int top = options.Top();
+#pragma warning restore CS8604 // Possible null reference argument.
 
             var awards = allAwards.OrderByDescending(a => a.CreatedAt)
                 .Skip(np)
@@ -210,9 +209,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateAwardAsync
         public async Task<AwardEntity> UpdateAwardAsync(AwardEntity entity, Award award, CancellationToken cancellationToken = default)
         {
-            if (entity == null || award == null)
-                return entity;
-
             if (!string.IsNullOrEmpty(award.description)) entity.Description = award.description;
             if (!string.IsNullOrEmpty(award.name)) entity.Name = award.name;
             if (award.pictures != null) entity.Pictures = award.pictures;
@@ -253,9 +249,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateAssignmentAsync
         public async Task<AwardAssignmentEntity> UpdateAssignmentAsync(AwardAssignmentEntity existing, AwardAssignment request, CancellationToken cancellationToken = default)
         {
-            if (existing == null || request == null)
-                return existing;
-
             existing.Description = request.description ?? existing.Description;
             await StorageContext.AwardAssignmentTable.MergeAsync(existing, cancellationToken);
             return existing;
@@ -263,7 +256,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetAssignmentCountAsync
-        public async Task<int> GetAssignmentCountAsync(string hackathonName, string awardId = null, CancellationToken cancellationToken = default)
+        public async Task<int> GetAssignmentCountAsync(string hackathonName, string? awardId = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(awardId))
             {
@@ -279,7 +272,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetAssignmentAsync
-        public async Task<AwardAssignmentEntity> GetAssignmentAsync(string hackathonName, string assignmentId, CancellationToken cancellationToken = default)
+        public async Task<AwardAssignmentEntity?> GetAssignmentAsync(string hackathonName, string assignmentId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(assignmentId))
                 return null;
