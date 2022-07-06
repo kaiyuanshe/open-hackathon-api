@@ -23,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         Organizer BuildOrganizer(OrganizerEntity organizerEntity);
         Rating BuildRating(RatingEntity ratingEntity, UserInfo judge, Team team, RatingKind ratingKind);
         RatingKind BuildRatingKind(RatingKindEntity ratingKindEntity);
-        Team? BuildTeam(TeamEntity teamEntity, UserInfo creator);
+        Team BuildTeam(TeamEntity teamEntity, UserInfo creator);
         TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
         TeamWork BuildTeamWork(TeamWorkEntity teamWorkEntity);
         Template BuildTemplate(TemplateContext context);
@@ -114,7 +114,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
         public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template)
         {
-            GuacamoleConnection conn = null;
+            GuacamoleConnection conn;
             switch (context.Status.protocol)
             {
                 case IngressProtocol.vnc:
@@ -129,7 +129,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                     };
                     break;
                 default:
-                    break;
+                    throw new ArgumentOutOfRangeException($"protocal {context.Status.protocol} is not supported.");
             }
 
             return conn;
@@ -189,7 +189,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public Team? BuildTeam(TeamEntity teamEntity, UserInfo creator)
+        public Team BuildTeam(TeamEntity teamEntity, UserInfo creator)
         {
             return teamEntity.As<Team>(p =>
             {

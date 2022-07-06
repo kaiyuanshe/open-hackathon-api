@@ -31,14 +31,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
                 Code = 201
             };
 
-            Status status = Status.FromV1Status(v1Status);
-            Assert.AreEqual("reason", status.reason);
-            Assert.AreEqual("msg", status.message);
-            Assert.AreEqual("status", status.kind);
-            Assert.AreEqual("group", status.details.Group);
-            Assert.AreEqual("field", status.details.Causes.First().Field);
-            Assert.AreEqual("success", status.status);
-            Assert.AreEqual(201, status.code);
+            Status? status = Status.FromV1Status(v1Status);
+            Assert.IsNotNull(status);
+            if (status != null)
+            {
+                Assert.AreEqual("reason", status.reason);
+                Assert.AreEqual("msg", status.message);
+                Assert.AreEqual("status", status.kind);
+                Assert.AreEqual("group", status.details.Group);
+                Assert.AreEqual("field", status.details.Causes.First().Field);
+                Assert.AreEqual("success", status.status);
+                Assert.AreEqual(201, status.code);
+            }
         }
     }
 }

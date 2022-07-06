@@ -1,6 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
-using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
@@ -25,12 +24,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
             var parameter = new Judge();
-            UserInfo user = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default));
 
             var controller = new JudgeController();
             moqs.SetupController(controller);
@@ -106,13 +104,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
             var parameter = new Judge();
             UserInfo user = new UserInfo();
-            JudgeEntity entity = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
-            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default)).ReturnsAsync(entity);
+            moqs.JudgeManagement.Setup(j => j.GetJudgeAsync("hack", "uid", default));
 
             var controller = new JudgeController();
             moqs.SetupController(controller);
@@ -176,11 +173,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetJudge_NotFound()
         {
             var hackathon = new HackathonEntity { Status = HackathonStatus.online };
-            UserInfo user = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default));
 
             var controller = new JudgeController();
             moqs.SetupController(controller);

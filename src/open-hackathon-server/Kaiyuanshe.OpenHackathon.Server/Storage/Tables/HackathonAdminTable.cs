@@ -13,7 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         /// <param name="userId">user Id</param>
         /// <param name="cancellationToken"></param>
         /// <returns><seealso cref="EnrollmentEntity"/> or null.</returns>
-        Task<HackathonAdminEntity> GetPlatformRole(string userId, CancellationToken cancellationToken);
+        Task<HackathonAdminEntity?> GetPlatformRole(string userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// List all individual participants of a hackathon including admins, judges and contestents.
@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
     {
         protected override string TableName => TableNames.HackathonAdmin;
 
-        public async Task<HackathonAdminEntity> GetPlatformRole(string userId, CancellationToken cancellationToken)
+        public async Task<HackathonAdminEntity?> GetPlatformRole(string userId, CancellationToken cancellationToken)
         {
             return await RetrieveAsync(string.Empty, userId, cancellationToken);
         }

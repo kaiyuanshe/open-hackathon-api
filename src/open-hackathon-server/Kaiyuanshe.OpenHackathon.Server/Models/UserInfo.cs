@@ -303,7 +303,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Password
         /// </summary>
         [JsonProperty("password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Detailed response from social login.
@@ -321,7 +321,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         [MinLength(1)]
         [MaxLength(10240)]
         [JsonProperty("token")]
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         /// <summary>
         /// A timestamp when the token will be expired

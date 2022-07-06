@@ -246,5 +246,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
         }
         #endregion
+
+        #region DeleteOrganzer
+        [Test]
+        public async Task DeleteOrganzer()
+        {
+            var moqs = new Moqs();
+            moqs.OrganizerTable.Setup(o => o.DeleteAsync("hack", "oid", default));
+            moqs.CacheProvider.Setup(c => c.Remove("Organizer-hack"));
+
+            var management = new OrganizerManagement();
+            moqs.SetupManagement(management);
+            await management.DeleteOrganzer("hack", "oid", default);
+
+            moqs.VerifyAll();
+        }
+        #endregion
     }
 }
