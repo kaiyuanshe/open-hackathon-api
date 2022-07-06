@@ -7,7 +7,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// Status of the object in kubernetes.
         /// </summary>
-        public Status status { get; internal set; }
+        public Status? status { get; internal set; }
     }
 
     /// <summary>
@@ -56,8 +56,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <example>200</example>
         public int? code { get; set; }
 
-        public static Status FromV1Status(V1Status v1Status)
+        public static Status? FromV1Status(V1Status v1Status)
         {
+            if (v1Status == null)
+                return null;
+
             return v1Status.As<Status>();
         }
     }

@@ -92,12 +92,12 @@ namespace Kaiyuanshe.OpenHackathon.Server
             return false;
         }
 
-        public static TDestination? As<TDestination>(this object src, Action<TDestination>? configure = null)
+        public static TDestination As<TDestination>(this object src, Action<TDestination>? configure = null)
             where TDestination : new()
         {
             if (src == null)
             {
-                return default;
+                throw new ArgumentNullException(nameof(src));
             }
 
             TDestination resp = new TDestination();
@@ -152,15 +152,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
                 return ((DateTime)value).ToString("o");
             }
 
-            try
-            {
-                return Convert.ChangeType(value, objectType);
-            }
-            catch
-            {
-            }
-
-            return null;
+            return Convert.ChangeType(value, objectType);
         }
 
         private static Type ResolveGenericTypeDefinition(Type parent)
