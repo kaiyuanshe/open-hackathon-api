@@ -286,6 +286,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Admin &quot;{adminName}&quot; deleted an organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_Hackathon_deleteOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_Hackathon_deleteOrganizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Judge &quot;{judgeName}&quot; removed a rating..
         /// </summary>
         internal static string ActivityLog_Hackathon_deleteRating {
@@ -957,6 +966,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deleteJudge {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deleteJudge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}]Deleted an organizer &quot;{organizerName}&quot;..
+        /// </summary>
+        internal static string ActivityLog_User_deleteOrganizer {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteOrganizer", resourceCulture);
             }
         }
         

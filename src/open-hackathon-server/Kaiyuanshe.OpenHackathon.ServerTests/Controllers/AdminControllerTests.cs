@@ -25,7 +25,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
-            UserInfo user = null;
+            UserInfo? user = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -160,7 +160,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetAdmin_UserNotFound()
         {
             var hackathon = new HackathonEntity();
-            UserInfo user = null;
+            UserInfo? user = null;
 
             var hackathonManagement = new Mock<IHackathonManagement>();
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -186,7 +186,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity();
             UserInfo user = new UserInfo();
-            HackathonAdminEntity adminEntity = null;
+            HackathonAdminEntity? adminEntity = null;
 
             var hackathonManagement = new Mock<IHackathonManagement>();
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -251,7 +251,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task DeleteAdmin_ReDelete()
         {
             var hackathon = new HackathonEntity();
-            HackathonAdminEntity adminEntity = null;
+            HackathonAdminEntity? adminEntity = null;
             var authResult = AuthorizationResult.Success();
 
             var moqs = new Moqs();

@@ -192,6 +192,9 @@
   <data name="ActivityLog_Hackathon_deleteJudge" xml:space="preserve">
     <value>Judge '{judgeName}' is deleted by admin '{userName}'</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteOrganizer" xml:space="preserve">
+    <value>Admin "{adminName}" deleted an organizer "{organizerName}".</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteRating" xml:space="preserve">
     <value>Judge "{judgeName}" removed a rating.</value>
   </data>
@@ -416,6 +419,9 @@
   </data>
   <data name="ActivityLog_User_deleteJudge" xml:space="preserve">
     <value>[{hackathonName}]Deleted judge '{judgeName}' of the hackathon.</value>
+  </data>
+  <data name="ActivityLog_User_deleteOrganizer" xml:space="preserve">
+    <value>[{hackathonName}]Deleted an organizer "{organizerName}".</value>
   </data>
   <data name="ActivityLog_User_deleteRating" xml:space="preserve">
     <value>[{hackathonName}]Removed a rating in hackathon.</value>

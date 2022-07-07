@@ -9,7 +9,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 {
     public interface IUserTable : IAzureTableV2<UserEntity>
     {
-        Task<UserInfo> GetUserByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task<UserInfo?> GetUserByIdAsync(string id, CancellationToken cancellationToken = default);
         Task<UserEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default);
     }
 
@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
         public IResponseBuilder ResponseBuilder { get; set; }
 
-        public async Task<UserInfo> GetUserByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<UserInfo?> GetUserByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             var entity = await RetrieveAsync(id.ToLower(), string.Empty, cancellationToken);
             if (entity == null)
