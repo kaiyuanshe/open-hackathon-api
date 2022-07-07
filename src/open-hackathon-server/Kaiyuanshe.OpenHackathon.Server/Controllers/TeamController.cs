@@ -104,7 +104,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                  ActivityLogType.createTeam, args, cancellationToken);
 
             var creator = await GetCurrentUserInfo(cancellationToken);
+#pragma warning disable CS8604 // Possible null reference argument.
             return Ok(ResponseBuilder.BuildTeam(teamEntity, creator));
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         private async Task<bool> IsTeamNameTaken(string hackathonName, string teamName, CancellationToken cancellationToken)

@@ -32,7 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="userId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<UserInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
+        Task<UserInfo?> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Search user by name or email.
@@ -63,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="token">AccessToken from Authing/Github</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<UserTokenEntity> GetTokenEntityAsync(string token, CancellationToken cancellationToken = default);
+        Task<UserTokenEntity?> GetTokenEntityAsync(string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validate AccessToken locally without calling Authing's API remotely.
@@ -71,14 +71,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="token">the token to validate</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ValidationResult> ValidateTokenAsync(string token, CancellationToken cancellationToken = default);
+        Task<ValidationResult?> ValidateTokenAsync(string token, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validate <see cref="UserTokenEntity"/> locally which contains an AccessToken/>
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ValidationResult> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default);
+        Task<ValidationResult?> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validate AccessToken by calling Authing Api
@@ -95,22 +95,25 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         public async Task AuthingAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {
-            userInfo.Id = userInfo.Id?.ToLower();
+            userInfo.Id = userInfo.Id.ToLower();
             await StorageContext.UserTable.SaveUserAsync(userInfo, cancellationToken);
             Cache.Remove(CacheKeys.GetCacheKey(CacheEntryType.User, userInfo.Id));
 
             // UserTokenEntity. 
-            var userToken = new UserTokenEntity
+            if (!string.IsNullOrEmpty(userInfo.Token))
             {
-                PartitionKey = DigestHelper.SHA512Digest(userInfo.Token),
-                RowKey = string.Empty,
-                UserId = userInfo.Id,
-                UserDisplayName = userInfo.GetDisplayName(),
-                TokenExpiredAt = userInfo.TokenExpiredAt,
-                Token = userInfo.Token,
-                CreatedAt = DateTime.UtcNow,
-            };
-            await StorageContext.UserTokenTable.InsertOrReplaceAsync(userToken, cancellationToken);
+                var userToken = new UserTokenEntity
+                {
+                    PartitionKey = DigestHelper.SHA512Digest(userInfo.Token),
+                    RowKey = string.Empty,
+                    UserId = userInfo.Id,
+                    UserDisplayName = userInfo.GetDisplayName(),
+                    TokenExpiredAt = userInfo.TokenExpiredAt,
+                    Token = userInfo.Token,
+                    CreatedAt = DateTime.UtcNow,
+                };
+                await StorageContext.UserTokenTable.InsertOrReplaceAsync(userToken, cancellationToken);
+            }
         }
 
         public async Task<User> GetCurrentUserRemotelyAsync(string userPoolId, string token, CancellationToken cancellationToken = default)
@@ -152,13 +155,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return claims;
         }
 
-        public virtual async Task<UserTokenEntity> GetTokenEntityAsync(string token, CancellationToken cancellationToken = default)
+        public virtual async Task<UserTokenEntity?> GetTokenEntityAsync(string token, CancellationToken cancellationToken = default)
         {
             string hash = DigestHelper.SHA512Digest(token);
             return await StorageContext.UserTokenTable.RetrieveAsync(hash, string.Empty, cancellationToken);
         }
 
-        public async Task<ValidationResult> ValidateTokenAsync(string token, CancellationToken cancellationToken = default)
+        public async Task<ValidationResult?> ValidateTokenAsync(string token, CancellationToken cancellationToken = default)
         {
             // the token must not be empty
             if (string.IsNullOrWhiteSpace(token))
@@ -172,7 +175,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, false, cancellationToken);
         }
 
-        public Task<ValidationResult> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default)
+        public Task<ValidationResult?> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default)
         {
             // existence
             if (tokenEntity == null)
@@ -213,7 +216,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
 
         #region GetUserByIdAsync
-        public async Task<UserInfo> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
+        public async Task<UserInfo?> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await Cache.GetOrAddAsync(
                 CacheKeys.GetCacheKey(CacheEntryType.User, userId),

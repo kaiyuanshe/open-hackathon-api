@@ -202,5 +202,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("oid", list.value[0].id);
         }
         #endregion
+
+        #region DeleteOrganizer
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task DeleteOrganizer(bool firstTime)
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
+            var authResult = AuthorizationResult.Success();
+            OrganizerEntity? entity = firstTime ? new OrganizerEntity
+            {
+                PartitionKey = "hack",
+                RowKey = "oid"
+            } : null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
+                .ReturnsAsync(authResult);
+            moqs.OrganizerManagement.Setup(t => t.GetOrganizerById("foo", "oid", default)).ReturnsAsync(entity);
+            if (firstTime)
+            {
+                moqs.OrganizerManagement.Setup(t => t.DeleteOrganzer("hack", "oid", default));
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteOrganizer, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteOrganizer, It.IsAny<object>(), null, default));
+            }
+
+            var controller = new OrganizerController();
+            moqs.SetupController(controller);
+            var result = await controller.DeleteOrganizer("Hack", "oid", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertNoContentResult(result);
+        }
+        #endregion
     }
 }
