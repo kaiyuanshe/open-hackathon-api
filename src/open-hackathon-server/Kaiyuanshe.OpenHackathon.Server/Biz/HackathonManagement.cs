@@ -41,7 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get Hackathon By name. Return null if not found.
         /// </summary>
-        Task<HackathonEntity> GetHackathonEntityByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<HackathonEntity?> GetHackathonEntityByNameAsync(string name, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Search paginated hackathon
@@ -188,7 +188,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetHackathonEntityByNameAsync
-        public async Task<HackathonEntity> GetHackathonEntityByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<HackathonEntity?> GetHackathonEntityByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             var entity = await StorageContext.HackathonTable.RetrieveAsync(name, string.Empty, cancellationToken);
 

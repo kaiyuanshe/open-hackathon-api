@@ -106,7 +106,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "hack";
             HackathonEntity hackathon = new HackathonEntity { };
             string awardId = "aid";
-            AwardEntity awardEntity = null;
+            AwardEntity? awardEntity = null;
             CancellationToken cancellationToken = CancellationToken.None;
 
             // moq
