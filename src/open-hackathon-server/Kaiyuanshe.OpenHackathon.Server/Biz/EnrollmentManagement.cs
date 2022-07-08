@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get an enrollment.
         /// </summary>
-        Task<EnrollmentEntity> GetEnrollmentAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
+        Task<EnrollmentEntity?> GetEnrollmentAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Check whether a user enrolled in a hackathon. It's similar to GetEnrollmentAsync. 
@@ -185,7 +185,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetEnrollmentAsync
-        public virtual async Task<EnrollmentEntity> GetEnrollmentAsync(string hackathonName, string userId, CancellationToken cancellationToken = default)
+        public virtual async Task<EnrollmentEntity?> GetEnrollmentAsync(string hackathonName, string userId, CancellationToken cancellationToken = default)
         {
             if (hackathonName == null || userId == null)
                 return null;

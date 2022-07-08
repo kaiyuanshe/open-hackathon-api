@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
@@ -17,13 +18,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
         public static void AssertObjectResult(object result, int expectedStatusCode, Action<ProblemDetails> extraAssert = null)
         {
-            ObjectResult objectResult = result as ObjectResult;
+            ObjectResult? objectResult = result as ObjectResult;
             Assert.IsNotNull(objectResult);
+            Debug.Assert(objectResult != null);
             Assert.AreEqual(expectedStatusCode, objectResult.StatusCode);
 
-            ProblemDetails problemDetails = objectResult.Value as ProblemDetails;
+            ProblemDetails? problemDetails = objectResult.Value as ProblemDetails;
             Assert.IsNotNull(problemDetails);
+            Debug.Assert(problemDetails != null);
             Assert.IsTrue(problemDetails.Status.HasValue);
+            Debug.Assert(problemDetails.Status.HasValue);
             Assert.AreEqual(expectedStatusCode, problemDetails.Status.Value);
             if (extraAssert != null)
             {
@@ -36,6 +40,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Assert.IsTrue(result is OkObjectResult);
             OkObjectResult objectResult = (OkObjectResult)result;
             Assert.IsNotNull(objectResult.Value);
+            Debug.Assert(objectResult.Value != null);
             Assert.IsTrue(objectResult.Value.GetType() == typeof(T));
             return (T)objectResult.Value;
         }

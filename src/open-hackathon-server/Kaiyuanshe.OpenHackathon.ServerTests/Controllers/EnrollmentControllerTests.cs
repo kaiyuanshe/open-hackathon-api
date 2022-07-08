@@ -27,23 +27,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task EnrollTest_HackNotFound()
         {
             string hackathonName = "Hack";
-            HackathonEntity hackathonEntity = null;
-            CancellationToken cancellationToken = CancellationToken.None;
+            HackathonEntity? hackathonEntity = null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default))
                 .ReturnsAsync(hackathonEntity);
 
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
+            var result = await controller.Enroll(hackathonName, new Enrollment(), default);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.Enroll(hackathonName, null, cancellationToken);
-
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404);
         }
 
@@ -354,7 +348,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetTest_NotFound()
         {
             string hackathonName = "hack";
-            EnrollmentEntity enrollment = null;
+            EnrollmentEntity? enrollment = null;
 
             var moqs = new Moqs();
             moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", string.Empty, default)).ReturnsAsync(enrollment);
@@ -383,10 +377,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.Get(hackathonName, default);
 
             moqs.VerifyAll();
-            Assert.IsTrue(result is OkObjectResult);
-            OkObjectResult objectResult = (OkObjectResult)result;
-            Enrollment en = (Enrollment)objectResult.Value;
-            Assert.IsNotNull(en);
+
+            Enrollment en = AssertHelper.AssertOKResult<Enrollment>(result);
             Assert.AreEqual(EnrollmentStatus.pendingApproval, enrollment.Status);
         }
         #endregion
