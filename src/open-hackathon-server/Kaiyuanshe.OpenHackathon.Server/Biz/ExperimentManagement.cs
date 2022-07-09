@@ -16,7 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public interface IExperimentManagement
     {
         Task<TemplateContext> CreateOrUpdateTemplateAsync(Template template, CancellationToken cancellationToken);
-        Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
+        Task<TemplateContext?> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
         Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
@@ -103,7 +103,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetTemplateAsync
-        public async Task<TemplateContext> GetTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
+        public async Task<TemplateContext?> GetTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
         {
             if (hackathonName == null || templateId == null)
                 return null;

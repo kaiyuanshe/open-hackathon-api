@@ -3,6 +3,7 @@
     public static class TableNames
     {
         public const string Award = "kysaward";
+        public const string Announcement = "kysannouncement";
         public const string AwardAssignment = "kysawardassignemnt";
         public const string Enrollment = "kysenrollment";
         public const string Experiment = "kysexperiment";
