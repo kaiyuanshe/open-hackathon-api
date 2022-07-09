@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -115,6 +116,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Template>(result);
             Assert.AreEqual("pk", resp.hackathonName);
+            Debug.Assert(resp.status != null);
             Assert.AreEqual("reason", resp.status.reason);
         }
         #endregion
@@ -127,7 +129,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var authResult = AuthorizationResult.Success();
             var parameter = new Template { };
             var entity = new TemplateEntity { PartitionKey = "pk" };
-            TemplateContext context = null;
+            TemplateContext? context = null;
 
             // mock
             var moqs = new Moqs();
@@ -243,6 +245,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.VerifyAll();
             var resp = AssertHelper.AssertOKResult<Template>(result);
             Assert.AreEqual("pk", resp.hackathonName);
+            Debug.Assert(resp.status != null);
             Assert.AreEqual("reason", resp.status.reason);
         }
         #endregion
@@ -253,7 +256,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
-            TemplateContext context = null;
+            TemplateContext? context = null;
 
             // mock
             var moqs = new Moqs();
@@ -385,7 +388,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var obj = AssertHelper.AssertOKResult<TemplateList>(result);
             Assert.AreEqual(1, obj.value.Count());
             Assert.AreEqual("dn", obj.value.First().displayName);
-            Assert.AreEqual(200, obj.value.First().status.code);
+            var first = obj.value.First();
+            Debug.Assert(first.status != null);
+            Assert.AreEqual(200, first.status.code);
             Assert.IsNull(obj.nextLink);
         }
         #endregion
@@ -653,6 +658,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.VerifyAll();
             Experiment resp = AssertHelper.AssertOKResult<Experiment>(result);
             Assert.AreEqual("rk", resp.id);
+            Debug.Assert(resp.status != null);
             Assert.AreEqual("reason", resp.status.reason);
         }
         #endregion
