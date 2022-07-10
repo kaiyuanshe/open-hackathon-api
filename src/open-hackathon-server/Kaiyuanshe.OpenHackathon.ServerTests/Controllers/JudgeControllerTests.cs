@@ -291,7 +291,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             UserInfo user = new UserInfo { };
-            JudgeEntity entity = firstTime ? new JudgeEntity() : null;
+            JudgeEntity? entity = firstTime ? new JudgeEntity() : null;
 
             // mock
             var moqs = new Moqs();

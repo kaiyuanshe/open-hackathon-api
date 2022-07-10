@@ -572,36 +572,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             {
                 Status = EnrollmentStatus.pendingApproval,
             };
-            CancellationToken cancellationToken = default;
             UserInfo userInfo = new UserInfo();
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(hackathonEntity);
-            var enrollmentManagement = new Mock<IEnrollmentManagement>();
-            enrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", "uid", It.IsAny<CancellationToken>()))
+            moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("hack", "uid", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(participant);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), cancellationToken))
+            moqs.UserManagement.Setup(p => p.GetUserByIdAsync(It.IsAny<string>(), default))
                 .ReturnsAsync(userInfo);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                EnrollmentManagement = enrollmentManagement.Object,
-                UserManagement = userManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.GetById(hack, userId, cancellationToken);
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
+            var result = await controller.GetById(hack, userId, default);
 
-            Mock.VerifyAll(hackathonManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-            Assert.IsTrue(result is OkObjectResult);
-            OkObjectResult objectResult = (OkObjectResult)result;
-            Enrollment enrollment = (Enrollment)objectResult.Value;
-            Assert.IsNotNull(enrollment);
+            moqs.VerifyAll();
+            Enrollment enrollment = AssertHelper.AssertOKResult<Enrollment>(result);
             Assert.AreEqual(EnrollmentStatus.pendingApproval, enrollment.status);
         }
         #endregion
@@ -612,23 +598,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             string hack = "Hack";
             Pagination pagination = new Pagination();
-            CancellationToken cancellationToken = CancellationToken.None;
-            HackathonEntity hackathonEntity = null;
+            HackathonEntity? hackathonEntity = null;
 
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(hackathonEntity);
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
 
-            var controller = new EnrollmentController
-            {
-                HackathonManagement = hackathonManagement.Object,
-                ResponseBuilder = new DefaultResponseBuilder(),
-                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
-            };
-            var result = await controller.ListEnrollments(hack, pagination, null, cancellationToken);
+            var controller = new EnrollmentController();
+            moqs.SetupController(controller);
+            var result = await controller.ListEnrollments(hack, pagination, null, default);
 
-            Mock.VerifyAll(hackathonManagement);
-            hackathonManagement.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404);
         }
 
