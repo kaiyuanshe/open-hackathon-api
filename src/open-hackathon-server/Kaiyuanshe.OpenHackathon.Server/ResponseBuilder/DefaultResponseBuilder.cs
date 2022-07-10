@@ -12,6 +12,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
     public interface IResponseBuilder
     {
         ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity);
+        Announcement BuildAnnouncement(AnnouncementEntity announcementEntity);
         Award BuildAward(AwardEntity awardEntity);
         AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user);
         Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
@@ -71,6 +72,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
                 p.updatedAt = activityLogEntity.Timestamp.UtcDateTime;
                 p.message = activityLogEntity.GetMessage();
                 p.messageFormat = activityLogEntity.GetMessageFormat();
+            });
+        }
+
+        public Announcement BuildAnnouncement(AnnouncementEntity announcementEntity)
+        {
+            return announcementEntity.As<Announcement>(p =>
+            {
+                p.updatedAt = announcementEntity.Timestamp.UtcDateTime;
             });
         }
 

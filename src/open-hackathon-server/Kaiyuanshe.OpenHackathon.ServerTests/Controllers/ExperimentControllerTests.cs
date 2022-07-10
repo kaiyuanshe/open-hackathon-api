@@ -512,7 +512,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var parameter = new Experiment();
             var hackathon = new HackathonEntity();
             var experiment = new ExperimentEntity { };
-            EnrollmentEntity enrollment = null;
+            EnrollmentEntity? enrollment = null;
             var context = new ExperimentContext
             {
                 ExperimentEntity = experiment,
@@ -786,11 +786,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             var list = AssertHelper.AssertOKResult<GuacamoleConnectionList>(result);
             Assert.AreEqual(1, list.value.Length);
-            VncConnection vncConnection = list.value[0] as VncConnection;
-            Assert.IsNotNull(vncConnection);
-            Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
-            Assert.AreEqual(5902, vncConnection.port);
-            Assert.AreEqual("tn", vncConnection.name);
+            if (list.value[0] is VncConnection vncConnection)
+            {
+                Assert.IsNotNull(vncConnection);
+                Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
+                Assert.AreEqual(5902, vncConnection.port);
+                Assert.AreEqual("tn", vncConnection.name);
+            }
         }
 
         [Test]
@@ -831,11 +833,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             var list = AssertHelper.AssertOKResult<GuacamoleConnectionList>(result);
             Assert.AreEqual(1, list.value.Length);
-            VncConnection vncConnection = list.value[0] as VncConnection;
-            Assert.IsNotNull(vncConnection);
-            Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
-            Assert.AreEqual(5902, vncConnection.port);
-            Assert.AreEqual("display", vncConnection.name);
+            if (list.value[0] is VncConnection vncConnection)
+            {
+                Assert.IsNotNull(vncConnection);
+                Assert.AreEqual(IngressProtocol.vnc, vncConnection.protocol);
+                Assert.AreEqual(5902, vncConnection.port);
+                Assert.AreEqual("display", vncConnection.name);
+            }
         }
         #endregion
 
@@ -964,7 +968,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task ResetExperiment_HackNotFound()
         {
             var expContext = new ExperimentContext { ExperimentEntity = new(), };
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
 
             // mock
             var moqs = new Moqs();
@@ -1102,7 +1106,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var obj = AssertHelper.AssertOKResult<ExperimentList>(result);
             Assert.AreEqual(1, obj.value.Count());
             Assert.AreEqual("un", obj.value.First().user.Name);
-            Assert.AreEqual(200, obj.value.First().status.code);
+            Status? status = obj.value.First().status;
+            Debug.Assert(status != null);
+            Assert.AreEqual(200, status.code);
             Assert.IsNull(obj.nextLink);
         }
         #endregion

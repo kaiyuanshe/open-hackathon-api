@@ -48,6 +48,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
+        #region BuildAnnouncement
+        [Test]
+        public void BuildAnnouncement()
+        {
+            var entity = new AnnouncementEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                Content = "content",
+                Title = "title",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var result = responseBuilder.BuildAnnouncement(entity);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual("rk", result.id);
+            Assert.AreEqual("title", result.title);
+            Assert.AreEqual("content", result.content);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.UtcDateTime, result.updatedAt);
+        }
+        #endregion
+
         #region BuildAward
         [Test]
         public void BuildAward()
