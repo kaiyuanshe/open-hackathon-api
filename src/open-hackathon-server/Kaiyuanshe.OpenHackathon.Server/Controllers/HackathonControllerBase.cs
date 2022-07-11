@@ -28,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IResponseBuilder ResponseBuilder { get; set; }
 
         public IActivityLogManagement ActivityLogManagement { get; set; }
+        public IAnnouncementManagement AnnouncementManagement { get; set; }
         public IAwardManagement AwardManagement { get; set; }
         public IEnrollmentManagement EnrollmentManagement { get; set; }
         public IExperimentManagement ExperimentManagement { get; set; }

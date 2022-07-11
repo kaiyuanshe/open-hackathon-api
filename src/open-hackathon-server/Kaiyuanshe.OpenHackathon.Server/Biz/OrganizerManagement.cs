@@ -13,7 +13,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface IOrganizerManagement
     {
-        [return: NotNull]
         Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken);
         Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer organizer, CancellationToken cancellationToken);
         Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
@@ -45,7 +44,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region CreateOrganizer
-        [return: NotNull]
         public async Task<OrganizerEntity> CreateOrganizer(string hackathonName, Organizer parameter, CancellationToken cancellationToken)
         {
             var entity = new OrganizerEntity
