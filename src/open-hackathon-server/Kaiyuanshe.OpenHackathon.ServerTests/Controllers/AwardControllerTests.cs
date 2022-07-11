@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -390,7 +391,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo" };
-            AwardEntity awardEntity = firstTimeDelete ? new AwardEntity { RowKey = "rk" } : null;
+            AwardEntity? awardEntity = firstTimeDelete ? new AwardEntity { RowKey = "rk" } : null;
             var authResult = AuthorizationResult.Success();
 
             // moq
@@ -399,6 +400,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.AwardManagement.Setup(t => t.GetAwardByIdAsync("hack", "aid", default)).ReturnsAsync(awardEntity);
             if (firstTimeDelete)
             {
+                Debug.Assert(awardEntity != null);
                 moqs.AwardManagement.Setup(t => t.DeleteAwardAsync(awardEntity, default));
                 moqs.AwardManagement.Setup(t => t.GetAssignmentCountAsync("hack", "rk", default)).ReturnsAsync(0);
                 moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteAward, It.IsAny<object>(), null, default));
@@ -455,7 +457,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 Target = AwardTarget.team,
             };
             var parameter = new AwardAssignment { assigneeId = "teamId" };
-            TeamEntity team = null;
+            TeamEntity? team = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -486,7 +488,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 Target = AwardTarget.individual,
             };
             var parameter = new AwardAssignment { assigneeId = "userId" };
-            EnrollmentEntity enrollmentEntity = status.HasValue ? new EnrollmentEntity { Status = status.Value } : null;
+            EnrollmentEntity? enrollmentEntity = status.HasValue ? new EnrollmentEntity { Status = status.Value } : null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -829,7 +831,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].assignmentId);
-            Assert.AreEqual("locale", list.value[0].team.creator.Locale);
+            var t = list.value[0].team;
+            Debug.Assert(t != null);
+            Assert.AreEqual("locale", t.creator.Locale);
         }
         #endregion
 

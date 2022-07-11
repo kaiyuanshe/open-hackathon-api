@@ -26,6 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         #endregion
 
         #region Biz
+        public Mock<IAnnouncementManagement> AnnouncementManagement { get; } = new();
         public Mock<IHackathonManagement> HackathonManagement { get; } = new();
         public Mock<IEnrollmentManagement> EnrollmentManagement { get; } = new();
         public Mock<IUserManagement> UserManagement { get; } = new();
@@ -83,8 +84,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement, ActivityLogManagement,
                 AuthorizationService, ExperimentManagement, JudgeManagement, RatingManagement,
                 TeamManagement, HackathonAdminManagement, AwardManagement, WorkManagement,
-                FileManagement);
+                FileManagement, AnnouncementManagement);
 
+            AnnouncementManagement.VerifyNoOtherCalls();
             HackathonManagement.VerifyNoOtherCalls();
             EnrollmentManagement.VerifyNoOtherCalls();
             UserManagement.VerifyNoOtherCalls();
