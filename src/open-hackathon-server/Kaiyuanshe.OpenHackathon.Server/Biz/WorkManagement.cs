@@ -21,7 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default);
     }
 
-    public class WorkManagement : ManagementClientBase<WorkManagement>, IWorkManagement
+    public class WorkManagement : ManagementClient<WorkManagement>, IWorkManagement
     {
         static readonly int MaxTeamWorkCount = 100;
 

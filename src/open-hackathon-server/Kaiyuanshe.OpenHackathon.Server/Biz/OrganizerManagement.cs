@@ -20,7 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteOrganzer(string hackathonName, string organizerId, CancellationToken cancellationToken);
     }
 
-    public class OrganizerManagement : ManagementClientBase<OrganizerManagement>, IOrganizerManagement
+    public class OrganizerManagement : ManagementClient<OrganizerManagement>, IOrganizerManagement
     {
         #region Cache
         private string CacheKeyByHackathon(string hackathonName)

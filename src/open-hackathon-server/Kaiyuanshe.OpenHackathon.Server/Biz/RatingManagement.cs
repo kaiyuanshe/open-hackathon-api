@@ -30,7 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteRatingAsync(string hackathonName, string ratingId, CancellationToken cancellationToken);
     }
 
-    public class RatingManagement : ManagementClientBase<RatingManagement>, IRatingManagement
+    public class RatingManagement : ManagementClient<RatingManagement>, IRatingManagement
     {
         static readonly int MaxRatingKindCount = 100;
 

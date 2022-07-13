@@ -1,39 +1,31 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
+using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
-    public interface IAnnouncementManagement
+    public interface IAnnouncementManagement : IManagementClient, IDefaultManagementClient<Announcement, AnnouncementEntity, AnnouncementQueryOptions>
     {
-        Task<AnnouncementEntity> CreateAnnouncement(string hackathonName, Announcement parameter, CancellationToken cancellationToken);
     }
 
-    public class AnnouncementManagement : ManagementClientBase<AnnouncementManagement>, IAnnouncementManagement
+    public class AnnouncementManagement
+        : DefaultManagementClient<AnnouncementManagement, Announcement, AnnouncementEntity, AnnouncementQueryOptions>, IAnnouncementManagement
     {
-        #region CreateAnnouncement
-        public async Task<AnnouncementEntity> CreateAnnouncement(string hackathonName, Announcement parameter, CancellationToken cancellationToken)
+        protected override CacheEntryType CacheType => CacheEntryType.Announcement;
+        protected override IAzureTableV2<AnnouncementEntity> Table => StorageContext.AnnouncementTable;
+        protected override AnnouncementEntity ConvertParamterToEntity(Announcement parameter)
         {
-            //var entity = new OrganizerEntity
-            //{
-            //    PartitionKey = hackathonName,
-            //    RowKey = Guid.NewGuid().ToString(),
-            //    CreatedAt = DateTime.UtcNow,
-            //    Description = parameter.description,
-            //    Logo = parameter.logo,
-            //    Name = parameter.name,
-            //    Type = parameter.type.GetValueOrDefault(OrganizerType.host),
-            //};
-            //await StorageContext.OrganizerTable.InsertAsync(entity, cancellationToken);
-            // InvalidateCache(hackathonName);
-
-            return null;
+            return new AnnouncementEntity
+            {
+                PartitionKey = parameter.hackathonName,
+                RowKey = Guid.NewGuid().ToString(),
+                Title = parameter.title,
+                Content = parameter.content,
+                CreatedAt = DateTime.UtcNow,
+            };
         }
-        #endregion
     }
 }

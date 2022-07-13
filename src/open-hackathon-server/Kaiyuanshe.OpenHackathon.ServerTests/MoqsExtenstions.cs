@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.OrganizerManagement = moqs.OrganizerManagement.Object;
         }
 
-        public static void SetupManagement<T>(this Moqs moqs, ManagementClientBase<T> management)
+        public static void SetupManagement<T>(this Moqs moqs, ManagementClient<T> management)
         {
             management.Logger = new Mock<ILogger<T>>().Object;
             management.StorageContext = moqs.StorageContext.Object;
