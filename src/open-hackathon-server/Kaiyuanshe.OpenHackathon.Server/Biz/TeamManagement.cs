@@ -104,7 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="ITeamManagement"/>
-    public class TeamManagement : ManagementClientBase<TeamManagement>, ITeamManagement
+    public class TeamManagement : ManagementClient<TeamManagement>, ITeamManagement
     {
         #region Cache
         private string TeamCacheKey(string teamId)

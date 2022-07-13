@@ -16,6 +16,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         ICacheProvider Cache { get; set; }
     }
 
+    public abstract class ManagementClient<TManagement> : IManagementClient
+    {
+        public IStorageContext StorageContext { get; set; }
+        public ICacheProvider Cache { get; set; }
+        public ILogger<TManagement> Logger { get; set; }
+    }
+
     public interface IDefaultManagementClient<TParameter, TEntity, TOptions>
         where TEntity : BaseTableEntity, new()
         where TParameter : new()
@@ -28,15 +35,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task Delete(string partitionKey, string rowkey, CancellationToken cancellationToken);
     }
 
-    public abstract class ManagementClientBase<TManagement> : IManagementClient
-    {
-        public IStorageContext StorageContext { get; set; }
-        public ICacheProvider Cache { get; set; }
-        public ILogger<TManagement> Logger { get; set; }
-    }
-
     public abstract class DefaultManagementClient<TManagement, TParameter, TEntity, TOptions>
-        : ManagementClientBase<TManagement>, IDefaultManagementClient<TParameter, TEntity, TOptions>
+        : ManagementClient<TManagement>, IDefaultManagementClient<TParameter, TEntity, TOptions>
         where TEntity : BaseTableEntity, new()
         where TParameter : new()
         where TOptions : TableQueryOptions

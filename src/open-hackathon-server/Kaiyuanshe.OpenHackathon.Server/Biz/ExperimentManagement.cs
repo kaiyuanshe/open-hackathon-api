@@ -35,7 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task CleanupKubernetesExperimentsAsync(string hackathonName, CancellationToken cancellationToken);
     }
 
-    public class ExperimentManagement : ManagementClientBase<ExperimentManagement>, IExperimentManagement
+    public class ExperimentManagement : ManagementClient<ExperimentManagement>, IExperimentManagement
     {
         public IKubernetesClusterFactory KubernetesClusterFactory { get; set; }
 

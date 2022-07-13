@@ -48,7 +48,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<ActivityLogEntity>> ListActivityLogs(ActivityLogQueryOptions options, CancellationToken cancellationToken = default);
     }
 
-    public class ActivityLogManagement : ManagementClientBase<ActivityLogManagement>, IActivityLogManagement
+    public class ActivityLogManagement : ManagementClient<ActivityLogManagement>, IActivityLogManagement
     {
         #region LogActivity
         public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)

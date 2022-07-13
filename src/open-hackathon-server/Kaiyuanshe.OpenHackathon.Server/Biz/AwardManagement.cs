@@ -80,7 +80,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<IEnumerable<AwardAssignmentEntity>> ListAssignmentsByTeamAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
     }
 
-    public class AwardManagement : ManagementClientBase<AwardManagement>, IAwardManagement
+    public class AwardManagement : ManagementClient<AwardManagement>, IAwardManagement
     {
         static readonly int MaxAwardCount = 100;
 

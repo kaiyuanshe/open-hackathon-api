@@ -16,7 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         FileUpload GetUploadUrl(ClaimsPrincipal user, FileUpload request);
     }
 
-    public class FileManagement : ManagementClientBase<FileManagement>, IFileManagement
+    public class FileManagement : ManagementClient<FileManagement>, IFileManagement
     {
         public static readonly string HackathonApiStaticSite = "https://hackathon-api.static.kaiyuanshe.cn";
 

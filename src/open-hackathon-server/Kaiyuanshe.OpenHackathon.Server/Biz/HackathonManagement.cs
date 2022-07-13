@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     }
 
     /// <inheritdoc cref="IHackathonManagement"/>
-    public class HackathonManagement : ManagementClientBase<HackathonManagement>, IHackathonManagement
+    public class HackathonManagement : ManagementClient<HackathonManagement>, IHackathonManagement
     {
         static readonly int MaxHackathonsEachDay = 3;
         static readonly int MaxHackathonsEachMonth = 10;

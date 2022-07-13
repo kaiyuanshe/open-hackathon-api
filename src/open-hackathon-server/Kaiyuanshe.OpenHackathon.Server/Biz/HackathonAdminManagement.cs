@@ -36,7 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> IsPlatformAdmin(string userId, CancellationToken cancellationToken = default);
     }
 
-    public class HackathonAdminManagement : ManagementClientBase<HackathonAdminManagement>, IHackathonAdminManagement
+    public class HackathonAdminManagement : ManagementClient<HackathonAdminManagement>, IHackathonAdminManagement
     {
         #region cache
 
