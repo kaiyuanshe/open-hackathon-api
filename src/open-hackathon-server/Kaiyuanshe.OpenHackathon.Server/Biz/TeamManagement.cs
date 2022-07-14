@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,7 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <param name="teamId">unique id of the team</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TeamEntity> GetTeamByIdAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
+        Task<TeamEntity?> GetTeamByIdAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get team(s) by team name
@@ -122,12 +123,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region CreateTeamAsync
         public async Task<TeamEntity> CreateTeamAsync(Team request, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.hackathonName)
-                || string.IsNullOrWhiteSpace(request.creatorId))
-            {
-                Logger?.LogInformation($"cannot create team. hackathonName or creatorId is empty");
-                return null;
-            }
+            Debug.Assert(request != null);
 
             TeamEntity teamEntity = new TeamEntity
             {
@@ -193,7 +189,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetTeamByIdAsync
-        public async Task<TeamEntity> GetTeamByIdAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)
+        public async Task<TeamEntity?> GetTeamByIdAsync(string hackathonName, string teamId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(teamId))
                 return null;

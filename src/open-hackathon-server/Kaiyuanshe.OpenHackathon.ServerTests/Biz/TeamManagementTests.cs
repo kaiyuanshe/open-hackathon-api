@@ -19,22 +19,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
     public class TeamManagementTests
     {
         #region CreateTeamAsync
-        [TestCase(null, "uid")]
-        [TestCase("", "uid")]
-        [TestCase(" ", "uid")]
-        [TestCase("foo", null)]
-        [TestCase("foo", "")]
-        [TestCase("foo", " ")]
-        public async Task CreateTeamAsync_Null(string hackathonName, string userId)
-        {
-            var request = new Team { hackathonName = hackathonName, creatorId = userId };
-            
-            var teamManagement = new TeamManagement();
-            Assert.IsNull(await teamManagement.CreateTeamAsync(request, default));
-        }
-
         [Test]
-        public async Task CreateTeamAsync_Succeed()
+        public async Task CreateTeamAsync()
         {
             var request = new Team
             {

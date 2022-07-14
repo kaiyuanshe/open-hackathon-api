@@ -16,6 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         #region Storage
         public Mock<IStorageContext> StorageContext { get; } = new();
         public Mock<IActivityLogTable> ActivityLogTable { get; } = new();
+        public Mock<IAnnouncementTable> AnnouncementTable { get; } = new();
         public Mock<IAwardAssignmentTable> AwardAssignmentTable { get; } = new();
         public Mock<IExperimentTable> ExperimentTable { get; } = new();
         public Mock<IHackathonTable> HackathonTable { get; } = new();
@@ -53,6 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Moqs()
         {
             StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
+            StorageContext.Setup(p => p.AnnouncementTable).Returns(AnnouncementTable.Object);
             StorageContext.Setup(p => p.AwardAssignmentTable).Returns(AwardAssignmentTable.Object);
             StorageContext.Setup(p => p.ExperimentTable).Returns(ExperimentTable.Object);
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
@@ -67,10 +69,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public void VerifyAll()
         {
             #region Storage
-            Mock.VerifyAll(ActivityLogTable, AwardAssignmentTable, ExperimentTable, HackathonTable,
+            Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable, 
+                ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable, TeamWorkTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
+            AnnouncementTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
             ExperimentTable.VerifyNoOtherCalls();
             HackathonTable.VerifyNoOtherCalls();
