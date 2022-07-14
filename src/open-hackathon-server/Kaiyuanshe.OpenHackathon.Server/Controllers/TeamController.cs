@@ -54,6 +54,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         {
             // validate hackathon
             var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            if (hackathon == null)
+            {
+                return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
+            }
             var options = new ValidateHackathonOptions
             {
                 OnlineRequired = true,
@@ -66,7 +70,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // validate enrollment
-            var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName.ToLower(), CurrentUserId, cancellationToken);
+            var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathon.Name, CurrentUserId, cancellationToken);
+            if (enrollment == null)
+            {
+                return NotFound(string.Format(Resources.Enrollment_NotFound, CurrentUserId, hackathonName));
+            }
             var enrollmentOptions = new ValidateEnrollmentOptions
             {
                 ApprovedRequired = true,
