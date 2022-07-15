@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_archiveHackathon" xml:space="preserve">
     <value>活动进入只读状态。</value>
   </data>
+  <data name="ActivityLog_Hackathon_createAnnouncement" xml:space="preserve">
+    <value>管理员'{adminName}'发布了一条公告。</value>
+  </data>
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>管理员"{userName}"添加了新的奖项"{awardName}"。</value>
   </data>
@@ -347,6 +350,9 @@
   </data>
   <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]修改活动为只读。</value>
+  </data>
+  <data name="ActivityLog_User_createAnnouncement" xml:space="preserve">
+    <value>[{hackathonName}]发布了一条公告。</value>
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>为活动“{hackathonName}”添加了新奖项“{awardName}”。</value>

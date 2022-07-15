@@ -132,6 +132,9 @@
   <data name="ActivityLog_Hackathon_archiveHackathon" xml:space="preserve">
     <value>The hackathon becomes ReadOnly.</value>
   </data>
+  <data name="ActivityLog_Hackathon_createAnnouncement" xml:space="preserve">
+    <value>Admin '{adminName}' published an announcement.</value>
+  </data>
   <data name="ActivityLog_Hackathon_createAward" xml:space="preserve">
     <value>A new award "{awardName}" is created by "{userName}".</value>
   </data>
@@ -347,6 +350,9 @@
   </data>
   <data name="ActivityLog_User_archiveHackathon" xml:space="preserve">
     <value>[{hackathonName}]Updated hackathon to ReadOnly.</value>
+  </data>
+  <data name="ActivityLog_User_createAnnouncement" xml:space="preserve">
+    <value>[{hackathonName}]Published an announcement.</value>
   </data>
   <data name="ActivityLog_User_createAward" xml:space="preserve">
     <value>[{hackathonName}]Created a new award "{awardName}".</value>

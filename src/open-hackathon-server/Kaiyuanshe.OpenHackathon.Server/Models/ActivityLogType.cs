@@ -34,6 +34,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         updateOrganizer,
         deleteOrganizer,
 
+        // hackathon announcement
+        createAnnouncement,
+        updateAnnouncement,
+        deleteAnnouncement,
+
         // team
         createTeam,
         updateTeam,
