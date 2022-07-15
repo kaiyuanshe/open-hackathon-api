@@ -54,10 +54,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         {
             // validate hackathon
             var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
-            if (hackathon == null)
-            {
-                return NotFound(string.Format(Resources.Hackathon_NotFound, hackathonName));
-            }
             var options = new ValidateHackathonOptions
             {
                 OnlineRequired = true,

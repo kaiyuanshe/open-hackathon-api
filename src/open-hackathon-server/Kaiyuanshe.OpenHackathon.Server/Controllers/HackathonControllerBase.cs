@@ -258,14 +258,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
 
         #region ValidateHackathon
-        protected async Task<bool> ValidateHackathon(HackathonEntity hackathon,
+        protected async Task<bool> ValidateHackathon(HackathonEntity? hackathon,
             ValidateHackathonOptions options,
             CancellationToken cancellationToken = default)
         {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            options.ValidateResult = null; // make sure it's not set by caller
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
             if (hackathon == null)
             {
                 options.ValidateResult = NotFound(string.Format(Resources.Hackathon_NotFound, options.HackathonName));

@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string title { get; set; }
 
         /// <summary>
-        /// Content. Can be rich-text.
+        /// Content. Required if create a new announcement. Optional for updating. Can be rich-text.
         /// </summary>
         /// <example>This is a sample content.</example>
         [MaxLength(10240)]
