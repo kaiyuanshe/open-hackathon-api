@@ -246,8 +246,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             public bool AssigneeExistRequired { get; set; }
 
             #region output
-            public TeamEntity TeamToAssign { get; set; }
-            public UserInfo UserToAssign { get; set; }
+            public TeamEntity? TeamToAssign { get; set; }
+            public UserInfo? UserToAssign { get; set; }
             #endregion
         }
 
@@ -359,7 +359,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #endregion
 
         #region ValidateEnrollment
-        protected bool ValidateEnrollment(EnrollmentEntity enrollment, ValidateEnrollmentOptions options)
+        protected bool ValidateEnrollment(EnrollmentEntity? enrollment, ValidateEnrollmentOptions options)
         {
             if (enrollment == null)
             {
@@ -378,7 +378,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #endregion
 
         #region ValidateTeam
-        protected async Task<bool> ValidateTeam(TeamEntity team,
+        protected async Task<bool> ValidateTeam(TeamEntity? team,
             ValidateTeamOptions options,
             CancellationToken cancellationToken = default)
         {

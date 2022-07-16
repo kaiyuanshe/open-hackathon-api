@@ -30,9 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<TEntity> Create(TParameter parameter, CancellationToken cancellationToken);
         Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken);
-        Task<TEntity?> Get(string partitionKey, string rowkey, CancellationToken cancellationToken);
         Task<IEnumerable<TEntity>> List(TOptions options, CancellationToken cancellationToken);
-        Task Delete(string partitionKey, string rowkey, CancellationToken cancellationToken);
     }
 
     public abstract class DefaultManagementClient<TManagement, TParameter, TEntity, TOptions>
@@ -55,16 +53,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 InvalidateCache(entity.PartitionKey);
             }
             return entity;
-        }
-
-        public Task Delete(string partitionKey, string rowkey, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<TEntity?> Get(string partitionKey, string rowkey, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
         }
 
         public Task<IEnumerable<TEntity>> List(TOptions options, CancellationToken cancellationToken)

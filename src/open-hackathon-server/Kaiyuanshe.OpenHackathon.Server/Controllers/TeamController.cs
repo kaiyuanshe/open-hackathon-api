@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,6 +67,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // validate enrollment
+            Debug.Assert(hackathon != null);
             var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathon.Name, CurrentUserId, cancellationToken);
             if (enrollment == null)
             {
@@ -155,6 +157,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // validate team
+            Debug.Assert(hackathon != null);
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
             var teamOptions = new ValidateTeamOptions
             {
@@ -164,7 +167,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamOptions.ValidateResult;
             }
+
             // check name uniqueness
+            Debug.Assert(team != null);
             if (parameter.displayName != null && team.DisplayName != parameter.displayName)
             {
                 if (await IsTeamNameTaken(hackathonName.ToLower(), parameter.displayName, cancellationToken))
@@ -184,6 +189,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                  ActivityLogType.updateTeam, args, cancellationToken);
 
             var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
+            Debug.Assert(creator != null);
             return Ok(ResponseBuilder.BuildTeam(team, creator));
         }
         #endregion
@@ -229,7 +235,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return teamOptions.ValidateResult;
             }
 
+            Debug.Assert(team != null);
             var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
+            Debug.Assert(creator != null);
             return Ok(ResponseBuilder.BuildTeam(team, creator));
         }
         #endregion
@@ -280,8 +288,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamOptions.ValidateResult;
             }
-
+            Debug.Assert(team != null);
             var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
+            Debug.Assert(creator != null);
             return Ok(ResponseBuilder.BuildTeam(team, creator));
         }
         #endregion
@@ -331,6 +340,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             foreach (var team in page.Values)
             {
                 var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
+                Debug.Assert(creator != null);
                 tuples.Add(Tuple.Create(team, creator));
             }
             return Ok(ResponseBuilder.BuildResourceList<TeamEntity, UserInfo, Team, TeamList>(
@@ -374,6 +384,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
@@ -522,6 +533,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Validate team
+            Debug.Assert(hackathon != null);
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
             var teamValidateOptions = new ValidateTeamOptions
             {

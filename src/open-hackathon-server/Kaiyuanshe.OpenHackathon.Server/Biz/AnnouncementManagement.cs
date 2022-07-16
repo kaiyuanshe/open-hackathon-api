@@ -4,11 +4,14 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface IAnnouncementManagement : IManagementClient, IDefaultManagementClient<Announcement, AnnouncementEntity, AnnouncementQueryOptions>
     {
+        Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken);
     }
 
     public class AnnouncementManagement
@@ -26,6 +29,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 Content = parameter.content,
                 CreatedAt = DateTime.UtcNow,
             };
+        }
+
+        public async Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken)
+        {
+            return await Table.RetrieveAsync(hackathonName, announcementId, cancellationToken);
         }
     }
 }
