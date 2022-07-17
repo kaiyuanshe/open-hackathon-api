@@ -534,6 +534,9 @@
   <data name="Admin_NotFound" xml:space="preserve">
     <value>用户不是活动的管理员</value>
   </data>
+  <data name="Announcement_NotFound" xml:space="preserve">
+    <value>公告不存在。</value>
+  </data>
   <data name="Auth_Forbidden" xml:space="preserve">
     <value>当前用户无权访问。请联系活动管理员以获取权限。</value>
   </data>

@@ -1312,6 +1312,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Announcement is not found..
+        /// </summary>
+        internal static string Announcement_NotFound {
+            get {
+                return ResourceManager.GetString("Announcement_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Forbidden. The user associated with the token doesn&apos;t have proper permission. Please contact the administrator for access..
         /// </summary>
         internal static string Auth_Forbidden {

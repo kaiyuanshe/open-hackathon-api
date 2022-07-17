@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+﻿using Kaiyuanshe.OpenHackathon.Server;
+using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
@@ -35,6 +36,53 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var controller = new AnnouncementController();
             moqs.SetupController(controller);
             var result = await controller.CreateAnnouncement(hackName, parameter, default);
+
+            // verify
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<Announcement>(result);
+            Assert.AreEqual("ct", resp.content);
+        }
+        #endregion
+
+        #region GetAnnouncement
+        [Test]
+        public async Task GetAnnouncement_NotFound()
+        {
+            // input
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo" };
+            AnnouncementEntity? announcementEntity = null;
+
+            // moq
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AnnouncementManagement.Setup(o => o.GetById("foo", "aid", default)).ReturnsAsync(announcementEntity);
+
+            // run
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.GetAnnouncement("Hack", "aid", default);
+
+            // verify
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Announcement_NotFound);
+        }
+
+        [Test]
+        public async Task GetAnnouncement_Succeed()
+        {
+            // input
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo" };
+            AnnouncementEntity? announcementEntity = new AnnouncementEntity { Content = "ct" };
+
+            // moq
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AnnouncementManagement.Setup(o => o.GetById("foo", "aid", default)).ReturnsAsync(announcementEntity);
+
+            // run
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.GetAnnouncement("Hack", "aid", default);
 
             // verify
             moqs.VerifyAll();
