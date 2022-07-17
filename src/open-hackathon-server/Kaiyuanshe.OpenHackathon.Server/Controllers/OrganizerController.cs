@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,6 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // create organizer
             parameter.hackathonName = hackathonName.ToLower();
@@ -100,6 +102,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // query and update organizer.
             var organizerEntity = await OrganizerManagement.GetOrganizerById(hackathon.Name, organizerId, cancellationToken);
@@ -153,6 +156,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // query and update organizer.
             var organizerEntity = await OrganizerManagement.GetOrganizerById(hackathon.Name, organizerId, cancellationToken);
@@ -245,6 +249,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // query and delete judge
             var entity = await OrganizerManagement.GetOrganizerById(hackathon.Name, organizerId, cancellationToken);

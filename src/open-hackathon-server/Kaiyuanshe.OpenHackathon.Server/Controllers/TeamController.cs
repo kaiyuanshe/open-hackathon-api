@@ -543,6 +543,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // join team
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);

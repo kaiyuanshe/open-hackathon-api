@@ -534,6 +534,9 @@
   <data name="Admin_NotFound" xml:space="preserve">
     <value>The specified user is not an admin of the hackathon</value>
   </data>
+  <data name="Announcement_NotFound" xml:space="preserve">
+    <value>Announcement is not found.</value>
+  </data>
   <data name="Auth_Forbidden" xml:space="preserve">
     <value>Forbidden. The user associated with the token doesn't have proper permission. Please contact the administrator for access.</value>
   </data>
