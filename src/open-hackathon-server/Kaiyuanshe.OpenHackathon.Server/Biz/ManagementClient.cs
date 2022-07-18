@@ -40,9 +40,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         where TOptions : TableQueryOptions
     {
         protected abstract TEntity ConvertParamterToEntity(TParameter parameter);
+        protected abstract void TryUpdate(TEntity existing, TParameter parameter);
         protected abstract IAzureTableV2<TEntity> Table { get; }
         protected virtual bool EnableCache { get; } = true;
         protected abstract CacheEntryType CacheType { get; }
+        protected virtual string GetCacheKey(TEntity entity) => entity.PartitionKey;
 
         public async Task<TEntity> Create(TParameter parameter, CancellationToken cancellationToken)
         {
@@ -50,7 +52,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             await Table.InsertAsync(entity, cancellationToken);
             if (EnableCache)
             {
-                InvalidateCache(entity.PartitionKey);
+                InvalidateCache(GetCacheKey(entity));
             }
             return entity;
         }
@@ -60,9 +62,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             throw new System.NotImplementedException();
         }
 
-        public Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken)
+        public async Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            TryUpdate(existing, parameter);
+            await Table.MergeAsync(existing, cancellationToken);
+            if (EnableCache)
+            {
+                InvalidateCache(GetCacheKey(existing));
+            }
+            return existing;
         }
 
         #region Cache
