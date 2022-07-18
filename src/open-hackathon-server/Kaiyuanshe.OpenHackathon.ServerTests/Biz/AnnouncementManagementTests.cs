@@ -59,5 +59,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual("ct", result.Content);
         }
         #endregion
+
+        #region Update
+        [Test]
+        public async Task Update()
+        {
+            var parameter = new Announcement
+            {
+                title = "title2",
+                content = "content2",
+            };
+            var entity = new AnnouncementEntity { PartitionKey = "pk", Title = "title", Content = "content" };
+
+            var moqs = new Moqs();
+            moqs.AnnouncementTable.Setup(a => a.MergeAsync(It.Is<AnnouncementEntity>(e =>
+                e.Content == "content2"
+                && e.Title == "title2"), default));
+            moqs.CacheProvider.Setup(c => c.Remove("Announcement-pk"));
+
+            var managementClient = new AnnouncementManagement();
+            moqs.SetupManagement(managementClient);
+            var resp = await managementClient.Update(entity, parameter, default);
+
+            moqs.VerifyAll();
+            Assert.IsNotNull(resp);
+            Assert.AreEqual("title2", resp.Title);
+        }
+        #endregion
     }
 }

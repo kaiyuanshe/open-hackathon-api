@@ -31,6 +31,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             };
         }
 
+        protected override void TryUpdate(AnnouncementEntity existing, Announcement parameter)
+        {
+            existing.Title = parameter.title ?? existing.Title;
+            existing.Content = parameter.content ?? existing.Content;
+        }
+
         public async Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken)
         {
             return await Table.RetrieveAsync(hackathonName, announcementId, cancellationToken);

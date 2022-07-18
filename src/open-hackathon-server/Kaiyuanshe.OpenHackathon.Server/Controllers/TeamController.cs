@@ -547,6 +547,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // join team
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(memberInfo != null);
             var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
             if (teamMember == null)
             {
@@ -638,6 +639,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team and member
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId.ToLower(), cancellationToken);
@@ -655,6 +657,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // Update team member
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(user != null);
             teamMember = await TeamManagement.UpdateTeamMemberAsync(teamMember, parameter, cancellationToken);
             var args = new
             {
@@ -704,6 +707,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
@@ -715,6 +719,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // Validate team member
             var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
@@ -730,6 +735,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(user != null);
             teamMember = await TeamManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
             var logArgs = new
             {
