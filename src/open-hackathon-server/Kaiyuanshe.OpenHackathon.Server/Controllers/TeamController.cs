@@ -786,6 +786,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
@@ -797,6 +798,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // Validate team member
             var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
@@ -813,6 +815,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // update status
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             teamMember = await TeamManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
+            Debug.Assert(memberInfo != null);
             var args = new
             {
                 hackathonName = hackathon.DisplayName,
