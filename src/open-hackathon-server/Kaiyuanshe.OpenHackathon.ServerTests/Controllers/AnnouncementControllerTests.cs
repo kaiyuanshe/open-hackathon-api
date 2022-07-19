@@ -90,5 +90,53 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("ct", resp.content);
         }
         #endregion
+
+        #region UpdateAnnouncement
+        [Test]
+        public async Task UpdateAnnouncement_NotFound()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Announcement();
+            AnnouncementEntity? organizerEntity = null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.AnnouncementManagement.Setup(o => o.GetById("pk", "aid", default)).ReturnsAsync(organizerEntity);
+
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.UpdateAnnouncement("Hack", "aid", parameter, default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.Announcement_NotFound);
+        }
+
+        [Test]
+        public async Task UpdateAnnouncement_Updated()
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "pk" };
+            var authResult = AuthorizationResult.Success();
+            var parameter = new Announcement();
+            AnnouncementEntity? organizerEntity = new AnnouncementEntity { Title = "title" };
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
+            moqs.AnnouncementManagement.Setup(o => o.GetById("pk", "aid", default)).ReturnsAsync(organizerEntity);
+            moqs.AnnouncementManagement.Setup(o => o.Update(organizerEntity, parameter, default)).ReturnsAsync(organizerEntity);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("pk", "", ActivityLogType.updateAnnouncement, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "pk", "", ActivityLogType.updateAnnouncement, It.IsAny<object>(), null, default));
+
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.UpdateAnnouncement("Hack", "aid", parameter, default);
+
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<Announcement>(result);
+            Assert.AreEqual("title", resp.title);
+        }
+        #endregion
     }
 }
