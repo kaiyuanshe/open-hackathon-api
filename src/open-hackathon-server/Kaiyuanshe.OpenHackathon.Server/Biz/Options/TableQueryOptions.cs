@@ -4,6 +4,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz.Options
 {
     public class TableQueryOptions
     {
+        public string HackathonName { get; set; }
         public Pagination Pagination { get; set; }
 
         public Pagination? NextPage { get; set; }

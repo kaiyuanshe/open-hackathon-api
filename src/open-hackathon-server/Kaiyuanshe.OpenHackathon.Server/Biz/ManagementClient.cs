@@ -1,10 +1,13 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +33,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     {
         Task<TEntity> Create(TParameter parameter, CancellationToken cancellationToken);
         Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken);
-        Task<IEnumerable<TEntity>> List(TOptions options, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> ListPaginated(TOptions options, CancellationToken cancellationToken);
     }
 
     public abstract class DefaultManagementClient<TManagement, TParameter, TEntity, TOptions>
@@ -45,6 +48,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         protected virtual bool EnableCache { get; } = true;
         protected abstract CacheEntryType CacheType { get; }
         protected virtual string GetCacheKey(TEntity entity) => entity.PartitionKey;
+        protected virtual TimeSpan Expiry { get; } = TimeSpan.FromHours(6);
+        protected abstract Task<IEnumerable<TEntity>> ListWithoutCache(TOptions options, CancellationToken cancellationToken);
 
         public async Task<TEntity> Create(TParameter parameter, CancellationToken cancellationToken)
         {
@@ -57,9 +62,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return entity;
         }
 
-        public Task<IEnumerable<TEntity>> List(TOptions options, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<TEntity>> ListPaginated(TOptions options, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var allEntities = await ListCachedEntities(options, cancellationToken);
+
+            // paging
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
+            var filtered = allEntities.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
+
+            // next paging
+            options.NextPage = null;
+            if (np + top < allEntities.Count())
+            {
+                options.NextPage = new Pagination
+                {
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
+                };
+            }
+
+            return filtered;
         }
 
         public async Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken)
@@ -82,6 +105,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         private void InvalidateCache(string subKey)
         {
             Cache.Remove(GetCacheKey(subKey));
+        }
+
+        private async Task<IEnumerable<TEntity>> ListCachedEntities(TOptions options, CancellationToken cancellationToken)
+        {
+            string cacheKey = GetCacheKey(options.HackathonName);
+            return await Cache.GetOrAddAsync(cacheKey, Expiry, async (ct) =>
+            {
+                return await ListWithoutCache(options, ct);
+            }, true, cancellationToken);
         }
         #endregion
     }
