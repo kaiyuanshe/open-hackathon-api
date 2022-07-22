@@ -654,6 +654,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamMemberValidateOption.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // Update team member
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
@@ -911,6 +912,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team
             var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);
@@ -1012,6 +1014,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // Validate team member
             var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
@@ -1152,7 +1155,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
-
+            Debug.Assert(teamEntity != null);
 
             // query
             var assignmentQueryOptions = new AwardAssignmentQueryOptions
@@ -1229,6 +1232,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 UserId = CurrentUserId,
                 ApprovedMemberRequired = true,
             };
+            Debug.Assert(team != null);
             if (await ValidateTeamMember(team, teamMember, teamMemberValidateOption, cancellationToken) == false)
             {
                 return teamMemberValidateOption.ValidateResult;
@@ -1306,6 +1310,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 UserId = CurrentUserId,
                 ApprovedMemberRequired = true,
             };
+            Debug.Assert(team != null);
             if (await ValidateTeamMember(team, teamMember, teamMemberValidateOption, cancellationToken) == false)
             {
                 return teamMemberValidateOption.ValidateResult;
@@ -1372,6 +1377,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamValidateOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // get team work
             var teamWorkEntity = await WorkManagement.GetTeamWorkAsync(hackathonName.ToLower(), workId, cancellationToken);
@@ -1415,15 +1421,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // Validate team
-            var teamEntity = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
+            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
             var teamValidateOptions = new ValidateTeamOptions
             {
             };
-            if (await ValidateTeam(teamEntity, teamValidateOptions) == false)
+            if (await ValidateTeam(team, teamValidateOptions) == false)
             {
                 return teamValidateOptions.ValidateResult;
             }
-
+            Debug.Assert(team != null);
 
             // query
             var teamWorkQueryOptions = new TeamWorkQueryOptions
@@ -1496,6 +1502,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamMemberValidateOption.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // Delete work
             var work = await WorkManagement.GetTeamWorkAsync(hackathonName.ToLower(), workId, cancellationToken);

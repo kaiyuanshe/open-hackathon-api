@@ -76,7 +76,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get a team member by userId
         /// </summary>
-        Task<TeamMemberEntity> GetTeamMemberAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
+        Task<TeamMemberEntity?> GetTeamMemberAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new team member. Not existance check. Please check existance before call this method
@@ -267,7 +267,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetTeamMemberAsync
-        public async Task<TeamMemberEntity> GetTeamMemberAsync(string hackathonName, string userId, CancellationToken cancellationToken = default)
+        public async Task<TeamMemberEntity?> GetTeamMemberAsync(string hackathonName, string userId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(userId))
                 return null;
