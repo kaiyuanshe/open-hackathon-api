@@ -41,8 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         protected override async Task<IEnumerable<AnnouncementEntity>> ListWithoutCache(AnnouncementQueryOptions options, CancellationToken cancellationToken)
         {
-            var filter = TableQueryHelper.PartitionKeyFilter(options.HackathonName);
-            return await Table.QueryEntitiesAsync(filter, null, cancellationToken);
+            return await StorageContext.AnnouncementTable.ListByHackathonAsync(options.HackathonName, cancellationToken);
         }
 
         public async Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken)
