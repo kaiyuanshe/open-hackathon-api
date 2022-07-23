@@ -1,12 +1,16 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.Auth;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
@@ -138,5 +142,77 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("title", resp.title);
         }
         #endregion
+
+        #region ListByHackathon
+        private static IEnumerable ListByHackathonTestData()
+        {
+            // arg0: pagination
+            // arg1: next pagination
+            // arg2: expected nextlink
+
+            // no pagination, no filter, no top
+            yield return new TestCaseData(
+                    new Pagination { },
+                    null,
+                    null
+                );
+
+            // with pagination and filters
+            yield return new TestCaseData(
+                    new Pagination { top = 10, np = "np", nr = "nr" },
+                    null,
+                    null
+                );
+
+            // next link
+            yield return new TestCaseData(
+                    new Pagination { },
+                    new Pagination { np = "np", nr = "nr" },
+                    "&np=np&nr=nr"
+                );
+
+            // next link with top
+            yield return new TestCaseData(
+                    new Pagination { top = 10, np = "np", nr = "nr" },
+                    new Pagination { np = "np2", nr = "nr2" },
+                    "&top=10&np=np2&nr=nr2"
+                );
+        }
+
+        [Test, TestCaseSource(nameof(ListByHackathonTestData))]
+        public async Task ListByHackathon(
+            Pagination pagination,
+            Pagination next,
+            string expectedLink)
+        {
+            // input
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "hack" };
+            List<AnnouncementEntity> entities = new List<AnnouncementEntity> {
+                new AnnouncementEntity { PartitionKey = "pk", RowKey = "oid" }
+            };
+
+            // mock and capture
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AnnouncementManagement.Setup(j => j.ListPaginated(
+                It.Is<AnnouncementQueryOptions>(a => a.HackathonName == "hack"), default))
+                .Callback<AnnouncementQueryOptions, CancellationToken>((opt, c) => { opt.NextPage = next; })
+                .ReturnsAsync(entities);
+
+            // run
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.ListByHackathon("Hack", pagination, default);
+
+            // verify
+            moqs.VerifyAll();
+            var list = AssertHelper.AssertOKResult<AnnouncementList>(result);
+            Assert.AreEqual(expectedLink, list.nextLink);
+            Assert.AreEqual(1, list.value.Length);
+            Assert.AreEqual("pk", list.value[0].hackathonName);
+            Assert.AreEqual("oid", list.value[0].id);
+        }
+        #endregion
+
     }
 }

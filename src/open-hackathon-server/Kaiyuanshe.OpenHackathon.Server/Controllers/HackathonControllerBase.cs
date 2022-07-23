@@ -425,7 +425,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #endregion
 
         #region ValidateTeamMember
-        protected async Task<bool> ValidateTeamMember(TeamEntity team, TeamMemberEntity teamMember,
+        protected async Task<bool> ValidateTeamMember(TeamEntity? team, TeamMemberEntity? teamMember,
             ValidateTeamMemberOptions options,
             CancellationToken cancellationToken)
         {

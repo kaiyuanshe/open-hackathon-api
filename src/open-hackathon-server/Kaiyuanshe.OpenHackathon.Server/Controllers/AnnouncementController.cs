@@ -1,11 +1,14 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
+using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Threading;
@@ -160,5 +163,58 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region ListByHackathon
+        /// <summary>
+        /// List paginated announcements of a hackathon.
+        /// </summary>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <returns>the response contains a list of announcements and a nextLink if there are more results.</returns>
+        /// <response code="200">Success. The response describes a list of organizers and a nullable link to query more results.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(AnnouncementList), StatusCodes.Status200OK)]
+        [SwaggerErrorResponse(400, 404)]
+        [Route("hackathon/{hackathonName}/announcements")]
+        public async Task<object> ListByHackathon(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromQuery] Pagination pagination,
+            CancellationToken cancellationToken)
+        {
+            // validate hackathon
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
+            var options = new ValidateHackathonOptions
+            {
+                HackathonName = hackathonName,
+                WritableRequired = false,
+            };
+            if (await ValidateHackathon(hackathon, options) == false)
+            {
+                return options.ValidateResult;
+            }
+            Debug.Assert(hackathon != null);
+
+            // query
+            var queryOptions = new AnnouncementQueryOptions
+            {
+                HackathonName = hackathon.Name,
+                Pagination = pagination,
+            };
+            var announcements = await AnnouncementManagement.ListPaginated(queryOptions, cancellationToken);
+            var routeValues = new RouteValueDictionary();
+            if (pagination.top.HasValue)
+            {
+                routeValues.Add(nameof(pagination.top), pagination.top.Value);
+            }
+            var nextLink = BuildNextLinkUrl(routeValues, queryOptions.NextPage);
+
+            // build resp
+            var resp = ResponseBuilder.BuildResourceList<AnnouncementEntity, Announcement, AnnouncementList>(
+                announcements,
+                ResponseBuilder.BuildAnnouncement,
+                nextLink);
+
+            return Ok(resp);
+        }
+        #endregion
     }
 }
