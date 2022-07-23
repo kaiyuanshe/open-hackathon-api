@@ -655,6 +655,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return teamMemberValidateOption.ValidateResult;
             }
             Debug.Assert(team != null);
+            Debug.Assert(teamMember != null);
 
             // Update team member
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
@@ -733,6 +734,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamMemberValidateOption.ValidateResult;
             }
+            Debug.Assert(teamMember != null);
 
             // update status
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
@@ -812,6 +814,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamMemberValidateOption.ValidateResult;
             }
+            Debug.Assert(teamMember != null);
 
             // update status
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);

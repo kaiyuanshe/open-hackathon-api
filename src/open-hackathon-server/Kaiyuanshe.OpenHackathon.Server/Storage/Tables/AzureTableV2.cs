@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
-        Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
+        Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string? continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
     }
 
     public abstract class AzureTableV2<TEntity> : StorageClientBase, IAzureTableV2<TEntity> where TEntity : BaseTableEntity, new()
@@ -243,7 +243,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
+        public virtual async Task<Page<TEntity>> ExecuteQuerySegmentedAsync(string filter, string? continuationToken, int? maxPerPage = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             var client = await GetTableClientAsync(cancellationToken);
             using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
