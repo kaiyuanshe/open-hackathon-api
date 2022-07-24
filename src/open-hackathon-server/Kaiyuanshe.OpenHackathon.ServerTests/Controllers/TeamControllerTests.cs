@@ -139,7 +139,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             string hackName = "Foo";
-            HackathonEntity hackathon = new HackathonEntity {PartitionKey="foo", Status = HackathonStatus.online };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.pendingApproval };
             Team parameter = new Team { };
 
@@ -1653,8 +1653,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             var hackName = "Hack";
             var teamId = "tid";
-            var cancellationToken = CancellationToken.None;
-            HackathonEntity hackathonEntity = new HackathonEntity();
+            HackathonEntity hackathonEntity = new HackathonEntity { PartitionKey = "hack" };
             TeamEntity teamEntity = new TeamEntity();
             var members = new List<TeamMemberEntity>
             {
@@ -1676,16 +1675,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 .ReturnsAsync(hackathonEntity);
             var teamManagement = new Mock<ITeamManagement>();
             TeamMemberQueryOptions optionsCaptured = null;
-            teamManagement.Setup(p => p.GetTeamByIdAsync("hack", "tid", cancellationToken))
+            teamManagement.Setup(p => p.GetTeamByIdAsync("hack", "tid", default))
                 .ReturnsAsync(teamEntity);
-            teamManagement.Setup(p => p.ListPaginatedTeamMembersAsync("hack", "tid", It.IsAny<TeamMemberQueryOptions>(), cancellationToken))
+            teamManagement.Setup(p => p.ListPaginatedTeamMembersAsync("hack", "tid", It.IsAny<TeamMemberQueryOptions>(), default))
                 .Callback<string, string, TeamMemberQueryOptions, CancellationToken>((h, n, o, t) =>
                 {
                     optionsCaptured = o;
                 })
                 .ReturnsAsync(segment);
             var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("rk", cancellationToken))
+            userManagement.Setup(u => u.GetUserByIdAsync("rk", default))
                 .ReturnsAsync(user);
 
             // run
@@ -1696,7 +1695,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 HackathonManagement = hackathonManagement.Object,
                 TeamManagement = teamManagement.Object,
             };
-            var result = await controller.ListMembers(hackName, teamId, pagination, role, status, cancellationToken);
+            var result = await controller.ListMembers(hackName, teamId, pagination, role, status, default);
 
             // verify
             Mock.VerifyAll(hackathonManagement, teamManagement, userManagement);
@@ -1893,7 +1892,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task UpdateTeamWork_NotFound()
         {
             // input
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
+            HackathonEntity hackathon = new HackathonEntity { PartitionKey = "hack", Status = HackathonStatus.online };
             TeamEntity teamEntity = new TeamEntity { };
             TeamMemberEntity memberEntity = new TeamMemberEntity { };
             TeamWork request = new TeamWork { };
@@ -1933,11 +1932,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // moq
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("hack", "teamId", default)).ReturnsAsync(teamEntity);
-            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("hack", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "teamId", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", It.IsAny<string>(), default)).ReturnsAsync(memberEntity);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamMember))
                 .ReturnsAsync(authResult);
-            moqs.WorkManagement.Setup(w => w.GetTeamWorkAsync("hack", "workId", default)).ReturnsAsync(teamWorkEntity);
+            moqs.WorkManagement.Setup(w => w.GetTeamWorkAsync("foo", "workId", default)).ReturnsAsync(teamWorkEntity);
             moqs.WorkManagement.Setup(w => w.UpdateTeamWorkAsync(It.IsAny<TeamWorkEntity>(), request, default)).ReturnsAsync(teamWorkEntity);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.updateTeamWork, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "rk", It.IsAny<string>(), ActivityLogType.updateTeamWork, It.IsAny<object>(), null, default));

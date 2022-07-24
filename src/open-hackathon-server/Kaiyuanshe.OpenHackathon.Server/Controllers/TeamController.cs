@@ -1030,8 +1030,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return teamMemberValidateOption.ValidateResult;
             }
+            Debug.Assert(teamMember != null);
 
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(user != null);
             return Ok(ResponseBuilder.BuildTeamMember(teamMember, user));
         }
         #endregion
@@ -1060,8 +1062,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             // validate hackathon
-            var hackName = hackathonName.ToLower();
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName);
+            HackathonEntity? hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -1071,9 +1072,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team
-            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
+            var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);
             var teamValidateOptions = new ValidateTeamOptions
             {
             };
@@ -1109,6 +1111,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             foreach (var member in page.Values)
             {
                 var user = await UserManagement.GetUserByIdAsync(member.UserId, cancellationToken);
+                Debug.Assert(user != null);
                 tuples.Add(Tuple.Create(member, user));
             }
             return Ok(ResponseBuilder.BuildResourceList<TeamMemberEntity, UserInfo, TeamMember, TeamMemberList>(
@@ -1177,6 +1180,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // build resp
             var creator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
+            Debug.Assert(creator != null);
             var team = ResponseBuilder.BuildTeam(teamEntity, creator);
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(
                 assignments,
@@ -1303,10 +1307,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team and member
-            var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
-            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), CurrentUserId, cancellationToken);
+            var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);
+            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathon.Name, CurrentUserId, cancellationToken);
             var teamMemberValidateOption = new ValidateTeamMemberOptions
             {
                 TeamId = teamId,
@@ -1320,7 +1325,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // create team work
-            var teamWorkEntity = await WorkManagement.GetTeamWorkAsync(hackathonName.ToLower(), workId, cancellationToken);
+            var teamWorkEntity = await WorkManagement.GetTeamWorkAsync(hackathon.Name, workId, cancellationToken);
             if (teamWorkEntity == null)
             {
                 return NotFound(Resources.TeamWork_NotFound);

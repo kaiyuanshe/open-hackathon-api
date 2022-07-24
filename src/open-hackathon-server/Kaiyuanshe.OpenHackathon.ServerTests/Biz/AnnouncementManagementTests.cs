@@ -208,5 +208,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             }
         }
         #endregion
+
+        #region Delete
+        [Test]
+        public async Task Delete()
+        {
+            var entity = new AnnouncementEntity { PartitionKey = "pk", RowKey = "rk" };
+
+            var moqs = new Moqs();
+            moqs.AnnouncementTable.Setup(t => t.DeleteAsync("pk", "rk", default));
+
+            var managementClient = new AnnouncementManagement();
+            moqs.SetupManagement(managementClient);
+            await managementClient.Delete(entity, default);
+
+            moqs.VerifyAll();
+        }
+        #endregion
     }
 }

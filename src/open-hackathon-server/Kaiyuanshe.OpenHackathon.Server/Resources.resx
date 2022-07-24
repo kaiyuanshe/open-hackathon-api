@@ -177,6 +177,9 @@
   <data name="ActivityLog_Hackathon_createTemplate" xml:space="preserve">
     <value>Admin "{adminName}" created a new template "{templateName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteAnnouncement" xml:space="preserve">
+    <value>Admin "{adminName}" deleted an announcement.</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
     <value>Admin "{adminName}" removed award "{awardName}".</value>
   </data>
@@ -404,6 +407,9 @@
   </data>
   <data name="ActivityLog_User_createTemplate" xml:space="preserve">
     <value>[{hackathonName}]Created a new template "{templateName}".</value>
+  </data>
+  <data name="ActivityLog_User_deleteAnnouncement" xml:space="preserve">
+    <value>[{hackathonName}]deleted an announcement.</value>
   </data>
   <data name="ActivityLog_User_deleteAward" xml:space="preserve">
     <value>[{hackathonName}]Dismissed team "{teamName}".</value>
