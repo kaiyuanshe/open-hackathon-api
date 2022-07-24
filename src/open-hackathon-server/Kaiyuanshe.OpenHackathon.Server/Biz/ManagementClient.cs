@@ -34,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<TEntity> Create(TParameter parameter, CancellationToken cancellationToken);
         Task<TEntity> Update(TEntity existing, TParameter parameter, CancellationToken cancellationToken);
         Task<IEnumerable<TEntity>> ListPaginated(TOptions options, CancellationToken cancellationToken);
+        Task Delete(TEntity entity, CancellationToken cancellationToken);
     }
 
     public abstract class DefaultManagementClient<TManagement, TParameter, TEntity, TOptions>
@@ -94,6 +95,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 InvalidateCache(GetCacheKey(existing));
             }
             return existing;
+        }
+
+        public async Task Delete(TEntity entity, CancellationToken cancellationToken)
+        {
+            await Table.DeleteAsync(entity.PartitionKey, entity.RowKey, cancellationToken);
         }
 
         #region Cache

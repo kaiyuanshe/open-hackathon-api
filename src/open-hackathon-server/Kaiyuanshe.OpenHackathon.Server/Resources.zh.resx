@@ -177,6 +177,9 @@
   <data name="ActivityLog_Hackathon_createTemplate" xml:space="preserve">
     <value>管理员"{adminName}"添加了新的虚拟环境模板"{templateName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_deleteAnnouncement" xml:space="preserve">
+    <value>管理员"{adminName}"删除了活动的公告。</value>
+  </data>
   <data name="ActivityLog_Hackathon_deleteAward" xml:space="preserve">
     <value>管理员"{adminName}"删除了奖项"{awardName}"。</value>
   </data>
@@ -404,6 +407,9 @@
   </data>
   <data name="ActivityLog_User_createTemplate" xml:space="preserve">
     <value>[{hackathonName}]添加了新的虚拟环境模板"{templateName}"。</value>
+  </data>
+  <data name="ActivityLog_User_deleteAnnouncement" xml:space="preserve">
+    <value>[{hackathonName}]删除了活动的公告。</value>
   </data>
   <data name="ActivityLog_User_deleteAward" xml:space="preserve">
     <value>[{hackathonName}]删除了奖项"{awardName}"。</value>
