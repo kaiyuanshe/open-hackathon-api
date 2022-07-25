@@ -29,6 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 Title = parameter.title,
                 Content = parameter.content,
                 CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow,
             };
         }
 

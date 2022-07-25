@@ -14,9 +14,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public interface IWorkManagement
     {
         Task<bool> CanCreateTeamWorkAsync(string hackathonName, string teamId, CancellationToken cancellationToken);
-        Task<TeamWorkEntity> CreateTeamWorkAsync(TeamWork request, CancellationToken cancellationToken = default);
+        Task<TeamWorkEntity?> CreateTeamWorkAsync(TeamWork request, CancellationToken cancellationToken = default);
         Task<TeamWorkEntity> UpdateTeamWorkAsync(TeamWorkEntity existing, TeamWork request, CancellationToken cancellationToken = default);
-        Task<TeamWorkEntity> GetTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default);
+        Task<TeamWorkEntity?> GetTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default);
         Task<IEnumerable<TeamWorkEntity>> ListPaginatedWorksAsync(string hackathonName, string teamId, TeamWorkQueryOptions options, CancellationToken cancellationToken = default);
         Task DeleteTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default);
     }
@@ -56,7 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region CreateTeamWorkAsync
-        public async Task<TeamWorkEntity> CreateTeamWorkAsync(TeamWork request, CancellationToken cancellationToken = default)
+        public async Task<TeamWorkEntity?> CreateTeamWorkAsync(TeamWork request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 return null;
@@ -83,9 +83,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region Task<TeamWorkEntity> UpdateTeamWorkAsync(TeamWorkEntity existing, TeamWork request, CancellationToken cancellationToken = default);
         public async Task<TeamWorkEntity> UpdateTeamWorkAsync(TeamWorkEntity existing, TeamWork request, CancellationToken cancellationToken = default)
         {
-            if (existing == null || request == null)
-                return existing;
-
             existing.Title = request.title ?? existing.Title;
             existing.Description = request.description ?? existing.Description;
             existing.Url = request.url ?? existing.Url;
@@ -98,7 +95,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region Task<TeamWorkEntity> GetTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default);
-        public async Task<TeamWorkEntity> GetTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default)
+        public async Task<TeamWorkEntity?> GetTeamWorkAsync(string hackathonName, string workId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(workId))
                 return null;
