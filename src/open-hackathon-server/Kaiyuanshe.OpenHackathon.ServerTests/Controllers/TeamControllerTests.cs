@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             string hackName = "Foo";
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
             Team parameter = new Team { };
 
             // moq
@@ -116,7 +117,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             string hackName = "Foo";
             HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
-            EnrollmentEntity enrollment = null;
+            EnrollmentEntity? enrollment = null;
             Team parameter = new Team { };
 
             // moq
@@ -221,7 +222,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             EnrollmentEntity enrollment = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             Team parameter = new Team { displayName = "dn" };
             TeamEntity teamEntity = new TeamEntity { AutoApprove = true, CreatorId = "uid", PartitionKey = "pk", RowKey = "rk", DisplayName = "dn" };
-            TeamMemberEntity teamMember = null;
+            TeamMemberEntity? teamMember = null;
 
             // mock
             var moqs = new Moqs();
@@ -244,6 +245,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("foo", parameter.hackathonName);
             Assert.AreEqual("", parameter.creatorId);
             Team resp = AssertHelper.AssertOKResult<Team>(result);
+            Debug.Assert(resp.autoApprove != null);
             Assert.AreEqual(true, resp.autoApprove.Value);
             Assert.AreEqual("uid", resp.creatorId);
             Assert.AreEqual("pk", resp.hackathonName);
@@ -258,7 +260,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             string hackName = "Foo";
             string teamId = "tid";
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
             Team parameter = new Team { };
 
             // moq
@@ -306,7 +308,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string teamId = "tid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             Team parameter = new Team { };
-            TeamEntity teamEntity = null;
+            TeamEntity? teamEntity = null;
 
             // moq
             var moqs = new Moqs();
@@ -431,7 +433,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             string hackName = "Foo";
             string teamId = "tid";
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
             CancellationToken cancellationToken = CancellationToken.None;
             // moq
             var hackathonManagement = new Mock<IHackathonManagement>();
@@ -457,7 +459,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             string teamId = "tid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
-            TeamEntity teamEntity = null;
+            TeamEntity? teamEntity = null;
             CancellationToken cancellationToken = CancellationToken.None;
             // moq
             var hackathonManagement = new Mock<IHackathonManagement>();
@@ -528,7 +530,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task GetCurrentTeam_HackNotFound()
         {
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -545,7 +547,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetCurrentTeam_NotJoinTeam()
         {
             HackathonEntity hackathon = new HackathonEntity();
-            TeamMemberEntity member = null;
+            TeamMemberEntity? member = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -564,7 +566,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             HackathonEntity hackathon = new HackathonEntity();
             TeamMemberEntity member = new TeamMemberEntity { TeamId = "tid" };
-            TeamEntity team = null;
+            TeamEntity? team = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -669,7 +671,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(hackathonEntity);
             var teamManagement = new Mock<ITeamManagement>();
-            TeamQueryOptions optionsCaptured = null;
+            TeamQueryOptions? optionsCaptured = null;
             teamManagement.Setup(p => p.ListPaginatedTeamsAsync("hack", It.IsAny<TeamQueryOptions>(), cancellationToken))
                 .Callback<string, TeamQueryOptions, CancellationToken>((n, o, t) =>
                 {
@@ -701,6 +703,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].id);
+            Debug.Assert(optionsCaptured != null);
             Assert.AreEqual(expectedOptions.Top(), optionsCaptured.Top());
             Assert.AreEqual(expectedOptions.ContinuationToken(), optionsCaptured.ContinuationToken());
         }
@@ -724,7 +727,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo user = new UserInfo();
 
             // mock
-            TeamMember captured = null;
+            TeamMember? captured = null;
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken)).ReturnsAsync(hackathon);
             moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "", cancellationToken)).ReturnsAsync(enrollmentEntity);
@@ -746,6 +749,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.VerifyAll();
             TeamMember output = AssertHelper.AssertOKResult<TeamMember>(result);
             Assert.AreEqual("desc", output.description);
+            Debug.Assert(captured != null);
             Assert.AreEqual(expectedStatus, captured.status);
         }
 
@@ -840,7 +844,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             // mock
             var moqs = new Moqs();
-            TeamMember captured = null;
+            TeamMember? captured = null;
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
             moqs.EnrollmentManagement.Setup(p => p.GetEnrollmentAsync("foo", "uid", default)).ReturnsAsync(enrollmentEntity);
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
@@ -863,7 +867,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.VerifyAll();
             TeamMember output = AssertHelper.AssertOKResult<TeamMember>(result);
             Assert.AreEqual("desc", output.description);
-            Assert.AreEqual(TeamMemberStatus.approved, captured.status); // alwasy Approved if add by admin no matter whether is autoApprove
+            Debug.Assert(captured != null);
+            Assert.AreEqual(TeamMemberStatus.approved, captured.status); // always Approved if add by admin no matter whether is autoApprove
         }
 
         [Test]
@@ -953,8 +958,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string userId = "uid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollmentEntity = new EnrollmentEntity { Status = EnrollmentStatus.approved };
-            TeamEntity teamEntity = null;
-            TeamMemberEntity memberEntity = null;
+            TeamEntity? teamEntity = null;
+            TeamMemberEntity? memberEntity = null;
             TeamMember request = new TeamMember { };
 
             // moq
@@ -983,7 +988,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollmentEntity = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             TeamEntity teamEntity = new TeamEntity { };
-            TeamMemberEntity memberEntity = null;
+            TeamMemberEntity? memberEntity = null;
             TeamMember request = new TeamMember { };
 
             // moq
@@ -1087,7 +1092,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             EnrollmentEntity enrollmentEntity = new EnrollmentEntity { Status = EnrollmentStatus.approved };
             TeamEntity teamEntity = new TeamEntity { };
-            TeamMemberEntity memberEntity = null;
+            TeamMemberEntity? memberEntity = null;
             var authResult = AuthorizationResult.Success();
 
             // moq
@@ -1203,7 +1208,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string teamId = "tid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
             TeamEntity teamEntity = new TeamEntity { };
-            TeamMemberEntity memberEntity = null;
+            TeamMemberEntity? memberEntity = null;
 
             // moq
             var moqs = new Moqs();
@@ -1411,7 +1416,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string hackName = "Foo";
             string teamId = "tid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
-            TeamEntity teamEntity = null;
+            TeamEntity? teamEntity = null;
 
             // moq
             var moqs = new Moqs();
@@ -1674,7 +1679,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(hackathonEntity);
             var teamManagement = new Mock<ITeamManagement>();
-            TeamMemberQueryOptions optionsCaptured = null;
+            TeamMemberQueryOptions? optionsCaptured = null;
             teamManagement.Setup(p => p.GetTeamByIdAsync("hack", "tid", default))
                 .ReturnsAsync(teamEntity);
             teamManagement.Setup(p => p.ListPaginatedTeamMembersAsync("hack", "tid", It.IsAny<TeamMemberQueryOptions>(), default))
@@ -1712,6 +1717,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(TeamMemberRole.Admin, list.value[0].role);
             Assert.AreEqual("company", list.value[0].user.Company);
 
+            Debug.Assert(optionsCaptured != null);
             Assert.AreEqual(expectedOptions.Status, optionsCaptured.Status);
             Assert.AreEqual(expectedOptions.Role, optionsCaptured.Role);
             Assert.AreEqual(expectedOptions.Pagination?.top, optionsCaptured.Pagination?.top);
@@ -1896,7 +1902,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             TeamEntity teamEntity = new TeamEntity { };
             TeamMemberEntity memberEntity = new TeamMemberEntity { };
             TeamWork request = new TeamWork { };
-            TeamWorkEntity teamWorkEntity = null;
+            TeamWorkEntity? teamWorkEntity = null;
             var authResult = AuthorizationResult.Success();
 
             // moq

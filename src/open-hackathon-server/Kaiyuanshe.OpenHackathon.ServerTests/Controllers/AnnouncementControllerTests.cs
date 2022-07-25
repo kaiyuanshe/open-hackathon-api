@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -214,5 +215,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         }
         #endregion
 
+        #region DeleteAnnouncement
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task DeleteAnnouncement(bool firstTime)
+        {
+            var hackathon = new HackathonEntity { PartitionKey = "foo" };
+            var authResult = AuthorizationResult.Success();
+            AnnouncementEntity? entity = firstTime ? new AnnouncementEntity
+            {
+                PartitionKey = "foo",
+                RowKey = "aid"
+            } : null;
+
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator))
+                .ReturnsAsync(authResult);
+            moqs.AnnouncementManagement.Setup(t => t.GetById("foo", "aid", default)).ReturnsAsync(entity);
+            if (firstTime)
+            {
+                Debug.Assert(entity != null);
+                moqs.AnnouncementManagement.Setup(t => t.Delete(entity, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteAnnouncement, It.IsAny<object>(), null, default));
+                moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteAnnouncement, It.IsAny<object>(), null, default));
+            }
+
+            var controller = new AnnouncementController();
+            moqs.SetupController(controller);
+            var result = await controller.DeleteAnnouncement("Hack", "aid", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertNoContentResult(result);
+        }
+        #endregion
     }
 }
