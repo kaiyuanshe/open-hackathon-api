@@ -1822,7 +1822,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].assignmentId);
-            Assert.AreEqual("2020", list.value[0].team.creator.LastLogin);
+            var team0 = list.value[0].team;
+            Debug.Assert(team0 != null);
+            Assert.AreEqual("2020", team0.creator.LastLogin);
         }
         #endregion
 
@@ -1967,7 +1969,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // input
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             TeamEntity teamEntity = new TeamEntity { };
-            TeamWorkEntity teamWorkEntity = null;
+            TeamWorkEntity? teamWorkEntity = null;
 
             // moq
             var hackathonManagement = new Mock<IHackathonManagement>();
@@ -2139,7 +2141,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { PartitionKey = "foo", Status = HackathonStatus.online };
             TeamEntity teamEntity = new TeamEntity { RowKey = "tid" };
             TeamMemberEntity memberEntity = new TeamMemberEntity { TeamId = "tid" };
-            TeamWorkEntity teamWorkEntity = firstTime ? new TeamWorkEntity() : null;
+            TeamWorkEntity? teamWorkEntity = firstTime ? new TeamWorkEntity() : null;
             var authResult = AuthorizationResult.Success();
 
             // moq
