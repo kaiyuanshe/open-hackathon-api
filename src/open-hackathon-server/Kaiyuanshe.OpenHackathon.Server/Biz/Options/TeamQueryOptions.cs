@@ -2,5 +2,6 @@
 {
     public class TeamQueryOptions : TableQueryOptions
     {
+        public string NameSearch { get; set; }
     }
 }

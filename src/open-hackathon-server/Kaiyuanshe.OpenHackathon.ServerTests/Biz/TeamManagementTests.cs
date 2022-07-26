@@ -70,25 +70,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         #region UpdateTeamAsync
         [Test]
-        public async Task UpdateTeamAsync_Null()
-        {
-            var storageContext = new Mock<IStorageContext>();
-
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
-            Assert.IsNull(await teamManagement.UpdateTeamAsync(null, null, default));
-            Assert.IsNull(await teamManagement.UpdateTeamAsync(new Team(), null, default));
-
-            TeamEntity entity = new TeamEntity();
-            Assert.AreEqual(entity, await teamManagement.UpdateTeamAsync(null, entity, default));
-            Mock.VerifyAll( storageContext);
-            
-            storageContext.VerifyNoOtherCalls();
-        }
-
-        [Test]
         public async Task UpdateTeamAsync_Updated()
         {
             var request = new Team { description = "newdesc", autoApprove = true };
@@ -100,7 +81,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 AutoApprove = false
             };
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(t => t.MergeAsync(entity, default));
             var storageContext = new Mock<IStorageContext>();
@@ -115,8 +96,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamAsync(request, entity, default);
 
-            Mock.VerifyAll( storageContext, teamTable, cache);
-            
+            Mock.VerifyAll(storageContext, teamTable, cache);
+
             storageContext.VerifyNoOtherCalls();
             teamTable.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
@@ -181,7 +162,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string hackName = "Hack";
             string teamId = "tid";
             TeamEntity teamEntity = new TeamEntity { Description = "desc" };
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(t => t.RetrieveAsync("hack", "tid", default))
                 .ReturnsAsync(teamEntity);
@@ -195,8 +176,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.GetTeamByIdAsync(hackName, teamId, default);
 
-            Mock.VerifyAll( storageContext, teamTable);
-            
+            Mock.VerifyAll(storageContext, teamTable);
+
             storageContext.VerifyNoOtherCalls();
             teamTable.VerifyNoOtherCalls();
             Assert.AreEqual("desc", result.Description);
@@ -212,7 +193,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new TeamEntity{  PartitionKey="pk" }
             };
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (DisplayName eq 'tn')", null, default)).ReturnsAsync(entities);
 
@@ -247,7 +228,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  }, "np nr"
                 );
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", null, 100, null, default)).ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
@@ -286,7 +267,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  }, "np2 nr2"
                 );
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", "np nr", expectedTop, null, default)).ReturnsAsync(entities);
 
@@ -316,7 +297,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task DeleteTeamAsync()
         {
             TeamEntity team = new TeamEntity { PartitionKey = "pk", RowKey = "rk" };
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(t => t.DeleteAsync("pk", "rk", default));
             var storageContext = new Mock<IStorageContext>();
@@ -331,7 +312,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             await teamManagement.DeleteTeamAsync(team, default);
 
-            Mock.VerifyAll( teamTable, storageContext, cache);
+            Mock.VerifyAll(teamTable, storageContext, cache);
             teamTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             cache.VerifyNoOtherCalls();
@@ -346,7 +327,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamEntity team = new TeamEntity { };
             int count = 5;
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.RetrieveAsync("hack", "tid", default)).ReturnsAsync(team);
             var teamMemberTable = new Mock<ITeamMemberTable>();
@@ -365,7 +346,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.CreateTeamMemberAsync(request, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamTable.Verify(t => t.MergeAsync(It.Is<TeamEntity>(t => t.MembersCount == 5), default), Times.Once);
             teamTable.VerifyNoOtherCalls();
             teamMemberTable.VerifyNoOtherCalls();
@@ -382,7 +363,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamMember request = new TeamMember { description = "b" };
             TeamMemberEntity member = new TeamMemberEntity { Description = "a", Role = TeamMemberRole.Member, Status = TeamMemberStatus.pendingApproval };
             TeamMemberEntity captured = null;
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
                 .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
@@ -395,7 +376,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamMemberAsync(member, request, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.AreEqual("b", result.Description);
@@ -413,7 +394,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase(null, " ")]
         public async Task GetTeamMember_Null(string hackName, string userId)
         {
-            
+
             TeamManagement teamManagement = new TeamManagement()
             {
             };
@@ -426,7 +407,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string userId = "uid";
             TeamMemberEntity teamMember = new TeamMemberEntity { Description = "desc" };
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(t => t.RetrieveAsync("hack", "uid", default))
                 .ReturnsAsync(teamMember);
@@ -439,7 +420,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.GetTeamMemberAsync("hack", userId, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.IsNotNull(result);
@@ -453,7 +434,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task UpdateTeamMemberStatusAsync_Skip(TeamMemberStatus status)
         {
             TeamMemberEntity teamMember = new TeamMemberEntity { Status = status };
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             var storageContext = new Mock<IStorageContext>();
 
@@ -463,7 +444,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamMemberStatusAsync(teamMember, status, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
         }
@@ -487,7 +468,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamMemberStatusAsync(teamMember, newStatus, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.IsNull(result.Description);
@@ -503,7 +484,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task UpdateTeamMemberRoleAsync_Skip(TeamMemberRole role)
         {
             TeamMemberEntity teamMember = new TeamMemberEntity { Role = role };
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             var storageContext = new Mock<IStorageContext>();
 
@@ -513,7 +494,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamMemberRoleAsync(teamMember, role, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
         }
@@ -524,7 +505,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TeamMemberEntity teamMember = new TeamMemberEntity { Role = oldRole };
             TeamMemberEntity captured = null;
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
                 .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
@@ -538,7 +519,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var result = await teamManagement.UpdateTeamMemberRoleAsync(teamMember, newRole, default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.IsNull(result.Description);
@@ -556,7 +537,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamEntity team = new TeamEntity { };
             int count = 5;
 
-            
+
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.RetrieveAsync("hack", "tid", default)).ReturnsAsync(team);
             var teamMemberTable = new Mock<ITeamMemberTable>();
@@ -604,7 +585,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 },
             };
 
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')", null, default))
                 .ReturnsAsync(teamMembers);
@@ -620,7 +601,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             var results = await teamManagement.ListTeamMembersAsync("hack", "tid", default);
 
-            Mock.VerifyAll( teamMemberTable, storageContext);
+            Mock.VerifyAll(teamMemberTable, storageContext);
             Assert.AreEqual(2, results.Count());
             Assert.AreEqual("rk1", results.First().UserId);
             Assert.AreEqual(TeamMemberRole.Admin, results.First().Role);
@@ -641,7 +622,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             // no options
             yield return new TestCaseData(
-                null,
+                new TeamMemberQueryOptions(),
                 100,
                 "(PartitionKey eq 'hack') and (TeamId eq 'tid')"
                 );
@@ -707,7 +688,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  "np nr"
                 );
 
-            
+
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(p => p.ExecuteQuerySegmentedAsync(expectedFilter, null, expectedTop, null, default))
                 .ReturnsAsync(entities);

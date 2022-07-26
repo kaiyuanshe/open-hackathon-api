@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -161,9 +160,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateTeamAsync
         public async Task<TeamEntity> UpdateTeamAsync(Team request, TeamEntity teamEntity, CancellationToken cancellationToken = default)
         {
-            if (teamEntity == null || request == null)
-                return teamEntity;
-
             teamEntity.AutoApprove = request.autoApprove.GetValueOrDefault(teamEntity.AutoApprove);
             teamEntity.Description = request.description ?? teamEntity.Description;
             teamEntity.DisplayName = request.displayName ?? teamEntity.DisplayName;
@@ -257,9 +253,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateTeamMemberAsync
         public async Task<TeamMemberEntity> UpdateTeamMemberAsync(TeamMemberEntity member, TeamMember request, CancellationToken cancellationToken = default)
         {
-            if (member == null || request == null)
-                return member;
-
             member.Description = request.description ?? member.Description;
             await StorageContext.TeamMemberTable.MergeAsync(member, cancellationToken);
             return member;
@@ -279,9 +272,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateTeamMemberStatusAsync
         public async Task<TeamMemberEntity> UpdateTeamMemberStatusAsync(TeamMemberEntity member, TeamMemberStatus teamMemberStatus, CancellationToken cancellationToken = default)
         {
-            if (member == null)
-                return member;
-
             if (member.Status != teamMemberStatus)
             {
                 member.Status = teamMemberStatus;
@@ -295,9 +285,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateTeamMemberRoleAsync
         public async Task<TeamMemberEntity> UpdateTeamMemberRoleAsync(TeamMemberEntity member, TeamMemberRole teamMemberRole, CancellationToken cancellationToken = default)
         {
-            if (member == null)
-                return member;
-
             if (member.Role != teamMemberRole)
             {
                 member.Role = teamMemberRole;
@@ -344,20 +331,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 TableQueryHelper.FilterForString(nameof(TeamMemberEntity.TeamId), ComparisonOperator.Equal, teamId),
             };
 
-            if (options != null)
+            Debug.Assert(options != null);
+            if (options.Status.HasValue)
             {
-                if (options.Status.HasValue)
-                {
-                    filters.Add(
-                        TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Status), ComparisonOperator.Equal, (int)options.Status.Value));
-                }
-                if (options.Role.HasValue)
-                {
-                    filters.Add(
-                        TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Role), ComparisonOperator.Equal, (int)options.Role.Value));
-                }
+                filters.Add(
+                    TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Status), ComparisonOperator.Equal, (int)options.Status.Value));
+            }
+            if (options.Role.HasValue)
+            {
+                filters.Add(
+                    TableQueryHelper.FilterForInt(nameof(TeamMemberEntity.Role), ComparisonOperator.Equal, (int)options.Role.Value));
             }
             var filter = TableQueryHelper.And(filters.ToArray());
+            
             return await StorageContext.TeamMemberTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
 
         }
