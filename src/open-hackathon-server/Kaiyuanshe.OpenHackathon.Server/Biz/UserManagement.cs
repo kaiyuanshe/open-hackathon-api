@@ -76,9 +76,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Validate <see cref="UserTokenEntity"/> locally which contains an AccessToken/>
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ValidationResult?> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default);
+        ValidationResult? ValidateToken(UserTokenEntity tokenEntity);
 
         /// <summary>
         /// Validate AccessToken by calling Authing Api
@@ -134,7 +133,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             IList<Claim> claims = new List<Claim>();
 
             var tokenEntity = await GetTokenEntityAsync(token, cancellationToken);
-            var tokenValidationResult = await ValidateTokenAsync(tokenEntity, cancellationToken);
+            var tokenValidationResult = ValidateToken(tokenEntity);
             if (tokenValidationResult != ValidationResult.Success)
             {
                 // token invalid
@@ -171,23 +170,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return await Cache.GetOrAddAsync(tokenCacheKey, TimeSpan.FromMinutes(5), async (c) =>
             {
                 var tokenEntity = await GetTokenEntityAsync(token, cancellationToken);
-                return await ValidateTokenAsync(tokenEntity, cancellationToken);
+                return ValidateToken(tokenEntity);
             }, false, cancellationToken);
         }
 
-        public Task<ValidationResult?> ValidateTokenAsync(UserTokenEntity tokenEntity, CancellationToken cancellationToken = default)
+        public ValidationResult? ValidateToken(UserTokenEntity? tokenEntity)
         {
             // existence
             if (tokenEntity == null)
-                return Task.FromResult(new ValidationResult(Resources.Auth_Unauthorized));
+                return new ValidationResult(Resources.Auth_Unauthorized);
 
             // expiry
             if (tokenEntity.TokenExpiredAt < DateTime.UtcNow)
             {
-                return Task.FromResult(new ValidationResult(string.Format(Resources.Auth_TokenExpired, tokenEntity.TokenExpiredAt.ToString("o"))));
+                return new ValidationResult(string.Format(Resources.Auth_TokenExpired, tokenEntity.TokenExpiredAt.ToString("o")));
             }
 
-            return Task.FromResult(ValidationResult.Success);
+            return ValidationResult.Success;
         }
 
         public async Task<JWTTokenStatus> ValidateTokenRemotelyAsync(string userPoolId, string token, CancellationToken cancellationToken = default)

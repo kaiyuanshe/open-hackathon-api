@@ -14,6 +14,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -299,39 +300,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
 
         [Test]
-        public async Task TaskValidateTokenAsyncTestEntityNull()
+        public void TaskValidateTokenAsyncTestEntityNull()
         {
-            UserTokenEntity tokenEntity = null;
-            CancellationToken cancellationToken = CancellationToken.None;
+            UserTokenEntity? tokenEntity = null;
 
             var userMgmt = new UserManagement();
-            var validationResult = await userMgmt.ValidateTokenAsync(tokenEntity, cancellationToken);
+            var validationResult = userMgmt.ValidateToken(tokenEntity);
 
             Assert.AreNotEqual(ValidationResult.Success, validationResult);
+            Debug.Assert(validationResult != null);
             Assert.AreEqual(Resources.Auth_Unauthorized, validationResult.ErrorMessage);
         }
 
         [Test]
-        public async Task TaskValidateTokenAsyncTestEntityExpired()
+        public void TaskValidateTokenAsyncTestEntityExpired()
         {
             UserTokenEntity tokenEntity = new UserTokenEntity { TokenExpiredAt = DateTime.UtcNow.AddMinutes(-1) };
-            CancellationToken cancellationToken = CancellationToken.None;
 
             var userMgmt = new UserManagement();
-            var validationResult = await userMgmt.ValidateTokenAsync(tokenEntity, cancellationToken);
+            var validationResult = userMgmt.ValidateToken(tokenEntity);
 
             Assert.AreNotEqual(ValidationResult.Success, validationResult);
+            Debug.Assert(validationResult != null);
+            Debug.Assert(validationResult.ErrorMessage != null);
             Assert.IsTrue(validationResult.ErrorMessage.Contains("expired"));
         }
 
         [Test]
-        public async Task TaskValidateTokenAsyncTestEntityValid()
+        public void TaskValidateTokenAsyncTestEntityValid()
         {
             UserTokenEntity tokenEntity = new UserTokenEntity { TokenExpiredAt = DateTime.UtcNow.AddHours(1) };
-            CancellationToken cancellationToken = CancellationToken.None;
 
             var userMgmt = new UserManagement();
-            var validationResult = await userMgmt.ValidateTokenAsync(tokenEntity, cancellationToken);
+            var validationResult = userMgmt.ValidateToken(tokenEntity);
 
             Assert.AreEqual(ValidationResult.Success, validationResult);
         }
