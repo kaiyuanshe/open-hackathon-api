@@ -60,12 +60,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             {
                 InvalidateCache(GetCacheKey(entity));
             }
+            entity.Timestamp = DateTimeOffset.UtcNow;
             return entity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> ListPaginated(TOptions options, CancellationToken cancellationToken)
         {
-            var allEntities = await ListCachedEntities(options, cancellationToken);
+            var allEntities = EnableCache ?
+                await ListCachedEntities(options, cancellationToken) :
+                await ListWithoutCache(options, cancellationToken);
 
             // paging
             int.TryParse(options.Pagination?.np, out int np);
@@ -100,6 +103,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         public async Task Delete(TEntity entity, CancellationToken cancellationToken)
         {
             await Table.DeleteAsync(entity.PartitionKey, entity.RowKey, cancellationToken);
+            if (EnableCache)
+            {
+                InvalidateCache(GetCacheKey(entity));
+            }
         }
 
         #region Cache

@@ -217,6 +217,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var moqs = new Moqs();
             moqs.AnnouncementTable.Setup(t => t.DeleteAsync("pk", "rk", default));
+            moqs.CacheProvider.Setup(c => c.Remove("Announcement-pk"));
 
             var managementClient = new AnnouncementManagement();
             moqs.SetupManagement(managementClient);
