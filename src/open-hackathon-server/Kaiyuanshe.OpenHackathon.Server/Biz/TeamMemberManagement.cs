@@ -37,12 +37,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         protected override Task<IEnumerable<TeamMemberEntity>> ListWithoutCache(TeamMemberQueryOptions options, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return StorageContext.TeamMemberTable.ListByTeamAsync(options.HackathonName, options.TeamId, cancellationToken);
         }
 
         protected override void TryUpdate(TeamMemberEntity existing, TeamMember parameter)
         {
-            throw new System.NotImplementedException();
+            existing.Description = parameter.description ?? existing.Description;
         }
     }
 }

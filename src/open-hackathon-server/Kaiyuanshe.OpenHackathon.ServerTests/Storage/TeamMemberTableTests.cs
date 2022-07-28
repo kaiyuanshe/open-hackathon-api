@@ -22,5 +22,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
                 default), Times.Once);
             awardTable.VerifyNoOtherCalls();
         }
+
+        [Test]
+        public async Task ListByTeamAsync()
+        {
+            string hackathonName = "hack";
+            string teamId = "tid";
+
+            var awardTable = new Mock<TeamMemberTable>() { };
+            await awardTable.Object.ListByTeamAsync(hackathonName, teamId, default);
+
+            awardTable.Verify(t => t.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')",
+                null, default), Times.Once);
+            awardTable.VerifyNoOtherCalls();
+        }
     }
 }

@@ -23,6 +23,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
         public Mock<IOrganizerTable> OrganizerTable { get; set; } = new();
+        public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
+        public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
         #endregion
 
@@ -61,6 +63,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
             StorageContext.Setup(p => p.OrganizerTable).Returns(OrganizerTable.Object);
+            StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
+            StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
@@ -69,9 +73,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public void VerifyAll()
         {
             #region Storage
-            Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable, 
+            Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
                 ExperimentTable, HackathonTable,
-                HackathonAdminTable, JudgeTable, OrganizerTable, TeamWorkTable);
+                HackathonAdminTable, JudgeTable, OrganizerTable, UserTokenTable,
+                TeamMemberTable, TeamWorkTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
@@ -81,6 +86,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonAdminTable?.VerifyNoOtherCalls();
             JudgeTable.VerifyNoOtherCalls();
             OrganizerTable.VerifyNoOtherCalls();
+            UserTokenTable.VerifyNoOtherCalls();
+            TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
             #endregion
 
