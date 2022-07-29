@@ -11,7 +11,12 @@ using System.Threading.Tasks;
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface ITeamMemberManagement : IManagementClient, IDefaultManagementClient<TeamMember, TeamMemberEntity, TeamMemberQueryOptions>
-    { }
+    {
+        /// <summary>
+        /// Get a team member by userId
+        /// </summary>
+        Task<TeamMemberEntity?> GetById(string hackathonName, string userId, CancellationToken cancellationToken = default);
+    }
 
     public class TeamMemberManagement : DefaultManagementClient<TeamMemberManagement, TeamMember, TeamMemberEntity, TeamMemberQueryOptions>, ITeamMemberManagement
     {
@@ -44,5 +49,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         {
             existing.Description = parameter.description ?? existing.Description;
         }
+
+        #region GetTeamMemberAsync
+        public async Task<TeamMemberEntity?> GetById(string hackathonName, string userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(userId))
+                return null;
+
+            return await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, userId, cancellationToken);
+        }
+        #endregion
     }
 }

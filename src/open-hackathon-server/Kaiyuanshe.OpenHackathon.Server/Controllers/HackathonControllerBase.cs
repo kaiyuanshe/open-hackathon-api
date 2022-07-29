@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
@@ -39,6 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IOrganizerManagement OrganizerManagement { get; set; }
         public IRatingManagement RatingManagement { get; set; }
         public ITeamManagement TeamManagement { get; set; }
+        public ITeamMemberManagement TeamMemberManagement { get; set; }
         public IUserManagement UserManagement { get; set; }
         public IWorkManagement WorkManagement { get; set; }
 

@@ -951,8 +951,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // remove it
-            await TeamManagement.DeleteTeamMemberAsync(teamMember, cancellationToken);
+            await TeamMemberManagement.Delete(teamMember, cancellationToken);
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(memberInfo != null);
             var logArgs = new
             {
                 hackathonName = hackathon.DisplayName,
