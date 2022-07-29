@@ -45,25 +45,25 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
-        //#region GetById
-        //[Test]
-        //public async Task GetById()
-        //{
-        //    var entity = new TeamMemberEntity { Content = "ct" };
+        #region GetById
+        [Test]
+        public async Task GetById()
+        {
+            var entity = new TeamMemberEntity { Description = "desc" };
 
-        //    var moqs = new Moqs();
-        //    moqs.AnnouncementTable.Setup(t => t.RetrieveAsync("pk", "rk", default)).ReturnsAsync(entity);
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.RetrieveAsync("pk", "rk", default)).ReturnsAsync(entity);
 
-        //    var managementClient = new AnnouncementManagement();
-        //    moqs.SetupManagement(managementClient);
-        //    var result = await managementClient.GetById("pk", "rk", default);
+            var managementClient = new TeamMemberManagement();
+            moqs.SetupManagement(managementClient);
+            var result = await managementClient.GetById("pk", "rk", default);
 
-        //    moqs.VerifyAll();
-        //    Assert.IsNotNull(result);
-        //    Debug.Assert(result != null);
-        //    Assert.AreEqual("ct", result.Content);
-        //}
-        //#endregion
+            moqs.VerifyAll();
+            Assert.IsNotNull(result);
+            Debug.Assert(result != null);
+            Assert.AreEqual("desc", result.Description);
+        }
+        #endregion
 
         #region Update
         [Test]

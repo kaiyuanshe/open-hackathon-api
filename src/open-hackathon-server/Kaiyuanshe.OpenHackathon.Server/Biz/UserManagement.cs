@@ -9,6 +9,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -141,6 +142,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }
 
             // User Id
+            Debug.Assert(tokenEntity != null);
             claims.Add(ClaimsHelper.UserId(tokenEntity.UserId));
             claims.Add(ClaimsHelper.UserDisplayName(tokenEntity.UserDisplayName));
 
@@ -203,7 +205,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return jwtTokenStatus;
         }
 
-        internal virtual async Task<Claim> GetPlatformAdminClaim(string userId, CancellationToken cancellationToken)
+        internal virtual async Task<Claim?> GetPlatformAdminClaim(string userId, CancellationToken cancellationToken)
         {
             var admin = await StorageContext.HackathonAdminTable.GetPlatformRole(userId, cancellationToken);
             if (admin != null && admin.IsPlatformAdministrator())
@@ -238,7 +240,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 || (u.Nickname != null && u.Nickname.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             };
 
-            string continuationToken = "";
+            string? continuationToken = "";
             do
             {
                 var entities = await GetCachedUsersByPage(continuationToken, cancellationToken);

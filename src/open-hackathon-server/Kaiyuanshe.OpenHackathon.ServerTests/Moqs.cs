@@ -39,6 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IJudgeManagement> JudgeManagement { get; } = new();
         public Mock<IRatingManagement> RatingManagement { get; } = new();
         public Mock<ITeamManagement> TeamManagement { get; } = new();
+        public Mock<ITeamMemberManagement> TeamMemberManagement { get; } = new();
         public Mock<IHackathonAdminManagement> HackathonAdminManagement { get; } = new();
         public Mock<IAwardManagement> AwardManagement { get; } = new();
         public Mock<IWorkManagement> WorkManagement { get; } = new();
@@ -92,25 +93,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             #endregion
 
             #region Biz
-            Mock.VerifyAll(HackathonManagement, EnrollmentManagement, UserManagement, ActivityLogManagement,
-                AuthorizationService, ExperimentManagement, JudgeManagement, RatingManagement,
-                TeamManagement, HackathonAdminManagement, AwardManagement, WorkManagement,
-                FileManagement, AnnouncementManagement);
+            Mock.VerifyAll(ActivityLogManagement, AnnouncementManagement, AuthorizationService,
+                AwardManagement, EnrollmentManagement, ExperimentManagement,
+                FileManagement, HackathonAdminManagement, HackathonManagement,
+                JudgeManagement, RatingManagement, TeamManagement,
+                TeamMemberManagement, UserManagement, WorkManagement);
 
-            AnnouncementManagement.VerifyNoOtherCalls();
-            HackathonManagement.VerifyNoOtherCalls();
-            EnrollmentManagement.VerifyNoOtherCalls();
-            UserManagement.VerifyNoOtherCalls();
             ActivityLogManagement.VerifyNoOtherCalls();
+            AnnouncementManagement.VerifyNoOtherCalls();
             AuthorizationService.VerifyNoOtherCalls();
-            ExperimentManagement.VerifyNoOtherCalls();
-            JudgeManagement.VerifyNoOtherCalls();
-            TeamManagement.VerifyNoOtherCalls();
-            RatingManagement.VerifyNoOtherCalls();
-            HackathonAdminManagement.VerifyNoOtherCalls();
             AwardManagement.VerifyNoOtherCalls();
-            WorkManagement.VerifyNoOtherCalls();
+            EnrollmentManagement.VerifyNoOtherCalls();
+            ExperimentManagement.VerifyNoOtherCalls();
             FileManagement.VerifyNoOtherCalls();
+            HackathonAdminManagement.VerifyNoOtherCalls();
+            HackathonManagement.VerifyNoOtherCalls();
+            JudgeManagement.VerifyNoOtherCalls();
+            RatingManagement.VerifyNoOtherCalls();
+            TeamManagement.VerifyNoOtherCalls();
+            TeamMemberManagement.VerifyNoOtherCalls();
+            UserManagement.VerifyNoOtherCalls();
+            WorkManagement.VerifyNoOtherCalls();
             #endregion
 
             #region k8s
