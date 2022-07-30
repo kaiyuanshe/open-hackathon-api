@@ -84,7 +84,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task GetCurrentUserClaimsAsyncTestInvalidToken1()
         {
             string token = "token";
-            UserTokenEntity tokenEntity = null;
+            UserTokenEntity? tokenEntity = null;
 
             var userMgmtMock = new Mock<UserManagement> { CallBase = true };
             userMgmtMock.Setup(m => m.GetTokenEntityAsync(token, default)).ReturnsAsync(tokenEntity);
@@ -209,27 +209,22 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             CancellationToken cancellationToken = CancellationToken.None;
             string token = "whatever";
             string hash = "ae3d347982977b422948b64011ac14ac76c9ab15898fb562a66a136733aa645fb3a9ccd9bee00cc578c2f44f486af47eb254af7c174244086d174cc52341e63a";
-            UserTokenEntity tokenEntity = null;
+            UserTokenEntity? tokenEntity = null;
 
             // moq
-            var storage = new Mock<IStorageContext>();
-            var tokenTable = new Mock<IUserTokenTable>();
-            storage.SetupGet(s => s.UserTokenTable).Returns(tokenTable.Object);
-            tokenTable.Setup(t => t.RetrieveAsync(hash, string.Empty, cancellationToken)).ReturnsAsync(tokenEntity);
+            var moqs = new Moqs();
+            moqs.UserTokenTable.Setup(t => t.RetrieveAsync(hash, string.Empty, cancellationToken)).ReturnsAsync(tokenEntity);
 
             // testing
-            var userMgmt = new UserManagement
-            {
-                StorageContext = storage.Object,
-                Cache = new DefaultCacheProvider(null),
-            };
+            var userMgmt = new UserManagement();
+            moqs.SetupManagement(userMgmt);
+            userMgmt.Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             var result = await userMgmt.ValidateTokenAsync(token);
 
             // verify
-            Mock.VerifyAll();
-            tokenTable.Verify(t => t.RetrieveAsync(hash, string.Empty, cancellationToken), Times.Once);
-            tokenTable.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Assert.AreNotEqual(ValidationResult.Success, result);
+            Debug.Assert(result != null);
             Assert.AreEqual(Resources.Auth_Unauthorized, result.ErrorMessage);
         }
 
