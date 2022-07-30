@@ -407,7 +407,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var members = await TeamManagement.ListTeamMembersAsync(hackathonName.ToLower(), teamId, cancellationToken);
             foreach (var member in members)
             {
-                await TeamManagement.DeleteTeamMemberAsync(member, cancellationToken);
+                await TeamMemberManagement.Delete(member, cancellationToken);
                 var logArgs = new
                 {
                     hackathonName = hackathon.DisplayName,
@@ -739,7 +739,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // update status
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             Debug.Assert(user != null);
-            teamMember = await TeamManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
+            teamMember = await TeamMemberManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
             var logArgs = new
             {
                 hackathonName = hackathon.DisplayName,
@@ -818,7 +818,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            teamMember = await TeamManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
+            teamMember = await TeamMemberManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
             Debug.Assert(memberInfo != null);
             var args = new
             {
@@ -1230,6 +1230,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team and member
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);
@@ -1497,6 +1498,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Validate team and member
             var team = await TeamManagement.GetTeamByIdAsync(hackathonName.ToLower(), teamId, cancellationToken);

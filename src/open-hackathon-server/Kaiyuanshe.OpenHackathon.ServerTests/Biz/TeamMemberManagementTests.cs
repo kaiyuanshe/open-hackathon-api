@@ -228,5 +228,80 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             moqs.VerifyAll();
         }
         #endregion
+
+
+        #region UpdateTeamMemberStatusAsync
+        [TestCase(TeamMemberStatus.approved)]
+        [TestCase(TeamMemberStatus.pendingApproval)]
+        public async Task UpdateTeamMemberStatusAsync_Skip(TeamMemberStatus status)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Status = status };
+
+            var moqs = new Moqs();
+
+            TeamMemberManagement management = new TeamMemberManagement();
+            moqs.SetupManagement(management);
+            var result = await management.UpdateTeamMemberStatusAsync(teamMember, status, default);
+
+            moqs.VerifyAll();
+        }
+
+        [TestCase(TeamMemberStatus.pendingApproval, TeamMemberStatus.approved)]
+        [TestCase(TeamMemberStatus.approved, TeamMemberStatus.pendingApproval)]
+        public async Task UpdateTeamMemberStatusAsync_Succeeded(TeamMemberStatus oldStatus, TeamMemberStatus newStatus)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Status = oldStatus };
+
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.MergeAsync(
+                It.Is<TeamMemberEntity>(m => m.Description == null && m.Status == newStatus),
+                default));
+
+            TeamMemberManagement management = new TeamMemberManagement();
+            moqs.SetupManagement(management);
+            var result = await management.UpdateTeamMemberStatusAsync(teamMember, newStatus, default);
+
+            moqs.VerifyAll();
+            Assert.IsNull(result.Description);
+            Assert.AreEqual(newStatus, result.Status);
+        }
+        #endregion
+
+        #region UpdateTeamMemberRoleAsync
+        [TestCase(TeamMemberRole.Member)]
+        [TestCase(TeamMemberRole.Admin)]
+        public async Task UpdateTeamMemberRoleAsync_Skip(TeamMemberRole role)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Role = role };
+
+            var moqs = new Moqs();
+
+            TeamMemberManagement management = new TeamMemberManagement();
+            moqs.SetupManagement(management);
+            var result = await management.UpdateTeamMemberRoleAsync(teamMember, role, default);
+
+            moqs.VerifyAll();
+        }
+
+        [TestCase(TeamMemberRole.Member, TeamMemberRole.Admin)]
+        [TestCase(TeamMemberRole.Admin, TeamMemberRole.Member)]
+        public async Task UpdateTeamMemberRoleAsync_Succeeded(TeamMemberRole oldRole, TeamMemberRole newRole)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Role = oldRole };
+
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.MergeAsync(
+                It.Is<TeamMemberEntity>(m => m.Description == null && m.Role == newRole),
+                default));
+
+            TeamMemberManagement management = new TeamMemberManagement();
+            moqs.SetupManagement(management);
+            var result = await management.UpdateTeamMemberRoleAsync(teamMember, newRole, default);
+
+            moqs.VerifyAll();
+            Assert.IsNull(result.Description);
+            Assert.AreEqual(newRole, result.Role);
+        }
+        #endregion
     }
 }

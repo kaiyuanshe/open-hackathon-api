@@ -16,6 +16,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// Get a team member by userId
         /// </summary>
         Task<TeamMemberEntity?> GetById(string hackathonName, string userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the status of a member
+        /// </summary>
+        Task<TeamMemberEntity> UpdateTeamMemberStatusAsync(TeamMemberEntity member, TeamMemberStatus teamMemberStatus, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the status of a member
+        /// </summary>
+        Task<TeamMemberEntity> UpdateTeamMemberRoleAsync(TeamMemberEntity member, TeamMemberRole teamMemberRole, CancellationToken cancellationToken = default);
+
     }
 
     public class TeamMemberManagement : DefaultManagementClient<TeamMemberManagement, TeamMember, TeamMemberEntity, TeamMemberQueryOptions>, ITeamMemberManagement
@@ -57,6 +68,32 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return null;
 
             return await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, userId, cancellationToken);
+        }
+        #endregion
+
+        #region UpdateTeamMemberStatusAsync
+        public async Task<TeamMemberEntity> UpdateTeamMemberStatusAsync(TeamMemberEntity member, TeamMemberStatus teamMemberStatus, CancellationToken cancellationToken = default)
+        {
+            if (member.Status != teamMemberStatus)
+            {
+                member.Status = teamMemberStatus;
+                await StorageContext.TeamMemberTable.MergeAsync(member);
+            }
+
+            return member;
+        }
+        #endregion
+
+        #region UpdateTeamMemberRoleAsync
+        public async Task<TeamMemberEntity> UpdateTeamMemberRoleAsync(TeamMemberEntity member, TeamMemberRole teamMemberRole, CancellationToken cancellationToken = default)
+        {
+            if (member.Role != teamMemberRole)
+            {
+                member.Role = teamMemberRole;
+                await StorageContext.TeamMemberTable.MergeAsync(member);
+            }
+
+            return member;
         }
         #endregion
     }
