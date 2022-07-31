@@ -86,6 +86,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// Upldate a team member(not including status/role). Not existance check. Please check existance before call this method
         /// </summary>
         Task<TeamMemberEntity> UpdateTeamMemberAsync(TeamMemberEntity member, TeamMember request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the status of a member
+        /// </summary>
+        Task<TeamMemberEntity> UpdateTeamMemberStatusAsync(TeamMemberEntity member, TeamMemberStatus teamMemberStatus, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the status of a member
+        /// </summary>
+        Task<TeamMemberEntity> UpdateTeamMemberRoleAsync(TeamMemberEntity member, TeamMemberRole teamMemberRole, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a team memter
+        /// </summary>
+        Task DeleteTeamMemberAsync(TeamMemberEntity member, CancellationToken cancellationToken = default);
     }
 
     /// <inheritdoc cref="ITeamManagement"/>
@@ -251,6 +266,43 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return null;
 
             return await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, userId, cancellationToken);
+        }
+        #endregion
+
+        #region UpdateTeamMemberStatusAsync
+        public async Task<TeamMemberEntity> UpdateTeamMemberStatusAsync(TeamMemberEntity member, TeamMemberStatus teamMemberStatus, CancellationToken cancellationToken = default)
+        {
+            if (member.Status != teamMemberStatus)
+            {
+                member.Status = teamMemberStatus;
+                await StorageContext.TeamMemberTable.MergeAsync(member);
+            }
+
+            return member;
+        }
+        #endregion
+
+        #region UpdateTeamMemberRoleAsync
+        public async Task<TeamMemberEntity> UpdateTeamMemberRoleAsync(TeamMemberEntity member, TeamMemberRole teamMemberRole, CancellationToken cancellationToken = default)
+        {
+            if (member.Role != teamMemberRole)
+            {
+                member.Role = teamMemberRole;
+                await StorageContext.TeamMemberTable.MergeAsync(member);
+            }
+
+            return member;
+        }
+        #endregion
+
+        #region DeleteTeamMemberAsync
+        public async Task DeleteTeamMemberAsync(TeamMemberEntity member, CancellationToken cancellationToken = default)
+        {
+            if (member == null)
+                return;
+
+            await StorageContext.TeamMemberTable.DeleteAsync(member.PartitionKey, member.RowKey, cancellationToken);
+            await UpdateTeamMembersCountAsync(member.HackathonName, member.TeamId, cancellationToken);
         }
         #endregion
 

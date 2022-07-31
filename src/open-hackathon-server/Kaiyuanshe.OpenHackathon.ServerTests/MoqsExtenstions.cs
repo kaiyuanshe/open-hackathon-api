@@ -23,7 +23,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.OrganizerManagement = moqs.OrganizerManagement.Object;
             controller.RatingManagement = moqs.RatingManagement.Object;
             controller.TeamManagement = moqs.TeamManagement.Object;
-            controller.TeamMemberManagement = moqs.TeamMemberManagement.Object;
             controller.UserManagement = moqs.UserManagement.Object;
             controller.WorkManagement = moqs.WorkManagement.Object;
 

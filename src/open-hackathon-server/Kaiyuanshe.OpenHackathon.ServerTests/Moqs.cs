@@ -39,7 +39,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IJudgeManagement> JudgeManagement { get; } = new();
         public Mock<IRatingManagement> RatingManagement { get; } = new();
         public Mock<ITeamManagement> TeamManagement { get; } = new();
-        public Mock<ITeamMemberManagement> TeamMemberManagement { get; } = new();
         public Mock<IHackathonAdminManagement> HackathonAdminManagement { get; } = new();
         public Mock<IAwardManagement> AwardManagement { get; } = new();
         public Mock<IWorkManagement> WorkManagement { get; } = new();
@@ -97,7 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
                 AwardManagement, EnrollmentManagement, ExperimentManagement,
                 FileManagement, HackathonAdminManagement, HackathonManagement,
                 JudgeManagement, RatingManagement, TeamManagement,
-                TeamMemberManagement, UserManagement, WorkManagement);
+                UserManagement, WorkManagement);
 
             ActivityLogManagement.VerifyNoOtherCalls();
             AnnouncementManagement.VerifyNoOtherCalls();
@@ -111,7 +110,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             JudgeManagement.VerifyNoOtherCalls();
             RatingManagement.VerifyNoOtherCalls();
             TeamManagement.VerifyNoOtherCalls();
-            TeamMemberManagement.VerifyNoOtherCalls();
             UserManagement.VerifyNoOtherCalls();
             WorkManagement.VerifyNoOtherCalls();
             #endregion
