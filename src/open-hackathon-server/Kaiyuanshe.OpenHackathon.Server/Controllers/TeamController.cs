@@ -407,7 +407,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var members = await TeamManagement.ListTeamMembersAsync(hackathonName.ToLower(), teamId, cancellationToken);
             foreach (var member in members)
             {
-                await TeamMemberManagement.Delete(member, cancellationToken);
+                await TeamManagement.DeleteTeamMemberAsync(member, cancellationToken);
                 var logArgs = new
                 {
                     hackathonName = hackathon.DisplayName,
@@ -739,7 +739,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // update status
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             Debug.Assert(user != null);
-            teamMember = await TeamMemberManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
+            teamMember = await TeamManagement.UpdateTeamMemberStatusAsync(teamMember, TeamMemberStatus.approved, cancellationToken);
             var logArgs = new
             {
                 hackathonName = hackathon.DisplayName,
@@ -818,7 +818,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             // update status
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
-            teamMember = await TeamMemberManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
+            teamMember = await TeamManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
             Debug.Assert(memberInfo != null);
             var args = new
             {
@@ -951,7 +951,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // remove it
-            await TeamMemberManagement.Delete(teamMember, cancellationToken);
+            await TeamManagement.DeleteTeamMemberAsync(teamMember, cancellationToken);
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             Debug.Assert(memberInfo != null);
             var logArgs = new

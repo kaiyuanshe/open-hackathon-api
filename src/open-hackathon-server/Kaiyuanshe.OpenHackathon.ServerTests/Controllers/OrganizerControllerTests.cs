@@ -223,7 +223,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.OrganizerManagement.Setup(t => t.GetOrganizerById("foo", "oid", default)).ReturnsAsync(entity);
             if (firstTime)
             {
-                moqs.OrganizerManagement.Setup(t => t.DeleteOrganzer("hack", "oid", default));
+                moqs.OrganizerManagement.Setup(t => t.DeleteOrganizer("hack", "oid", default));
                 moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteOrganizer, It.IsAny<object>(), null, default));
                 moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteOrganizer, It.IsAny<object>(), null, default));
             }

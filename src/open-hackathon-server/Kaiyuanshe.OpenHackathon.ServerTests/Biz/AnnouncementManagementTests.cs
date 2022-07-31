@@ -16,9 +16,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 {
     internal class AnnouncementManagementTests
     {
-        #region Create
+        #region CreateAnnouncement
         [Test]
-        public async Task Create()
+        public async Task CreateAnnouncement()
         {
             var parameter = new Announcement
             {
@@ -38,7 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var managementClient = new AnnouncementManagement();
             moqs.SetupManagement(managementClient);
-            var resp = await managementClient.Create(parameter, default);
+            var resp = await managementClient.CreateAnnouncement(parameter, default);
 
             moqs.VerifyAll();
             Assert.IsNotNull(resp);
@@ -66,9 +66,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
-        #region Update
+        #region UpdateAnnouncement
         [Test]
-        public async Task Update()
+        public async Task UpdateAnnouncement()
         {
             var parameter = new Announcement
             {
@@ -85,7 +85,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var managementClient = new AnnouncementManagement();
             moqs.SetupManagement(managementClient);
-            var resp = await managementClient.Update(entity, parameter, default);
+            var resp = await managementClient.UpdateAnnouncement(entity, parameter, default);
 
             moqs.VerifyAll();
             Assert.IsNotNull(resp);
@@ -93,7 +93,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
-        #region ListPaginated
+        #region ListPaginatedAnnouncementsAsync
         private static IEnumerable ListPaginatedTestData()
         {
             var a1 = new AnnouncementEntity
@@ -173,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
 
         [Test, TestCaseSource(nameof(ListPaginatedTestData))]
-        public async Task ListPaginated(
+        public async Task ListPaginatedAnnouncementsAsync(
             AnnouncementQueryOptions options,
             IEnumerable<AnnouncementEntity> all,
             IEnumerable<AnnouncementEntity> expectedResult,
@@ -186,7 +186,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 Cache = cache.Object,
             };
-            var result = await mgmt.ListPaginated(options, default);
+            var result = await mgmt.ListPaginatedAnnouncementsAsync(options, default);
 
             Mock.VerifyAll(cache);
             cache.VerifyNoOtherCalls();
@@ -209,19 +209,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         }
         #endregion
 
-        #region Delete
+        #region DeleteAnnouncement
         [Test]
-        public async Task Delete()
+        public async Task DeleteAnnouncement()
         {
             var entity = new AnnouncementEntity { PartitionKey = "pk", RowKey = "rk" };
 
             var moqs = new Moqs();
             moqs.AnnouncementTable.Setup(t => t.DeleteAsync("pk", "rk", default));
-            moqs.CacheProvider.Setup(c => c.Remove("Announcement-pk"));
 
             var managementClient = new AnnouncementManagement();
             moqs.SetupManagement(managementClient);
-            await managementClient.Delete(entity, default);
+            await managementClient.DeleteAnnouncement(entity, default);
 
             moqs.VerifyAll();
         }

@@ -9,7 +9,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,7 +58,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(1, result.MembersCount);
 
             Assert.IsNotNull(teamMember);
-            Debug.Assert(teamMember != null);
             Assert.AreEqual("hack", teamMember.HackathonName);
             Assert.AreEqual("hack", teamMember.PartitionKey);
             Assert.AreEqual(TeamMemberRole.Admin, teamMember.Role);
@@ -194,7 +192,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 new TeamEntity{  PartitionKey="pk" }
             };
-
 
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (DisplayName eq 'tn')", null, default)).ReturnsAsync(entities);
@@ -427,6 +424,143 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             storageContext.VerifyNoOtherCalls();
             Assert.IsNotNull(result);
             Assert.AreEqual("desc", result.Description);
+        }
+        #endregion
+
+        #region UpdateTeamMemberStatusAsync
+        [TestCase(TeamMemberStatus.approved)]
+        [TestCase(TeamMemberStatus.pendingApproval)]
+        public async Task UpdateTeamMemberStatusAsync_Skip(TeamMemberStatus status)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Status = status };
+
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            var storageContext = new Mock<IStorageContext>();
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await teamManagement.UpdateTeamMemberStatusAsync(teamMember, status, default);
+
+            Mock.VerifyAll(teamMemberTable, storageContext);
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+        }
+
+        [TestCase(TeamMemberStatus.pendingApproval, TeamMemberStatus.approved)]
+        [TestCase(TeamMemberStatus.approved, TeamMemberStatus.pendingApproval)]
+        public async Task UpdateTeamMemberStatusAsync_Succeeded(TeamMemberStatus oldStatus, TeamMemberStatus newStatus)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Status = oldStatus };
+            TeamMemberEntity captured = null;
+
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
+                .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await teamManagement.UpdateTeamMemberStatusAsync(teamMember, newStatus, default);
+
+            Mock.VerifyAll(teamMemberTable, storageContext);
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            Assert.IsNull(result.Description);
+            Assert.IsNull(captured.Description);
+            Assert.AreEqual(newStatus, result.Status);
+            Assert.AreEqual(newStatus, captured.Status);
+        }
+        #endregion
+
+        #region UpdateTeamMemberRoleAsync
+        [TestCase(TeamMemberRole.Member)]
+        [TestCase(TeamMemberRole.Admin)]
+        public async Task UpdateTeamMemberRoleAsync_Skip(TeamMemberRole role)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Role = role };
+
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            var storageContext = new Mock<IStorageContext>();
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await teamManagement.UpdateTeamMemberRoleAsync(teamMember, role, default);
+
+            Mock.VerifyAll(teamMemberTable, storageContext);
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+        }
+
+        [TestCase(TeamMemberRole.Member, TeamMemberRole.Admin)]
+        [TestCase(TeamMemberRole.Admin, TeamMemberRole.Member)]
+        public async Task UpdateTeamMemberRoleAsync_Succeeded(TeamMemberRole oldRole, TeamMemberRole newRole)
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Role = oldRole };
+            TeamMemberEntity captured = null;
+
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
+                .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await teamManagement.UpdateTeamMemberRoleAsync(teamMember, newRole, default);
+
+            Mock.VerifyAll(teamMemberTable, storageContext);
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            Assert.IsNull(result.Description);
+            Assert.IsNull(captured.Description);
+            Assert.AreEqual(newRole, result.Role);
+            Assert.AreEqual(newRole, captured.Role);
+        }
+        #endregion
+
+        #region DeleteTeamMemberAsync
+        [Test]
+        public async Task DeleteTeamMemberAsync()
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { PartitionKey = "hack", RowKey = "uid", TeamId = "tid" };
+            TeamEntity team = new TeamEntity { };
+            int count = 5;
+
+
+            var teamTable = new Mock<ITeamTable>();
+            teamTable.Setup(p => p.RetrieveAsync("hack", "tid", default)).ReturnsAsync(team);
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            teamMemberTable.Setup(t => t.DeleteAsync("hack", "uid", default));
+            teamMemberTable.Setup(m => m.GetMemberCountAsync("hack", "tid", default)).ReturnsAsync(count);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
+            var cache = new Mock<ICacheProvider>();
+            cache.Setup(c => c.Remove("Team-tid"));
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+                Cache = cache.Object,
+            };
+            await teamManagement.DeleteTeamMemberAsync(teamMember, default);
+
+            Mock.VerifyAll(storageContext, teamTable, teamMemberTable, cache);
+            teamTable.Verify(t => t.MergeAsync(It.Is<TeamEntity>(t => t.MembersCount == 5), default), Times.Once);
+            teamTable.VerifyNoOtherCalls();
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            cache.VerifyNoOtherCalls();
         }
         #endregion
 

@@ -1132,7 +1132,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
-            moqs.TeamMemberManagement.Setup(t => t.UpdateTeamMemberStatusAsync(memberEntity, TeamMemberStatus.approved, default))
+            moqs.TeamManagement.Setup(t => t.UpdateTeamMemberStatusAsync(memberEntity, TeamMemberStatus.approved, default))
                 .Callback<TeamMemberEntity, TeamMemberStatus, CancellationToken>((m, s, c) =>
                 {
                     m.Status = s;
@@ -1180,7 +1180,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
-            moqs.TeamMemberManagement.Setup(t => t.UpdateTeamMemberRoleAsync(memberEntity, expectedRole, default)).ReturnsAsync(memberEntity);
+            moqs.TeamManagement.Setup(t => t.UpdateTeamMemberRoleAsync(memberEntity, expectedRole, default)).ReturnsAsync(memberEntity);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.updateTeamMemberRole, It.IsAny<object>(), null, default));
@@ -1324,7 +1324,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(memberEntity);
             moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
-            moqs.TeamMemberManagement.Setup(t => t.Delete(memberEntity, default));
+            moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(memberEntity, default));
             moqs.UserManagement.Setup(t => t.GetUserByIdAsync("", default)).ReturnsAsync(memberInfo);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.leaveTeam, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.leaveTeam, It.IsAny<object>(), null, default));
@@ -1388,7 +1388,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
             moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
             moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
-            moqs.TeamMemberManagement.Setup(t => t.Delete(memberEntity, default));
+            moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(memberEntity, default));
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
             moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(memberInfo);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
@@ -1520,7 +1520,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
             moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
             moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(members);
-            moqs.TeamMemberManagement.Setup(t => t.Delete(It.Is<TeamMemberEntity>(m => m.HackathonName == "foo"), default));
+            moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(It.Is<TeamMemberEntity>(m => m.HackathonName == "foo"), default));
             moqs.TeamManagement.Setup(t => t.DeleteTeamAsync(teamEntity, default));
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
             moqs.AwardManagement.Setup(a => a.ListAssignmentsByTeamAsync("foo", "tid", default)).ReturnsAsync(assignments);

@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<OrganizerEntity> UpdateOrganizer(OrganizerEntity entity, Organizer organizer, CancellationToken cancellationToken);
         Task<OrganizerEntity?> GetOrganizerById([DisallowNull] string hackathonName, [DisallowNull] string organizerId, CancellationToken cancellationToken);
         Task<IEnumerable<OrganizerEntity>> ListPaginatedOrganizersAsync(string hackathonName, OrganizerQueryOptions options, CancellationToken cancellationToken = default);
-        Task DeleteOrganzer(string hackathonName, string organizerId, CancellationToken cancellationToken);
+        Task DeleteOrganizer(string hackathonName, string organizerId, CancellationToken cancellationToken);
     }
 
     public class OrganizerManagement : ManagementClient<OrganizerManagement>, IOrganizerManagement
@@ -122,7 +122,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region DeleteOrganizer
-        public async Task DeleteOrganzer(string hackathonName, string organizerId, CancellationToken cancellationToken)
+        public async Task DeleteOrganizer(string hackathonName, string organizerId, CancellationToken cancellationToken)
         {
             await StorageContext.OrganizerTable.DeleteAsync(hackathonName, organizerId, cancellationToken);
             InvalidateCachedOrganizers(hackathonName);

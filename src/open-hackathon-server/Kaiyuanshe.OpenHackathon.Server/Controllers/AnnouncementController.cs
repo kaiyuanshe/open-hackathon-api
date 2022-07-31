@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             // create announcement
             Debug.Assert(hackathon != null);
             parameter.hackathonName = hackathon.Name;
-            var entity = await AnnouncementManagement.Create(parameter, cancellationToken);
+            var entity = await AnnouncementManagement.CreateAnnouncement(parameter, cancellationToken);
 
             var args = new
             {
@@ -147,7 +147,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return NotFound(Resources.Announcement_NotFound);
             }
-            announcementEntity = await AnnouncementManagement.Update(announcementEntity, parameter, cancellationToken);
+            announcementEntity = await AnnouncementManagement.UpdateAnnouncement(announcementEntity, parameter, cancellationToken);
 
             // logs
             var args = new
@@ -199,7 +199,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 HackathonName = hackathon.Name,
                 Pagination = pagination,
             };
-            var announcements = await AnnouncementManagement.ListPaginated(queryOptions, cancellationToken);
+            var announcements = await AnnouncementManagement.ListPaginatedAnnouncementsAsync(queryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
             if (pagination.top.HasValue)
             {
@@ -254,7 +254,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
 
-            await AnnouncementManagement.Delete(entity, cancellationToken);
+            await AnnouncementManagement.DeleteAnnouncement(entity, cancellationToken);
             var args = new
             {
                 hackathonName = hackathon.DisplayName,
@@ -264,6 +264,5 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             return NoContent();
         }
         #endregion
-
     }
 }
