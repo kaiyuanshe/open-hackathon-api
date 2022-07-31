@@ -33,7 +33,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
-            moqs.AnnouncementManagement.Setup(o => o.Create(parameter, default)).ReturnsAsync(organizerEntity);
+            moqs.AnnouncementManagement.Setup(o => o.CreateAnnouncement(parameter, default)).ReturnsAsync(organizerEntity);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.createAnnouncement, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.createAnnouncement, It.IsAny<object>(), null, default));
 
@@ -130,7 +130,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
             moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), hackathon, AuthConstant.Policy.HackathonAdministrator)).ReturnsAsync(authResult);
             moqs.AnnouncementManagement.Setup(o => o.GetById("pk", "aid", default)).ReturnsAsync(organizerEntity);
-            moqs.AnnouncementManagement.Setup(o => o.Update(organizerEntity, parameter, default)).ReturnsAsync(organizerEntity);
+            moqs.AnnouncementManagement.Setup(o => o.UpdateAnnouncement(organizerEntity, parameter, default)).ReturnsAsync(organizerEntity);
             moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("pk", "", ActivityLogType.updateAnnouncement, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "pk", "", ActivityLogType.updateAnnouncement, It.IsAny<object>(), null, default));
 
@@ -195,7 +195,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // mock and capture
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-            moqs.AnnouncementManagement.Setup(j => j.ListPaginated(
+            moqs.AnnouncementManagement.Setup(j => j.ListPaginatedAnnouncementsAsync(
                 It.Is<AnnouncementQueryOptions>(a => a.HackathonName == "hack"), default))
                 .Callback<AnnouncementQueryOptions, CancellationToken>((opt, c) => { opt.NextPage = next; })
                 .ReturnsAsync(entities);
@@ -236,7 +236,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             if (firstTime)
             {
                 Debug.Assert(entity != null);
-                moqs.AnnouncementManagement.Setup(t => t.Delete(entity, default));
+                moqs.AnnouncementManagement.Setup(t => t.DeleteAnnouncement(entity, default));
                 moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", It.IsAny<string>(), ActivityLogType.deleteAnnouncement, It.IsAny<object>(), null, default));
                 moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", It.IsAny<string>(), ActivityLogType.deleteAnnouncement, It.IsAny<object>(), null, default));
             }

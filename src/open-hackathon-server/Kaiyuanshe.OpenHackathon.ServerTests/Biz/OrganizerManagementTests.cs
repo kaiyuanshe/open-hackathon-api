@@ -257,7 +257,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
             var management = new OrganizerManagement();
             moqs.SetupManagement(management);
-            await management.DeleteOrganzer("hack", "oid", default);
+            await management.DeleteOrganizer("hack", "oid", default);
 
             moqs.VerifyAll();
         }

@@ -258,7 +258,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
 
-            await OrganizerManagement.DeleteOrganzer(entity.PartitionKey, entity.RowKey, cancellationToken);
+            await OrganizerManagement.DeleteOrganizer(entity.PartitionKey, entity.RowKey, cancellationToken);
             var args = new
             {
                 hackathonName = hackathon.DisplayName,

@@ -195,7 +195,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new TeamEntity{  PartitionKey="pk" }
             };
 
-
             var teamTable = new Mock<ITeamTable>();
             teamTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (DisplayName eq 'tn')", null, default)).ReturnsAsync(entities);
 

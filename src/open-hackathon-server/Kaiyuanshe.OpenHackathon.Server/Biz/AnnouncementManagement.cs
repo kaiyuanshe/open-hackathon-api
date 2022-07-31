@@ -2,27 +2,51 @@
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
-    public interface IAnnouncementManagement : IManagementClient, IDefaultManagementClient<Announcement, AnnouncementEntity, AnnouncementQueryOptions>
+    public interface IAnnouncementManagement : IManagementClient
     {
+        Task<AnnouncementEntity> CreateAnnouncement(Announcement parameter, CancellationToken cancellationToken);
+        Task<AnnouncementEntity> UpdateAnnouncement(AnnouncementEntity entity, Announcement organizer, CancellationToken cancellationToken);
         Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken);
+        Task<IEnumerable<AnnouncementEntity>> ListPaginatedAnnouncementsAsync(AnnouncementQueryOptions options, CancellationToken cancellationToken = default);
+        Task DeleteAnnouncement(AnnouncementEntity announcementEntity, CancellationToken cancellationToken);
+
     }
 
-    public class AnnouncementManagement
-        : DefaultManagementClient<AnnouncementManagement, Announcement, AnnouncementEntity, AnnouncementQueryOptions>, IAnnouncementManagement
+    public class AnnouncementManagement : ManagementClient<AnnouncementManagement>, IAnnouncementManagement
     {
-        protected override CacheEntryType CacheType => CacheEntryType.Announcement;
-        protected override IAzureTableV2<AnnouncementEntity> Table => StorageContext.AnnouncementTable;
-        protected override AnnouncementEntity ConvertParamterToEntity(Announcement parameter)
+
+        #region Cache
+        private string GetCacheKey(string hackathonName)
         {
-            return new AnnouncementEntity
+            return CacheKeys.GetCacheKey(CacheEntryType.Announcement, hackathonName);
+        }
+
+        private void InvalidateCache(string hackathonName)
+        {
+            Cache.Remove(GetCacheKey(hackathonName));
+        }
+
+        private async Task<IEnumerable<AnnouncementEntity>> ListCachedEntities(AnnouncementQueryOptions options, CancellationToken cancellationToken)
+        {
+            string cacheKey = GetCacheKey(options.HackathonName);
+            return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), async (ct) =>
+            {
+                return await StorageContext.AnnouncementTable.ListByHackathonAsync(options.HackathonName, ct);
+            }, true, cancellationToken);
+        }
+        #endregion
+
+        public async Task<AnnouncementEntity> CreateAnnouncement(Announcement parameter, CancellationToken cancellationToken)
+        {
+            var entity = new AnnouncementEntity
             {
                 PartitionKey = parameter.hackathonName,
                 RowKey = Guid.NewGuid().ToString(),
@@ -31,22 +55,51 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 CreatedAt = DateTime.UtcNow,
                 Timestamp = DateTimeOffset.UtcNow,
             };
+            await StorageContext.AnnouncementTable.InsertAsync(entity, cancellationToken);
+            InvalidateCache(entity.HackathonName);
+            return entity;
         }
 
-        protected override void TryUpdate(AnnouncementEntity existing, Announcement parameter)
+        public async Task<AnnouncementEntity> UpdateAnnouncement(AnnouncementEntity existing, Announcement parameter, CancellationToken cancellationToken)
         {
             existing.Title = parameter.title ?? existing.Title;
             existing.Content = parameter.content ?? existing.Content;
-        }
-
-        protected override async Task<IEnumerable<AnnouncementEntity>> ListWithoutCache(AnnouncementQueryOptions options, CancellationToken cancellationToken)
-        {
-            return await StorageContext.AnnouncementTable.ListByHackathonAsync(options.HackathonName, cancellationToken);
+            await StorageContext.AnnouncementTable.MergeAsync(existing, cancellationToken);
+            InvalidateCache(existing.HackathonName);
+            return existing;
         }
 
         public async Task<AnnouncementEntity?> GetById(string hackathonName, string announcementId, CancellationToken cancellationToken)
         {
-            return await Table.RetrieveAsync(hackathonName, announcementId, cancellationToken);
+            return await StorageContext.AnnouncementTable.RetrieveAsync(hackathonName, announcementId, cancellationToken);
+        }
+
+        public async Task<IEnumerable<AnnouncementEntity>> ListPaginatedAnnouncementsAsync(AnnouncementQueryOptions options, CancellationToken cancellationToken = default)
+        {
+            var allEntities = await ListCachedEntities(options, cancellationToken);
+
+            // paging
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
+            var filtered = allEntities.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
+
+            // next paging
+            options.NextPage = null;
+            if (np + top < allEntities.Count())
+            {
+                options.NextPage = new Pagination
+                {
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
+                };
+            }
+
+            return filtered;
+        }
+
+        public async Task DeleteAnnouncement(AnnouncementEntity entity, CancellationToken cancellationToken)
+        {
+            await StorageContext.AnnouncementTable.DeleteAsync(entity.PartitionKey, entity.RowKey, cancellationToken);
         }
     }
 }
