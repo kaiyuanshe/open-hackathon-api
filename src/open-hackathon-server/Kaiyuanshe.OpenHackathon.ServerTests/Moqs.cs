@@ -23,9 +23,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
         public Mock<IOrganizerTable> OrganizerTable { get; set; } = new();
-        public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
+        public Mock<ITeamTable> TeamTable { get; set; } = new();
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
+        public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
         #endregion
 
         #region Biz
@@ -63,9 +64,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
             StorageContext.Setup(p => p.OrganizerTable).Returns(OrganizerTable.Object);
-            StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
+            StorageContext.Setup(p => p.TeamTable).Returns(TeamTable.Object);
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
+            StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
         }
@@ -75,8 +77,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
                 ExperimentTable, HackathonTable,
-                HackathonAdminTable, JudgeTable, OrganizerTable, UserTokenTable,
-                TeamMemberTable, TeamWorkTable);
+                HackathonAdminTable, JudgeTable, OrganizerTable,
+                TeamTable, TeamMemberTable, TeamWorkTable,
+                UserTokenTable);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
@@ -86,9 +89,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonAdminTable?.VerifyNoOtherCalls();
             JudgeTable.VerifyNoOtherCalls();
             OrganizerTable.VerifyNoOtherCalls();
-            UserTokenTable.VerifyNoOtherCalls();
+            TeamTable.VerifyNoOtherCalls();
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
+            UserTokenTable.VerifyNoOtherCalls();
             #endregion
 
             #region Biz

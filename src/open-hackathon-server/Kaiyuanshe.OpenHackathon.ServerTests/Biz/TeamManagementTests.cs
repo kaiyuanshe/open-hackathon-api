@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(1, result.MembersCount);
 
             Assert.IsNotNull(teamMember);
+            Debug.Assert(teamMember != null);
             Assert.AreEqual("hack", teamMember.HackathonName);
             Assert.AreEqual("hack", teamMember.PartitionKey);
             Assert.AreEqual(TeamMemberRole.Admin, teamMember.Role);
@@ -75,33 +77,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var request = new Team { description = "newdesc", autoApprove = true };
             var entity = new TeamEntity
             {
+                PartitionKey = "pk",
                 RowKey = "tid",
                 Description = "desc",
                 DisplayName = "dp",
                 AutoApprove = false
             };
 
+            var moqs = new Moqs();
+            moqs.TeamTable.Setup(t => t.MergeAsync(entity, default));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-pk"));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-tid"));
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(t => t.MergeAsync(entity, default));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.Remove("Team-tid"));
-
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-                Cache = cache.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.UpdateTeamAsync(request, entity, default);
 
-            Mock.VerifyAll(storageContext, teamTable, cache);
-
-            storageContext.VerifyNoOtherCalls();
-            teamTable.VerifyNoOtherCalls();
-            cache.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual("newdesc", result.Description);
             Assert.AreEqual("dp", result.DisplayName);
             Assert.AreEqual(true, result.AutoApprove);
@@ -297,24 +289,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TeamEntity team = new TeamEntity { PartitionKey = "pk", RowKey = "rk" };
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(t => t.DeleteAsync("pk", "rk", default));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.Remove("Team-rk"));
+            var moqs = new Moqs();
+            moqs.TeamTable.Setup(t => t.DeleteAsync("pk", "rk", default));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-pk"));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-rk"));
 
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-                Cache = cache.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             await teamManagement.DeleteTeamAsync(team, default);
 
-            Mock.VerifyAll(teamTable, storageContext, cache);
-            teamTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            cache.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
         #endregion
 
@@ -536,31 +520,19 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamEntity team = new TeamEntity { };
             int count = 5;
 
+            var moqs = new Moqs();
+            moqs.TeamTable.Setup(p => p.RetrieveAsync("hack", "tid", default)).ReturnsAsync(team);
+            moqs.TeamTable.Setup(p => p.MergeAsync(team, default));
+            moqs.TeamMemberTable.Setup(t => t.DeleteAsync("hack", "uid", default));
+            moqs.TeamMemberTable.Setup(m => m.GetMemberCountAsync("hack", "tid", default)).ReturnsAsync(count);
+            moqs.CacheProvider.Setup(c => c.Remove("Team-hack"));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-tid"));
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(p => p.RetrieveAsync("hack", "tid", default)).ReturnsAsync(team);
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.DeleteAsync("hack", "uid", default));
-            teamMemberTable.Setup(m => m.GetMemberCountAsync("hack", "tid", default)).ReturnsAsync(count);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.Remove("Team-tid"));
-
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-                Cache = cache.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             await teamManagement.DeleteTeamMemberAsync(teamMember, default);
 
-            Mock.VerifyAll(storageContext, teamTable, teamMemberTable, cache);
-            teamTable.Verify(t => t.MergeAsync(It.Is<TeamEntity>(t => t.MembersCount == 5), default), Times.Once);
-            teamTable.VerifyNoOtherCalls();
-            teamMemberTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            cache.VerifyNoOtherCalls();
+            moqs.VerifyAll();
         }
         #endregion
 
