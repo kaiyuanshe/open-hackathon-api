@@ -250,7 +250,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userMgmt = new UserManagement
             {
                 StorageContext = storage.Object,
-                Cache = new DefaultCacheProvider(null),
+                Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var result = await userMgmt.ValidateTokenAsync(token);
 
@@ -259,6 +259,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             tokenTable.Verify(t => t.RetrieveAsync(hash, string.Empty, cancellationToken), Times.Once);
             tokenTable.VerifyNoOtherCalls();
             Assert.AreNotEqual(ValidationResult.Success, result);
+            Debug.Assert(result != null);
             Assert.IsTrue(result.ErrorMessage.Contains("expired"));
         }
 

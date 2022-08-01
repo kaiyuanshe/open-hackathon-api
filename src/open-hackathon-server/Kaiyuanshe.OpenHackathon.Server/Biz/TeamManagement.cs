@@ -112,11 +112,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return CacheKeys.GetCacheKey(CacheEntryType.Team, teamId);
         }
 
-        private void InvalidateCachedTeam(string teamId)
+        private string TeamListCacheKey(string hackathonName)
         {
-            string cacheKey = TeamCacheKey(teamId);
-            Cache.Remove(cacheKey);
+            return CacheKeys.GetCacheKey(CacheEntryType.Team, hackathonName);
         }
+
+        private void InvalidateCachedTeam(string hackathonName, string teamId)
+        {
+            Cache.Remove(TeamListCacheKey(hackathonName));
+            Cache.Remove(TeamCacheKey(teamId));
+        }
+
         #endregion
 
         #region CreateTeamAsync
@@ -165,7 +171,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             teamEntity.DisplayName = request.displayName ?? teamEntity.DisplayName;
 
             await StorageContext.TeamTable.MergeAsync(teamEntity, cancellationToken);
-            InvalidateCachedTeam(teamEntity.Id);
+            InvalidateCachedTeam(teamEntity.HackathonName, teamEntity.Id);
             return teamEntity;
         }
         #endregion
@@ -179,7 +185,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 var count = await StorageContext.TeamMemberTable.GetMemberCountAsync(hackathonName, teamId, cancellationToken);
                 team.MembersCount = count;
                 await StorageContext.TeamTable.MergeAsync(team, cancellationToken);
-                InvalidateCachedTeam(teamId);
+                InvalidateCachedTeam(hackathonName, teamId);
             }
         }
         #endregion
@@ -226,7 +232,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return;
 
             await StorageContext.TeamTable.DeleteAsync(team.PartitionKey, team.RowKey, cancellationToken);
-            InvalidateCachedTeam(team.Id);
+            InvalidateCachedTeam(team.HackathonName, team.Id);
         }
         #endregion
 
