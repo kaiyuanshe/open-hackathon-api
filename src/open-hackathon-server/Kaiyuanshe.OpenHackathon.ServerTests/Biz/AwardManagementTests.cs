@@ -320,7 +320,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             await awardManagement.ListAwardsAsync("hack", default);
 
-            cache.Verify(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(e => e.AutoRefresh == true && e.CacheKey == "Award-hack"), default), Times.Once);
+            cache.Verify(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(e => e.AutoRefresh == false && e.CacheKey == "Award-hack"), default), Times.Once);
         }
 
         [Test]

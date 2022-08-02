@@ -39,7 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), (ct) =>
             {
                 return StorageContext.OrganizerTable.ListByHackathonAsync(hackathonName, ct);
-            }, true, cancellationToken);
+            }, false, cancellationToken);
         }
         #endregion
 

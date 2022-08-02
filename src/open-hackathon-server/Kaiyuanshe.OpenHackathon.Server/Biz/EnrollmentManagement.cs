@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,7 +83,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                     var filter = TableQueryHelper.PartitionKeyFilter(hackathon.Name);
                     return await StorageContext.EnrollmentTable.QueryEntitiesAsync(filter, null, cancellationToken);
                 },
-                true,
+                false,
                 cancellationToken);
         }
         #endregion
@@ -134,9 +135,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateEnrollmentStatusAsync
         public async Task<EnrollmentEntity> UpdateEnrollmentStatusAsync(HackathonEntity hackathon, EnrollmentEntity enrollment, EnrollmentStatus status, CancellationToken cancellationToken = default)
         {
-            if (enrollment == null || hackathon == null)
-                return enrollment;
-
             if (enrollment.Status == status)
                 return enrollment;
 
@@ -169,6 +167,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region ListPaginatedEnrollmentsAsync
         public async Task<Page<EnrollmentEntity>> ListPaginatedEnrollmentsAsync(string hackathonName, EnrollmentQueryOptions options, CancellationToken cancellationToken = default)
         {
+            Debug.Assert(options != null);
             var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
             if (options != null && options.Status.HasValue)
             {
@@ -200,7 +199,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             if (hackathon == null || string.IsNullOrWhiteSpace(userId))
                 return false;
 
-            EnrollmentEntity entity = null;
+            EnrollmentEntity? entity = null;
             var cached = await GetCachedEnrollmentsAsync(hackathon, cancellationToken);
             if (cached == null)
             {

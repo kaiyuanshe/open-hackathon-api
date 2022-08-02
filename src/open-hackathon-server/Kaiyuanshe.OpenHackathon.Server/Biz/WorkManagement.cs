@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 CacheKeyWorks(teamId),
                 TimeSpan.FromHours(4),
                 (ct) => StorageContext.TeamWorkTable.ListByTeamAsync(hackathonName, teamId, ct),
-                true,
+                false,
                 cancellationToken);
         }
         #endregion
