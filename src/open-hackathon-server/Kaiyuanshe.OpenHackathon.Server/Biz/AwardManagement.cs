@@ -170,7 +170,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 CacheKeyAwards(hackathonName),
                 TimeSpan.FromHours(4),
                 (ct) => StorageContext.AwardTable.ListAllAwardsAsync(hackathonName, ct),
-                true,
+                false,
                 cancellationToken);
         }
         #endregion

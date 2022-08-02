@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
 
     public static class ExtensionHelper
     {
-        public static Extension[] Merge(this Extension[] extensions, Extension[] updates)
+        public static Extension[] Merge(this Extension[]? extensions, Extension[]? updates)
         {
             if (extensions == null)
             {

@@ -73,7 +73,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 (token) =>
                 {
                     return StorageContext.HackathonAdminTable.ListByHackathonAsync(hackathonName, token);
-                }, true, cancellationToken);
+                }, false, cancellationToken);
         }
         #endregion
 

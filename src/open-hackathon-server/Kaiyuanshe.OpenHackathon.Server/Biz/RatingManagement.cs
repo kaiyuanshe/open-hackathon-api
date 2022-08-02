@@ -118,7 +118,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 cacheKey,
                 TimeSpan.FromHours(4),
                 (ct) => StorageContext.RatingKindTable.ListRatingKindsAsync(hackathonName, ct),
-                true,
+                false,
                 cancellationToken);
         }
 

@@ -40,7 +40,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), async (ct) =>
             {
                 return await StorageContext.AnnouncementTable.ListByHackathonAsync(options.HackathonName, ct);
-            }, true, cancellationToken);
+            }, false, cancellationToken);
         }
         #endregion
 

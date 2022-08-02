@@ -218,6 +218,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListPaginatedTeamsAsync
+        private async Task<IEnumerable<TeamEntity>> ListCachedEntities(TeamQueryOptions options, CancellationToken cancellationToken)
+        {
+            string cacheKey = TeamListCacheKey(options.HackathonName);
+            return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), async (ct) =>
+            {
+                return await StorageContext.TeamTable.ListByHackathonAsync(options.HackathonName, ct);
+            }, false, cancellationToken);
+        }
+
         public async Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default)
         {
             var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);

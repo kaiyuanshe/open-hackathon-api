@@ -6,6 +6,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -178,9 +179,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region Task<HackathonEntity> UpdateHackathonReadOnlyAsync(HackathonEntity hackathon, bool readOnly, CancellationToken cancellation)
         public async Task<HackathonEntity> UpdateHackathonReadOnlyAsync(HackathonEntity hackathon, bool readOnly, CancellationToken cancellation)
         {
-            if (hackathon == null)
-                return hackathon;
-
             hackathon.ReadOnly = readOnly;
             await StorageContext.HackathonTable.MergeAsync(hackathon, cancellation);
             return hackathon;
@@ -233,6 +231,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, cancellationToken);
             var updated = await StorageContext.HackathonTable.RetrieveAsync(request.name, string.Empty, cancellationToken);
             InvalidateCacheAllHackathon();
+            Debug.Assert(updated != null);
             return updated;
         }
         #endregion
