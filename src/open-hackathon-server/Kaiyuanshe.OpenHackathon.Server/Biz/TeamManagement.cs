@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,11 +57,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// List paged teams of hackathon
         /// </summary>
-        /// <param name="hackathonName">name of hackathon</param>
         /// <param name="options">options for query</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TeamEntity>> ListPaginatedTeamsAsync(TeamQueryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List all team members
@@ -227,10 +227,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, false, cancellationToken);
         }
 
-        public async Task<Page<TeamEntity>> ListPaginatedTeamsAsync(string hackathonName, TeamQueryOptions options, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TeamEntity>> ListPaginatedTeamsAsync(TeamQueryOptions options, CancellationToken cancellationToken = default)
         {
-            var filter = TableQueryHelper.PartitionKeyFilter(hackathonName);
-            return await StorageContext.TeamTable.ExecuteQuerySegmentedAsync(filter, options.ContinuationToken(), options.Top(), null, cancellationToken);
+            var allEntities = await ListCachedEntities(options, cancellationToken);
+
+            // paging
+            int.TryParse(options.Pagination?.np, out int np);
+            int top = options.Top();
+            var filtered = allEntities.OrderByDescending(a => a.CreatedAt).Skip(np).Take(top);
+
+            // next paging
+            options.NextPage = null;
+            if (np + top < allEntities.Count())
+            {
+                options.NextPage = new Pagination
+                {
+                    np = (np + top).ToString(),
+                    nr = (np + top).ToString(),
+                };
+            }
+
+            return filtered;
         }
         #endregion
 

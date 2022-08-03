@@ -651,9 +651,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string expectedLink)
         {
             // input
-            var hackName = "Hack";
-            var cancellationToken = CancellationToken.None;
-            HackathonEntity hackathonEntity = new HackathonEntity();
+            HackathonEntity hackathonEntity = new HackathonEntity { PartitionKey = "hack" };
             var teams = new List<TeamEntity>
             {
                 new TeamEntity
@@ -664,48 +662,32 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 }
             };
             UserInfo user = new UserInfo();
-            var segment = MockHelper.CreatePage(teams, continuationToken);
 
             // mock and capture
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(hackathonEntity);
-            var teamManagement = new Mock<ITeamManagement>();
-            TeamQueryOptions? optionsCaptured = null;
-            teamManagement.Setup(p => p.ListPaginatedTeamsAsync("hack", It.IsAny<TeamQueryOptions>(), cancellationToken))
-                .Callback<string, TeamQueryOptions, CancellationToken>((n, o, t) =>
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
+            moqs.TeamManagement.Setup(p => p.ListPaginatedTeamsAsync(
+                It.Is<TeamQueryOptions>(o => o.Top(100) == expectedOptions.Top(100)
+                    && o.ContinuationToken() == expectedOptions.ContinuationToken()), default))
+                .Callback<TeamQueryOptions, CancellationToken>((o, c) =>
                 {
-                    optionsCaptured = o;
+                    o.NextPage = Pagination.FromContinuationToken(continuationToken);
                 })
-                .ReturnsAsync(segment);
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("uid", cancellationToken))
-                .ReturnsAsync(user);
+                .ReturnsAsync(teams);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
 
             // run
-            var controller = new TeamController
-            {
-                ResponseBuilder = new DefaultResponseBuilder(),
-                HackathonManagement = hackathonManagement.Object,
-                UserManagement = userManagement.Object,
-                TeamManagement = teamManagement.Object,
-            };
-            var result = await controller.ListTeams(hackName, pagination, cancellationToken);
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.ListTeams("Hack", pagination, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, teamManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var list = AssertHelper.AssertOKResult<TeamList>(result);
             Assert.AreEqual(expectedLink, list.nextLink);
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].id);
-            Debug.Assert(optionsCaptured != null);
-            Assert.AreEqual(expectedOptions.Top(), optionsCaptured.Top());
-            Assert.AreEqual(expectedOptions.ContinuationToken(), optionsCaptured.ContinuationToken());
         }
 
         #endregion

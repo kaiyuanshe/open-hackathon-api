@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -344,7 +345,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             // validate hackathon
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            HackathonEntity? hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -355,6 +356,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
             if (hackathon.Status == HackathonStatus.online)
             {
                 return PreconditionFailed(string.Format(Resources.Hackathon_AlreadyOnline, hackathonName));
@@ -397,7 +399,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             // validate hackathon
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -407,6 +409,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonStatusAsync(hackathon, HackathonStatus.online, cancellationToken);
