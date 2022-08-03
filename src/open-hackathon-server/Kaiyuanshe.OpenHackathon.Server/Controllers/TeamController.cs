@@ -312,8 +312,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             [FromQuery] Pagination pagination,
             CancellationToken cancellationToken)
         {
-            var hackName = hackathonName.ToLower();
-            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName);
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -323,21 +322,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             var teamQueryOptions = new TeamQueryOptions
             {
+                HackathonName = hackathon.Name,
                 Pagination = pagination,
             };
-            var page = await TeamManagement.ListPaginatedTeamsAsync(hackName, teamQueryOptions, cancellationToken);
+            var page = await TeamManagement.ListPaginatedTeamsAsync(teamQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();
             if (pagination.top.HasValue)
             {
                 routeValues.Add(nameof(pagination.top), pagination.top.Value);
             }
-            var nextLink = BuildNextLinkUrl(routeValues, page.ContinuationToken);
+            var nextLink = BuildNextLinkUrl(routeValues, teamQueryOptions.NextPage);
 
             List<Tuple<TeamEntity, UserInfo>> tuples = new List<Tuple<TeamEntity, UserInfo>>();
-            foreach (var team in page.Values)
+            foreach (var team in page)
             {
                 var creator = await UserManagement.GetUserByIdAsync(team.CreatorId, cancellationToken);
                 Debug.Assert(creator != null);

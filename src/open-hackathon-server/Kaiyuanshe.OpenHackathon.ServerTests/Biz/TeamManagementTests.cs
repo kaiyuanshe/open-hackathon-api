@@ -7,6 +7,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -207,79 +208,118 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         #endregion
 
         #region ListPaginatedTeamsAsync
-        [Test]
-        public async Task ListPaginatedTeamsAsync_NoOptions()
+        private static IEnumerable ListPaginatedTestData()
         {
-            string hackName = "foo";
-            TeamQueryOptions options = null;
-            var entities = MockHelper.CreatePage<TeamEntity>(
-                 new List<TeamEntity>
-                 {
-                     new TeamEntity{  PartitionKey="pk" }
-                 }, "np nr"
+            var a1 = new TeamEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(1),
+            };
+            var a2 = new TeamEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(3),
+            };
+            var a3 = new TeamEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(2),
+            };
+            var a4 = new TeamEntity
+            {
+                RowKey = "a1",
+                CreatedAt = DateTime.UtcNow.AddDays(4),
+            };
+
+            // arg0: options
+            // arg1: awards
+            // arg2: expected result
+            // arg3: expected Next
+
+            // by Award
+            yield return new TestCaseData(
+                new TeamQueryOptions { HackathonName = "hack" },
+                new List<TeamEntity> { a1, a2, a3, a4 },
+                new List<TeamEntity> { a4, a2, a3, a1 },
+                null
                 );
 
+            // by Team
+            yield return new TestCaseData(
+                new TeamQueryOptions { HackathonName = "hack" },
+                new List<TeamEntity> { a1, a2, a3, a4 },
+                new List<TeamEntity> { a4, a2, a3, a1 },
+                null
+                );
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", null, 100, null, default)).ReturnsAsync(entities);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
+            // by Hackathon
+            yield return new TestCaseData(
+                new TeamQueryOptions { HackathonName = "hack" },
+                new List<TeamEntity> { a1, a2, a3, a4 },
+                new List<TeamEntity> { a4, a2, a3, a1 },
+                null
+                );
 
-            var teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object
-            };
-            var page = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
+            // top
+            yield return new TestCaseData(
+                new TeamQueryOptions { HackathonName = "hack", Pagination = new Pagination { top = 2, } },
+                new List<TeamEntity> { a1, a2, a3, a4 },
+                new List<TeamEntity> { a4, a2, },
+                new Pagination { np = "2", nr = "2" }
+                );
 
-            Mock.VerifyAll(teamTable, storageContext);
-            teamTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
-            Assert.AreEqual(1, page.Values.Count());
-            Assert.AreEqual("pk", page.Values.First().HackathonName);
-            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
-            Assert.AreEqual("np", pagination.np);
-            Assert.AreEqual("nr", pagination.nr);
+            // paging
+            yield return new TestCaseData(
+                new TeamQueryOptions
+                {
+                    HackathonName = "hack",
+                    Pagination = new Pagination
+                    {
+                        np = "1",
+                        nr = "1",
+                        top = 2,
+                    },
+                },
+                new List<TeamEntity> { a1, a2, a3, a4 },
+                new List<TeamEntity> { a2, a3, },
+                new Pagination { np = "3", nr = "3" }
+                );
         }
 
-        [TestCase(5, 5)]
-        [TestCase(-1, 100)]
-        public async Task ListPaginatedTeamsAsync_Options(int topInPara, int expectedTop)
+        [Test, TestCaseSource(nameof(ListPaginatedTestData))]
+        public async Task ListPaginatedTeamsAsync(
+            TeamQueryOptions options,
+            IEnumerable<TeamEntity> all,
+            IEnumerable<TeamEntity> expectedResult,
+            Pagination expectedNext)
         {
-            string hackName = "foo";
-            TeamQueryOptions options = new TeamQueryOptions
+            var cache = new Mock<ICacheProvider>();
+            cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<TeamEntity>>>(c => c.CacheKey == "Team-hack"), default)).ReturnsAsync(all);
+
+            var mgmt = new TeamManagement()
             {
-                Pagination = new Pagination { nr = "nr", np = "np", top = topInPara },
+                Cache = cache.Object,
             };
-            var entities = MockHelper.CreatePage<TeamEntity>(
-                 new List<TeamEntity>
-                 {
-                     new TeamEntity{  PartitionKey="pk" }
-                 }, "np2 nr2"
-                );
+            var result = await mgmt.ListPaginatedTeamsAsync(options, default);
 
+            Mock.VerifyAll(cache);
+            cache.VerifyNoOtherCalls();
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(p => p.ExecuteQuerySegmentedAsync("PartitionKey eq 'foo'", "np nr", expectedTop, null, default)).ReturnsAsync(entities);
-
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
-
-            var teamManagement = new TeamManagement()
+            Assert.AreEqual(expectedResult.Count(), result.Count());
+            for (int i = 0; i < expectedResult.Count(); i++)
             {
-                StorageContext = storageContext.Object
-            };
-            var page = await teamManagement.ListPaginatedTeamsAsync(hackName, options, default);
-
-            Mock.VerifyAll(teamTable, storageContext);
-            teamTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
-            Assert.AreEqual(1, page.Values.Count());
-            Assert.AreEqual("pk", page.Values.First().HackathonName);
-            var pagination = Pagination.FromContinuationToken(page.ContinuationToken);
-            Assert.AreEqual("np2", pagination.np);
-            Assert.AreEqual("nr2", pagination.nr);
+                Assert.AreEqual(expectedResult.ElementAt(i).Id, result.ElementAt(i).Id);
+            }
+            if (expectedNext == null)
+            {
+                Assert.IsNull(options.NextPage);
+            }
+            else
+            {
+                Assert.IsNotNull(options.NextPage);
+                Assert.AreEqual(expectedNext.np, options.NextPage?.np);
+                Assert.AreEqual(expectedNext.nr, options.NextPage?.nr);
+            }
         }
         #endregion
 

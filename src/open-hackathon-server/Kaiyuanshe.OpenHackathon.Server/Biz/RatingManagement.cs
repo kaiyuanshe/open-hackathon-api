@@ -23,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task DeleteRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
         Task<RatingEntity> CreateRatingAsync(Rating parameter, CancellationToken cancellationToken);
         Task<RatingEntity> UpdateRatingAsync(RatingEntity existing, Rating parameter, CancellationToken cancellationToken);
-        Task<RatingEntity> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken);
+        Task<RatingEntity?> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken);
         Task<RatingEntity> GetRatingAsync(string hackathonName, string ratingId, CancellationToken cancellationToken);
         Task<bool> IsRatingCountGreaterThanZero(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken);
         Task<Page<RatingEntity>> ListPaginatedRatingsAsync(string hackathonName, RatingQueryOptions options, CancellationToken cancellationToken = default);
@@ -192,7 +192,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region Task<RatingEntity> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken)
-        public async Task<RatingEntity> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken)
+        public async Task<RatingEntity?> GetRatingAsync(string hackathonName, string judgeId, string teamId, string kindId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(hackathonName)
                 || string.IsNullOrWhiteSpace(judgeId)
