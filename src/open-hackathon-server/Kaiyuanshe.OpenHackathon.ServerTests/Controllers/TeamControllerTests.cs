@@ -679,7 +679,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // run
             var controller = new TeamController();
             moqs.SetupController(controller);
-            var result = await controller.ListTeams("Hack", pagination, default);
+            var result = await controller.ListTeams("Hack", pagination, "", default);
 
             // verify
             moqs.VerifyAll();
