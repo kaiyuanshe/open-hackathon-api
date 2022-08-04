@@ -301,6 +301,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="search" example="a">search team by display name. Matched if the displayName contains the pattern.
+        /// </param>
         /// <returns>the response contains a list of teams and a nextLink if there are more results.</returns>
         /// <response code="200">Success.</response>
         [HttpGet]
@@ -310,6 +312,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public async Task<object> ListTeams(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
             [FromQuery] Pagination pagination,
+            [FromQuery] string search,
             CancellationToken cancellationToken)
         {
             var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
@@ -328,6 +331,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 HackathonName = hackathon.Name,
                 Pagination = pagination,
+                NameSearch = search,
             };
             var page = await TeamManagement.ListPaginatedTeamsAsync(teamQueryOptions, cancellationToken);
             var routeValues = new RouteValueDictionary();

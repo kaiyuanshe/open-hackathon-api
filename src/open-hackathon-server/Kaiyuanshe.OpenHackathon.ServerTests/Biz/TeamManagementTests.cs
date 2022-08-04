@@ -5,6 +5,7 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -165,12 +166,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TeamManagement teamManagement = new TeamManagement()
             {
                 StorageContext = storageContext.Object,
-                Cache = new DefaultCacheProvider(null),
+                Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var result = await teamManagement.GetTeamByIdAsync(hackName, teamId, default);
 
             Mock.VerifyAll(storageContext, teamTable);
-
+            Debug.Assert(result != null);
             storageContext.VerifyNoOtherCalls();
             teamTable.VerifyNoOtherCalls();
             Assert.AreEqual("desc", result.Description);
@@ -213,30 +214,34 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var a1 = new TeamEntity
             {
                 RowKey = "a1",
+                DisplayName = "a1",
                 CreatedAt = DateTime.UtcNow.AddDays(1),
             };
             var a2 = new TeamEntity
             {
-                RowKey = "a1",
+                RowKey = "a2",
+                DisplayName = "a2",
                 CreatedAt = DateTime.UtcNow.AddDays(3),
             };
             var a3 = new TeamEntity
             {
-                RowKey = "a1",
+                RowKey = "b1",
+                DisplayName = "b1",
                 CreatedAt = DateTime.UtcNow.AddDays(2),
             };
             var a4 = new TeamEntity
             {
-                RowKey = "a1",
+                RowKey = "b2",
+                DisplayName = "b2",
                 CreatedAt = DateTime.UtcNow.AddDays(4),
             };
 
             // arg0: options
-            // arg1: awards
+            // arg1: all entities
             // arg2: expected result
             // arg3: expected Next
 
-            // by Award
+            // default options
             yield return new TestCaseData(
                 new TeamQueryOptions { HackathonName = "hack" },
                 new List<TeamEntity> { a1, a2, a3, a4 },
@@ -244,19 +249,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 null
                 );
 
-            // by Team
+            // search
             yield return new TestCaseData(
-                new TeamQueryOptions { HackathonName = "hack" },
+                new TeamQueryOptions { HackathonName = "hack", NameSearch = "a" },
                 new List<TeamEntity> { a1, a2, a3, a4 },
-                new List<TeamEntity> { a4, a2, a3, a1 },
-                null
-                );
-
-            // by Hackathon
-            yield return new TestCaseData(
-                new TeamQueryOptions { HackathonName = "hack" },
-                new List<TeamEntity> { a1, a2, a3, a4 },
-                new List<TeamEntity> { a4, a2, a3, a1 },
+                new List<TeamEntity> { a2, a1 },
                 null
                 );
 

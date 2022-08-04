@@ -231,6 +231,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         {
             var allEntities = await ListCachedEntities(options, cancellationToken);
 
+            if (!string.IsNullOrWhiteSpace(options.NameSearch))
+            {
+                allEntities = allEntities.Where(t => t.DisplayName.Contains(options.NameSearch));
+            }
+
             // paging
             int.TryParse(options.Pagination?.np, out int np);
             int top = options.Top();

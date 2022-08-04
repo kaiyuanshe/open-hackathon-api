@@ -216,7 +216,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             return await UpdateInternal(entity, parameter, cancellationToken);
         }
 
-        private async Task<object> UpdateInternal(HackathonEntity entity, Hackathon parameter, CancellationToken cancellationToken)
+        private async Task<object> UpdateInternal(HackathonEntity? entity, Hackathon parameter, CancellationToken cancellationToken)
         {
             var options = new ValidateHackathonOptions
             {
@@ -227,6 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(entity != null);
 
             var updated = await HackathonManagement.UpdateHackathonAsync(parameter, cancellationToken);
             var logArgs = new
@@ -451,7 +452,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken = default)
         {
             // validate hackathon
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower(), cancellationToken);
             var options = new ValidateHackathonOptions
             {
                 WritableRequired = false,
@@ -462,6 +463,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // update status
             hackathon = await HackathonManagement.UpdateHackathonReadOnlyAsync(hackathon, readOnly, cancellationToken);
