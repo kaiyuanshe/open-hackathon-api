@@ -16,7 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             });
         }
 
-        public static void AssertObjectResult(object result, int expectedStatusCode, Action<ProblemDetails> extraAssert = null)
+        public static void AssertObjectResult(object result, int expectedStatusCode, Action<ProblemDetails>? extraAssert = null)
         {
             ObjectResult? objectResult = result as ObjectResult;
             Assert.IsNotNull(objectResult);
