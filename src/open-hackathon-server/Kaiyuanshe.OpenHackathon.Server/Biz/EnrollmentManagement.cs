@@ -68,7 +68,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             Cache.Remove(cacheKey);
         }
 
-        private async Task<IEnumerable<EnrollmentEntity>> GetCachedEnrollmentsAsync(HackathonEntity hackathon, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<EnrollmentEntity>?> GetCachedEnrollmentsAsync(HackathonEntity hackathon, CancellationToken cancellationToken = default)
         {
             if (hackathon == null || hackathon.MaxEnrollment > CACHE_THRESHOLD || hackathon.MaxEnrollment <= 0)
             {
@@ -121,9 +121,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateEnrollmentAsync
         public async Task<EnrollmentEntity> UpdateEnrollmentAsync(EnrollmentEntity existing, Enrollment request, CancellationToken cancellationToken = default)
         {
-            if (existing == null || request == null)
-                return existing;
-
             existing.Extensions = existing.Extensions.Merge(request.extensions);
             await StorageContext.EnrollmentTable.MergeAsync(existing, cancellationToken);
             InvalidateCachedEnrollment(existing.HackathonName);
