@@ -17,14 +17,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task ListAcitivitiesByHackathon_HackNotFound()
         {
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
 
             var mockContext = new Moqs();
             mockContext.HackathonManagement.Setup(u => u.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
 
             var controller = new ActivityLogController();
             mockContext.SetupController(controller);
-            var result = await controller.ListAcitivitiesByHackathon("Hack", null, default);
+            var result = await controller.ListAcitivitiesByHackathon("Hack", new Pagination(), default);
 
             mockContext.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
@@ -69,14 +69,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task ListAcitivitiesByTeam_HackNotFound()
         {
-            HackathonEntity hackathon = null;
+            HackathonEntity? hackathon = null;
 
             var mockContext = new Moqs();
             mockContext.HackathonManagement.Setup(u => u.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
 
             var controller = new ActivityLogController();
             mockContext.SetupController(controller);
-            var result = await controller.ListAcitivitiesByTeam("Hack", "tid", null, default);
+            var result = await controller.ListAcitivitiesByTeam("Hack", "tid", new Pagination(), default);
 
             mockContext.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Hackathon_NotFound, "Hack"));
@@ -86,7 +86,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task ListAcitivitiesByTeam_TeamNotFound()
         {
             HackathonEntity hackathon = new HackathonEntity { PartitionKey = "hack" };
-            TeamEntity team = null;
+            TeamEntity? team = null;
 
             var mockContext = new Moqs();
             mockContext.HackathonManagement.Setup(u => u.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -94,7 +94,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             var controller = new ActivityLogController();
             mockContext.SetupController(controller);
-            var result = await controller.ListAcitivitiesByTeam("Hack", "tid", null, default);
+            var result = await controller.ListAcitivitiesByTeam("Hack", "tid", new Pagination(), default);
 
             mockContext.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.Team_NotFound, "Hack"));
@@ -141,14 +141,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [Test]
         public async Task ListAcitivitiesByUser_UserNotFound()
         {
-            UserInfo user = null;
+            UserInfo? user = null;
 
             var mockContext = new Moqs();
             mockContext.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
 
             var controller = new ActivityLogController();
             mockContext.SetupController(controller);
-            var result = await controller.ListAcitivitiesByUser("uid", null, default);
+            var result = await controller.ListAcitivitiesByUser("uid", new Pagination(), default);
 
             mockContext.VerifyAll();
             AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);

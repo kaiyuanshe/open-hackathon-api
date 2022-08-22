@@ -548,6 +548,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("rk", resp.assignmentId);
             Assert.AreEqual("teamId", resp.assigneeId);
             Assert.IsNull(resp.user);
+            Debug.Assert(resp.team != null);
             Assert.AreEqual("dn", resp.team.displayName);
         }
 
@@ -941,7 +942,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].assignmentId);
-            Assert.AreEqual("locality", list.value[0].team.creator.Locality);
+            var t = list.value[0].team;
+            Debug.Assert(t != null);
+            Assert.AreEqual("locality", t.creator.Locality);
         }
         #endregion
     }

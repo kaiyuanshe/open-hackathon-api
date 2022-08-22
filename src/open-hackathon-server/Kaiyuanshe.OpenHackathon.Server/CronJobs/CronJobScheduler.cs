@@ -73,7 +73,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
                 {
                     if (func != null && logger != null)
                     {
-                        string trace = string.Format("[Quartz]" + func(), parameters);
                         Action<string, object[]> action = logger.LogInformation;
                         switch (level)
                         {
@@ -91,7 +90,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
                                 action = logger.LogCritical;
                                 break;
                         }
-                        logger.LogInformation(trace);
+                        action("[Quartz]" + func(), parameters);
+                        if (exception != null)
+                        {
+                            logger.LogError(exception, exception.Message);
+                        }
                     }
                     return true;
                 };
