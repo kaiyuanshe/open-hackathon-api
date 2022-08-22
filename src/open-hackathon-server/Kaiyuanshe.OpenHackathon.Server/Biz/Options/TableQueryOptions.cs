@@ -22,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz.Options
             return defaultValue;
         }
 
-        public static string? ContinuationToken(this TableQueryOptions options)
+        public static string? ContinuationToken(this TableQueryOptions? options)
         {
             if (options?.Pagination != null)
                 return options.Pagination.ToContinuationToken();
