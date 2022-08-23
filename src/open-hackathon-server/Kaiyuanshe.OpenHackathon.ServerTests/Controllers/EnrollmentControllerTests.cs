@@ -60,7 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 HackathonManagement = hackathonManagement.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var result = await controller.Enroll(hackathonName, null, cancellationToken);
+            var result = await controller.Enroll(hackathonName, new Enrollment(), cancellationToken);
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
@@ -88,7 +88,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 HackathonManagement = hackathonManagement.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var result = await controller.Enroll(hackathonName, null, cancellationToken);
+            var result = await controller.Enroll(hackathonName, new Enrollment(), cancellationToken);
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
@@ -117,7 +117,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 HackathonManagement = hackathonManagement.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var result = await controller.Enroll(hackathonName, null, cancellationToken);
+            var result = await controller.Enroll(hackathonName, new Enrollment(), cancellationToken);
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
@@ -148,7 +148,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 HackathonManagement = hackathonManagement.Object,
                 ProblemDetailsFactory = new CustomProblemDetailsFactory(),
             };
-            var result = await controller.Enroll(hackathonName, null, cancellationToken);
+            var result = await controller.Enroll(hackathonName, new Enrollment(), cancellationToken);
 
             Mock.VerifyAll(hackathonManagement);
             hackathonManagement.VerifyNoOtherCalls();
@@ -436,7 +436,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var controller = new EnrollmentController();
             moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
-            var result = await func(hack, userId, null, default);
+            var result = await func(hack, userId, new Enrollment(), default);
 
             moqs.VerifyAll();
             AssertHelper.AssertObjectResult(result, 403);
@@ -503,7 +503,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var controller = new EnrollmentController();
             moqs.SetupController(controller);
             var func = GetTargetMethod(controller, status);
-            var result = await func(hack, userId, null, default);
+            var result = await func(hack, userId, new Enrollment(), default);
 
             // verify
             moqs.VerifyAll();

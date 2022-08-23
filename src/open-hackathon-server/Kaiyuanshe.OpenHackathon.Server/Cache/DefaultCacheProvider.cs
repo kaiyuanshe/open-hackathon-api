@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
         /// </summary>
         /// <param name="key"></param>
         /// <returns>If the entry is found in the cache, the removed cache entry; otherwise, null.</returns>
-        public object Remove(string key);
+        public object? Remove(string key);
 
         /// <summary>
         /// Refresh the cached value. Ignored if CacheEntry is not found.
@@ -98,14 +98,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 
         public async Task RefreshAsync(string cacheKey, CancellationToken cancellationToken)
         {
-            if (cacheEntries.TryGetValue(cacheKey, out CacheEntry cacheEntry))
+            if (cacheEntries.TryGetValue(cacheKey, out CacheEntry? cacheEntry))
             {
                 var value = await cacheEntry.SupplyValueAsync(cancellationToken);
-                cache.Add(cacheEntry.CacheKey, value, cacheEntry.CachePolicy);
+                if (value != null)
+                {
+                    cache.Add(cacheEntry.CacheKey, value, cacheEntry.CachePolicy);
+                }
             }
         }
 
-        public object Remove(string key)
+        public object? Remove(string key)
         {
             if (cache.Contains(key))
             {
@@ -127,7 +130,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
                 }
                 else
                 {
-                    return default;
+                    return value;
                 }
             }
             else
@@ -147,9 +150,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
             bool autoRefresh = false,
             CancellationToken cancellationToken = default)
         {
-            if (cache == null)
-                return null;
-
             var entry = new CacheEntry<TValue>(cacheKey, slidingExpiration, supplyVaule, autoRefresh);
             return cache.GetOrAddAsync(entry, cancellationToken);
         }

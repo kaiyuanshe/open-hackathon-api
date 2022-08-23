@@ -63,7 +63,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
 
             // malformatted
             var authHeader = Request.Headers[HeaderNames.Authorization].LastOrDefault();
-            if (!authHeader.StartsWith(TokenPrefix, StringComparison.OrdinalIgnoreCase))
+            if (authHeader == null || !authHeader.StartsWith(TokenPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 logger?.TraceInformation("Invalid 'Authorizatio' header format");
                 return AuthenticateResult.Fail(Resources.Auth_Unauthorized);
