@@ -595,6 +595,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("rk", resp.assignmentId);
             Assert.AreEqual("userId", resp.assigneeId);
             Assert.IsNull(resp.team);
+            Debug.Assert(resp.user != null);
             Assert.AreEqual("gn", resp.user.GivenName);
         }
         #endregion
@@ -645,11 +646,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             if (target == AwardTarget.team)
             {
                 Assert.IsNull(resp.user);
+                Debug.Assert(resp.team != null);
                 Assert.AreEqual("creator", resp.team.creatorId);
                 Assert.AreEqual("un", resp.team.creator.Name);
             }
             else
             {
+                Debug.Assert(resp.user != null);
                 Assert.IsNull(resp.team);
                 Assert.AreEqual("un", resp.user.Name);
             }
@@ -683,6 +686,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("rk", resp.assignmentId);
             Assert.AreEqual("teamId", resp.assigneeId);
             Assert.IsNull(resp.user);
+            Debug.Assert(resp.team != null);
             Assert.AreEqual("creator", resp.team.creatorId);
             Assert.AreEqual("ip", resp.team.creator.LastIp);
         }
@@ -698,7 +702,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
             var awardEntity = new AwardEntity { PartitionKey = "hack", Target = target };
-            AwardAssignmentEntity assignment = firstTime ? new AwardAssignmentEntity
+            AwardAssignmentEntity? assignment = firstTime ? new AwardAssignmentEntity
             {
                 AssigneeId = target == AwardTarget.team ? "tid" : "uid"
             } : null;
