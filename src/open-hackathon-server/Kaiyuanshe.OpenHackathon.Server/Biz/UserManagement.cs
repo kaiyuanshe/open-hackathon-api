@@ -226,9 +226,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             return await Cache.GetOrAddAsync(
                 CacheKeys.GetCacheKey(CacheEntryType.User, userId),
-                TimeSpan.FromHours(6),
+                TimeSpan.FromHours(1),
                 ct => StorageContext.UserTable.GetUserByIdAsync(userId, ct),
-                true,
+                false,
                 cancellationToken);
         }
         #endregion
