@@ -92,7 +92,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 
                 Logger?.LogInformation($"Refreshing entry in cache: {cacheEntry.CacheKey}");
                 var value = await cacheEntry.SupplyValueAsync(cancellationToken);
-                cache.Add(cacheEntry.CacheKey, value, cacheEntry.CachePolicy);
+                if (value != null)
+                {
+                    cache.Add(cacheEntry.CacheKey, value, cacheEntry.CachePolicy);
+                }
             }
         }
 

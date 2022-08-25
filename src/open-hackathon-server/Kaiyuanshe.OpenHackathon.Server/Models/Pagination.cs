@@ -30,7 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         [Range(1, 1000)]
         public int? top { get; set; }
 
-        public string ToContinuationToken()
+        public string? ToContinuationToken()
         {
             // np/nr in nextLink shouldn't be null or empty.
             if (string.IsNullOrWhiteSpace(np) || string.IsNullOrWhiteSpace(nr))
@@ -50,10 +50,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             }
 
             string[] array = continuationToken.Split(ContinuationTokenSplit, 2);
+            if (array.Length < 2)
+            {
+                return new Pagination { top = top };
+            }
+
             return new Pagination
             {
                 np = array[0],
-                nr = (array.Length > 1 && array[1].Length > 0) ? array[1] : null,
+                nr = array[1],
                 top = top
             };
         }

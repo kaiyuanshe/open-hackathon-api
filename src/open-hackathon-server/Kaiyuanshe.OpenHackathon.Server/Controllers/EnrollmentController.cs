@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +38,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             [FromBody] Enrollment parameter,
             CancellationToken cancellationToken)
         {
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
 
             var options = new ValidateHackathonOptions
             {
@@ -50,6 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName.ToLower(), CurrentUserId, cancellationToken);
             if (enrollment == null)
@@ -65,6 +67,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId, ActivityLogType.createEnrollment, args, cancellationToken);
 
                 var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+                Debug.Assert(user != null);
                 return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
             }
             else
@@ -284,7 +287,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             var hackName = hackathonName.ToLower();
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName, cancellationToken);
+            HackathonEntity? hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName, cancellationToken);
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -295,13 +298,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
-            EnrollmentEntity enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackName, userId.ToLower(), cancellationToken);
+            EnrollmentEntity? enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackName, userId.ToLower(), cancellationToken);
             if (enrollment == null)
             {
                 return NotFound(string.Format(Resources.Enrollment_NotFound, userId, hackathonName));
             }
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+            Debug.Assert(user != null);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
         #endregion
@@ -326,7 +331,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             CancellationToken cancellationToken)
         {
             var hackName = hackathonName.ToLower();
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName, cancellationToken);
+            HackathonEntity? hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackName, cancellationToken);
             var options = new ValidateHackathonOptions
             {
                 HackathonName = hackathonName,
@@ -336,6 +341,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             var enrollmentOptions = new EnrollmentQueryOptions
             {
@@ -358,6 +364,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             foreach (var enrollment in page.Values)
             {
                 var user = await UserManagement.GetUserByIdAsync(enrollment.UserId, cancellationToken);
+                Debug.Assert(user != null);
                 list.Add(Tuple.Create(enrollment, user));
             }
 
