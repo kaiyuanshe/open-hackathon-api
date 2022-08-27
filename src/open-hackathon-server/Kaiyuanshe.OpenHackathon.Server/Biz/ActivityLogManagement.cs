@@ -3,8 +3,10 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,6 +48,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task LogUserActivity(string userId, string? hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<ActivityLogEntity>> ListActivityLogs(ActivityLogQueryOptions options, CancellationToken cancellationToken = default);
+
+        Task<Dictionary<string, int>> CountActivityByUser(int durationDays = 365, CancellationToken cancellationToken = default);
     }
 
     public class ActivityLogManagement : ManagementClient<ActivityLogManagement>, IActivityLogManagement
@@ -160,6 +164,26 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 default:
                     return null;
             }
+        }
+        #endregion
+
+        #region CountActivityByUser
+        public async Task<Dictionary<string, int>> CountActivityByUser(int durationDays = 365, CancellationToken cancellationToken = default)
+        {
+            ConcurrentDictionary<string, int> scores = new ConcurrentDictionary<string, int>();
+
+            var catetory = TableQueryHelper.FilterForInt(nameof(ActivityLogEntity.Category), ComparisonOperator.Equal, (int)ActivityLogCategory.User);
+            var timestamp = TableQueryHelper.FilterForDate(nameof(BaseTableEntity.Timestamp), ComparisonOperator.GreaterThan, DateTimeOffset.UtcNow.AddDays(durationDays * -1));
+            var filter = TableQueryHelper.And(catetory, timestamp);
+
+            var select = new string[] { nameof(BaseTableEntity.PartitionKey) };
+
+            await StorageContext.ActivityLogTable.ExecuteQueryAsync(filter, (log) =>
+            {
+                scores.AddOrUpdate(log.PartitionKey, 1, (k, v) => v + 1);
+            }, null, select, cancellationToken);
+
+            return scores.ToDictionary(p => p.Key, p => p.Value);
         }
         #endregion
     }

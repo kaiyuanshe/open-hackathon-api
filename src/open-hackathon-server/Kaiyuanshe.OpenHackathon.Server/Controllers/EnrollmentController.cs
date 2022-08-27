@@ -103,7 +103,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             [FromBody] Enrollment parameter,
             CancellationToken cancellationToken)
         {
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName.ToLower());
 
             var options = new ValidateHackathonOptions
             {
@@ -116,6 +116,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName.ToLower(), userId, cancellationToken);
             if (enrollment == null)
@@ -233,7 +234,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         private async Task<object> UpdateEnrollmentStatus(string hackathonName, string userId, EnrollmentStatus status, CancellationToken cancellationToken)
         {
-            HackathonEntity hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName);
+            var hackathon = await HackathonManagement.GetHackathonEntityByNameAsync(hackathonName);
             var options = new ValidateHackathonOptions
             {
                 HackAdminRequird = true,
@@ -243,15 +244,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
-            EnrollmentEntity enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName, userId);
+            var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName, userId);
             if (enrollment == null)
             {
                 return NotFound(string.Format(Resources.Enrollment_NotFound, userId, hackathonName));
             }
+            Debug.Assert(enrollment != null);
 
             enrollment = await EnrollmentManagement.UpdateEnrollmentStatusAsync(hackathon, enrollment, status, cancellationToken);
             var enrolledUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(enrolledUser != null);
             var activityLogType = status == EnrollmentStatus.approved ? ActivityLogType.approveEnrollment : ActivityLogType.rejectEnrollment;
             var resKeyOfUser = status == EnrollmentStatus.approved ? nameof(Resources.ActivityLog_User_approveEnrollment2) : nameof(Resources.ActivityLog_User_rejectEnrollment2);
             var logArgs = new
@@ -264,6 +268,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 activityLogType, logArgs, resKeyOfUser, null, cancellationToken);
 
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+            Debug.Assert(user != null);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
         #endregion
