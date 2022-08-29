@@ -153,6 +153,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     null, nameof(Resources.ActivityLog_User_updateEnrollment2), cancellationToken);
             }
             var user = await UserManagement.GetUserByIdAsync(existing.UserId, cancellationToken);
+            Debug.Assert(user != null);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
 
@@ -181,6 +182,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(string.Format(Resources.Enrollment_NotFound, CurrentUserId, hackathonName));
             }
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
+            Debug.Assert(user != null);
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
         #endregion
