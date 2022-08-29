@@ -54,6 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // check kind count
             bool canCreate = await RatingManagement.CanCreateRatingKindAsync(hackathonName.ToLower(), cancellationToken);
@@ -280,9 +281,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region BuildRatingResp
         private async Task<Rating> BuildRatingResp(RatingEntity ratingEntity,
-            UserInfo judge = null,
-            TeamEntity teamEntity = null,
-            RatingKindEntity ratingKindEntity = null,
+            UserInfo? judge = null,
+            TeamEntity? teamEntity = null,
+            RatingKindEntity? ratingKindEntity = null,
             CancellationToken cancellationToken = default)
         {
             if (judge == null)
@@ -293,8 +294,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (teamEntity == null)
             {
                 teamEntity = await TeamManagement.GetTeamByIdAsync(ratingEntity.HackathonName, ratingEntity.TeamId, cancellationToken);
+                Debug.Assert(teamEntity != null);
             }
             var teamCreator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
+            Debug.Assert(teamCreator != null);
             var team = ResponseBuilder.BuildTeam(teamEntity, teamCreator);
 
             if (ratingKindEntity == null)

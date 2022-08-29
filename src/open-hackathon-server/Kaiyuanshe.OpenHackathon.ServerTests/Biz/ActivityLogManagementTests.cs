@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
@@ -271,6 +272,42 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Assert.AreEqual(2, result.Count());
             }
             AssertHelper.AssertEqual(expectedNext, options.NextPage);
+        }
+        #endregion
+
+        #region CountActivityByUser
+        [Test]
+        public async Task CountActivityByUser()
+        {
+            var logs = new List<ActivityLogEntity>()
+            {
+                new ActivityLogEntity{ PartitionKey="u1" },
+                new ActivityLogEntity{ PartitionKey="u2" },
+                new ActivityLogEntity{ PartitionKey="u1" },
+            };
+
+            var moqs = new Moqs();
+            moqs.ActivityLogTable.Setup(a => a.ExecuteQueryAsync(
+                It.Is<string>(s => s.StartsWith("(Category eq 1) and (Timestamp gt datetime'")),
+                It.IsAny<Action<ActivityLogEntity>>(), null,
+                It.Is<IEnumerable<string>>(s => s.Single() == "PartitionKey"), default))
+                .Callback<string, Action<ActivityLogEntity>, int?, IEnumerable<string>?, CancellationToken>((f, action, l, s, c) =>
+                {
+                    logs.ForEach(a => action(a));
+                });
+
+            var activityLogManagement = new ActivityLogManagement()
+            {
+                StorageContext = moqs.StorageContext.Object,
+            };
+            var result = await activityLogManagement.CountActivityByUser(365, default);
+
+            moqs.VerifyAll();
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.ContainsKey("u1"));
+            Assert.IsTrue(result.ContainsKey("u2"));
+            Assert.AreEqual(2, result["u1"]);
+            Assert.AreEqual(1, result["u2"]);
         }
         #endregion
     }
