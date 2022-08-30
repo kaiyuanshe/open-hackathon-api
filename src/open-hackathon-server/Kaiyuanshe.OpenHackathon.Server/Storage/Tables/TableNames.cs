@@ -17,6 +17,7 @@
         public const string TeamMember = "kysteammember";
         public const string TeamWork = "kysteamwork";
         public const string Template = "kystemplate";
+        public const string TopUser = "kystopuser";
         public const string User = "kysuser";
         public const string UserActivityLog = "kysactivitylog";
         public const string UserToken = "kysusertoken";
