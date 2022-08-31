@@ -110,6 +110,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Query Rating Kind
             var ratingKindEntity = await RatingManagement.GetRatingKindAsync(hackathonName.ToLower(), kindId, cancellationToken);
@@ -360,6 +361,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return validateTeamOptions.ValidateResult;
             }
+            Debug.Assert(team != null);
 
             // validate kind
             var kind = await RatingManagement.GetRatingKindAsync(hackathonName.ToLower(), parameter.ratingKindId, cancellationToken);
@@ -425,6 +427,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // Get Rating
             var ratingEntity = await RatingManagement.GetRatingAsync(hackathonName.ToLower(), ratingId, cancellationToken);

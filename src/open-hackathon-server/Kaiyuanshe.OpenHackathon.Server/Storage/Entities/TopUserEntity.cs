@@ -3,15 +3,15 @@
     public class TopUserEntity : BaseTableEntity
     {
         [IgnoreEntityProperty]
-        public string UserId
+        public int Rank
         {
             get
             {
-                return PartitionKey;
+                return int.Parse(PartitionKey);
             }
         }
 
-        public int Rank { get; set; }
+        public string UserId { get; set; }
         public int Score { get; set; }
     }
 }
