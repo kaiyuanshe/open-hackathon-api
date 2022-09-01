@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -298,7 +299,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 case AwardTarget.team:
                     var teamEntity = await TeamManagement.GetTeamByIdAsync(awardEntity.HackathonName, awardAssignmentEntity.AssigneeId, cancellationToken);
+                    Debug.Assert(teamEntity != null);
                     var teamCreator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
+                    Debug.Assert(teamCreator != null);
                     var team = ResponseBuilder.BuildTeam(teamEntity, teamCreator);
                     return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, team, null);
                 case AwardTarget.individual:

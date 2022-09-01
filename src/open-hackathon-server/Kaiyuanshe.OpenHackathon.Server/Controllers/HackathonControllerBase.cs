@@ -86,7 +86,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="routeValues">values to generate url. Values of current url are implicitly used. 
         /// Add extra key/value pairs or modifications to routeValues. Values not used in route will be appended as QueryString.</param>
         /// <returns></returns>
-        protected string? BuildNextLinkUrl(RouteValueDictionary routeValues, Pagination? nextPage)
+        protected string? BuildNextLinkUrl(RouteValueDictionary? routeValues, Pagination? nextPage)
         {
             if (nextPage?.np == null || nextPage?.nr == null)
                 return null;
