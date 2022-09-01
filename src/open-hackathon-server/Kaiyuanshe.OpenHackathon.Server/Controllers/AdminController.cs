@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,6 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate user
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
@@ -67,6 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var adminEntity = await HackathonAdminManagement.CreateAdminAsync(admin, cancellationToken);
 
             var updatedUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(updatedUser != null);
             var args = new
             {
                 hackathonName = hackathon.DisplayName,
@@ -216,6 +219,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // get admin
             var adminEntity = await HackathonAdminManagement.GetAdminAsync(hackathonName.ToLower(), userId, cancellationToken);
@@ -231,6 +235,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
             await HackathonAdminManagement.DeleteAdminAsync(hackathonName.ToLower(), userId, cancellationToken);
             var deletedUser = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            Debug.Assert(deletedUser != null);
             var args = new
             {
                 hackathonName = hackathon.DisplayName,
