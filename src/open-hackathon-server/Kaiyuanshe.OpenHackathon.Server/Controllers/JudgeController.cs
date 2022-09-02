@@ -271,6 +271,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate user
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);

@@ -52,7 +52,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
         {
             get
             {
-                return LoggerFactory?.CreateLogger("CronJob");
+                return LoggerFactory.CreateLogger("CronJob");
             }
         }
 
@@ -75,7 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
             return ExecuteAsync(cronJobContext, cancellationTokenSource.Token);
         }
 
-        public Task ExecuteNow(CronJobContext context)
+        public Task ExecuteNow(CronJobContext? context)
         {
             context = context ?? new CronJobContext();
             context.EnforceInterval = true;

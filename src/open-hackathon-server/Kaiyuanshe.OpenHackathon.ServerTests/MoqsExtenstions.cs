@@ -1,6 +1,7 @@
 ﻿using DotLiquid.Util;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
+using Kaiyuanshe.OpenHackathon.Server.CronJobs;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -36,6 +37,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             management.Logger = new Mock<ILogger<T>>().Object;
             management.StorageContext = moqs.StorageContext.Object;
             management.Cache = moqs.CacheProvider.Object;
+        }
+
+        public static void SetupCronJob(this Moqs moqs, CronJobBase cronJob)
+        {
+            cronJob.StorageContext = moqs.StorageContext.Object;
+            cronJob.CacheProvider = moqs.CacheProvider.Object;
+            cronJob.LoggerFactory = moqs.LoggerFactory.Object;
         }
     }
 }
