@@ -185,6 +185,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Mock.VerifyAll();
             tokenTable.Verify(t => t.RetrieveAsync(hash, string.Empty, cToken), Times.Once);
             tokenTable.VerifyNoOtherCalls();
+            Debug.Assert(resp != null);
             Assert.AreEqual("1", resp.UserId);
         }
         #endregion
@@ -260,6 +261,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             tokenTable.VerifyNoOtherCalls();
             Assert.AreNotEqual(ValidationResult.Success, result);
             Debug.Assert(result != null);
+            Debug.Assert(result.ErrorMessage != null);
             Assert.IsTrue(result.ErrorMessage.Contains("expired"));
         }
 
@@ -337,6 +339,51 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var userMgmt = new UserManagement();
             Assert.ThrowsAsync<ArgumentNullException>(() => userMgmt.ValidateTokenRemotelyAsync(userPoolId, accessToken));
+        }
+        #endregion
+
+        #region ListTopUsers
+        private static IEnumerable ListTopUsersTestData()
+        {
+            // arg0: db results
+            // arg1: top
+            // arg2: expected result
+
+            Func<int, IEnumerable<TopUserEntity>> GetList = (count) =>
+            {
+                return Enumerable.Range(0, count).Select(i => new TopUserEntity { PartitionKey = i.ToString() });
+            };
+
+            // with top, top < actual
+            yield return new TestCaseData(GetList(15), 6, GetList(6));
+
+            // with top, top > actual
+            yield return new TestCaseData(GetList(5), 20, GetList(5));
+
+            // without top, default top < actual
+            yield return new TestCaseData(GetList(15), null, GetList(10));
+
+            // without top, default top > actual
+            yield return new TestCaseData(GetList(4), null, GetList(4));
+        }
+
+        [Test, TestCaseSource(nameof(ListTopUsersTestData))]
+        public async Task ListTopUsers(IEnumerable<TopUserEntity> dbResults, int? top, IEnumerable<TopUserEntity> expectedOutput)
+        {
+            var moqs = new Moqs();
+            moqs.TopUserTable.Setup(t => t.QueryEntitiesAsync(null, null, default)).ReturnsAsync(dbResults);
+
+            var management = new UserManagement();
+            moqs.SetupManagement(management);
+
+            var actual = await management.ListTopUsers(top, default);
+
+            moqs.VerifyAll();
+            Assert.AreEqual(actual.Count(), expectedOutput.Count());
+            for (int i = 0; i < actual.Count(); i++)
+            {
+                Assert.AreEqual(actual.ElementAt(i).Rank, expectedOutput.ElementAt(i).Rank);
+            }
         }
         #endregion
 
@@ -447,7 +494,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "", null)
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 1, Search = "b" },
                     new List<UserEntity> { u1 }
@@ -457,7 +504,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "bc" },
                     new List<UserEntity> { u1, u2 }
@@ -467,7 +514,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "c@" },
                     new List<UserEntity> { u1 }
@@ -477,7 +524,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", null)
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "Name" },
                     new List<UserEntity> { u3, u4 }
@@ -487,8 +534,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "next", null),
-                        ["next"] = Page<UserEntity>.FromValues(new List<UserEntity> { u3, u4 }, "", null),
+                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, }, "next", new Mock<Response>().Object),
+                        ["next"] = Page<UserEntity>.FromValues(new List<UserEntity> { u3, u4 }, "", new Mock<Response>().Object),
                     },
                     new UserQueryOptions { Top = 100, Search = "Name" },
                     new List<UserEntity> { u3, u4 }

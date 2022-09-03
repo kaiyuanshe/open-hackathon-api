@@ -24,7 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
         Task ReplaceAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task DeleteAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
         Task<TEntity?> RetrieveAsync(string partitionKey, string rowKey, CancellationToken cancellationToken = default);
-        Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> QueryEntitiesAsync(string? filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Action<TEntity> action, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryAsync(string filter, Func<TEntity, Task> asyncAction, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
         Task ExecuteQueryInParallelAsync(string filter, Func<TEntity, Task> asyncAction, int maxParallelism = 5, int? limit = null, IEnumerable<string>? select = null, CancellationToken cancellationToken = default);
@@ -173,7 +173,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
             }
         }
 
-        public virtual async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<TEntity>> QueryEntitiesAsync(string? filter, IEnumerable<string>? select = null, CancellationToken cancellationToken = default)
         {
             List<TEntity> entities = new List<TEntity>();
             var client = await GetTableClientAsync(cancellationToken);

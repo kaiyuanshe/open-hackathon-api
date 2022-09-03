@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,6 +49,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate user
             var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
