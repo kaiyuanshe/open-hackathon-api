@@ -49,6 +49,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <returns></returns>
         Task<User> GetCurrentUserRemotelyAsync(string userPoolId, string token, CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<TopUserEntity>> ListTopUsers(int? top = 10, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Get basic Claims of user associated with an Token. Return empty list if token is invalid.
         /// Resource-based claims are not included for performance reaons.
@@ -127,6 +129,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var authenticationClient = new AuthenticationClient(options => options.UserPoolId = userPoolId);
             authenticationClient.AccessToken = token;
             return await authenticationClient.GetCurrentUser(cancellationToken);
+        }
+
+        public async Task<IEnumerable<TopUserEntity>> ListTopUsers(int? top = 10, CancellationToken cancellationToken = default)
+        {
+            var topUsers = await StorageContext.TopUserTable.QueryEntitiesAsync(null, null, cancellationToken);
+            var result = topUsers.OrderBy(t => t.Rank).Take(top.GetValueOrDefault(10));
+            return result;
         }
 
         public async Task<IEnumerable<Claim>> GetUserBasicClaimsAsync(string token, CancellationToken cancellationToken = default)
