@@ -191,10 +191,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return NotFound(string.Format(Resources.Template_NotFound, templateId, hackathonName));
             }
+            Debug.Assert(context != null);
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: context.TemplateEntity.DisplayName);

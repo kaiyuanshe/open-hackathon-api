@@ -103,6 +103,36 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
         #endregion
 
+        #region ListTopUsers
+        [Test]
+        public async Task ListTopUsers()
+        {
+            var topUsers = new List<TopUserEntity>
+            {
+                new TopUserEntity { UserId = "a" },
+                new TopUserEntity { UserId = "b" },
+            };
+            var usera = new UserInfo { Name = "namea" };
+            var userb = new UserInfo { Name = "nameb" };
+
+            var moqs = new Moqs();
+            moqs.UserManagement.Setup(u => u.ListTopUsers(10, default)).ReturnsAsync(topUsers);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("a", default)).ReturnsAsync(usera);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("b", default)).ReturnsAsync(userb);
+
+            var controller = new UserController();
+            moqs.SetupController(controller);
+            var result = await controller.ListTopUsers(default);
+
+            moqs.VerifyAll();
+            var resp = AssertHelper.AssertOKResult<UserInfoList>(result);
+            Assert.IsNull(resp.nextLink);
+            Assert.AreEqual(2, resp.value.Length);
+            Assert.AreEqual("namea", resp.value[0].Name);
+            Assert.AreEqual("nameb", resp.value[1].Name);
+        }
+        #endregion
+
         #region SearchUser
         [Test]
         public async Task SearchUser()
