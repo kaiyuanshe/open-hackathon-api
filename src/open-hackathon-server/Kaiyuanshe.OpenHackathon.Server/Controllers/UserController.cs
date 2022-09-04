@@ -6,7 +6,9 @@ using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,6 +30,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public async Task<object> Authing([FromBody] UserInfo parameter,
             CancellationToken cancellationToken)
         {
+            Debug.Assert(parameter.Token != null);
             var tokenStatus = await UserManagement.ValidateTokenRemotelyAsync(parameter.UserPoolId, parameter.Token, cancellationToken);
             if (!tokenStatus.Status.GetValueOrDefault(false))
             {
@@ -67,6 +70,35 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NotFound(Resources.User_NotFound);
             }
             return Ok(userInfo);
+        }
+        #endregion
+
+        #region ListTopUsers
+        /// <summary>
+        /// List top users.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>the top users</returns>
+        /// <response code="200">Success. The response describes a list of users.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(UserInfoList), StatusCodes.Status200OK)]
+        [Route("user/topUsers")]
+        public async Task<object> ListTopUsers(CancellationToken cancellationToken)
+        {
+            var users = new List<UserInfo>();
+
+            var topUsers = await UserManagement.ListTopUsers(10, cancellationToken);
+            foreach (var topUser in topUsers)
+            {
+                var userInfo = await UserManagement.GetUserByIdAsync(topUser.UserId, cancellationToken);
+                Debug.Assert(userInfo != null);
+                users.Add(userInfo);
+            }
+
+            return Ok(new UserInfoList
+            {
+                value = users.ToArray()
+            });
         }
         #endregion
 
