@@ -28,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         TeamMember BuildTeamMember(TeamMemberEntity teamMemberEntity, UserInfo member);
         TeamWork BuildTeamWork(TeamWorkEntity teamWorkEntity);
         Template BuildTemplate(TemplateContext context);
+        TopUser BuildTopUser(TopUserEntity topUserEntity, UserInfo userInfo);
         UserInfo BuildUser(UserEntity userEntity);
 
         TResult BuildResourceList<TSrcItem, TResultItem, TResult>(
@@ -230,6 +231,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             {
                 p.updatedAt = context.TemplateEntity.Timestamp.UtcDateTime;
                 p.status = Status.FromV1Status(context.Status);
+            });
+        }
+
+        public TopUser BuildTopUser(TopUserEntity topUserEntity, UserInfo userInfo)
+        {
+            return topUserEntity.As<TopUser>(t =>
+            {
+                t.updatedAt = topUserEntity.Timestamp.UtcDateTime;
+                t.user = userInfo;
             });
         }
 

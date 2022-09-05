@@ -1,5 +1,4 @@
 ﻿using Authing.ApiClient.Types;
-using Kaiyuanshe.OpenHackathon.Server;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
@@ -7,7 +6,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
@@ -244,7 +243,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.IsTrue(conn is VncConnection);
             Assert.AreEqual(IngressProtocol.vnc, conn.protocol);
             Assert.AreEqual("dn", conn.name);
-            VncConnection vnc = conn as VncConnection;
+            VncConnection? vnc = conn as VncConnection;
+            Debug.Assert(vnc != null);
             Assert.AreEqual("10.0.0.1", vnc.hostname);
             Assert.AreEqual(15901, vnc.port);
             Assert.AreEqual("un", vnc.username);
@@ -604,6 +604,35 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual(entity.Timestamp.DateTime, template.updatedAt);
             Assert.AreEqual(200, template.status.code);
             Assert.AreEqual("kind", template.status.kind);
+        }
+        #endregion
+
+        #region BuildTopUser
+        [Test]
+        public void BuildTopUser()
+        {
+            var entity = new TopUserEntity
+            {
+                PartitionKey = "2",
+                Score = 10,
+                UserId = "uid",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow
+            };
+            var userInfo = new UserInfo
+            {
+                Name = "un"
+            };
+
+            var responseBuilder = new DefaultResponseBuilder();
+            var topUser = responseBuilder.BuildTopUser(entity, userInfo);
+
+            Assert.AreEqual(2, topUser.rank);
+            Assert.AreEqual(10, topUser.score);
+            Assert.AreEqual("uid", topUser.userId);
+            Assert.AreEqual(entity.CreatedAt, topUser.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, topUser.updatedAt);
+            Assert.AreEqual("un", topUser.user.Name);
         }
         #endregion
 

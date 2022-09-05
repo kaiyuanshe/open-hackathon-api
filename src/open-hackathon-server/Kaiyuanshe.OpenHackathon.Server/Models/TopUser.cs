@@ -1,0 +1,31 @@
+﻿namespace Kaiyuanshe.OpenHackathon.Server.Models
+{
+    /// <summary>
+    /// Top users that engage in hackathon events.
+    /// </summary>
+    public class TopUser : ModelBase
+    {
+        /// <summary>
+        /// the rank. Starting from index 0. O means the highest rank.
+        /// </summary>
+        /// <example>1</example>
+        public int rank { get; internal set; }
+
+        /// <summary>
+        /// the score that is used for ranking. The high in score, the high in rank.
+        /// </summary>
+        /// <example>100</example>
+        public int score { get; internal set; }
+
+        /// <summary>
+        /// user id.
+        /// </summary>
+        /// <example>1</example>
+        public string userId { get; internal set; }
+
+        /// <summary>
+        /// The user details.
+        /// </summary>
+        public UserInfo user { get; internal set; }
+    }
+}
