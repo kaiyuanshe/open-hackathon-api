@@ -389,7 +389,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (experimentContext.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: experimentContext.Status.Code.Value,
+                    statusCode: experimentContext.Status.Code,
                     detail: experimentContext.Status.Message,
                     title: experimentContext.Status.Reason,
                     instance: experimentContext.ExperimentEntity.Id);
@@ -571,6 +571,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // reset
             context = await ExperimentManagement.ResetExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
@@ -587,10 +588,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
 
             // build resp
+            Debug.Assert(context != null);
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: experimentId);
@@ -598,6 +600,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             else
             {
                 var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity.UserId, cancellationToken);
+                Debug.Assert(userInfo != null);
                 var resp = ResponseBuilder.BuildExperiment(context, userInfo);
                 return Ok(resp);
             }
@@ -644,6 +647,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 async (context, token) =>
                 {
                     var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity?.UserId, token);
+                    Debug.Assert(userInfo != null);
                     return ResponseBuilder.BuildExperiment(context, userInfo);
                 },
                 null);
