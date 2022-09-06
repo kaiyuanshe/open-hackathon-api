@@ -10,7 +10,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
@@ -109,8 +108,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var topUsers = new List<TopUserEntity>
             {
-                new TopUserEntity { UserId = "a" },
-                new TopUserEntity { UserId = "b" },
+                new TopUserEntity { PartitionKey = "0", UserId = "a" },
+                new TopUserEntity { PartitionKey = "1", UserId = "b" },
             };
             var usera = new UserInfo { Name = "namea" };
             var userb = new UserInfo { Name = "nameb" };
@@ -125,11 +124,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.ListTopUsers(default);
 
             moqs.VerifyAll();
-            var resp = AssertHelper.AssertOKResult<UserInfoList>(result);
+            var resp = AssertHelper.AssertOKResult<TopUserList>(result);
             Assert.IsNull(resp.nextLink);
             Assert.AreEqual(2, resp.value.Length);
-            Assert.AreEqual("namea", resp.value[0].Name);
-            Assert.AreEqual("nameb", resp.value[1].Name);
+            Assert.AreEqual(0, resp.value[0].rank);
+            Assert.AreEqual("namea", resp.value[0].user.Name);
+            Assert.AreEqual(1, resp.value[1].rank);
+            Assert.AreEqual("nameb", resp.value[1].user.Name);
         }
         #endregion
 

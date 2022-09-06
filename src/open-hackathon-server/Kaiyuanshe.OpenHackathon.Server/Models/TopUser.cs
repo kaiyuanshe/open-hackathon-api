@@ -28,4 +28,15 @@
         /// </summary>
         public UserInfo user { get; internal set; }
     }
+
+    /// <summary>
+    /// a list of users
+    /// </summary>
+    public class TopUserList : ResourceList<TopUser>
+    {
+        /// <summary>
+        /// a list of TopUser
+        /// </summary>
+        public override TopUser[] value { get; set; }
+    }
 }
