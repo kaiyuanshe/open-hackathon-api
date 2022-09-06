@@ -81,21 +81,21 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <returns>the top users</returns>
         /// <response code="200">Success. The response describes a list of users.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(UserInfoList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TopUserList), StatusCodes.Status200OK)]
         [Route("user/topUsers")]
         public async Task<object> ListTopUsers(CancellationToken cancellationToken)
         {
-            var users = new List<UserInfo>();
+            var users = new List<TopUser>();
 
             var topUsers = await UserManagement.ListTopUsers(10, cancellationToken);
             foreach (var topUser in topUsers)
             {
                 var userInfo = await UserManagement.GetUserByIdAsync(topUser.UserId, cancellationToken);
                 Debug.Assert(userInfo != null);
-                users.Add(userInfo);
+                users.Add(ResponseBuilder.BuildTopUser(topUser, userInfo));
             }
 
-            return Ok(new UserInfoList
+            return Ok(new TopUserList
             {
                 value = users.ToArray()
             });

@@ -138,6 +138,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("desc", result.description);
             Assert.AreEqual(awardAssignment.CreatedAt, result.createdAt);
             Assert.AreEqual(awardAssignment.Timestamp.UtcDateTime, result.updatedAt);
+            Debug.Assert(result.user != null);
+            Debug.Assert(result.team != null);
             Assert.AreEqual("device", result.user.Device);
             Assert.AreEqual("teamid", result.team.id);
         }

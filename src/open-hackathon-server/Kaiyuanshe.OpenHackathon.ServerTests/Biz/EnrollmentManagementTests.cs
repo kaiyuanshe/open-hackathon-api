@@ -37,7 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                     new Extension { name = "n1", value = "v1" }
                 }
             };
-            EnrollmentEntity enrollment = null;
+            EnrollmentEntity? enrollment = null;
 
             var enrollmentTable = new Mock<IEnrollmentTable>();
             enrollmentTable.Setup(p => p.InsertAsync(It.IsAny<EnrollmentEntity>(), default))

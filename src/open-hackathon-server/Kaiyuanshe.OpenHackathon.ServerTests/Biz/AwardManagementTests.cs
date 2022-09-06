@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -184,9 +185,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(expectedEntity.Pictures?.Length, result.Pictures?.Length);
             for (int i = 0; i < result.Pictures?.Length; i++)
             {
-                Assert.AreEqual(expectedEntity.Pictures[0].uri, result.Pictures[0].uri);
-                Assert.AreEqual(expectedEntity.Pictures[0].name, result.Pictures[0].name);
-                Assert.AreEqual(expectedEntity.Pictures[0].description, result.Pictures[0].description);
+                Debug.Assert(expectedEntity.Pictures != null);
+                Assert.AreEqual(expectedEntity.Pictures[i].uri, result.Pictures[i].uri);
+                Assert.AreEqual(expectedEntity.Pictures[i].name, result.Pictures[i].name);
+                Assert.AreEqual(expectedEntity.Pictures[i].description, result.Pictures[i].description);
             }
         }
         #endregion
