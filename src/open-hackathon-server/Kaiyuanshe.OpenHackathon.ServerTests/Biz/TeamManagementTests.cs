@@ -382,7 +382,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TeamMember request = new TeamMember { description = "b" };
             TeamMemberEntity member = new TeamMemberEntity { Description = "a", Role = TeamMemberRole.Member, Status = TeamMemberStatus.pendingApproval };
-            TeamMemberEntity captured = null;
+            TeamMemberEntity? captured = null;
 
             var teamMemberTable = new Mock<ITeamMemberTable>();
             teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))

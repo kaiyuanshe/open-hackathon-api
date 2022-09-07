@@ -186,7 +186,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // verify
             moqs.VerifyAll();
             FileUpload resp = AssertHelper.AssertOKResult<FileUpload>(result);
-            Assert.AreEqual(10, resp.expiration.Value);
+            Assert.AreEqual(10, resp.expiration.GetValueOrDefault());
             Assert.AreEqual("user/avatar.jpg", resp.filename);
         }
         #endregion

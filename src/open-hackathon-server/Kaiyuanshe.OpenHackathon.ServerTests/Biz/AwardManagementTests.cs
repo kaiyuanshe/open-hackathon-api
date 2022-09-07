@@ -57,6 +57,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Mock.VerifyAll(storageContext, awardTable);
             storageContext.VerifyNoOtherCalls();
             awardTable.VerifyNoOtherCalls();
+            Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
         #endregion
