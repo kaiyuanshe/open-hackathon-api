@@ -393,6 +393,12 @@
   <data name="ActivityLog_User_createOrganizer" xml:space="preserve">
     <value>[{hackathonName}]Added an organizer "{organizerName}".</value>
   </data>
+  <data name="ActivityLog_User_createPlatformAdmin" xml:space="preserve">
+    <value>The user is added as platform admin by user {operatorName}.</value>
+  </data>
+  <data name="ActivityLog_User_createPlatformAdmin2" xml:space="preserve">
+    <value>Added user {userName} as platform admin.</value>
+  </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>[{hackathonName}]Rated team "{teamName}" on kind "{kindName}".</value>
   </data>

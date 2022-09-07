@@ -393,6 +393,12 @@
   <data name="ActivityLog_User_createOrganizer" xml:space="preserve">
     <value>[{hackathonName}]添加了活动的组织者"{organizerName}"。</value>
   </data>
+  <data name="ActivityLog_User_createPlatformAdmin" xml:space="preserve">
+    <value>被管理员 {operatorName}添加为平台管理员。</value>
+  </data>
+  <data name="ActivityLog_User_createPlatformAdmin2" xml:space="preserve">
+    <value>添加新的平台管理员：{userName} 。</value>
+  </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>给团队"{teamName}"的"{kindName}"打分。活动名称："{hackathonName}"。</value>
   </data>

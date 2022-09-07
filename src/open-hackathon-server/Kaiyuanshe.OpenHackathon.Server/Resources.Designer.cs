@@ -889,6 +889,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The user is added as platform admin by user {operatorName}..
+        /// </summary>
+        internal static string ActivityLog_User_createPlatformAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createPlatformAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added user {userName} as platform admin..
+        /// </summary>
+        internal static string ActivityLog_User_createPlatformAdmin2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createPlatformAdmin2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{hackathonName}]Rated team &quot;{teamName}&quot; on kind &quot;{kindName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_createRating {

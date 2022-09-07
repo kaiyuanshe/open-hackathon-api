@@ -26,6 +26,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         unarchiveHackathon, // make it writable
 
         // hackathon Admin
+        createPlatformAdmin,
+        deletePlatformAdmin,
         createHackathonAdmin,
         deleteHackathonAdmin,
 
