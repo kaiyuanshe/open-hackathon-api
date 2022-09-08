@@ -2,6 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +31,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
         public async Task<UserEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {
+            Debug.Assert(userInfo.Password != null);
+            Debug.Assert(userInfo.Token != null);
             var entity = new UserEntity
             {
                 Address = userInfo.Address,
@@ -83,7 +86,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 Zoneinfo = userInfo.Zoneinfo,
             };
             await InsertOrReplaceAsync(entity, cancellationToken);
-            return await RetrieveAsync(userInfo.Id.ToLower(), string.Empty);
+            var resp = await RetrieveAsync(userInfo.Id.ToLower(), string.Empty);
+            Debug.Assert(resp != null);
+            return resp;
         }
     }
 }

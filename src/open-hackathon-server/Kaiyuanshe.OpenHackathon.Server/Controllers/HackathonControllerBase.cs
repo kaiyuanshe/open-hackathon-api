@@ -516,7 +516,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         #endregion
 
         #region ValidateRatingKind
-        protected bool ValidateRatingKind(RatingKindEntity ratingKindEntity, ValidateRatingKindOptions options)
+        protected bool ValidateRatingKind(RatingKindEntity? ratingKindEntity, ValidateRatingKindOptions options)
         {
             if (ratingKindEntity == null)
             {

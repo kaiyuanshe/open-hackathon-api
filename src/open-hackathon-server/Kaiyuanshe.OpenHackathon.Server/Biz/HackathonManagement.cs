@@ -55,9 +55,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<Dictionary<string, HackathonEntity>> ListAllHackathonsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get roles of a user on a specified hackathon
+        /// Get roles of a user on a specified hackathon. Return null for anonymous user.
         /// </summary>
-        Task<HackathonRoles> GetHackathonRolesAsync(HackathonEntity hackathon, ClaimsPrincipal user, CancellationToken cancellationToken = default);
+        Task<HackathonRoles?> GetHackathonRolesAsync(HackathonEntity hackathon, ClaimsPrincipal user, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get roles of a user on a list of hackathon
@@ -395,7 +395,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetHackathonRolesAsync
-        public async Task<HackathonRoles> GetHackathonRolesAsync(HackathonEntity hackathon, ClaimsPrincipal user, CancellationToken cancellationToken = default)
+        public async Task<HackathonRoles?> GetHackathonRolesAsync(HackathonEntity hackathon, ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
             string userId = ClaimsHelper.GetUserId(user);
             if (hackathon == null || string.IsNullOrEmpty(userId))

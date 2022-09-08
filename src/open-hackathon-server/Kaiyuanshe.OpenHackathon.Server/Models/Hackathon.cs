@@ -144,7 +144,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// roles of current user. null if anonymous.
         /// </summary>
-        public HackathonRoles roles { get; internal set; }
+        public HackathonRoles? roles { get; internal set; }
     }
 
     /// <summary>
