@@ -17,8 +17,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user);
         Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
         Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
-        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template);
-        Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles);
+        GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext? template);
+        Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles? roles);
         HackathonAdmin BuildHackathonAdmin(HackathonAdminEntity hackathonAdminEntity, UserInfo userInfo);
         Judge BuildJudge(JudgeEntity judgeEntity, UserInfo userInfo);
         Organizer BuildOrganizer(OrganizerEntity organizerEntity);
@@ -122,7 +122,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext template)
+        public GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext? template)
         {
             GuacamoleConnection conn;
             switch (context.Status.protocol)
@@ -145,7 +145,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             return conn;
         }
 
-        public Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles roles)
+        public Hackathon BuildHackathon(HackathonEntity hackathonEntity, HackathonRoles? roles)
         {
             return hackathonEntity.As<Hackathon>(h =>
             {

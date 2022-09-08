@@ -244,7 +244,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
 
         [Test, TestCaseSource(nameof(ListActivityLogsTestData))]
         public async Task ListActivityLogs(ActivityLogQueryOptions options, string returnedToken,
-            string expectedFilter, string expectedToken, int? expectedTop, Pagination expectedNext)
+            string expectedFilter, string expectedToken, int? expectedTop, Pagination? expectedNext)
         {
             var logs = new List<ActivityLogEntity>()
             {

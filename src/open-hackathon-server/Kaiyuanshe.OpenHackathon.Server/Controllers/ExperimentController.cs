@@ -448,14 +448,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: context.ExperimentEntity.Id);
             }
             else
             {
-                TemplateContext template = await ExperimentManagement.GetTemplateAsync(
+                TemplateContext? template = await ExperimentManagement.GetTemplateAsync(
                     hackathonName.ToLower(),
                     context.ExperimentEntity.TemplateId,
                     cancellationToken);
