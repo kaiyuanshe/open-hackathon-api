@@ -35,22 +35,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             TeamMemberEntity? teamMember = null;
 
-            var teamTable = new Mock<ITeamTable>();
-            teamTable.Setup(p => p.InsertAsync(It.IsAny<TeamEntity>(), default));
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(p => p.InsertAsync(It.IsAny<TeamMemberEntity>(), default))
+            var moqs = new Moqs();
+            moqs.TeamTable.Setup(p => p.InsertAsync(It.IsAny<TeamEntity>(), default));
+            moqs.TeamMemberTable.Setup(p => p.InsertAsync(It.IsAny<TeamMemberEntity>(), default))
                 .Callback<TeamMemberEntity, CancellationToken>((t, c) => { teamMember = t; });
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamTable).Returns(teamTable.Object);
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            moqs.CacheProvider.Setup(c => c.Remove(It.IsAny<string>()));
+            moqs.CacheProvider.Setup(c => c.Remove("Team-hack"));
 
-            var teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.CreateTeamAsync(request, default);
 
-            Mock.VerifyAll(teamTable, teamMemberTable, storageContext);
+            moqs.VerifyAll();
+            moqs.CacheProvider.Verify(c => c.Remove("Team-hack"));
+            Debug.Assert(teamMember != null);
+            Assert.IsNotNull(teamMember);
+            moqs.CacheProvider.Verify(c => c.Remove($"Team-{teamMember.TeamId}"));
+
             Assert.IsNotNull(result);
             Assert.AreEqual(false, result.AutoApprove);
             Assert.AreEqual("uid", result.CreatorId);

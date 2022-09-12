@@ -19,14 +19,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             return $"{ResourceKeyPrefix}_{entity.Category}_{entity.ActivityLogType}";
         }
 
-        public static void GenerateMessage(this ActivityLogEntity entity, object args, string? resourceKey = null)
+        public static void GenerateMessage(this ActivityLogEntity entity, object? args, string? resourceKey = null)
         {
             if (entity == null)
                 return;
 
             resourceKey ??= entity.GetResourceKey();
             entity.MessageResourceKey = resourceKey;
-            Func<CultureInfo, string> messageByCulture = (culture) =>
+            Func<CultureInfo, string?> messageByCulture = (culture) =>
             {
                 try
                 {
@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             }
         }
 
-        public static string GetMessage(this ActivityLogEntity entity)
+        public static string? GetMessage(this ActivityLogEntity entity)
         {
             if (entity == null)
                 return null;
@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
             return entity.Messages.Values.FirstOrDefault(m => m != null);
         }
 
-        public static string GetMessageFormat(this ActivityLogEntity entity)
+        public static string? GetMessageFormat(this ActivityLogEntity entity)
         {
             if (entity == null)
                 return null;
@@ -76,7 +76,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
                 return GetMessage(entity);
             }
 
-            string format = Resources.ResourceManager.GetString(entity.MessageResourceKey);
+            string? format = Resources.ResourceManager.GetString(entity.MessageResourceKey);
             return format ?? GetMessage(entity);
         }
     }

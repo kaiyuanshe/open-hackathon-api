@@ -80,7 +80,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// A Microsoft PowerPoint doc
         /// </summary>
-        powerpoint
+        powerpoint,
+        /// <summary>
+        /// A pdf document.
+        /// </summary>
+        pdf,
+        /// <summary>
+        /// A zip package.
+        /// </summary>
+        zip,
     }
 
     /// <summary>

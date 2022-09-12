@@ -52,10 +52,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Assert.AreEqual(204, noContent.StatusCode);
         }
 
-        public static void AssertEqual(Pagination expected, Pagination actual)
+        public static void AssertEqual(Pagination? expected, Pagination? actual)
         {
+            if (expected == null && actual == null)
+            {
+                return;
+            }
+
             if (expected == actual)
                 return;
+
+            if(expected == null || actual == null)
+            {
+                Assert.Fail();
+                return;
+            }
 
             Assert.IsNotNull(expected);
             Assert.IsNotNull(actual);
