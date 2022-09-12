@@ -41,7 +41,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// Messages for all cultures. Use CultureInfo.Name as key.
         /// </summary>
         [ConvertableEntityProperty]
-        public Dictionary<string, string> Messages { get; set; } = new();
+        public Dictionary<string, string?> Messages { get; set; } = new();
     }
 
     public enum ActivityLogCategory

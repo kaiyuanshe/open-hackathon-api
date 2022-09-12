@@ -158,6 +158,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 CreatedAt = teamEntity.CreatedAt,
             };
             await StorageContext.TeamMemberTable.InsertAsync(teamMember, cancellationToken);
+            InvalidateCachedTeam(request.hackathonName, teamEntity.Id);
 
             return teamEntity;
         }
@@ -221,7 +222,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         private async Task<IEnumerable<TeamEntity>> ListCachedEntities(TeamQueryOptions options, CancellationToken cancellationToken)
         {
             string cacheKey = TeamListCacheKey(options.HackathonName);
-            return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(6), async (ct) =>
+            return await Cache.GetOrAddAsync(cacheKey, TimeSpan.FromHours(1), async (ct) =>
             {
                 return await StorageContext.TeamTable.ListByHackathonAsync(options.HackathonName, ct);
             }, false, cancellationToken);

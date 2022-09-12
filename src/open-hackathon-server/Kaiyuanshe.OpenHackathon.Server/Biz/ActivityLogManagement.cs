@@ -55,7 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public class ActivityLogManagement : ManagementClient<ActivityLogManagement>, IActivityLogManagement
     {
         #region LogActivity
-        public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogHackathonActivity(string hackathonName, string operatorId, ActivityLogType logType, object? args, string? resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(hackathonName))
                 return;
@@ -67,7 +67,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             }, cancellationToken);
         }
 
-        public async Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object args, string? resourceKey = null, CancellationToken cancellationToken = default)
+        public async Task LogTeamActivity(string hackathonName, string teamId, string operatorId, ActivityLogType logType, object? args, string? resourceKey = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(teamId))
                 return;
@@ -96,7 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             return $"{StorageUtils.InversedTimeKey(DateTime.UtcNow)}-{Guid.NewGuid().ToString().Substring(0, 8)}";
         }
 
-        private async Task CustomizeAndSave(string? hackathonName, string operatorId, ActivityLogType logType, object args, string? resourceKey, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
+        private async Task CustomizeAndSave(string? hackathonName, string operatorId, ActivityLogType logType, object? args, string? resourceKey, Action<ActivityLogEntity> customize, CancellationToken cancellationToken)
         {
             var entity = new ActivityLogEntity
             {

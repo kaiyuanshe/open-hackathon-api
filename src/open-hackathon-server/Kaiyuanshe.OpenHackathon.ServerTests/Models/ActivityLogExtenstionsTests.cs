@@ -132,7 +132,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
         }
 
         [Test, TestCaseSource(nameof(GetMessageTestData))]
-        public string GetMessage(Dictionary<string, string> messages)
+        public string GetMessage(Dictionary<string, string?> messages)
         {
             CultureInfo.CurrentUICulture = CultureInfos.zh_CN;
             var entity = new ActivityLogEntity { Messages = messages };
@@ -149,7 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             // null resource key
             yield return new TestCaseData(new ActivityLogEntity
             {
-                Messages = new Dictionary<string, string>
+                Messages = new Dictionary<string, string?>
                 {
                     ["en-US"] = "en"
                 }
@@ -159,7 +159,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             yield return new TestCaseData(new ActivityLogEntity
             {
                 MessageResourceKey = "abcdef",
-                Messages = new Dictionary<string, string>
+                Messages = new Dictionary<string, string?>
                 {
                     ["en-US"] = "en"
                 }
@@ -169,7 +169,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             yield return new TestCaseData(new ActivityLogEntity
             {
                 MessageResourceKey = "User_NotFound",
-                Messages = new Dictionary<string, string>
+                Messages = new Dictionary<string, string?>
                 {
                     ["en-US"] = "en"
                 }
@@ -177,7 +177,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
         }
 
         [Test, TestCaseSource(nameof(GetMessageFormatTestData))]
-        public string GetMessageFormat(ActivityLogEntity entity)
+        public string? GetMessageFormat(ActivityLogEntity entity)
         {
             return entity.GetMessageFormat();
         }

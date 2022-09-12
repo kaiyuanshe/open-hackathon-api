@@ -31,8 +31,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
 
         public async Task<UserEntity> SaveUserAsync(UserInfo userInfo, CancellationToken cancellationToken = default)
         {
-            Debug.Assert(userInfo.Password != null);
-            Debug.Assert(userInfo.Token != null);
+#pragma warning disable CS8601 // Possible null reference assignment.
             var entity = new UserEntity
             {
                 Address = userInfo.Address,
@@ -85,6 +84,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 Website = userInfo.Website,
                 Zoneinfo = userInfo.Zoneinfo,
             };
+#pragma warning restore CS8601 // Possible null reference assignment.
+
             await InsertOrReplaceAsync(entity, cancellationToken);
             var resp = await RetrieveAsync(userInfo.Id.ToLower(), string.Empty);
             Debug.Assert(resp != null);
