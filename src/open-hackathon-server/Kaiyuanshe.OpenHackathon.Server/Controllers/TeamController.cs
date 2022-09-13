@@ -122,6 +122,45 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         }
         #endregion
 
+        #region CheckNameAvailability
+        /// <summary>
+        /// Check the team name availability.
+        /// </summary>
+        /// <remarks>
+        /// Check if a team name is valid. <br />
+        /// A name could be invalid because it's taken by another team or it's too long. 
+        /// Team name(case-sensitive) must be unique in the same hackathon.
+        /// Please choose a different name if not valid.
+        /// </remarks>
+        /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
+        /// Must contain only letters and/or numbers, length between 1 and 100</param>
+        /// <param name="parameter">parameter including the name to check</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>availability and a reason if not available.</returns>
+        [HttpPost]
+        [Route("hackathon/{hackathonName}/team/checkNameAvailability")]
+        [SwaggerErrorResponse(400, 401)]
+        [ProducesResponseType(typeof(NameAvailability), StatusCodes.Status200OK)]
+        [Authorize(Policy = AuthConstant.PolicyForSwagger.LoginUser)]
+        public async Task<object> CheckNameAvailability(
+            [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
+            [FromBody, Required] NameAvailability parameter,
+            CancellationToken cancellationToken)
+        {
+            if (parameter.name.Length > 128)
+            {
+                return parameter.Invalid(Resources.Team_NameTooLong);
+            }
+
+            if (await IsTeamNameTaken(hackathonName.ToLower(), parameter.name, cancellationToken))
+            {
+                return parameter.AlreadyExists(Resources.Team_NameTaken);
+            }
+
+            return parameter.OK();
+        }
+        #endregion
+
         #region UpdateTeam
         /// <summary>
         /// Update a team by teamId.

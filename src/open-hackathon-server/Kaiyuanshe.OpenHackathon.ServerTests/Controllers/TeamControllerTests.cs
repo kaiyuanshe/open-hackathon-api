@@ -22,6 +22,65 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
     [TestFixture]
     public class TeamControllerTests
     {
+        #region CheckNameAvailability
+        [Test]
+        public async Task CheckNameAvailability_Invalid()
+        {
+            var name = new string('a', 129);
+            var parameter = new NameAvailability { name = name };
+
+            var controller = new TeamController();
+            var result = await controller.CheckNameAvailability("hack", parameter, default);
+            NameAvailability resp = (NameAvailability)(result);
+            Assert.AreEqual(name, resp.name);
+            Assert.IsFalse(resp.nameAvailable);
+            Assert.AreEqual("Invalid", resp.reason);
+            Assert.AreEqual(Resources.Team_NameTooLong, resp.message);
+        }
+
+        [Test]
+        public async Task CheckNameAvailability_AlreadyExists()
+        {
+            var name = new string('a', 128);
+            var parameter = new NameAvailability { name = name };
+            var teams = new List<TeamEntity> { new TeamEntity() };
+
+            var moqs = new Moqs();
+            moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", name, default)).ReturnsAsync(teams);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CheckNameAvailability("Foo", parameter, default);
+
+            NameAvailability resp = (NameAvailability)(result);
+            Assert.AreEqual(name, resp.name);
+            Assert.IsFalse(resp.nameAvailable);
+            Assert.AreEqual("AlreadyExists", resp.reason);
+            Assert.AreEqual(Resources.Team_NameTaken, resp.message);
+        }
+
+        [Test]
+        public async Task CheckNameAvailability_Ok()
+        {
+            var name = new string('a', 128);
+            var parameter = new NameAvailability { name = name };
+            var teams = new List<TeamEntity> { };
+
+            var moqs = new Moqs();
+            moqs.TeamManagement.Setup(t => t.GetTeamByNameAsync("foo", name, default)).ReturnsAsync(teams);
+
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.CheckNameAvailability("Foo", parameter, default);
+
+            NameAvailability resp = (NameAvailability)(result);
+            Assert.AreEqual(name, resp.name);
+            Assert.IsTrue(resp.nameAvailable);
+            Assert.IsNull(resp.reason);
+            Assert.IsNull(resp.message);
+        }
+        #endregion
+
         #region CreateTeam
         [Test]
         public async Task CreateTeam_HackNotFound()
