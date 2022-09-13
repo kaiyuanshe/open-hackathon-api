@@ -53,7 +53,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.CheckNameAvailability("Foo", parameter, default);
 
             NameAvailability resp = (NameAvailability)(result);
-            Assert.AreEqual("Foo", resp.name);
+            Assert.AreEqual(name, resp.name);
             Assert.IsFalse(resp.nameAvailable);
             Assert.AreEqual("AlreadyExists", resp.reason);
             Assert.AreEqual(Resources.Team_NameTaken, resp.message);
@@ -74,7 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.CheckNameAvailability("Foo", parameter, default);
 
             NameAvailability resp = (NameAvailability)(result);
-            Assert.AreEqual("Foo", resp.name);
+            Assert.AreEqual(name, resp.name);
             Assert.IsTrue(resp.nameAvailable);
             Assert.IsNull(resp.reason);
             Assert.IsNull(resp.message);
