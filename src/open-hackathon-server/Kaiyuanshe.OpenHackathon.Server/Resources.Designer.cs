@@ -1771,6 +1771,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name is too long. Length cannot exceed 128..
+        /// </summary>
+        internal static string Team_NameTooLong {
+            get {
+                return ResourceManager.GetString("Team_NameTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access denied. Please contact admins of the team..
         /// </summary>
         internal static string Team_NotAdmin {

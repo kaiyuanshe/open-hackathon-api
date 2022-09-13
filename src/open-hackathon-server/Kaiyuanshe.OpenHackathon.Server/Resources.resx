@@ -705,6 +705,9 @@
   <data name="Team_NameTaken" xml:space="preserve">
     <value>The team name '{0}' is already taken. Please try a different name.</value>
   </data>
+  <data name="Team_NameTooLong" xml:space="preserve">
+    <value>The name is too long. Length cannot exceed 128.</value>
+  </data>
   <data name="Team_NotAdmin" xml:space="preserve">
     <value>Access denied. Please contact admins of the team.</value>
   </data>

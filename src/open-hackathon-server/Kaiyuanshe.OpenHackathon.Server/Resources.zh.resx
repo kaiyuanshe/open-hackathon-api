@@ -705,6 +705,9 @@
   <data name="Team_NameTaken" xml:space="preserve">
     <value>团队名称'{0}'已被占用。请重新选择一个不同的名称。</value>
   </data>
+  <data name="Team_NameTooLong" xml:space="preserve">
+    <value>名称长度不能超过128个字符。</value>
+  </data>
   <data name="Team_NotAdmin" xml:space="preserve">
     <value>拒绝访问，请联系团队管理员</value>
   </data>
