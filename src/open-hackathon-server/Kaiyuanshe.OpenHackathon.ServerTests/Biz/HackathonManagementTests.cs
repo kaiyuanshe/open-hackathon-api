@@ -163,15 +163,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [TestCase(HackathonStatus.offline, HackathonStatus.offline)]
         public async Task UpdateHackathonStatusAsync_Skip(HackathonStatus origin, HackathonStatus target)
         {
-            CancellationToken cancellationToken = CancellationToken.None;
             HackathonEntity hackathonEntity = new HackathonEntity { Status = origin };
 
-            var hackathonManagement = new HackathonManagement()
-            {
-            };
-            var updated = await hackathonManagement.UpdateHackathonStatusAsync(hackathonEntity, target, cancellationToken);
+            var moqs = new Moqs();
+
+            var hackathonManagement = new HackathonManagement();
+            moqs.SetupManagement(hackathonManagement);
+            moqs.HackathonTable.Setup(h => h.MergeAsync(hackathonEntity, default));
+
+            var updated = await hackathonManagement.UpdateHackathonStatusAsync(hackathonEntity, target, default);
             Assert.AreEqual(target, updated.Status);
-            Assert.IsNull(await hackathonManagement.UpdateHackathonStatusAsync(null, target, cancellationToken));
         }
 
         [TestCase(HackathonStatus.planning, HackathonStatus.pendingApproval)]
