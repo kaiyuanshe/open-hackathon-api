@@ -22,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
-        Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string? templateId = null, CancellationToken cancellationToken = default);
         Task DeleteExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task DeleteExperimentAsync(string experimentResourceName, CancellationToken cancellationToken);
     }
@@ -365,7 +365,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
         #endregion
 
         #region ListExperimentsAsync
-        public async Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string templateId = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string? templateId = null, CancellationToken cancellationToken = default)
         {
             try
             {

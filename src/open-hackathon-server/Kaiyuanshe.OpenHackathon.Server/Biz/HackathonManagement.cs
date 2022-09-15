@@ -62,7 +62,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get roles of a user on a list of hackathon
         /// </summary>
-        Task<IEnumerable<Tuple<HackathonEntity, HackathonRoles>>> ListHackathonRolesAsync(IEnumerable<HackathonEntity> hackathons, ClaimsPrincipal user, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Tuple<HackathonEntity, HackathonRoles?>>> ListHackathonRolesAsync(IEnumerable<HackathonEntity> hackathons, ClaimsPrincipal user, CancellationToken cancellationToken = default);
     }
 
     /// <inheritdoc cref="IHackathonManagement"/>
@@ -165,9 +165,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region UpdateHackathonStatusAsync
         public async Task<HackathonEntity> UpdateHackathonStatusAsync(HackathonEntity hackathonEntity, HackathonStatus status, CancellationToken cancellationToken = default)
         {
-            if (hackathonEntity == null || hackathonEntity.Status == status)
-                return hackathonEntity;
-
             hackathonEntity.Status = status;
             await StorageContext.HackathonTable.MergeAsync(hackathonEntity, cancellationToken);
 
@@ -241,7 +238,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         {
             // ordering
             IEnumerable<HackathonEntity> hackathons = candidtes;
-            var orderBy = options?.OrderBy.GetValueOrDefault(HackathonOrderBy.createdAt);
+            var orderBy = options.OrderBy.GetValueOrDefault(HackathonOrderBy.createdAt);
             switch (orderBy)
             {
                 case HackathonOrderBy.updatedAt:
@@ -444,9 +441,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListHackathonRolesAsync
-        public async Task<IEnumerable<Tuple<HackathonEntity, HackathonRoles>>> ListHackathonRolesAsync(IEnumerable<HackathonEntity> hackathons, ClaimsPrincipal user, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Tuple<HackathonEntity, HackathonRoles?>>> ListHackathonRolesAsync(IEnumerable<HackathonEntity> hackathons, ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
-            List<Tuple<HackathonEntity, HackathonRoles>> tuples = new List<Tuple<HackathonEntity, HackathonRoles>>();
+            List<Tuple<HackathonEntity, HackathonRoles?>> tuples = new List<Tuple<HackathonEntity, HackathonRoles?>>();
             foreach (var hackathon in hackathons)
             {
                 var roles = await GetHackathonRolesAsync(hackathon, user, cancellationToken);

@@ -12,7 +12,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz.Options
 
     public static class TableQueryOptionsExtension
     {
-        public static int Top(this TableQueryOptions options, int defaultValue = 100)
+        public static int Top(this TableQueryOptions? options, int defaultValue = 100)
         {
             if (options?.Pagination?.top != null && options.Pagination.top.Value > 0)
             {

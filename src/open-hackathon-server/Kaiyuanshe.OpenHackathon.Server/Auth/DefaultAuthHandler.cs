@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             IUserManagement userManagement,
             ICacheProvider cache,
             ProblemDetailsFactory problemDetailsFactory,
-            Func<HttpResponse, string, CancellationToken, Task> writeToResponse = null)
+            Func<HttpResponse, string, CancellationToken, Task>? writeToResponse = null)
             : base(options, logger, encoder, clock)
         {
             this.userManagement = userManagement;
