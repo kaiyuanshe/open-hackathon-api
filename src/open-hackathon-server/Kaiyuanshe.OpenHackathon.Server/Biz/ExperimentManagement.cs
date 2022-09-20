@@ -19,16 +19,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<TemplateContext?> GetTemplateAsync(string hackathonName, string templateName, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateContext>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<int> GetTemplateCountAsync(string hackathonName, CancellationToken cancellationToken);
-        Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
+        Task<TemplateContext?> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken);
         /// <summary>
         /// Delete all templates of a hackathon from kubernetes, but keep the records in DB for query
         /// </summary>
         Task CleanupKubernetesTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken);
-        Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
-        Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
-        Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string templateId = null, CancellationToken cancellationToken = default);
-        Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
+        Task<ExperimentContext?> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
+        Task<ExperimentContext?> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
+        Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string? templateId = null, CancellationToken cancellationToken = default);
+        Task<ExperimentContext?> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken);
         /// <summary>
         /// Delete all experiments of a hackathon from kubernetes, but keep the records in DB for query
         /// </summary>
@@ -42,9 +42,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region CreateOrUpdateTemplateAsync
         public async Task<TemplateContext> CreateOrUpdateTemplateAsync(Template request, CancellationToken cancellationToken)
         {
-            if (request == null)
-                return null;
-
             request.id ??= Guid.NewGuid().ToString();
             var entity = await StorageContext.TemplateTable.RetrieveAsync(request.hackathonName, request.id, cancellationToken);
             if (entity == null)
@@ -153,7 +150,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             Func<TemplateResource, string, bool> selector = (k8sResource, tempId) =>
             {
                 if (k8sResource?.Metadata?.Labels != null
-                    && k8sResource.Metadata.Labels.TryGetValue(Labels.TemplateId, out string templateId)
+                    && k8sResource.Metadata.Labels.TryGetValue(Labels.TemplateId, out string? templateId)
                     && tempId == templateId)
                 {
                     return true;
@@ -195,7 +192,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region DeleteTemplateAsync
-        public async Task<TemplateContext> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
+        public async Task<TemplateContext?> DeleteTemplateAsync(string hackathonName, string templateId, CancellationToken cancellationToken)
         {
             var entity = await StorageContext.TemplateTable.RetrieveAsync(hackathonName, templateId, cancellationToken);
             if (entity == null)
@@ -227,9 +224,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region CreateOrUpdateExperimentAsync
         public async Task<ExperimentContext> CreateOrUpdateExperimentAsync(Experiment experiment, CancellationToken cancellationToken)
         {
-            if (experiment == null)
-                return null;
-
             experiment.id = GetExperimentRowKey(experiment.templateId, experiment.userId);
             var entity = await StorageContext.ExperimentTable.RetrieveAsync(experiment.hackathonName, experiment.id, cancellationToken);
             if (entity == null)
@@ -275,7 +269,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ResetExperimentAsync
-        public async Task<ExperimentContext> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
+        public async Task<ExperimentContext?> ResetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
         {
             if (hackathonName == null || experimentId == null)
                 return null;
@@ -306,7 +300,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region GetExperimentAsync
-        public async Task<ExperimentContext> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
+        public async Task<ExperimentContext?> GetExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
         {
             if (hackathonName == null || experimentId == null)
                 return null;
@@ -336,7 +330,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region ListExperimentsAsync
-        public async Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string templateId = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ExperimentContext>> ListExperimentsAsync(HackathonEntity hackathon, string? templateId = null, CancellationToken cancellationToken = default)
         {
             if (hackathon == null)
                 return Array.Empty<ExperimentContext>();
@@ -391,7 +385,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region DeleteExperimentAsync
-        public async Task<ExperimentContext> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
+        public async Task<ExperimentContext?> DeleteExperimentAsync(string hackathonName, string experimentId, CancellationToken cancellationToken)
         {
             var entity = await StorageContext.ExperimentTable.RetrieveAsync(hackathonName, experimentId, cancellationToken);
             if (entity == null)

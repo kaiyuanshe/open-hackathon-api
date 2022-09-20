@@ -2,10 +2,13 @@
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,15 +19,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
         string BlobContainerUri { get; }
         string CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn);
         Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken);
+        Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken);
     }
 
     public abstract class AzureBlobContainerV2 : StorageClientBase, IAzureBlobContainerV2
     {
-        BlobContainerClient blobContainerClient = null;
+        BlobContainerClient blobContainerClient;
         ILogger logger;
         protected abstract string ContainerName { get; }
 
-        public override string StorageName => blobContainerClient?.AccountName;
+        public override string StorageName => blobContainerClient?.AccountName ?? string.Empty;
 
         protected AzureBlobContainerV2(ILogger logger)
         {
@@ -66,12 +70,31 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
             }
         }
 
+        public async Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken)
+        {
+            var blobContainerClient = GetBlobContainerClient();
+            var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
+            using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
+            {
+                try
+                {
+                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+                    var options = new BlobUploadOptions { };
+                    await blobClient.UploadAsync(stream, options, cancellationToken);
+                }
+                catch (RequestFailedException ex)
+                {
+                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
+                }
+            }
+        }
+
         private BlobContainerClient GetBlobContainerClient()
         {
             return GetBlobContainerClientInternal(null);
         }
 
-        private BlobContainerClient GetBlobContainerClientInternal(BlobClientOptions options)
+        private BlobContainerClient GetBlobContainerClientInternal(BlobClientOptions? options)
         {
             if (blobContainerClient == null)
             {
