@@ -26,6 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         IUserTokenTable UserTokenTable { get; set; }
         IUserBlobContainer UserBlobContainer { get; set; }
         IKubernetesBlobContainer KubernetesBlobContainer { get; set; }
+        IReportsContainer ReportsContainer { get; set; }
     }
 
     public class StorageContext : IStorageContext
@@ -51,5 +52,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public IUserTokenTable UserTokenTable { get; set; }
         public IUserBlobContainer UserBlobContainer { get; set; }
         public IKubernetesBlobContainer KubernetesBlobContainer { get; set; }
+        public IReportsContainer ReportsContainer { get; set; }
     }
 }
