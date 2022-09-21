@@ -15,7 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
 
     public class TrustedAppHandler : AuthorizationHandler<TrustedAppRequirement>
     {
-        IHttpContextAccessor _httpContextAccessor = null;
+        IHttpContextAccessor? _httpContextAccessor = null;
         string[] _trustedApps = new string[0];
 
         static readonly string HeaderNameAppId = "x-openhackathon-app-id";
@@ -40,8 +40,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, TrustedAppRequirement requirement)
         {
-            var request = _httpContextAccessor.HttpContext.Request;
-            if (!request.Headers.ContainsKey(HeaderNameAppId))
+            var request = _httpContextAccessor?.HttpContext?.Request;
+            if (request == null || !request.Headers.ContainsKey(HeaderNameAppId))
             {
                 // No "x-openhackathon-app-id" header
                 logger?.TraceInformation("No 'x-openhackathon-app-id' header found");
