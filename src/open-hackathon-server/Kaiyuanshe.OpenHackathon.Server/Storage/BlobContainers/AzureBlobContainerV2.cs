@@ -20,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
         string CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn);
         Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken);
         Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken);
     }
 
     public abstract class AzureBlobContainerV2 : StorageClientBase, IAzureBlobContainerV2
@@ -81,6 +82,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
                     using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
                     var options = new BlobUploadOptions { };
                     await blobClient.UploadAsync(stream, options, cancellationToken);
+                }
+                catch (RequestFailedException ex)
+                {
+                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
+                }
+            }
+        }
+
+        public async Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken)
+        {
+            var blobContainerClient = GetBlobContainerClient();
+            var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
+            using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
+            {
+                try
+                {
+                    return await blobClient.ExistsAsync(cancellationToken);
                 }
                 catch (RequestFailedException ex)
                 {

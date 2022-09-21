@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,11 +14,31 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
 {
     public abstract class ReportsBaseJob : CronJobBase
     {
-        protected override TimeSpan Interval => TimeSpan.FromHours(12);
+        protected override TimeSpan Interval => TimeSpan.FromHours(18);
 
         protected abstract string ReportName { get; }
 
         protected abstract Task<IList<dynamic>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
+
+        internal virtual bool IsEligibleForReport(HackathonEntity hackathon)
+        {
+            // no report for readOnly hackathons
+            if (hackathon.ReadOnly)
+            {
+                return false;
+            }
+
+            // no report: 1 month after hackathon ends 
+            if (hackathon.EventEndedAt.HasValue)
+            {
+                return hackathon.EventEndedAt.Value.AddMonths(1) > DateTime.UtcNow;
+            }
+
+            // if no end date: only reports online hackathons that were created within 1 year. 
+            return hackathon.Status == HackathonStatus.online
+                && hackathon.CreatedAt.AddYears(1) > DateTime.UtcNow;
+        }
+
 
         protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
         {
@@ -27,14 +48,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
             {
                 try
                 {
-                    var report = await GenerateReport(hackathon, token);
+                    var container = StorageContext.ReportsContainer;
                     var blobName = $"{hackathon.Name}/{ReportName}.csv";
+                    var reportExists = await container.ExistsAsync(blobName, token);
 
-                    using (var writer = new StringWriter())
-                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    if (!reportExists || IsEligibleForReport(hackathon))
                     {
-                        csv.WriteRecords(report);
-                        // await StorageContext.ReportsContainer.UploadBlockBlobAsync(blobName, writer.ToString(), token);
+                        var report = await GenerateReport(hackathon, token);
+
+                        using (var writer = new StringWriter())
+                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                        {
+                            csv.WriteRecords(report);
+                            await StorageContext.ReportsContainer.UploadBlockBlobAsync(blobName, writer.ToString(), token);
+                        }
                     }
                 }
                 catch (Exception e)
