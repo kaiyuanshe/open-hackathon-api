@@ -60,7 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
                         using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                         {
                             csv.WriteRecords(report);
-                            await StorageContext.ReportsContainer.UploadBlockBlobAsync(blobName, writer.ToString(), token);
+                            //await StorageContext.ReportsContainer.UploadBlockBlobAsync(blobName, writer.ToString(), token);
                         }
                     }
                 }
