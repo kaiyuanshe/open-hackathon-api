@@ -1,0 +1,69 @@
+﻿using CsvHelper;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
+{
+    public abstract class ReportsBaseJob : CronJobBase
+    {
+        protected override TimeSpan Interval => TimeSpan.FromHours(12);
+
+        protected abstract string ReportName { get; }
+
+        protected abstract Task<IList<dynamic>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
+
+        protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
+        {
+            var hackathons = await StorageContext.HackathonTable.ListAllHackathonsAsync(token);
+
+            await Parallel.ForEachAsync(hackathons.Values, token, async (hackathon, t) =>
+            {
+                try
+                {
+                    var report = await GenerateReport(hackathon, token);
+                    var blobName = $"{hackathon.Name}/{ReportName}.csv";
+
+                    using (var writer = new StringWriter())
+                    using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    {
+                        csv.WriteRecords(report);
+                        // await StorageContext.ReportsContainer.UploadBlockBlobAsync(blobName, writer.ToString(), token);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.TraceError($"[{GetType().Name}]Failed to generate report `{ReportName}` for hackathon {hackathon.Name}", e);
+                }
+            });
+        }
+    }
+
+    public class TestReportJob : ReportsBaseJob
+    {
+        protected override string ReportName => "test";
+
+        protected override async Task<IList<dynamic>> GenerateReport(HackathonEntity hackathon, CancellationToken token)
+        {
+            var records = new List<dynamic>();
+
+            dynamic record = new ExpandoObject();
+
+            record.Id = 1;
+            record.Name = "one";
+            records.Add(record);
+
+            record.Id = 2;
+            record.Name = "two";
+            records.Add(record);
+
+            return records;
+        }
+    }
+}

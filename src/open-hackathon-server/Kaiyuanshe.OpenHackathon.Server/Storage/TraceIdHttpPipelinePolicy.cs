@@ -20,10 +20,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public override void OnSendingRequest(HttpMessage message)
         {
             string traceId = Activity.Current?.Id ?? string.Empty;
-            if (message.TryGetProperty(HttpHeaderNames.TraceId, out object prop))
+            if (message.TryGetProperty(HttpHeaderNames.TraceId, out object? prop))
             {
-                traceId = (string)prop;
-                message.Request.Headers.SetValue(HttpHeaderNames.TraceId, traceId);
+                if (prop != null)
+                {
+                    traceId = (string)prop;
+                    message.Request.Headers.SetValue(HttpHeaderNames.TraceId, traceId);
+                }
             }
 
             if (EnableLogging(message))
@@ -43,9 +46,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
             }
 
             string traceId = Activity.Current?.Id ?? string.Empty;
-            if (message.TryGetProperty(HttpHeaderNames.TraceId, out object prop))
+            if (message.TryGetProperty(HttpHeaderNames.TraceId, out object? prop))
             {
-                traceId = (string)prop;
+                if (prop != null)
+                {
+                    traceId = (string)prop;
+                }
             }
 
             if (!message.HasResponse)
@@ -70,6 +76,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
         private bool EnableLogging(HttpMessage message)
         {
+            Debug.Assert(message.Request.Uri.Host != null);
+
             // skip Qeueu messages GET, there are too many.
             string host = message.Request.Uri.Host.ToLower();
             string method = message.Request.Method.Method.ToUpper();

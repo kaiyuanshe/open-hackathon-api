@@ -4,5 +4,6 @@
     {
         public const string StaticWebsite = "$web";
         public const string Kubernetes = "kubernetes";
+        public const string Reports = "reports";
     }
 }
