@@ -2,19 +2,38 @@
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
 {
-    public class EnrollmentReportsJob : ReportsBaseJob
+    public class EnrollmentReportsJob : ReportsBaseJob<EnrollmentReportsJob.EnrollmentReport>
     {
-        protected override string ReportName => "Enrollments";
+        internal override string ReportName => "enrollments";
 
-        protected override async Task<IList<dynamic>> GenerateReport(HackathonEntity hackathon, CancellationToken token)
+        public class EnrollmentReport
         {
-            IList<dynamic> reports = new List<dynamic>();
+            public string UserId { get; set; }
+            public string UserName { get; set; }
+            public string Nickname { get; set; }
+            public string FamilyName { get; set; }
+            public string MiddleName { get; set; }
+            public string GivenName { get; set; }
+            public string Email { get; set; }
+            public string Phone { get; set; }
+            public string Gender { get; set; }
+            // hackathon info
+            public string HackathonName { get; set; }
+            public string HackathonDisplayName { get; set; }
+            // enrollment
+            public string EnrollmentId { get; set; }
+            public string EnrollmentStatus { get; set; }
+            public string Extensions { get; set; }
+        }
+
+        protected override async Task<IList<EnrollmentReport>> GenerateReport(HackathonEntity hackathon, CancellationToken token)
+        {
+            IList<EnrollmentReport> reports = new List<EnrollmentReport>();
 
             var filter = TableQueryHelper.PartitionKeyFilter(hackathon.Name);
             await StorageContext.EnrollmentTable.ExecuteQueryAsync(filter, async (enrollment) =>
@@ -23,27 +42,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
                 if (user == null)
                     return;
 
-                dynamic record = new ExpandoObject();
-                // user info
-                record.UserId = user.Id;
-                record.UserName = user.Username;
-                record.Nickname = user.Nickname;
-                record.FamilyName = user.FamilyName;
-                record.MiddleName = user.MiddleName;
-                record.GivenName = user.GivenName;
-                record.Email = user.Email;
-                record.Phone = user.Phone;
-                record.Gender = user.Gender;
-                record.Nickname = user.Nickname;
-                // hackathon info
-                record.HackathonName = hackathon.Name;
-                record.HackathonDisplayName = hackathon.DisplayName;
-                // enrollment
-                record.EnrollmentId = enrollment.RowKey;
-                record.EnrollmentStatus = enrollment.Status.ToString();
-                record.Extensions = JsonConvert.SerializeObject(enrollment.Extensions);
-
+                var record = new EnrollmentReport
+                {
+                    UserId = user.Id,
+                    UserName = user.Username,
+                    Nickname = user.Nickname,
+                    FamilyName = user.FamilyName,
+                    MiddleName = user.MiddleName,
+                    GivenName = user.GivenName,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Gender = user.Gender,
+                    // hackathon info
+                    HackathonName = hackathon.Name,
+                    HackathonDisplayName = hackathon.DisplayName,
+                    // enrollment
+                    EnrollmentId = enrollment.RowKey,
+                    EnrollmentStatus = enrollment.Status.ToString(),
+                    Extensions = JsonConvert.SerializeObject(enrollment.Extensions),
+                };
                 reports.Add(record);
+
             }, null, null, token);
 
             return reports;
