@@ -1,5 +1,6 @@
 ﻿using Azure.Data.Tables;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -31,6 +32,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
                 FilterForString(nameof(ITableEntity.RowKey), ComparisonOperator.LessThan, newStartsWith)
             );
 
+            Debug.Assert(filter != null);
             return filter;
         }
 
@@ -93,19 +95,19 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
             return GenerateFilter(propertyName, op, operand);
         }
 
-        public static string And(params string[] filters)
+        public static string? And(params string[] filters)
         {
             return CombineFilters("and", filters);
         }
 
-        public static string Or(params string[] filters)
+        public static string? Or(params string[] filters)
         {
             return CombineFilters("or", filters);
         }
 
-        static string CombineFilters(string operatorString, params string[] filters)
+        static string? CombineFilters(string operatorString, params string[] filters)
         {
-            if (filters?.Length == 0)
+            if (filters == null || filters.Length == 0)
                 return null;
 
             if (filters.Length == 1)

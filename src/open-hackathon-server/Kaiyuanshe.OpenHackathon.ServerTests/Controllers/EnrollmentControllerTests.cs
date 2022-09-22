@@ -279,8 +279,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 EnrollmentEndedAt = DateTime.UtcNow.AddDays(1),
                 Status = HackathonStatus.online,
             };
-            Enrollment request = new Enrollment { extensions = new Extension[11] };
-            for (int i = 0; i < 11; i++)
+            Enrollment request = new Enrollment { extensions = new Extension[Enrollment.MaxExtensions + 1] };
+            for (int i = 0; i < Enrollment.MaxExtensions + 1; i++)
             {
                 request.extensions[i] = new Extension { name = i.ToString(), value = i.ToString() };
             }
@@ -295,7 +295,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.Update(hackathonName, userId, request, default);
 
             moqs.VerifyAll();
-            AssertHelper.AssertObjectResult(result, 400, string.Format(Resources.Enrollment_TooManyExtensions, 10));
+            AssertHelper.AssertObjectResult(result, 400, string.Format(Resources.Enrollment_TooManyExtensions, Enrollment.MaxExtensions));
         }
 
         [Test]
