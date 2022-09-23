@@ -15,7 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
     {
         protected override TimeSpan Interval => TimeSpan.FromHours(18);
 
-        internal abstract string ReportName { get; }
+        internal abstract ReportType ReportType { get; }
 
         protected abstract Task<IList<T>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
 
@@ -48,7 +48,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
                 try
                 {
                     var container = StorageContext.ReportsContainer;
-                    var blobName = $"{hackathon.Name}/{ReportName}.csv";
+                    var blobName = $"{hackathon.Name}/{ReportType}.csv";
                     var reportExists = await container.ExistsAsync(blobName, token);
 
                     if (!reportExists || IsEligibleForReport(hackathon))
@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
                 }
                 catch (Exception e)
                 {
-                    Logger.TraceError($"[{GetType().Name}]Failed to generate report `{ReportName}` for hackathon {hackathon.Name}", e);
+                    Logger.TraceError($"[{GetType().Name}]Failed to generate report `{ReportType}` for hackathon {hackathon.Name}", e);
                 }
             });
         }

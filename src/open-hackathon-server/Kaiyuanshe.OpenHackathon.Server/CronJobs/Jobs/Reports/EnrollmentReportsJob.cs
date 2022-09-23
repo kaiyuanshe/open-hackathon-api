@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Storage;
+﻿using Kaiyuanshe.OpenHackathon.Server.Models;
+using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
 {
     public class EnrollmentReportsJob : ReportsBaseJob<EnrollmentReportsJob.EnrollmentReport>
     {
-        internal override string ReportName => "enrollments";
+        internal override ReportType ReportType => ReportType.enrollments;
 
         public class EnrollmentReport
         {

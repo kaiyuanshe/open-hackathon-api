@@ -85,8 +85,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             var nextLink = BuildNextLinkUrl(routeValues, options.NextPage);
 
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             return Ok(ResponseBuilder.BuildResourceList<HackathonEntity, HackathonRoles, Hackathon, HackathonList>(
-                    entityWithRoles, ResponseBuilder.BuildHackathon, nextLink));
+                    entityWithRoles,
+                    ResponseBuilder.BuildHackathon,
+                    nextLink));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
         }
         #endregion
 

@@ -609,6 +609,9 @@
   <data name="Experiment_UserNotMatch" xml:space="preserve">
     <value>Forbidden. The experiment is owned by another user.</value>
   </data>
+  <data name="HackathonReport_NotFound" xml:space="preserve">
+    <value>The report is not ready for downloading. Please retry 24 hours later.</value>
+  </data>
   <data name="Hackathon_AlreadyOnline" xml:space="preserve">
     <value>Hackathon {0} is already Online.</value>
   </data>

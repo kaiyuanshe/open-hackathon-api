@@ -4,6 +4,8 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using System;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
@@ -14,6 +16,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// </summary>
         /// <returns></returns>
         FileUpload GetUploadUrl(ClaimsPrincipal user, FileUpload request);
+
+        Task<byte[]?> DownloadReport(string hackathonName, ReportType reportType, CancellationToken token);
     }
 
     public class FileManagement : ManagementClient<FileManagement>, IFileManagement
@@ -92,6 +96,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             fileUpload.url = $"{baseUrls.readUrlBase}/{blobName}";
             fileUpload.uploadUrl = $"{baseUrls.writeUrlBase}/{BlobContainerNames.StaticWebsite}/{blobName}{sasToken}";
             return fileUpload;
+        }
+        #endregion
+
+        #region DownloadReport
+        public async Task<byte[]?> DownloadReport(string hackathonName, ReportType reportType, CancellationToken token)
+        {
+            var blobName = $"{hackathonName}/{reportType}.csv";
+            var blobExists = await StorageContext.ReportsContainer.ExistsAsync(blobName, token);
+            if (!blobExists)
+            {
+                return null;
+            }
+
+            return await StorageContext.ReportsContainer.DownloadBlockBlobAsBytesAsync(blobName, token);
         }
         #endregion
     }
