@@ -13,6 +13,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
         {
             moqs.SetupCronJob(job);
 
+            job.UserManagement = moqs.UserManagement.Object;
             moqs.HackathonTable.Setup(h => h.ListAllHackathonsAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(hackathons.ToDictionary(h => h.Name, h => h));
             foreach (var h in hackathons)

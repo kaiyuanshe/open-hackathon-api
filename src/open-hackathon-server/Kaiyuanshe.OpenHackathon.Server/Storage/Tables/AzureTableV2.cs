@@ -7,7 +7,6 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -182,7 +181,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Tables
                 try
                 {
                     var query = client.QueryAsync<TableEntity>(filter, null, select, cancellationToken);
-                    await query.ForEach(entity => entities.Add(entity.ToBaseTableEntity<TEntity>()), null, cancellationToken);
+                    await query.ForEach(entity =>
+                    {
+                        var converted = entity.ToBaseTableEntity<TEntity>();
+                        if (converted != null)
+                            entities.Add(converted);
+                    }, null, cancellationToken);
                 }
                 catch (RequestFailedException ex)
                 {
