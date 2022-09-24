@@ -219,6 +219,9 @@
   <data name="ActivityLog_Hackathon_deleteTemplate" xml:space="preserve">
     <value>Admin "{adminName}" deleted experiment template "{templateName}".</value>
   </data>
+  <data name="ActivityLog_Hackathon_downloadReport" xml:space="preserve">
+    <value>Admin {adminName} downloaded a report of type {reportType}.</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>User "{memberName}" requested to join team "{teamName}".</value>
   </data>
@@ -464,6 +467,9 @@
   </data>
   <data name="ActivityLog_User_deleteTemplate" xml:space="preserve">
     <value>[{hackathonName}]Deleted experiment template "{templateName}".</value>
+  </data>
+  <data name="ActivityLog_User_downloadReport" xml:space="preserve">
+    <value>[{hackathonName}]downloaded a report of type {reportType}.</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>Uploaded a new file.</value>
