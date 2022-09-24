@@ -8,7 +8,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EntityFramework" Version="6.2.0" />
 		<PackageReference Include="LiquidTestReports.Markdown" Version="1.0.9" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.1" />
 		<PackageReference Include="coverlet.collector" Version="3.1.2">
@@ -22,10 +21,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Kaiyuanshe.OpenHackathon.Server\Kaiyuanshe.OpenHackathon.Server.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
 	</ItemGroup>
 
 </Project>
