@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
 {
-    public abstract class ReportsBaseJob : CronJobBase
+    public abstract class ReportsBaseJob<T> : CronJobBase
     {
         protected override TimeSpan Interval => TimeSpan.FromHours(18);
 
-        protected abstract string ReportName { get; }
+        internal abstract string ReportName { get; }
 
-        protected abstract Task<IList<dynamic>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
+        protected abstract Task<IList<T>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
 
         internal virtual bool IsEligibleForReport(HackathonEntity hackathon)
         {

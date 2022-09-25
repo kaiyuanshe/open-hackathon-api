@@ -2,6 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
+using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IActivityLogTable> ActivityLogTable { get; } = new();
         public Mock<IAnnouncementTable> AnnouncementTable { get; } = new();
         public Mock<IAwardAssignmentTable> AwardAssignmentTable { get; } = new();
+        public Mock<IEnrollmentTable> EnrollmentTable { get; } = new();
         public Mock<IExperimentTable> ExperimentTable { get; } = new();
         public Mock<IHackathonTable> HackathonTable { get; } = new();
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
@@ -28,7 +30,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
         public Mock<ITopUserTable> TopUserTable { get; set; } = new();
+        public Mock<IUserTable> UserTable { get; set; } = new();
         public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
+        public Mock<IReportsContainer> ReportsContainer { get; set; } = new();
         #endregion
 
         #region Biz
@@ -63,6 +67,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
             StorageContext.Setup(p => p.AnnouncementTable).Returns(AnnouncementTable.Object);
             StorageContext.Setup(p => p.AwardAssignmentTable).Returns(AwardAssignmentTable.Object);
+            StorageContext.Setup(p => p.EnrollmentTable).Returns(EnrollmentTable.Object);
             StorageContext.Setup(p => p.ExperimentTable).Returns(ExperimentTable.Object);
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
@@ -72,7 +77,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
             StorageContext.Setup(p => p.TopUserTable).Returns(TopUserTable.Object);
+            StorageContext.Setup(p => p.UserTable).Returns(UserTable.Object);
             StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
+            StorageContext.Setup(p => p.ReportsContainer).Returns(ReportsContainer.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
         }
@@ -81,14 +88,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         {
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
-                ExperimentTable, HackathonTable,
+                EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable,
                 TeamTable, TeamMemberTable, TeamWorkTable, TopUserTable,
-                UserTokenTable);
+                UserTable, UserTokenTable, ReportsContainer);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
+            EnrollmentTable.VerifyNoOtherCalls();
             ExperimentTable.VerifyNoOtherCalls();
             HackathonTable.VerifyNoOtherCalls();
             HackathonAdminTable?.VerifyNoOtherCalls();
@@ -98,7 +106,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
             TopUserTable.VerifyNoOtherCalls();
+            UserTable.VerifyNoOtherCalls();
             UserTokenTable.VerifyNoOtherCalls();
+            ReportsContainer.VerifyNoOtherCalls();
             #endregion
 
             #region Biz
