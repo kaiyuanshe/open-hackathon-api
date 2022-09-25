@@ -609,6 +609,9 @@
   <data name="Experiment_UserNotMatch" xml:space="preserve">
     <value>禁止访问。该实验环境属于其它用户。</value>
   </data>
+  <data name="HackathonReport_NotFound" xml:space="preserve">
+    <value>导出文件还未就绪。请24小时后重试。</value>
+  </data>
   <data name="Hackathon_AlreadyOnline" xml:space="preserve">
     <value>活动 {0} 已经上线</value>
   </data>

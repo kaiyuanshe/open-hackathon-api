@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
                 .ReturnsAsync(hackathons.ToDictionary(h => h.Name, h => h));
             foreach (var h in hackathons)
             {
-                var blobName = $"{h.Name}/{job.ReportName}.csv";
+                var blobName = $"{h.Name}/{job.ReportType}.csv";
                 moqs.ReportsContainer.Setup(c => c.ExistsAsync(blobName, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(false);
                 moqs.ReportsContainer.Setup(c => c.UploadBlockBlobAsync(blobName, It.IsAny<string>(), It.IsAny<CancellationToken>()));

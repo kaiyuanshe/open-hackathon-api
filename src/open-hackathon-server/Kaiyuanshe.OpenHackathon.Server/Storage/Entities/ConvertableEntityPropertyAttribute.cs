@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return JsonConvert.SerializeObject(value);
         }
 
-        public virtual object Deserialize(string value, Type resultType)
+        public virtual object? Deserialize(string value, Type resultType)
         {
             return JsonConvert.DeserializeObject(value, resultType);
         }

@@ -19,6 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
         string BlobContainerUri { get; }
         string CreateBlobSasToken(string blobName, BlobSasPermissions permissions, DateTimeOffset expiresOn);
         Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken);
+        Task<byte[]> DownloadBlockBlobAsBytesAsync(string blobName, CancellationToken cancellationToken);
         Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken);
         Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken);
     }
@@ -55,42 +56,50 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
 
         public async Task<string> DownloadBlockBlobAsync(string blobName, CancellationToken cancellationToken)
         {
-            var blobContainerClient = GetBlobContainerClient();
-            var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
-            using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
+            return await ExecuteBlockBlobInternal(blobName, async (blobClient) =>
             {
-                try
-                {
-                    var response = await blobClient.DownloadContentAsync(cancellationToken);
-                    return response.Value.Content.ToString();
-                }
-                catch (RequestFailedException ex)
-                {
-                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
-                }
-            }
+                var response = await blobClient.DownloadContentAsync(cancellationToken);
+                return response.Value.Content.ToString();
+            }, cancellationToken);
+        }
+
+        public async Task<byte[]> DownloadBlockBlobAsBytesAsync(string blobName, CancellationToken cancellationToken)
+        {
+            return await ExecuteBlockBlobInternal(blobName, async (blobClient) =>
+            {
+                var response = await blobClient.DownloadContentAsync(cancellationToken);
+                return response.Value.Content.ToArray();
+            }, cancellationToken);
         }
 
         public async Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken)
         {
-            var blobContainerClient = GetBlobContainerClient();
-            var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
-            using (HttpPipeline.CreateHttpMessagePropertiesScope(GetMessageProperties()))
+            await ExecuteBlockBlobInternal(blobName, async (blobClient) =>
             {
-                try
-                {
-                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-                    var options = new BlobUploadOptions { };
-                    await blobClient.UploadAsync(stream, options, cancellationToken);
-                }
-                catch (RequestFailedException ex)
-                {
-                    throw new AzureStorageException(ex.Status, ex.Message, ex.ErrorCode, ex);
-                }
-            }
+                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+                var options = new BlobUploadOptions { };
+                await blobClient.UploadAsync(stream, options, cancellationToken);
+            }, cancellationToken);
         }
 
         public async Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken)
+        {
+            return await ExecuteBlockBlobInternal(blobName, async (blobClient) =>
+            {
+                return await blobClient.ExistsAsync(cancellationToken);
+            }, cancellationToken);
+        }
+
+        private async Task ExecuteBlockBlobInternal(string blobName, Func<BlockBlobClient, Task> func, CancellationToken cancellationToken)
+        {
+            await ExecuteBlockBlobInternal(blobName, async (blobClient) =>
+            {
+                await func(blobClient);
+                return 0;
+            }, cancellationToken);
+        }
+
+        private async Task<T> ExecuteBlockBlobInternal<T>(string blobName, Func<BlockBlobClient, Task<T>> func, CancellationToken cancellationToken)
         {
             var blobContainerClient = GetBlobContainerClient();
             var blobClient = blobContainerClient.GetBlockBlobClient(blobName);
@@ -98,7 +107,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
             {
                 try
                 {
-                    return await blobClient.ExistsAsync(cancellationToken);
+                    return await func(blobClient);
                 }
                 catch (RequestFailedException ex)
                 {

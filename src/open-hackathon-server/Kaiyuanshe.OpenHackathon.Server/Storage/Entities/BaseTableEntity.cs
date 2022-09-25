@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -64,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     {
         private static readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _propertyDictionary = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
 
-        public static TableEntity ToTableEntity(this BaseTableEntity entity)
+        public static TableEntity? ToTableEntity(this BaseTableEntity entity)
         {
             if (entity == null)
                 return null;
@@ -83,14 +84,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                     continue;
                 }
 
-                Type nullableType = Nullable.GetUnderlyingType(property.PropertyType);
+                Type? nullableType = Nullable.GetUnderlyingType(property.PropertyType);
                 var propertyValue = property.GetValue(entity);
                 if (propertyValue == null)
                 {
                     continue;
                 }
 
-                var convertableAttribute = (ConvertableEntityPropertyAttribute)Attribute.GetCustomAttribute(property, typeof(ConvertableEntityPropertyAttribute));
+                var convertableAttribute = property.GetCustomAttribute<ConvertableEntityPropertyAttribute>();
                 if (convertableAttribute != null)
                 {
                     values.Add(property.Name, convertableAttribute.Serialize(propertyValue));
@@ -105,7 +106,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                 }
                 else if (property.PropertyType == typeof(DateTime) || nullableType == typeof(DateTime))
                 {
-                    if (propertyValue != null && ((DateTime)propertyValue).Year < 1700)
+                    if (((DateTime)propertyValue).Year < 1700)
                     {
                         continue;
                     }
@@ -140,7 +141,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return tableEntity;
         }
 
-        public static TEntity ToBaseTableEntity<TEntity>(this TableEntity tableEntity)
+        public static TEntity? ToBaseTableEntity<TEntity>(this TableEntity tableEntity)
             where TEntity : BaseTableEntity, new()
         {
             if (tableEntity == null)
@@ -162,9 +163,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                     continue;
                 }
 
-                Type nullableType = Nullable.GetUnderlyingType(property.PropertyType);
+                Type? nullableType = Nullable.GetUnderlyingType(property.PropertyType);
                 // Convertable property
-                var convertableAttribute = (ConvertableEntityPropertyAttribute)Attribute.GetCustomAttribute(property, typeof(ConvertableEntityPropertyAttribute));
+                var convertableAttribute = property.GetCustomAttribute<ConvertableEntityPropertyAttribute>();
                 if (convertableAttribute != null && tableEntity.ContainsKey(property.Name))
                 {
                     Type resultType = property.PropertyType;
@@ -198,10 +199,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
                     || (nullableType != null && nullableType.IsEnum))
                 {
                     // Enum property
-                    Type enumType = property.PropertyType.IsEnum ? property.PropertyType : nullableType;
+                    var enumType = property.PropertyType.IsEnum ? property.PropertyType : nullableType;
                     var value = tableEntity.GetInt32(property.Name);
                     if (value.HasValue)
                     {
+                        Debug.Assert(enumType != null);
                         property.SetValue(entity, Enum.ToObject(enumType, value.Value));
                     }
                 }
@@ -248,7 +250,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return entity;
         }
 
-        public static IEnumerable<TEntity> ToBaseTableEntities<TEntity>(this IEnumerable<TableEntity> tableEntities)
+        public static IEnumerable<TEntity?> ToBaseTableEntities<TEntity>(this IEnumerable<TableEntity> tableEntities)
             where TEntity : BaseTableEntity, new()
         {
             return tableEntities.Select(entity => entity.ToBaseTableEntity<TEntity>());
@@ -256,7 +258,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 
         private static IEnumerable<PropertyInfo> GetCachedProperties(Type type)
         {
-            if (!_propertyDictionary.TryGetValue(type, out IEnumerable<PropertyInfo> properties))
+            if (!_propertyDictionary.TryGetValue(type, out IEnumerable<PropertyInfo>? properties))
             {
                 properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 _propertyDictionary.TryAdd(type, properties);

@@ -1654,6 +1654,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The report is not ready for downloading. Please retry 24 hours later..
+        /// </summary>
+        internal static string HackathonReport_NotFound {
+            get {
+                return ResourceManager.GetString("HackathonReport_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified user is not judge of the hackathon..
         /// </summary>
         internal static string Judge_NotFound {

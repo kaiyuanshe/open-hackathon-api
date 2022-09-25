@@ -314,6 +314,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             var user = await UserManagement.GetUserByIdAsync(CurrentUserId, cancellationToken);
             Debug.Assert(user != null);
+
             return Ok(ResponseBuilder.BuildEnrollment(enrollment, user));
         }
         #endregion
