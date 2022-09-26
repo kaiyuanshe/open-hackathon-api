@@ -12,26 +12,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
     {
         internal override ReportType ReportType => ReportType.enrollments;
 
-        public class EnrollmentReport
-        {
-            public string UserId { get; set; }
-            public string UserName { get; set; }
-            public string Nickname { get; set; }
-            public string FamilyName { get; set; }
-            public string MiddleName { get; set; }
-            public string GivenName { get; set; }
-            public string Email { get; set; }
-            public string Phone { get; set; }
-            public string Gender { get; set; }
-            // hackathon info
-            public string HackathonName { get; set; }
-            public string HackathonDisplayName { get; set; }
-            // enrollment
-            public string EnrollmentId { get; set; }
-            public string EnrollmentStatus { get; set; }
-            public string Extensions { get; set; }
-        }
-
         protected override async Task<IList<EnrollmentReport>> GenerateReport(HackathonEntity hackathon, CancellationToken token)
         {
             IList<EnrollmentReport> reports = new List<EnrollmentReport>();
@@ -39,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
             var filter = TableQueryHelper.PartitionKeyFilter(hackathon.Name);
             await StorageContext.EnrollmentTable.ExecuteQueryAsync(filter, async (enrollment) =>
             {
-                var user = await StorageContext.UserTable.GetUserByIdAsync(enrollment.UserId, token);
+                var user = await UserManagement.GetUserByIdAsync(enrollment.UserId, token);
                 if (user == null)
                     return;
 
@@ -67,6 +47,25 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
             }, null, null, token);
 
             return reports;
+        }
+        public class EnrollmentReport
+        {
+            public string UserId { get; set; }
+            public string UserName { get; set; }
+            public string Nickname { get; set; }
+            public string FamilyName { get; set; }
+            public string MiddleName { get; set; }
+            public string GivenName { get; set; }
+            public string Email { get; set; }
+            public string Phone { get; set; }
+            public string Gender { get; set; }
+            // hackathon info
+            public string HackathonName { get; set; }
+            public string HackathonDisplayName { get; set; }
+            // enrollment
+            public string EnrollmentId { get; set; }
+            public string EnrollmentStatus { get; set; }
+            public string Extensions { get; set; }
         }
     }
 }

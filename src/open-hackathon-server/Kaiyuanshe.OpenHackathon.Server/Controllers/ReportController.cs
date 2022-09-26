@@ -35,6 +35,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="reportType">type of report. required. See below for supported type <br />
         /// <ul>
         /// <li><b>enrollments</b>: export all enrolled users</li>
+        /// <li><b>teams</b>: export all teams and their members</li>
         /// </ul>
         /// </param>
         /// <param name="token">access token from login. It's optional but either Authorization or token is required. 

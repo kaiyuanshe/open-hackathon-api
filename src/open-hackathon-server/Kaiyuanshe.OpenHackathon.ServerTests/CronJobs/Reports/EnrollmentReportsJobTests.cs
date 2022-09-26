@@ -115,7 +115,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
                 });
             foreach (var u in userIds)
             {
-                moqs.UserTable.Setup(t => t.GetUserByIdAsync(u, It.IsAny<CancellationToken>()));
+                moqs.UserManagement.Setup(t => t.GetUserByIdAsync(u, It.IsAny<CancellationToken>()));
             }
 
             await job.ExecuteNow(null);

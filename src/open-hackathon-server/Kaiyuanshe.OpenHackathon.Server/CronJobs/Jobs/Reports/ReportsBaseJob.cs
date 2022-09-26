@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
         internal abstract ReportType ReportType { get; }
 
         protected abstract Task<IList<T>> GenerateReport(HackathonEntity hackathon, CancellationToken token);
+
+        public IUserManagement UserManagement { get; set; }
 
         internal virtual bool IsEligibleForReport(HackathonEntity hackathon)
         {

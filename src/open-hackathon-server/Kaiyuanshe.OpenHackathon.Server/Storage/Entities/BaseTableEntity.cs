@@ -65,11 +65,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
     {
         private static readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _propertyDictionary = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
 
-        public static TableEntity? ToTableEntity(this BaseTableEntity entity)
+        public static TableEntity ToTableEntity(this BaseTableEntity entity)
         {
-            if (entity == null)
-                return null;
-
             if (entity is DynamicTableEntity dynamicEntity)
             {
                 return dynamicEntity.ToTableEntityDynamic();
@@ -141,14 +138,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return tableEntity;
         }
 
-        public static TEntity? ToBaseTableEntity<TEntity>(this TableEntity tableEntity)
+        public static TEntity ToBaseTableEntity<TEntity>(this TableEntity tableEntity)
             where TEntity : BaseTableEntity, new()
         {
-            if (tableEntity == null)
-            {
-                return default(TEntity);
-            }
-
             if (typeof(TEntity) == typeof(DynamicTableEntity))
             {
                 return (TEntity)(object)tableEntity.ToDynamicTableEntity();
@@ -250,7 +242,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
             return entity;
         }
 
-        public static IEnumerable<TEntity?> ToBaseTableEntities<TEntity>(this IEnumerable<TableEntity> tableEntities)
+        public static IEnumerable<TEntity> ToBaseTableEntities<TEntity>(this IEnumerable<TableEntity> tableEntities)
             where TEntity : BaseTableEntity, new()
         {
             return tableEntities.Select(entity => entity.ToBaseTableEntity<TEntity>());
