@@ -36,6 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <ul>
         /// <li><b>enrollments</b>: export all enrolled users</li>
         /// <li><b>teams</b>: export all teams and their members</li>
+        /// <li><b>teamWorks</b>: export all team works.</li>
         /// </ul>
         /// </param>
         /// <param name="token">access token from login. It's optional but either Authorization or token is required. 
