@@ -102,6 +102,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         updateExperiment,
         resetExperiment,
         deleteExperiment,
+
+        // report
+        downloadReport,
     }
 
 }

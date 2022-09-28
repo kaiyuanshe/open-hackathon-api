@@ -36,7 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
         {
             if (bytes == null)
             {
-                return null;
+                return "";
             }
             StringBuilder sb = new StringBuilder(bytes.Length * 2);
             foreach (byte b in bytes)

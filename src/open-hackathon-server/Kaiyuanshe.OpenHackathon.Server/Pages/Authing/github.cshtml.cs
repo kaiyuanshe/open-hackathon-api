@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Pages.Authing
     {
         static readonly HttpClient client = new HttpClient();
 
-        public string Token
+        public string? Token
         {
             get;
             private set;

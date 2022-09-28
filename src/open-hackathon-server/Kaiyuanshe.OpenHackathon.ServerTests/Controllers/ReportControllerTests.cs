@@ -107,7 +107,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         [TestCase(ReportType.enrollments)]
         public async Task GetReport_Downloaded(ReportType reportType)
         {
-            HackathonEntity? hackathon = new HackathonEntity();
+            HackathonEntity? hackathon = new HackathonEntity { PartitionKey = "hack" };
             var claims = new List<Claim> { ClaimsHelper.UserId("uid") };
             AuthorizationResult auth = AuthorizationResult.Success();
             byte[]? reportContent = Encoding.UTF8.GetBytes("reportContent");
@@ -121,6 +121,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                     AuthConstant.Policy.HackathonAdministrator))
                 .ReturnsAsync(auth);
             moqs.FileManagement.Setup(f => f.DownloadReport("hack", reportType, default)).ReturnsAsync(reportContent);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("hack", "uid", ActivityLogType.downloadReport, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "hack", "uid", ActivityLogType.downloadReport, It.IsAny<object>(), null, default));
 
             var controller = new ReportController();
             moqs.SetupController(controller);

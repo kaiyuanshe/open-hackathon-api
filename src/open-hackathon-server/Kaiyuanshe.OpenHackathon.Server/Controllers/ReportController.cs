@@ -1,4 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
+using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Mvc;
@@ -78,6 +79,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return NotFound(Resources.HackathonReport_NotFound);
             }
+
+            var args = new
+            {
+                adminName = usr.GetUserDisplayName(),
+                hackathonName = hackathon.DisplayName,
+                reportType = reportType.ToString(),
+            };
+            await ActivityLogManagement.OnHackathonEvent(hackathon.Name, usr.GetUserId(), ActivityLogType.downloadReport, args, cancellationToken);
 
             var fileName = $"{hackathonName.ToLower()}-{reportType}.csv";
             HttpContext.Response.Headers.Add(HeaderNames.ContentDisposition, $"attachment;filename={fileName}");

@@ -219,6 +219,9 @@
   <data name="ActivityLog_Hackathon_deleteTemplate" xml:space="preserve">
     <value>管理员"{adminName}"删除了实验环境模板"{templateName}"。</value>
   </data>
+  <data name="ActivityLog_Hackathon_downloadReport" xml:space="preserve">
+    <value>管理员{adminName}下载了报告:{reportType}.</value>
+  </data>
   <data name="ActivityLog_Hackathon_joinTeam" xml:space="preserve">
     <value>用户"{memberName}"请求加入团队“{teamName}”。</value>
   </data>
@@ -464,6 +467,9 @@
   </data>
   <data name="ActivityLog_User_deleteTemplate" xml:space="preserve">
     <value>[{hackathonName}]删除了实验环境模板"{templateName}"。</value>
+  </data>
+  <data name="ActivityLog_User_downloadReport" xml:space="preserve">
+    <value>[{hackathonName}]下载了报告:{reportType}.</value>
   </data>
   <data name="ActivityLog_User_fileUpload" xml:space="preserve">
     <value>上传了一个文件。</value>
