@@ -287,7 +287,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// </summary>
         /// <remarks>
         /// Valid auth token is required. 
-        /// Will return the team info if user joined a team of the hackathon, otherwise 404 is returned.
+        /// Will return the team info if user joined a team and got approved, otherwise 404 is returned.
         /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
