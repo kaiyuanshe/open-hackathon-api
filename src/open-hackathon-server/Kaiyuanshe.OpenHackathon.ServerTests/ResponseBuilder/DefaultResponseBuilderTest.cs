@@ -493,7 +493,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             var entity = new TeamMemberEntity
             {
                 PartitionKey = "hack",
-                RowKey = "uid",
+                RowKey = "rk",
+                UserId = "uid",
                 TeamId = "tid",
                 Description = "desc",
                 Role = TeamMemberRole.Admin,

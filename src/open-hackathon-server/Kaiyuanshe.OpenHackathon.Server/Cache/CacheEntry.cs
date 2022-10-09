@@ -34,7 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 
         public abstract bool AutoRefresh { get; }
 
-        public abstract Task<object> SupplyValueAsync(CancellationToken cancellationToken);
+        public abstract Task<object?> SupplyValueAsync(CancellationToken cancellationToken);
     }
 
     public class CacheEntry<TValue> : CacheEntry
@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
                 throw new ArgumentNullException(nameof(cacheKey));
             if (slidingExpiration == TimeSpan.MinValue)
                 throw new ArgumentNullException(nameof(slidingExpiration));
-            if (supplyValue == null && !EnvironmentHelper.IsRunningInTests())
+            if (supplyValue == null)
                 throw new ArgumentNullException(nameof(supplyValue));
 
             CacheKey = cacheKey;
@@ -62,7 +62,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 
         public override bool AutoRefresh => autoRefresh;
 
-        public override async Task<object> SupplyValueAsync(CancellationToken cancellationToken)
+        public override async Task<object?> SupplyValueAsync(CancellationToken cancellationToken)
         {
             return await supplyValueAsync(cancellationToken);
         }
