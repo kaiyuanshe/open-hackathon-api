@@ -409,29 +409,31 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         #endregion
 
         #region GetTeamMemberAsync
-        [TestCase(null, null)]
-        [TestCase("", null)]
-        [TestCase("", " ")]
-        [TestCase(null, "")]
-        [TestCase(null, " ")]
-        public async Task GetTeamMember_Null(string hackName, string userId)
+        [TestCase(null, "a", "a")]
+        [TestCase("", "a", "a")]
+        [TestCase(" ", "a", "a")]
+        [TestCase("a", null, "a")]
+        [TestCase("a", "", "a")]
+        [TestCase("a", " ", "a")]
+        [TestCase("a", "a", null)]
+        [TestCase("a", "a", "")]
+        [TestCase("a", "a", " ")]
+        public async Task GetTeamMember_Null(string hackName, string teamId, string userId)
         {
-
             TeamManagement teamManagement = new TeamManagement()
             {
             };
-            var result = await teamManagement.GetTeamMemberAsync(hackName, userId, default);
+            var result = await teamManagement.GetTeamMemberAsync(hackName, teamId, userId, default);
             Assert.IsNull(result);
         }
 
         [Test]
         public async Task GetTeamMember_Suecceded()
         {
-            string userId = "uid";
             TeamMemberEntity teamMember = new TeamMemberEntity { Description = "desc" };
 
             var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.RetrieveAsync("hack", "uid", default))
+            teamMemberTable.Setup(t => t.RetrieveAsync("hack", "9c70db41-b4af-0d2e-1bbb-fc4ffe92d62f", default))
                 .ReturnsAsync(teamMember);
             var storageContext = new Mock<IStorageContext>();
             storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
@@ -440,12 +442,38 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 StorageContext = storageContext.Object,
             };
-            var result = await teamManagement.GetTeamMemberAsync("hack", userId, default);
+            var result = await teamManagement.GetTeamMemberAsync("hack", "tid", "uid", default);
 
             Mock.VerifyAll(teamMemberTable, storageContext);
             teamMemberTable.VerifyNoOtherCalls();
             storageContext.VerifyNoOtherCalls();
             Assert.IsNotNull(result);
+            Debug.Assert(result != null);
+            Assert.AreEqual("desc", result.Description);
+        }
+
+        [Test]
+        public async Task GetTeamMember_Suecceded_Uid()
+        {
+            TeamMemberEntity teamMember = new TeamMemberEntity { Description = "desc" };
+
+            var teamMemberTable = new Mock<ITeamMemberTable>();
+            teamMemberTable.Setup(t => t.RetrieveAsync("hack", "9c70db41-b4af-0d2e-1bbb-fc4ffe92d62f", default)).ReturnsAsync(default(TeamMemberEntity));
+            teamMemberTable.Setup(t => t.RetrieveAsync("hack", "uid", default)).ReturnsAsync(teamMember);
+            var storageContext = new Mock<IStorageContext>();
+            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+
+            TeamManagement teamManagement = new TeamManagement()
+            {
+                StorageContext = storageContext.Object,
+            };
+            var result = await teamManagement.GetTeamMemberAsync("hack", "tid", "uid", default);
+
+            Mock.VerifyAll(teamMemberTable, storageContext);
+            teamMemberTable.VerifyNoOtherCalls();
+            storageContext.VerifyNoOtherCalls();
+            Assert.IsNotNull(result);
+            Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
         #endregion
