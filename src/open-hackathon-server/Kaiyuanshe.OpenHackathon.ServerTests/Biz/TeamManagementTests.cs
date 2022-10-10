@@ -69,6 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Assert.AreEqual(TeamMemberStatus.approved, teamMember.Status);
             Assert.AreEqual(result.Id, teamMember.TeamId);
             Assert.AreEqual("uid", teamMember.UserId);
+            Assert.IsNotNull(teamMember.MemberId);
             Assert.AreEqual(result.CreatedAt, teamMember.CreatedAt);
         }
         #endregion
@@ -582,13 +583,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             {
                 new TeamMemberEntity
                 {
-                    RowKey = "rk1",
+                    UserId = "rk1",
                     Role = TeamMemberRole.Admin,
                     Status = TeamMemberStatus.approved
                 },
                 new TeamMemberEntity
                 {
-                    RowKey = "rk2",
+                    UserId = "rk2",
                     Role = TeamMemberRole.Member,
                     Status = TeamMemberStatus.pendingApproval
                 },

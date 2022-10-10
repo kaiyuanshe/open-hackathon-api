@@ -150,8 +150,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             TeamMemberEntity teamMember = new TeamMemberEntity
             {
                 TeamId = teamEntity.Id,
-                RowKey = request.creatorId,
+                UserId = request.creatorId,
                 PartitionKey = request.hackathonName,
+                RowKey = GenerateTeamMemberId(teamEntity.Id, request.creatorId),
                 Description = "Creator",
                 Role = TeamMemberRole.Admin,
                 Status = TeamMemberStatus.approved,
@@ -161,6 +162,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             InvalidateCachedTeam(request.hackathonName, teamEntity.Id);
 
             return teamEntity;
+        }
+
+        private string GenerateTeamMemberId(string teamId, string userId)
+        {
+            return DigestHelper.String2Guid($"{teamId}-{userId}".ToLower()).ToString();
         }
         #endregion
 
