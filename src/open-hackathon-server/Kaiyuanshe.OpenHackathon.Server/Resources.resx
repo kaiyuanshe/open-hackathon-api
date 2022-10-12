@@ -693,8 +693,11 @@
   <data name="TeamMember_CannotChangeTeam" xml:space="preserve">
     <value>The user is in a different team. Please leave the current team if want to change a team.</value>
   </data>
+  <data name="TeamMember_CannotUpdateCreatorRole" xml:space="preserve">
+    <value>Cannot update the role of team creator.</value>
+  </data>
   <data name="TeamMember_LastAdmin" xml:space="preserve">
-    <value>The user cannot be removed since there are more than 1 members and the user is the only admin with admin access.</value>
+    <value>Cannot remove creator if there are other members in the team. Please remove others first.</value>
   </data>
   <data name="TeamMember_NotFound" xml:space="preserve">
     <value>User {0} is not a member of team {1}</value>

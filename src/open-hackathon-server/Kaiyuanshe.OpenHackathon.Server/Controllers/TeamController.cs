@@ -860,6 +860,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(teamMember != null);
 
+            // validate not creator
+            if (teamMember.UserId == team.CreatorId)
+            {
+                return PreconditionFailed(Resources.TeamMember_CannotUpdateCreatorRole);
+            }
+
             // update status
             var memberInfo = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
             teamMember = await TeamManagement.UpdateTeamMemberRoleAsync(teamMember, parameter.role.GetValueOrDefault(teamMember.Role), cancellationToken);
@@ -986,10 +992,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 return NoContent();
             }
 
-            // Admin must be the last person who leaves the team, to ensure there is at least one admin at any time.
+            // Creator must be the last person who leaves the team, to ensure there is at least one admin at any time.
             var members = await TeamManagement.ListTeamMembersAsync(hackathon.Name, team.Id, cancellationToken);
-            var admins = members.Where(m => m.Role == TeamMemberRole.Admin && m.Status == TeamMemberStatus.approved);
-            if (admins.Count() == 1 && members.Count() > 1 && admins.Single().UserId == userId)
+            if (members.Count() > 1 && userId == team.CreatorId)
             {
                 return PreconditionFailed(Resources.TeamMember_LastAdmin);
             }
@@ -1015,6 +1020,20 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 await ActivityLogManagement.OnTeamMemberEvent(hackathon.Name, team.Id, userId, CurrentUserId,
                      ActivityLogType.deleteTeamMember, logArgs,
                      nameof(Resources.ActivityLog_User_deleteTeamMember2), null, cancellationToken);
+            }
+
+            // dismiss team if all members are removed
+            if (members.Count() == 1)
+            {
+                await TeamManagement.DeleteTeamAsync(team, cancellationToken);
+                var logArgs2 = new
+                {
+                    hackathonName = hackathon.DisplayName,
+                    teamName = team.DisplayName,
+                    adminName = CurrentUserDisplayName,
+                };
+                await ActivityLogManagement.OnTeamEvent(hackathon.Name, team.Id, CurrentUserId,
+                    ActivityLogType.deleteTeam, logArgs2, cancellationToken);
             }
 
             return NoContent();
