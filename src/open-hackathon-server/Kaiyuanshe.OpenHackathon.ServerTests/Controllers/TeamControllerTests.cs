@@ -1594,36 +1594,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region GetTeamMember
-        [TestCase("a", "b")]
-        [TestCase("a", null)]
-        [TestCase(null, "b")]
-        public async Task GetTeamMember_TeamIdNotMatch(string teamId1, string teamId2)
-        {
-            // input
-            string hackName = "Foo";
-            string teamId = "tid";
-            string userId = "uid";
-            HackathonEntity hackathon = new HackathonEntity { };
-            TeamEntity teamEntity = new TeamEntity { RowKey = teamId1 };
-            TeamMemberEntity teamMemberEntity = new TeamMemberEntity { Description = "desc", TeamId = teamId2 };
-            UserInfo user = new UserInfo();
-
-            // moq
-            var moqs = new Moqs();
-            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
-            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
-            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", teamId1, "uid", default)).ReturnsAsync(teamMemberEntity);
-
-            // run
-            var controller = new TeamController();
-            moqs.SetupController(controller);
-            var result = await controller.GetTeamMember(hackName, teamId, userId, default);
-
-            // verify
-            moqs.VerifyAll();
-            AssertHelper.AssertObjectResult(result, 404, string.Format(Resources.TeamMember_NotFound, userId, teamId));
-        }
-
         [Test]
         public async Task GetTeamMember_Succeeded()
         {
@@ -1632,24 +1602,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string teamId = "tid";
             string userId = "uid";
             HackathonEntity hackathon = new HackathonEntity { };
-            TeamEntity teamEntity = new TeamEntity { RowKey = "rk" };
-            TeamMemberEntity teamMemberEntity = new TeamMemberEntity { Description = "desc", TeamId = "rk" };
+            TeamEntity teamEntity = new TeamEntity { };
+            TeamMemberEntity teamMemberEntity = new TeamMemberEntity { Description = "desc" };
+            CancellationToken cancellationToken = CancellationToken.None;
             UserInfo user = new UserInfo();
 
             // moq
-            var moqs = new Moqs();
-            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
-            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
-            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "rk", "uid", default)).ReturnsAsync(teamMemberEntity);
-            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", cancellationToken))
+                .ReturnsAsync(hackathon);
+            var teamManagement = new Mock<ITeamManagement>();
+            teamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", cancellationToken))
+                .ReturnsAsync(teamEntity);
+            teamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", cancellationToken))
+                .ReturnsAsync(teamMemberEntity);
+            var userManagement = new Mock<IUserManagement>();
+            userManagement.Setup(u => u.GetUserByIdAsync("uid", cancellationToken))
+                .ReturnsAsync(user);
 
             // run
-            var controller = new TeamController();
-            moqs.SetupController(controller);
-            var result = await controller.GetTeamMember(hackName, teamId, userId, default);
-
+            var controller = new TeamController
+            {
+                HackathonManagement = hackathonManagement.Object,
+                TeamManagement = teamManagement.Object,
+                UserManagement = userManagement.Object,
+                ProblemDetailsFactory = new CustomProblemDetailsFactory(),
+                ResponseBuilder = new DefaultResponseBuilder(),
+            };
+            var result = await controller.GetTeamMember(hackName, teamId, userId, cancellationToken);
             // verify
-            moqs.VerifyAll();
+            Mock.VerifyAll(hackathonManagement, teamManagement, userManagement);
+            hackathonManagement.VerifyNoOtherCalls();
+            teamManagement.VerifyNoOtherCalls();
+            userManagement.VerifyNoOtherCalls();
 
             var resp = AssertHelper.AssertOKResult<TeamMember>(result);
             Assert.AreEqual("desc", resp.description);

@@ -17,7 +17,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         Task<bool> CanCreateRatingKindAsync(string hackathonName, CancellationToken cancellationToken);
         Task<RatingKindEntity?> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken);
         Task<RatingKindEntity> UpdateRatingKindAsync(RatingKindEntity existing, RatingKind parameter, CancellationToken cancellationToken);
-        Task<RatingKindEntity?> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
+        Task<RatingKindEntity> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
         Task<RatingKindEntity?> GetRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
         Task<IEnumerable<RatingKindEntity>> ListPaginatedRatingKindsAsync(string hackathonName, RatingKindQueryOptions options, CancellationToken cancellationToken = default);
         Task DeleteRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
@@ -76,9 +76,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region UpdateRatingKindAsync
+        #region Task<RatingKindEntity> UpdateRatingKindAsync(RatingKindEntity existing, RatingKind parameter, CancellationToken cancellationToken)
         public async Task<RatingKindEntity> UpdateRatingKindAsync(RatingKindEntity existing, RatingKind parameter, CancellationToken cancellationToken)
         {
+            if (existing == null || parameter == null)
+                return existing;
+
             existing.Name = parameter.name ?? existing.Name;
             existing.Description = parameter.description ?? existing.Description;
             existing.MaximumScore = parameter.maximumScore.GetValueOrDefault(existing.MaximumScore);
@@ -89,8 +92,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region GetCachedRatingKindAsync
-        public async Task<RatingKindEntity?> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken)
+        #region Task<RatingKindEntity> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
+        public async Task<RatingKindEntity> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken)
         {
             var allKinds = await ListRatingKindsAsync(hackathonName, cancellationToken);
             return allKinds.FirstOrDefault(k => k.Id == kindId);
@@ -174,9 +177,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region UpdateRatingAsync
+        #region Task<RatingEntity> UpdateRatingAsync(RatingEntity exiting, Rating parameter, CancellationToken cancellationToken)
         public async Task<RatingEntity> UpdateRatingAsync(RatingEntity existing, Rating parameter, CancellationToken cancellationToken)
         {
+            if (existing == null || parameter == null)
+                return existing;
+
             existing.Score = parameter.score.GetValueOrDefault(existing.Score);
             existing.Description = parameter.description ?? existing.Description;
 
