@@ -75,9 +75,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// <summary>
         /// Get a team member by userId
         /// </summary>
-        [Obsolete]
         Task<TeamMemberEntity?> GetTeamMemberAsync(string hackathonName, string userId, CancellationToken cancellationToken = default);
-        Task<TeamMemberEntity?> GetTeamMemberAsync(string hackathonName, string teamId, string userId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new team member. Not existance check. Please check existance before call this method
@@ -312,22 +310,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return null;
 
             return await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, userId, cancellationToken);
-        }
-
-        public async Task<TeamMemberEntity?> GetTeamMemberAsync(string hackathonName, string teamId, string userId, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(teamId) || string.IsNullOrWhiteSpace(userId))
-                return null;
-
-            var rk = GenerateTeamMemberId(teamId, userId);
-            var result = await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, rk, cancellationToken);
-            if (result == null)
-            {
-                // for backward-compatibility. RK of Legacy entities is userId.
-                result = await StorageContext.TeamMemberTable.RetrieveAsync(hackathonName, userId, cancellationToken);
-            }
-
-            return result;
         }
         #endregion
 
