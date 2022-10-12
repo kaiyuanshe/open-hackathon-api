@@ -693,8 +693,11 @@
   <data name="TeamMember_CannotChangeTeam" xml:space="preserve">
     <value>用户已加入别的团队。如需更换团队，请先离开当前团队。</value>
   </data>
+  <data name="TeamMember_CannotUpdateCreatorRole" xml:space="preserve">
+    <value>不能修改团队创建人的角色。</value>
+  </data>
   <data name="TeamMember_LastAdmin" xml:space="preserve">
-    <value>无法删除：您正在试图删除团队最后一位管理员，而团队中尚有其他成员。</value>
+    <value>创建者无法离队：团队尚有其它成员。请先移除其它成员。</value>
   </data>
   <data name="TeamMember_NotFound" xml:space="preserve">
     <value>用户{0}不属于团队{1}。</value>

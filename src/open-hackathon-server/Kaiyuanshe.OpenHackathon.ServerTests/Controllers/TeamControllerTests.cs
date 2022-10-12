@@ -1200,6 +1200,37 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         #endregion
 
         #region UpdateTeamMemberRole
+        [Test]
+        public async Task UpdateTeamMemberRole_Creator()
+        {
+            // input
+            string hackName = "Foo";
+            string teamId = "tid";
+            string userId = "uid";
+            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "tid", CreatorId = "creator" };
+            TeamMemberEntity memberEntity = new TeamMemberEntity { Role = TeamMemberRole.Member, TeamId = "tid", RowKey = "creator" };
+            var authResult = AuthorizationResult.Success();
+            var parameter = new TeamMember { };
+            UserInfo user = new UserInfo();
+
+            // moq
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
+
+            // run
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.UpdateTeamMemberRole(hackName, teamId, userId, parameter, default);
+
+            // verify
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.TeamMember_CannotUpdateCreatorRole);
+        }
+
         [TestCase(null, TeamMemberRole.Member)]
         [TestCase(TeamMemberRole.Admin, TeamMemberRole.Admin)]
         [TestCase(TeamMemberRole.Member, TeamMemberRole.Member)]
@@ -1210,7 +1241,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             string teamId = "tid";
             string userId = "uid";
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
-            TeamEntity teamEntity = new TeamEntity { RowKey = "tid" };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "tid", CreatorId = "c" };
             TeamMemberEntity memberEntity = new TeamMemberEntity { Role = TeamMemberRole.Member, TeamId = "tid" };
             var authResult = AuthorizationResult.Success();
             var parameter = new TeamMember { role = requestedRole };
@@ -1265,61 +1296,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             // verify
             moqs.VerifyAll();
             AssertHelper.AssertNoContentResult(result);
-        }
-
-        [Test]
-        public async Task LeaveTeam_LastAdmin()
-        {
-            // input
-            string hackName = "Foo";
-            string teamId = "tid";
-            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
-            TeamEntity teamEntity = new TeamEntity { RowKey = "tid" };
-            TeamMemberEntity memberEntity = new TeamMemberEntity { };
-            List<TeamMemberEntity> teamMembers = new List<TeamMemberEntity>
-            {
-                // admin
-                new TeamMemberEntity
-                {
-                    PartitionKey = teamId,
-                    RowKey = "",
-                    Role = TeamMemberRole.Admin,
-                    Status = TeamMemberStatus.approved
-                },
-                // other non-admin
-                new TeamMemberEntity
-                {
-                    PartitionKey = teamId,
-                    RowKey = "user2",
-                    Role = TeamMemberRole.Member,
-                    Status = TeamMemberStatus.approved
-                },
-                new TeamMemberEntity
-                {
-                    PartitionKey = teamId,
-                    RowKey = "user2",
-                    Role = TeamMemberRole.Admin,
-                    Status = TeamMemberStatus.pendingApproval
-                },
-            };
-
-            // moq
-            var moqs = new Moqs();
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
-            var teamManagement = new Mock<ITeamManagement>();
-            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
-            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "", default)).ReturnsAsync(memberEntity);
-            moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
-
-            // run
-            var controller = new TeamController();
-            moqs.SetupController(controller);
-            var result = await controller.LeaveTeam(hackName, teamId, default);
-
-            // verify
-            moqs.VerifyAll();
-            AssertHelper.AssertObjectResult(result, 412, Resources.TeamMember_LastAdmin);
         }
 
         [Test]
@@ -1385,6 +1361,62 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
         #region DeleteTeamMember
         [Test]
+        public async Task DeleteTeamMember_LastAdmin()
+        {
+            // input
+            string hackName = "Foo";
+            string teamId = "tid";
+            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "tid", CreatorId = "creator" };
+            TeamMemberEntity memberEntity = new TeamMemberEntity { };
+            List<TeamMemberEntity> teamMembers = new List<TeamMemberEntity>
+            {
+                // admin
+                new TeamMemberEntity
+                {
+                    PartitionKey = teamId,
+                    RowKey = "creator",
+                    Role = TeamMemberRole.Admin,
+                    Status = TeamMemberStatus.approved
+                },
+                // other non-admin
+                new TeamMemberEntity
+                {
+                    PartitionKey = teamId,
+                    RowKey = "user1",
+                    Role = TeamMemberRole.Member,
+                    Status = TeamMemberStatus.approved
+                },
+                new TeamMemberEntity
+                {
+                    PartitionKey = teamId,
+                    RowKey = "user2",
+                    Role = TeamMemberRole.Admin,
+                    Status = TeamMemberStatus.pendingApproval
+                },
+            };
+            var authResult = AuthorizationResult.Success();
+
+            // moq
+            var moqs = new Moqs();
+            var hackathonManagement = new Mock<IHackathonManagement>();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "creator", default)).ReturnsAsync(memberEntity);
+            moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
+
+            // run
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.DeleteTeamMember(hackName, teamId, "creator", default);
+
+            // verify
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 412, Resources.TeamMember_LastAdmin);
+        }
+
+        [Test]
         public async Task DeleteTeamMember_Succeeded()
         {
             // input
@@ -1436,6 +1468,57 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
             moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteTeamMember2), default));
+
+            // run
+            var controller = new TeamController();
+            moqs.SetupController(controller);
+            var result = await controller.DeleteTeamMember(hackName, teamId, userId, default);
+
+            // verify
+            moqs.VerifyAll();
+            AssertHelper.AssertNoContentResult(result);
+        }
+
+        [Test]
+        public async Task DeleteTeamMember_Succeeded_DismissTeam()
+        {
+            // input
+            string hackName = "Foo";
+            string teamId = "tid";
+            string userId = "uid";
+            HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online, PartitionKey = "foo" };
+            TeamEntity teamEntity = new TeamEntity { RowKey = "tid" };
+            TeamMemberEntity memberEntity = new TeamMemberEntity { };
+            List<TeamMemberEntity> teamMembers = new List<TeamMemberEntity>
+            {
+                new TeamMemberEntity
+                {
+                    PartitionKey = teamId,
+                    RowKey = "uid",
+                    Role = TeamMemberRole.Admin,
+                    Status = TeamMemberStatus.approved
+                },
+            };
+            var authResult = AuthorizationResult.Success();
+            var memberInfo = new UserInfo();
+
+            // moq
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("foo", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync("foo", "tid", default)).ReturnsAsync(teamEntity);
+            moqs.TeamManagement.Setup(t => t.GetTeamMemberAsync("foo", "uid", default)).ReturnsAsync(memberEntity);
+            moqs.TeamManagement.Setup(t => t.ListTeamMembersAsync("foo", "tid", default)).ReturnsAsync(teamMembers);
+            moqs.TeamManagement.Setup(t => t.DeleteTeamMemberAsync(memberEntity, default));
+            moqs.TeamManagement.Setup(t => t.DeleteTeamAsync(teamEntity, default));
+            moqs.AuthorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), teamEntity, AuthConstant.Policy.TeamAdministrator)).ReturnsAsync(authResult);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(memberInfo);
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "foo", "", ActivityLogType.deleteTeamMember, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deleteTeamMember2), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("foo", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogTeamActivity("foo", "tid", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "foo", "", ActivityLogType.deleteTeam, It.IsAny<object>(), null, default));
 
             // run
             var controller = new TeamController();

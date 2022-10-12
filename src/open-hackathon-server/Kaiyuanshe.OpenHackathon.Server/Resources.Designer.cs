@@ -1861,7 +1861,16 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The user cannot be removed since there are more than 1 members and the user is the only admin with admin access..
+        ///   Looks up a localized string similar to Cannot update the role of team creator..
+        /// </summary>
+        internal static string TeamMember_CannotUpdateCreatorRole {
+            get {
+                return ResourceManager.GetString("TeamMember_CannotUpdateCreatorRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot remove creator if there are other members in the team. Please remove others first..
         /// </summary>
         internal static string TeamMember_LastAdmin {
             get {
