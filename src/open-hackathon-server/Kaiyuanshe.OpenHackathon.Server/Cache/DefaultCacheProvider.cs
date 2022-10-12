@@ -70,12 +70,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
             // disable cache in Dev or Unit Tests
             if (EnvironmentHelper.IsDevelopment() || EnvironmentHelper.IsRunningInTests())
             {
-                var val = await cacheEntry.SupplyValueAsync(cancellationToken);
-#pragma warning disable CS8603 // Possible null reference return.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                return (TValue)val ?? default;
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8603 // Possible null reference return.
+                return (TValue)await cacheEntry.SupplyValueAsync(cancellationToken);
             }
 
             return (TValue)await GetOrAddAsyncInternal(cacheEntry, cancellationToken);

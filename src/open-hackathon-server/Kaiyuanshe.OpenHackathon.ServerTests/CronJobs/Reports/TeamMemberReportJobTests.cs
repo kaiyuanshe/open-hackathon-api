@@ -29,11 +29,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
             };
             var members = new List<TeamMemberEntity>
             {
-                new TeamMemberEntity { UserId = "u1" }, // team id null 
-                new TeamMemberEntity { UserId = "u2", TeamId = "t222" }, // team id not match 
-                new TeamMemberEntity { UserId = "u3", TeamId = "t3" }, // user not found
-                new TeamMemberEntity { UserId = "u4", TeamId = "t2" }, // creator not found
-                new TeamMemberEntity { UserId = "u5", TeamId = "t3" }, // normal
+                new TeamMemberEntity { RowKey = "u1" }, // team id null 
+                new TeamMemberEntity { RowKey = "u2", TeamId = "t222" }, // team id not match 
+                new TeamMemberEntity { RowKey = "u3", TeamId = "t3" }, // user not found
+                new TeamMemberEntity { RowKey = "u4", TeamId = "t2" }, // creator not found
+                new TeamMemberEntity { RowKey = "u5", TeamId = "t3" }, // normal
             };
             var user = new UserInfo();
 

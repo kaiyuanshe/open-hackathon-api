@@ -127,7 +127,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             {
                 new TeamMemberEntity
                 {
-                    UserId = userid,
+                    RowKey = userid,
                     Role = Server.Models.TeamMemberRole.Admin,
                     Status = Server.Models.TeamMemberStatus.approved,
                 }
@@ -235,21 +235,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
                 // not approved
                 new TeamMemberEntity
                 {
-                    UserId = userid,
+                    RowKey = userid,
                     Role = Server.Models.TeamMemberRole.Admin,
                     Status = Server.Models.TeamMemberStatus.pendingApproval,
                 },
                 // not Admin
                 new TeamMemberEntity
                 {
-                    UserId = userid,
+                    RowKey = userid,
                     Role = Server.Models.TeamMemberRole.Member,
                     Status = Server.Models.TeamMemberStatus.approved,
                 },
                 // id not match
                 new TeamMemberEntity
                 {
-                    UserId = "anotherid",
+                    RowKey = "anotherid",
                     Role = Server.Models.TeamMemberRole.Admin,
                     Status = Server.Models.TeamMemberStatus.approved,
                 },
