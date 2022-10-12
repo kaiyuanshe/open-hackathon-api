@@ -27,7 +27,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         ///         and this rest api only returns the latest reports that are already generated.
         ///         Please download again after 24 hours.</li>
         ///     <li>If 404 Not Found is returned, wait for 24 hours and retry. 
-        ///         It just means that no report is ready and usually happens to a brand new hackathon.</li>
+        ///         It just means the no report is ready and usually happens to a brand new hackathon.</li>
         /// </ul>
         /// Note that 
         /// </remarks>
@@ -49,7 +49,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [Route("hackathon/{hackathonName}/report")]
         public async Task<object> GetReport(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
-            [FromQuery, Required] ReportType reportType,
+            [FromQuery] ReportType reportType,
             [FromQuery] string? token,
             CancellationToken cancellationToken)
         {

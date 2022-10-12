@@ -1282,7 +1282,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 new TeamMemberEntity
                 {
                     PartitionKey = teamId,
-                    UserId = "",
+                    RowKey = "",
                     Role = TeamMemberRole.Admin,
                     Status = TeamMemberStatus.approved
                 },
@@ -1290,14 +1290,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 new TeamMemberEntity
                 {
                     PartitionKey = teamId,
-                    UserId = "user2",
+                    RowKey = "user2",
                     Role = TeamMemberRole.Member,
                     Status = TeamMemberStatus.approved
                 },
                 new TeamMemberEntity
                 {
                     PartitionKey = teamId,
-                    UserId = "user2",
+                    RowKey = "user2",
                     Role = TeamMemberRole.Admin,
                     Status = TeamMemberStatus.pendingApproval
                 },
@@ -1552,8 +1552,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var assignments = new List<AwardAssignmentEntity>();
             var members = new List<TeamMemberEntity>
             {
-                new TeamMemberEntity { PartitionKey="foo", UserId="u1" },
-                new TeamMemberEntity { PartitionKey="foo", UserId="u2" },
+                new TeamMemberEntity { PartitionKey="foo", RowKey="u1" },
+                new TeamMemberEntity { PartitionKey="foo", RowKey="u2" },
             };
 
             // mock
@@ -1721,7 +1721,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 new TeamMemberEntity
                 {
                     PartitionKey = "pk",
-                    UserId = "rk",
+                    RowKey = "rk",
                     TeamId = "tid",
                     Status = TeamMemberStatus.approved,
                     Role = TeamMemberRole.Admin,
