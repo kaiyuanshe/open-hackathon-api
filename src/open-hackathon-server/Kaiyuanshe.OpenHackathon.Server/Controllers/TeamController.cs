@@ -1065,7 +1065,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             Debug.Assert(team != null);
 
             // Validate team member
-            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), team.Id, userId, cancellationToken);
+            var teamMember = await TeamManagement.GetTeamMemberAsync(hackathonName.ToLower(), userId, cancellationToken);
             var teamMemberValidateOption = new ValidateTeamMemberOptions
             {
                 TeamId = teamId,
