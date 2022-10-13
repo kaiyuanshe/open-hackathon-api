@@ -133,7 +133,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
                 }
                 else
                 {
+#pragma warning disable CS8603 // Possible null reference return.
                     return value;
+#pragma warning restore CS8603 // Possible null reference return.
                 }
             }
             else
