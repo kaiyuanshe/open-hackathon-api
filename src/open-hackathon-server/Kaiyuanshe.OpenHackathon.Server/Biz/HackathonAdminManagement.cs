@@ -77,7 +77,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region Task<IEnumerable<HackathonAdminEntity>> ListPaginatedHackathonAdminAsync(string hackathonName, AdminQueryOptions options, CancellationToken cancellationToken = default)
+        #region ListPaginatedHackathonAdminAsync
         public async Task<IEnumerable<HackathonAdminEntity>> ListPaginatedHackathonAdminAsync(string hackathonName, AdminQueryOptions options, CancellationToken cancellationToken = default)
         {
             IEnumerable<HackathonAdminEntity> allAdmins = await ListHackathonAdminAsync(hackathonName, cancellationToken);
@@ -102,7 +102,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region Task<HackathonAdminEntity> GetAdminAsync(string hackathonName, string userId, CancellationToken cancellationToken)
+        #region GetAdminAsync
         public async Task<HackathonAdminEntity?> GetAdminAsync(string hackathonName, string userId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(userId))
@@ -125,7 +125,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        #region Task<bool> IsHackathonAdmin(string hackathonName, string userId, CancellationToken cancellationToken = default);
+        #region IsHackathonAdmin
         public async Task<bool> IsHackathonAdmin(string hackathonName, ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
             string userId = ClaimsHelper.GetUserId(user);

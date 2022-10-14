@@ -447,6 +447,12 @@
   <data name="ActivityLog_User_deleteOrganizer" xml:space="preserve">
     <value>[{hackathonName}]Deleted an organizer "{organizerName}".</value>
   </data>
+  <data name="ActivityLog_User_deletePlatformAdmin" xml:space="preserve">
+    <value>Removed a platform admin.</value>
+  </data>
+  <data name="ActivityLog_User_deletePlatformAdmin2" xml:space="preserve">
+    <value>No longer be a platform admin.</value>
+  </data>
   <data name="ActivityLog_User_deleteRating" xml:space="preserve">
     <value>[{hackathonName}]Removed a rating in hackathon.</value>
   </data>

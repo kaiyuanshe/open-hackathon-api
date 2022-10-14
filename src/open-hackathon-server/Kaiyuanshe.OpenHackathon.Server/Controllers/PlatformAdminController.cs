@@ -58,5 +58,42 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             return Ok(resp);
         }
         #endregion
+
+        #region DeletePlatformAdmin
+        /// <summary>
+        /// Remove a platform admin. 
+        /// </summary>
+        /// <param name="userId" example="1">Id of user</param>
+        /// <returns>The created or updated admin.</returns>
+        /// <response code="204">Success. The response indicates the platform admin is deleted.</response>
+        [HttpDelete]
+        [SwaggerErrorResponse(400, 404, 412)]
+        [Route("platform/admin/{userId}")]
+        [Authorize(Policy = AuthConstant.Policy.PlatformAdministrator)]
+        public async Task<object> DeletePlatformAdmin(
+            [FromRoute, Required] string userId,
+            CancellationToken cancellationToken)
+        {
+            // validate user
+            var user = await UserManagement.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                return NotFound(Resources.User_NotFound);
+            }
+
+            // create admin
+            await HackathonAdminManagement.DeleteAdminAsync(string.Empty, userId, cancellationToken);
+
+            var args = new
+            {
+                userName = user.GetDisplayName(),
+                operatorName = CurrentUserDisplayName,
+            };
+            await ActivityLogManagement.OnUserEvent(string.Empty, userId, CurrentUserId,
+                ActivityLogType.deletePlatformAdmin, args, nameof(Resources.ActivityLog_User_deletePlatformAdmin2), nameof(Resources.ActivityLog_User_deletePlatformAdmin), cancellationToken);
+
+            return NoContent();
+        }
+        #endregion
     }
 }

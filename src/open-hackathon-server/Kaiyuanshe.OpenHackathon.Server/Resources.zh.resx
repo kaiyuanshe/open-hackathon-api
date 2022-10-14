@@ -447,6 +447,12 @@
   <data name="ActivityLog_User_deleteOrganizer" xml:space="preserve">
     <value>[{hackathonName}]删除了活动组织者"{organizerName}"。</value>
   </data>
+  <data name="ActivityLog_User_deletePlatformAdmin" xml:space="preserve">
+    <value>删除了一名平台管理员。</value>
+  </data>
+  <data name="ActivityLog_User_deletePlatformAdmin2" xml:space="preserve">
+    <value>不再担任平台管理员。</value>
+  </data>
   <data name="ActivityLog_User_deleteRating" xml:space="preserve">
     <value>[{hackathonName}]撤销了一项评分。</value>
   </data>
