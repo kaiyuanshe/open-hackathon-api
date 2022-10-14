@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.*
       
@@ -33,17 +33,12 @@ jobs:
     - name: Build
       run: dotnet build --configuration $config --no-restore
       
-    - name: set pr build number (if pr)
-      id: PRNUMBER
-      if: ${{ github.event_name == 'pull_request' }}
-      uses: kkak10/pr-number-action@v1.3
-      
       # set report file and title 
     - name: Set Test Title
       run: | 
             if ${{ github.event_name == 'pull_request' }}
             then
-              echo "title=Test Run for PR #${{steps.PRNUMBER.outputs.pr}} (${{github.run_id}})" >> $GITHUB_ENV
+              echo "title=Test Run for PR #${{github.event.number}} (${{github.run_id}})" >> $GITHUB_ENV
               echo "file_name=TestReport.pr.${{github.run_id}}.md" >> $GITHUB_ENV
             else
               echo "title=Test Run ${{github.run_id}}" >> $GITHUB_ENV
