@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
                 throw new ArgumentNullException(nameof(cacheKey));
             if (slidingExpiration == TimeSpan.MinValue)
                 throw new ArgumentNullException(nameof(slidingExpiration));
-            if (supplyValue == null && !EnvironmentHelper.IsRunningInTests())
+            if (supplyValue == null)
                 throw new ArgumentNullException(nameof(supplyValue));
 
             CacheKey = cacheKey;
@@ -64,7 +64,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Cache
 
         public override async Task<object> SupplyValueAsync(CancellationToken cancellationToken)
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return await supplyValueAsync(cancellationToken);
+#pragma warning restore CS8603 // Possible null reference return.
         }
     }
 }

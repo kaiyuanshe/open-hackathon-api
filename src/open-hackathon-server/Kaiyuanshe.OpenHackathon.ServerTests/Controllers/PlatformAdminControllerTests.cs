@@ -52,5 +52,43 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Assert.AreEqual("name", admin.user.Name);
         }
         #endregion
+
+        #region DeletePlatformAdmin
+        [Test]
+        public async Task DeletePlatformAdmin_UserNotFound()
+        {
+            UserInfo? user = null;
+
+            var moqs = new Moqs();
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+
+            var controller = new PlatformAdminController();
+            moqs.SetupController(controller);
+            var result = await controller.DeletePlatformAdmin("uid", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertObjectResult(result, 404, Resources.User_NotFound);
+        }
+
+        [Test]
+        public async Task DeletePlatformAdmin_Succeeded()
+        {
+            UserInfo user = new UserInfo { Name = "name" };
+
+            var moqs = new Moqs();
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("uid", default)).ReturnsAsync(user);
+            moqs.HackathonAdminManagement.Setup(a => a.DeleteAdminAsync("", "uid", default));
+            moqs.ActivityLogManagement.Setup(a => a.LogHackathonActivity("", "", ActivityLogType.deletePlatformAdmin, It.IsAny<object>(), null, default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("", "", "", ActivityLogType.deletePlatformAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deletePlatformAdmin), default));
+            moqs.ActivityLogManagement.Setup(a => a.LogUserActivity("uid", "", "", ActivityLogType.deletePlatformAdmin, It.IsAny<object>(), nameof(Resources.ActivityLog_User_deletePlatformAdmin2), default));
+
+            var controller = new PlatformAdminController();
+            moqs.SetupController(controller);
+            var result = await controller.DeletePlatformAdmin("uid", default);
+
+            moqs.VerifyAll();
+            AssertHelper.AssertNoContentResult(result);
+        }
+        #endregion
     }
 }

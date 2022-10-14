@@ -1051,6 +1051,24 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removed a platform admin..
+        /// </summary>
+        internal static string ActivityLog_User_deletePlatformAdmin {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deletePlatformAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No longer be a platform admin..
+        /// </summary>
+        internal static string ActivityLog_User_deletePlatformAdmin2 {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deletePlatformAdmin2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{hackathonName}]Removed a rating in hackathon..
         /// </summary>
         internal static string ActivityLog_User_deleteRating {
