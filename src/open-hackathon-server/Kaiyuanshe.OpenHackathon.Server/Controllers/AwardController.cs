@@ -637,7 +637,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 {
                     var awardEntity = awards.SingleOrDefault(a => a.Id == assignment.AwardId);
                     if (awardEntity == null)
+#pragma warning disable CS8603 // Possible null reference return.
                         return null;
+#pragma warning restore CS8603 // Possible null reference return.
                     return await BuildAwardAssignment(assignment, awardEntity, ct);
                 },
                 nextLink);
