@@ -55,48 +55,53 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    # https://github.com/docker/metadata-action#tags-input
     - name: Docker meta
-      id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v1
+      id: meta
+      uses: docker/metadata-action@v4
       with:
-        images: openhackathon/oph-server-v2,kysprodacr.azurecr.cn/oph-server-v2  # list of Docker images to use as base name for tags
-        tag-sha: true # add git short SHA as Docker tag
+        # list of Docker images to use as base name for tags
+        images: |
+          openhackathon/oph-server-v2
+          kysprodacr.azurecr.cn/oph-server-v2
+        # generate Docker tags based on the following events/attributes
+        tags: |
+          type=schedule
+          type=ref,event=push
+          type=ref,event=branch
+          type=sha,format=long
     
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
     
     - name: Login to Docker Hub
-      uses: docker/login-action@v1 
+      uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
 
     - name: Login to Azure Container Registry	
-      uses: docker/login-action@v1 	
+      uses: docker/login-action@v2
       with:	
         registry: kysprodacr.azurecr.cn	
         username: ${{ secrets.REGISTRY_USERNAME }}	
         password: ${{ secrets.REGISTRY_PASSWORD }}
       
+    # https://github.com/docker/build-push-action#advanced-usage
     - name: Build and Push image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         file: ./src/deploy/hackathon-docker/Dockerfile
         push: true
-        tags: ${{ steps.docker_meta.outputs.tags }}
-        labels: ${{ steps.docker_meta.outputs.labels }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
   
-    - uses: benjlevesque/short-sha@v1.2
-      id: short-sha
-      with:
-        length: 7
-          
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'hackathon-api'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: 'kysprodacr.azurecr.cn/oph-server-v2:sha-${{ steps.short-sha.outputs.sha }}'
+        images: 'kysprodacr.azurecr.cn/oph-server-v2:sha-${{ github.sha }}'

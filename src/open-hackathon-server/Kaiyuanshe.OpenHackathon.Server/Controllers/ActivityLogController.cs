@@ -96,6 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate team
             var team = await TeamManagement.GetTeamByIdAsync(hackathon.Name, teamId, cancellationToken);

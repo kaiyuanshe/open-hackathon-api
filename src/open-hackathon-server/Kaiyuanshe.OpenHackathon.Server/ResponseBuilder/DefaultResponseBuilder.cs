@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
         Task<TResult> BuildResourceListAsync<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
-            Func<TSrcItem, CancellationToken, Task<TResultItem>> converter,
+            Func<TSrcItem, CancellationToken, Task<TResultItem?>> converter,
             string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new();
@@ -295,7 +295,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
 
         public async Task<TResult> BuildResourceListAsync<TSrcItem, TResultItem, TResult>(
             IEnumerable<TSrcItem> items,
-            Func<TSrcItem, CancellationToken, Task<TResultItem>> converter,
+            Func<TSrcItem, CancellationToken, Task<TResultItem?>> converter,
             string? nextLink,
             CancellationToken cancellationToken = default)
             where TResult : IResourceList<TResultItem>, new()
