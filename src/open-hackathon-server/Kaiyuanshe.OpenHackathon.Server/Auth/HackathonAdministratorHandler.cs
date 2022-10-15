@@ -28,7 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
                 return;
             }
 
-            string userId = context?.User?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserId)?.Value;
+            string? userId = context.User?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserId)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 // anonymous user
