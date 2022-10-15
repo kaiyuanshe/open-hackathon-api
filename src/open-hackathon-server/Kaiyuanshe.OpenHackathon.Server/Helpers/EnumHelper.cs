@@ -11,11 +11,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Helpers
         /// <typeparam name="T">The type of the attribute you want to retrieve</typeparam>
         /// <param name="enumVal">The enum value</param>
         /// <returns>The first attribute of type T that exists on the enum value</returns>
-        public static T GetCustomAttribute<T>(this Enum enumVal) where T : Attribute
+        public static T? GetCustomAttribute<T>(this Enum enumVal) where T : Attribute
         {
-            var type = enumVal.GetType();
-            var memInfo = type.GetMember(Enum.GetName(type, enumVal));
-            return memInfo[0].GetCustomAttribute<T>(false);
+            Type type = enumVal.GetType();
+            var name = Enum.GetName(type, enumVal);
+            if (name != null)
+            {
+                var memInfo = type.GetMember(name);
+                return memInfo[0].GetCustomAttribute<T>(false);
+            }
+
+            return null;
         }
     }
 }
