@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
             return Problem(
-                detail: context.Error.Message,
+                detail: context?.Error.Message,
                 title: Resources.Hackathon_UnhandledException);
         }
     }

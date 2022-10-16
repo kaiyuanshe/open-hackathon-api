@@ -132,6 +132,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 async (admin, ct) =>
                 {
                     var userInfo = await UserManagement.GetUserByIdAsync(admin.UserId, ct);
+                    Debug.Assert(userInfo != null);
                     return ResponseBuilder.BuildHackathonAdmin(admin, userInfo);
                 },
                 nextLink);

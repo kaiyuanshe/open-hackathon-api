@@ -15,7 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 
         protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
         {
-            string filter = TableQueryHelper.And(
+            string? filter = TableQueryHelper.And(
                 TableQueryHelper.FilterForBool(nameof(HackathonEntity.ExperimentCleaned), ComparisonOperator.Equal, false),
                 TableQueryHelper.FilterForBool(nameof(HackathonEntity.ReadOnly), ComparisonOperator.Equal, true)
             );

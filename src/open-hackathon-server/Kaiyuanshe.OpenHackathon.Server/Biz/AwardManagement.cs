@@ -182,7 +182,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             // paging
             int np = 0;
-            int.TryParse(options?.Pagination?.np, out np);
+            int.TryParse(options.Pagination?.np, out np);
 #pragma warning disable CS8604 // Possible null reference argument.
             int top = options.Top();
 #pragma warning restore CS8604 // Possible null reference argument.
