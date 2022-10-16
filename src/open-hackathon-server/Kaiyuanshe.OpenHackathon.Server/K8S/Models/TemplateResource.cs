@@ -22,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S.Models
 
         public int ingressPort { get; set; }
 
-        public Vnc vnc { get; set; }
+        public Vnc? vnc { get; set; }
     }
 
     public class PodTemplate

@@ -22,7 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server
         public static bool IsRunningInTests()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            return assemblies.Any(a => a.FullName.ToLower().StartsWith("nunit.framework"));
+            return assemblies.Any(a => a.FullName != null && a.FullName.ToLower().StartsWith("nunit.framework"));
         }
     }
 }

@@ -374,6 +374,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return validateKindOptions.ValidateResult;
             }
+            Debug.Assert(kind != null);
 
             // create
             parameter.hackathonName = hackathonName.ToLower();
@@ -455,6 +456,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return validateKindOptions.ValidateResult;
             }
+            Debug.Assert(kind != null);
 
             // update
             ratingEntity = await RatingManagement.UpdateRatingAsync(ratingEntity, parameter, cancellationToken);

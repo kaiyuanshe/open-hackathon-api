@@ -15,7 +15,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
     public interface IRatingManagement
     {
         Task<bool> CanCreateRatingKindAsync(string hackathonName, CancellationToken cancellationToken);
-        Task<RatingKindEntity?> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken);
+        Task<RatingKindEntity> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken);
         Task<RatingKindEntity> UpdateRatingKindAsync(RatingKindEntity existing, RatingKind parameter, CancellationToken cancellationToken);
         Task<RatingKindEntity> GetCachedRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
         Task<RatingKindEntity?> GetRatingKindAsync(string hackathonName, string kindId, CancellationToken cancellationToken);
@@ -56,11 +56,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #endregion
 
         #region Task<RatingKindEntity> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken);
-        public async Task<RatingKindEntity?> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken)
+        public async Task<RatingKindEntity> CreateRatingKindAsync(RatingKind parameter, CancellationToken cancellationToken)
         {
-            if (parameter == null)
-                return null;
-
             var entity = new RatingKindEntity
             {
                 PartitionKey = parameter.hackathonName,

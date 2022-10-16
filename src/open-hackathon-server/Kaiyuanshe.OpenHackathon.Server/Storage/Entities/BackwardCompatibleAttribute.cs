@@ -27,7 +27,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
 
     internal static class BackwardCompatibleAttributeExtensions
     {
-        public static object GetValue(this BackwardCompatibleAttribute attribute, TableEntity tableEntity)
+        public static object? GetValue(this BackwardCompatibleAttribute attribute, TableEntity tableEntity)
         {
             if (attribute._compatibleName != null)
             {
