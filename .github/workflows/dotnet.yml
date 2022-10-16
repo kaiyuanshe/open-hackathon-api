@@ -67,7 +67,6 @@ jobs:
         # generate Docker tags based on the following events/attributes
         tags: |
           type=schedule
-          type=ref,event=push
           type=ref,event=branch
           type=sha,format=long
     
