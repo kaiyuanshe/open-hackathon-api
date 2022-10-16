@@ -1,5 +1,6 @@
 ﻿using k8s;
 using k8s.Autorest;
+using k8s.Models;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,13 +16,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
     {
         Task CreateOrUpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task UpdateTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
-        Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
+        Task<TemplateResource?> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateResource>> ListTemplatesAsync(string hackathonName, CancellationToken cancellationToken);
         Task DeleteTemplateAsync(TemplateContext context, CancellationToken cancellationToken);
         Task DeleteTemplateAsync(string templateResourceName, CancellationToken cancellationToken);
         Task CreateOrUpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task UpdateExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
-        Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
+        Task<ExperimentResource?> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task<IEnumerable<ExperimentResource>> ListExperimentsAsync(string hackathonName, string? templateId = null, CancellationToken cancellationToken = default);
         Task DeleteExperimentAsync(ExperimentContext context, CancellationToken cancellationToken);
         Task DeleteExperimentAsync(string experimentResourceName, CancellationToken cancellationToken);
@@ -76,7 +77,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Templates,
                     cancellationToken: cancellationToken);
                 logger.TraceInformation($"CreateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
-                context.Status = new k8s.Models.V1Status
+                context.Status = new V1Status
                 {
                     Code = (int)resp.Response.StatusCode,
                     Reason = resp.Response.ReasonPhrase,
@@ -88,7 +89,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 logger.TraceError($"CreateTemplateAsync: {exception.Message}", exception);
-                context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<V1Status>(exception.Response.Content)
+                    ?? StatusHelper.InternalServerError();
             }
         }
         #endregion
@@ -109,7 +111,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     cancellationToken: cancellationToken);
 
                 logger.TraceInformation($"UpdateTemplateAsync. Status: {resp.Response.StatusCode}, reason: {resp.Response.ReasonPhrase}");
-                context.Status = new k8s.Models.V1Status
+                context.Status = new V1Status
                 {
                     Code = (int)resp.Response.StatusCode,
                     Reason = resp.Response.ReasonPhrase,
@@ -121,13 +123,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 logger.TraceError($"UpdateTemplateAsync: {exception.Message}", exception);
-                context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<V1Status>(exception.Response.Content)
+                    ?? StatusHelper.InternalServerError();
             }
         }
         #endregion
 
         #region GetTemplateAsync
-        public async Task<TemplateResource> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
+        public async Task<TemplateResource?> GetTemplateAsync(TemplateContext context, CancellationToken cancellationToken)
         {
             try
             {
@@ -140,12 +143,14 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     null,
                     cancellationToken);
 
-                context.Status = new k8s.Models.V1Status
+                context.Status = new V1Status
                 {
                     Code = 200,
                     Status = "success"
                 };
+#pragma warning disable CS8604 // Possible null reference argument.
                 var resp = JsonConvert.DeserializeObject<TemplateResource>(cr.Body.ToString());
+#pragma warning restore CS8604 // Possible null reference argument.
                 return resp;
             }
             catch (HttpOperationException exception)
@@ -154,7 +159,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 logger.TraceInformation(exception.Response.Content);
-                context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<V1Status>(exception.Response.Content) ?? StatusHelper.InternalServerError();
                 return null;
             }
         }
@@ -173,8 +178,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Templates,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
+#pragma warning disable CS8604 // Possible null reference argument.
                 var crl = JsonConvert.DeserializeObject<CustomResourceList<TemplateResource>>(listResp.Body.ToString());
-                return crl.Items;
+#pragma warning restore CS8604 // Possible null reference argument.
+                return crl?.Items ?? new List<TemplateResource>();
             }
             catch (HttpOperationException exception)
             {
@@ -199,7 +206,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Templates,
                     context.GetTemplateResourceName(),
                     cancellationToken: cancellationToken);
-                context.Status = new k8s.Models.V1Status
+                context.Status = new V1Status
                 {
                     Code = 204,
                     Status = "success"
@@ -211,11 +218,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response.StatusCode != HttpStatusCode.NotFound)
                 {
                     // ignore 404
-                    context.Status = JsonConvert.DeserializeObject<k8s.Models.V1Status>(exception.Response.Content);
+                    context.Status = JsonConvert.DeserializeObject<V1Status>(exception.Response.Content) ?? StatusHelper.InternalServerError();
                 }
                 else
                 {
-                    context.Status = new k8s.Models.V1Status
+                    context.Status = new V1Status
                     {
                         Code = 204,
                         Status = "success"
@@ -296,7 +303,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response?.Content == null)
                     throw;
 
-                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content) ?? StatusHelper.InternalExperimentError();
             }
         }
         #endregion
@@ -329,13 +336,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 logger.TraceError($"UpdateExperimentAsync: {exception.Message}", exception);
-                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content) ?? StatusHelper.InternalExperimentError();
             }
         }
         #endregion
 
         #region GetExperimentAsync
-        public async Task<ExperimentResource> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
+        public async Task<ExperimentResource?> GetExperimentAsync(ExperimentContext context, CancellationToken cancellationToken)
         {
             try
             {
@@ -347,9 +354,18 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     context.GetExperimentResourceName(),
                     null,
                     cancellationToken);
+#pragma warning disable CS8604 // Possible null reference argument.
                 var exp = JsonConvert.DeserializeObject<ExperimentResource>(cr.Body.ToString());
-                context.Status = exp.Status;
-                context.Status.Code = exp.Status.Code.GetValueOrDefault(200);
+#pragma warning restore CS8604 // Possible null reference argument.
+                if (exp == null)
+                {
+                    context.Status = StatusHelper.InternalExperimentError();
+                }
+                else
+                {
+                    context.Status = exp.Status;
+                    context.Status.Code = exp.Status.Code.GetValueOrDefault(200);
+                }
                 return exp;
             }
             catch (HttpOperationException exception)
@@ -358,7 +374,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     throw;
 
                 logger.TraceInformation(exception.Response.Content);
-                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content) ?? StatusHelper.InternalExperimentError();
                 return null;
             }
         }
@@ -381,8 +397,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                     CustomResourceDefinition.Plurals.Experiments,
                     labelSelector: labelSelector,
                     cancellationToken: cancellationToken);
+#pragma warning disable CS8604 // Possible null reference argument.
                 var crl = JsonConvert.DeserializeObject<CustomResourceList<ExperimentResource>>(listResp.Body.ToString());
-                return crl.Items;
+#pragma warning restore CS8604 // Possible null reference argument.
+                return crl?.Items ?? new List<ExperimentResource>();
             }
             catch (HttpOperationException exception)
             {
@@ -419,7 +437,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.K8S
                 if (exception.Response.StatusCode != HttpStatusCode.NotFound)
                 {
                     // ignore 404
-                    context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content);
+                    context.Status = JsonConvert.DeserializeObject<ExperimentStatus>(exception.Response.Content) ?? StatusHelper.InternalExperimentError();
                 }
                 else
                 {

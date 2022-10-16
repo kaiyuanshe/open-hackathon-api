@@ -1248,7 +1248,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             var team = ResponseBuilder.BuildTeam(teamEntity, creator);
             var resp = await ResponseBuilder.BuildResourceListAsync<AwardAssignmentEntity, AwardAssignment, AwardAssignmentList>(
                 assignments,
-                (assignment, ct) => Task.FromResult(ResponseBuilder.BuildAwardAssignment(assignment, team, null)),
+                (assignment, ct) =>
+                {
+                    AwardAssignment? resp = ResponseBuilder.BuildAwardAssignment(assignment, team, null);
+                    return Task.FromResult(resp);
+                },
                 nextLink);
 
             return Ok(resp);
