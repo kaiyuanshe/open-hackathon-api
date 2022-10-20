@@ -4,7 +4,6 @@ using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.K8S.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +50,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate count
             var templateCount = await ExperimentManagement.GetTemplateCountAsync(hackathonName.ToLower(), cancellationToken);
@@ -74,7 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: context.TemplateEntity.DisplayName);
@@ -118,6 +118,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate template exist
             var template = await ExperimentManagement.GetTemplateAsync(hackathonName.ToLower(), templateId, cancellationToken);
@@ -134,17 +135,17 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 hackathonName = hackathon.DisplayName,
                 adminName = CurrentUserDisplayName,
-                templateName = context?.TemplateEntity?.DisplayName ?? "default",
+                templateName = context.TemplateEntity?.DisplayName ?? "default",
             };
             await ActivityLogManagement.OnHackathonEvent(hackathon.Name, CurrentUserId,
                  ActivityLogType.updateTemplate, logArgs, cancellationToken);
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
-                    instance: context.TemplateEntity.DisplayName);
+                    instance: context.TemplateEntity?.DisplayName);
             }
             else
             {
@@ -301,7 +302,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (context?.Status != null && context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: context.TemplateEntity?.Id);
@@ -343,6 +344,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // validate enrollment
             var enrollment = await EnrollmentManagement.GetEnrollmentAsync(hackathonName.ToLower(), CurrentUserId, cancellationToken);
@@ -365,7 +367,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (templateContext.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: templateContext.Status.Code.Value,
+                    statusCode: templateContext.Status.Code,
                     detail: templateContext.Status.Message,
                     title: templateContext.Status.Reason,
                     instance: templateContext.TemplateEntity?.DisplayName);
@@ -396,7 +398,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             else
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 return Ok(ResponseBuilder.BuildExperiment(experimentContext, userInfo));
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
         #endregion
@@ -514,7 +518,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: experimentId);
@@ -522,6 +526,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             else
             {
                 var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity.UserId, cancellationToken);
+                Debug.Assert(userInfo != null);
                 var resp = ResponseBuilder.BuildExperiment(context, userInfo);
                 return Ok(resp);
             }
@@ -646,9 +651,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 contexts,
                 async (context, token) =>
                 {
-                    var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity?.UserId, token);
-                    Debug.Assert(userInfo != null);
-                    return ResponseBuilder.BuildExperiment(context, userInfo);
+                    if (context.ExperimentEntity != null)
+                    {
+                        var userInfo = await UserManagement.GetUserByIdAsync(context.ExperimentEntity.UserId, token);
+                        Debug.Assert(userInfo != null);
+                        return ResponseBuilder.BuildExperiment(context, userInfo);
+                    }
+#pragma warning disable CS8603 // Possible null reference return.
+                    return null;
+#pragma warning restore CS8603 // Possible null reference return.
                 },
                 null);
             return Ok(resp);
@@ -683,6 +694,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 return options.ValidateResult;
             }
+            Debug.Assert(hackathon != null);
 
             // delete experiment
             var context = await ExperimentManagement.DeleteExperimentAsync(hackathonName.ToLower(), experimentId, cancellationToken);
@@ -700,7 +712,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             if (context?.Status != null && context.Status.IsFailed())
             {
                 return Problem(
-                    statusCode: context.Status.Code.Value,
+                    statusCode: context.Status.Code,
                     detail: context.Status.Message,
                     title: context.Status.Reason,
                     instance: experimentId);

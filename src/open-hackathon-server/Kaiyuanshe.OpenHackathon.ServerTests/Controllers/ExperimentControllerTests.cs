@@ -601,7 +601,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             UserInfo userInfo = new UserInfo { Region = "region" };
             var templateContext = new TemplateContext { TemplateEntity = new(), Status = new V1Status { Code = 200 } };
 
-
             // mock
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);

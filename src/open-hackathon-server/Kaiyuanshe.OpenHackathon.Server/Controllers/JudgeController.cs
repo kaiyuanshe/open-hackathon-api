@@ -234,6 +234,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                 async (judge, ct) =>
                 {
                     var userInfo = await UserManagement.GetUserByIdAsync(judge.UserId, ct);
+                    Debug.Assert(userInfo != null);
                     return ResponseBuilder.BuildJudge(judge, userInfo);
                 },
                 nextLink);
