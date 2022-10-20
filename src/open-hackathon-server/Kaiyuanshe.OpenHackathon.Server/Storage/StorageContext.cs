@@ -9,6 +9,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         IAnnouncementTable AnnouncementTable { get; set; }
         IAwardTable AwardTable { get; set; }
         IAwardAssignmentTable AwardAssignmentTable { get; set; }
+        ICronJobTable CronJobTable { get; set; }
         IEnrollmentTable EnrollmentTable { get; set; }
         IExperimentTable ExperimentTable { get; set; }
         IHackathonTable HackathonTable { get; set; }
@@ -35,6 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public IAwardTable AwardTable { get; set; }
         public IAnnouncementTable AnnouncementTable { get; set; }
         public IAwardAssignmentTable AwardAssignmentTable { get; set; }
+        public ICronJobTable CronJobTable { get; set; }
         public IEnrollmentTable EnrollmentTable { get; set; }
         public IExperimentTable ExperimentTable { get; set; }
         public IHackathonAdminTable HackathonAdminTable { get; set; }
