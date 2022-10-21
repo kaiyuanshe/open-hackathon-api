@@ -4,6 +4,7 @@ using Kaiyuanshe.OpenHackathon.Server.CronJobs;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Mutex;
 using Quartz;
 using Quartz.Spi;
 
@@ -19,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             builder.RegisterAzureBlobContainersV2();
             builder.RegisterType<StorageContext>().As<IStorageContext>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<TraceIdHttpPipelinePolicyFactory>().As<ITraceIdHttpPipelinePolicyFactory>().PropertiesAutowired().SingleInstance();
+            builder.RegisterType<MutexProvider>().As<IMutexProvider>().PropertiesAutowired().SingleInstance();
 
             //Biz
             builder.RegisterManagementClients();

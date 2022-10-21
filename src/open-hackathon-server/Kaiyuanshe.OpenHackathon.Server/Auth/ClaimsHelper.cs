@@ -52,7 +52,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
                     AuthConstant.Issuer.Default);
         }
 
-        public static bool IsPlatformAdministrator(this ClaimsPrincipal claimsPrincipal)
+        public static bool IsPlatformAdministrator(this ClaimsPrincipal? claimsPrincipal)
         {
             if (claimsPrincipal == null)
                 return false;
@@ -63,13 +63,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             });
         }
 
-        public static string GetUserId(this ClaimsPrincipal claimsPrincipal)
+        public static string GetUserId(this ClaimsPrincipal? claimsPrincipal)
         {
             var userIdClaim = claimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserId);
             return userIdClaim?.Value ?? string.Empty;
         }
 
-        public static string GetUserDisplayName(this ClaimsPrincipal claimsPrincipal)
+        public static string GetUserDisplayName(this ClaimsPrincipal? claimsPrincipal)
         {
             var userIdClaim = claimsPrincipal?.Claims?.FirstOrDefault(c => c.Type == AuthConstant.ClaimType.UserDisplayName);
             return userIdClaim?.Value ?? string.Empty;

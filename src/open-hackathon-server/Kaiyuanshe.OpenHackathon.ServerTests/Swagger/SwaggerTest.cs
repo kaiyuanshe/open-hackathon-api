@@ -9,7 +9,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
 {
     public class SwaggerTest
     {
-        public SwaggerGenerator Generate(IEnumerable<ApiDescription> apiDescriptions, Action<SwaggerGeneratorOptions> configure = null)
+        public SwaggerGenerator Generate(IEnumerable<ApiDescription> apiDescriptions, Action<SwaggerGeneratorOptions>? configure = null)
         {
             var options = DefaultOptions;
             configure?.Invoke(options);
