@@ -1,5 +1,4 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Microsoft.OpenApi.Writers;
 using SmartFormat;
 using System;
 using System.Globalization;
@@ -11,7 +10,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     {
         private static readonly string ResourceKeyPrefix = "ActivityLog";
 
-        public static string GetResourceKey(this ActivityLogEntity entity)
+        public static string? GetResourceKey(this ActivityLogEntity entity)
         {
             if (entity == null)
                 return null;
@@ -25,12 +24,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
                 return;
 
             resourceKey ??= entity.GetResourceKey();
-            entity.MessageResourceKey = resourceKey;
+            entity.MessageResourceKey = resourceKey ?? string.Empty;
             Func<CultureInfo, string?> messageByCulture = (culture) =>
             {
                 try
                 {
-                    var messageFormat = Resources.ResourceManager.GetString(resourceKey, culture);
+                    var messageFormat = Resources.ResourceManager.GetString(resourceKey ?? string.Empty, culture);
                     if (messageFormat == null)
                     {
                         return null;

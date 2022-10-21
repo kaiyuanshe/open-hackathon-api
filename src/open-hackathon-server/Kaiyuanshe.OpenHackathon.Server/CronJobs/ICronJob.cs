@@ -103,6 +103,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
                 return trigger;
             }
         }
+    }
+
+    public abstract class NonConcurrentCronJob : CronJobBase
+    {
 
     }
 }

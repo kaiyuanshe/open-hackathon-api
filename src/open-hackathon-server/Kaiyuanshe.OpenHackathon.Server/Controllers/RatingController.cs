@@ -307,6 +307,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             {
                 ratingKindEntity = await RatingManagement.GetCachedRatingKindAsync(ratingEntity.HackathonName, ratingEntity.RatingKindId, cancellationToken);
             }
+            Debug.Assert(ratingKindEntity != null);
             var kind = ResponseBuilder.BuildRatingKind(ratingKindEntity);
 
             var rating = ResponseBuilder.BuildRating(ratingEntity, judge, team, kind);
