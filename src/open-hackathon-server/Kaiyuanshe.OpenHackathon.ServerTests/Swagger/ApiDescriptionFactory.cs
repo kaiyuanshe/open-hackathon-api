@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -35,9 +36,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
             string groupName = "v1",
             string httpMethod = "POST",
             string relativePath = "resoure",
-            IEnumerable<ApiParameterDescription> parameterDescriptions = null,
-            IEnumerable<ApiRequestFormat> supportedRequestFormats = null,
-            IEnumerable<ApiResponseType> supportedResponseTypes = null)
+            IEnumerable<ApiParameterDescription>? parameterDescriptions = null,
+            IEnumerable<ApiRequestFormat>? supportedRequestFormats = null,
+            IEnumerable<ApiResponseType>? supportedResponseTypes = null)
         {
             var actionDescriptor = CreateActionDescriptor(methodInfo);
             var apiDescription = new ApiDescription
@@ -97,12 +98,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
             string groupName = "v1",
             string httpMethod = "POST",
             string relativePath = "resoure",
-            IEnumerable<ApiParameterDescription> parameterDescriptions = null,
-            IEnumerable<ApiRequestFormat> supportedRequestFormats = null,
-            IEnumerable<ApiResponseType> supportedResponseTypes = null)
+            IEnumerable<ApiParameterDescription>? parameterDescriptions = null,
+            IEnumerable<ApiRequestFormat>? supportedRequestFormats = null,
+            IEnumerable<ApiResponseType>? supportedResponseTypes = null)
             where TController : new()
         {
             var methodInfo = typeof(TController).GetMethod(actionNameSelector(new TController()));
+            Debug.Assert(methodInfo != null);
 
             return Create(
                 methodInfo,
@@ -126,7 +128,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
                 .Select(CreateParameterDescriptor)
                 .ToList();
 
-            var routeValues = new Dictionary<string, string>
+            Debug.Assert(methodInfo.DeclaringType != null);
+            var routeValues = new Dictionary<string, string?>
             {
                 ["controller"] = methodInfo.DeclaringType.Name.Replace("Controller", string.Empty)
             };
@@ -139,7 +142,6 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
                 MethodInfo = methodInfo,
                 Parameters = parameterDescriptors,
                 RouteValues = routeValues
-
             };
         }
 
@@ -147,7 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
         {
             return new ControllerParameterDescriptor
             {
-                Name = parameterInfo.Name,
+                Name = parameterInfo.Name ?? string.Empty,
                 ParameterInfo = parameterInfo,
                 ParameterType = parameterInfo.ParameterType,
             };
