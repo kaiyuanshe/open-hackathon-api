@@ -4,6 +4,7 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
 {
@@ -25,16 +26,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
                 TokenExpiredAt = date,
                 RegisterSource = registerSource,
                 Identities = identities,
-                //Roles = roles,
             };
 
             var user1 = userInfo.As<User>();
             Assert.AreEqual("address", user1.Address);
             Assert.IsNull(user1.Name);
             Assert.IsNull(user1.Openid);
-            Assert.AreEqual(true, user1.Blocked.Value);
+            Assert.AreEqual(true, user1.Blocked.GetValueOrDefault());
             Assert.AreEqual(false, user1.EmailVerified.HasValue);
-            Assert.AreEqual(10, user1.LoginsCount.Value);
+            Assert.AreEqual(10, user1.LoginsCount.GetValueOrDefault());
             Assert.AreEqual(date.ToString("o"), user1.TokenExpiredAt);
             Assert.AreEqual(identities, user1.Identities);
             //Assert.AreEqual(roles, user1.Roles);
@@ -46,9 +46,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
             Assert.AreEqual("address", user2.Address);
             Assert.AreEqual("name", user2.Name);
             Assert.IsNull(user2.Openid);
-            Assert.AreEqual(true, user2.Blocked.Value);
+            Assert.AreEqual(true, user2.Blocked.GetValueOrDefault());
             Assert.AreEqual(false, user2.EmailVerified.HasValue);
-            Assert.AreEqual(10, user2.LoginsCount.Value);
+            Assert.AreEqual(10, user2.LoginsCount.GetValueOrDefault());
             Assert.AreEqual(date.ToString("o"), user2.TokenExpiredAt);
             Assert.AreEqual(identities, user2.Identities);
             //Assert.AreEqual(roles, user2.Roles);
@@ -56,7 +56,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
 
         public interface IInheritTest { }
         public abstract class InheritTest : IInheritTest { }
-        public interface IInheritTestA: IInheritTest { }
+        public interface IInheritTestA : IInheritTest { }
         public abstract class InheritTestA : IInheritTestA { }
         public abstract class InheritTestB : IInheritTest { }
 

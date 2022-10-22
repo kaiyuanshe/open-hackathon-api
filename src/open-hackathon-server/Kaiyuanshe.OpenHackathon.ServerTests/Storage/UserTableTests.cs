@@ -4,6 +4,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Moq;
 using NUnit.Framework;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
@@ -25,6 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
 
             var resp = await userTable.Object.GetUserByIdAsync("uid", default);
 
+            Debug.Assert(resp != null);
             Assert.AreEqual("name", resp.Name);
             Mock.VerifyAll(responseBuilder, userTable);
             responseBuilder.VerifyNoOtherCalls();
