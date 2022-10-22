@@ -1,4 +1,6 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Runtime.Caching;
@@ -12,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
         [Test]
         public void ContainsKey()
         {
-            var cacheProvider = new DefaultCacheProvider(null);
+            var cacheProvider = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             Assert.IsFalse(cacheProvider.ContainsKey("abc"));
             MemoryCache.Default.Add("abc", "val", DateTimeOffset.Now.AddMinutes(2));
             Assert.IsTrue(cacheProvider.ContainsKey("abc"));
@@ -32,7 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
             CancellationToken cancellationToken = CancellationToken.None;
 
             MemoryCache.Default.Add(entry.CacheKey, "first", entry.CachePolicy);
-            var cacheProvider = new DefaultCacheProvider(null);
+            var cacheProvider = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             string value = await cacheProvider.GetOrAddAsync(entry, cancellationToken);
             Assert.AreEqual("second", value);
         }
@@ -63,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
                 );
             CancellationToken cancellationToken = CancellationToken.None;
 
-            var cacheProvider = new DefaultCacheProvider(null);
+            var cacheProvider = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             await cacheProvider.GetOrAddAsync(first, cancellationToken);
             await cacheProvider.GetOrAddAsync(second, cancellationToken);
             await cacheProvider.GetOrAddAsync(third, cancellationToken);
@@ -92,7 +94,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
                 );
             CancellationToken cancellationToken = CancellationToken.None;
 
-            var cacheProvider = new DefaultCacheProvider(null);
+            var cacheProvider = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             await cacheProvider.GetOrAddAsync(entry, cancellationToken);
             Assert.IsFalse(MemoryCache.Default.Contains(entry.CacheKey));
 
@@ -116,7 +118,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
                }, false);
             CancellationToken cancellationToken = CancellationToken.None;
 
-            var cacheProvider = new DefaultCacheProvider(null);
+            var cacheProvider = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
 
             MemoryCache.Default.Add(entry.CacheKey, "existing", entry.CachePolicy);
             string value = (string)await cacheProvider.GetOrAddAsyncInternal(entry, cancellationToken);

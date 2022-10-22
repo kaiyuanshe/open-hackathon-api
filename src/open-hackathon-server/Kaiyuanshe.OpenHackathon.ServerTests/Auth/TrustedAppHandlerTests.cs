@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
@@ -33,7 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
-            }, null, null);
+            }, new ClaimsPrincipal(), null);
             var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 
@@ -68,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
-            }, null, null);
+            }, new ClaimsPrincipal(), null);
             var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 
@@ -105,7 +106,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             var authContext = new AuthorizationHandlerContext(new List<IAuthorizationRequirement>
             {
                 new TrustedAppRequirement()
-            }, null, null);
+            }, new ClaimsPrincipal(), null);
             var handler = new TrustedAppHandler(config.Object, accessor.Object, logger.Object);
             await handler.HandleAsync(authContext);
 

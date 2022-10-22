@@ -9,6 +9,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -43,6 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             AssertHelper.AssertObjectResult(resp, 400, p =>
             {
+                Debug.Assert(p.Detail != null);
                 Assert.IsTrue(p.Detail.Contains("Some Message"));
             });
         }
@@ -53,7 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         public async Task GetUserById_NotFound()
         {
             string userId = "uid";
-            UserInfo userInfo = null;
+            UserInfo? userInfo = null;
 
             // mock
             var userManagement = new Mock<IUserManagement>();

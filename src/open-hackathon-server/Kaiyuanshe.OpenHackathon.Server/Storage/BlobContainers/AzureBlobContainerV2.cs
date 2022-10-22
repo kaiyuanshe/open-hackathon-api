@@ -5,6 +5,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -22,6 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
         Task<byte[]> DownloadBlockBlobAsBytesAsync(string blobName, CancellationToken cancellationToken);
         Task UploadBlockBlobAsync(string blobName, string content, CancellationToken cancellationToken);
         Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken);
+        AzurePageBlob GetPageBlob(string blobName);
     }
 
     public abstract class AzureBlobContainerV2 : StorageClientBase, IAzureBlobContainerV2
@@ -88,6 +90,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers
             {
                 return await blobClient.ExistsAsync(cancellationToken);
             }, cancellationToken);
+        }
+
+        public AzurePageBlob GetPageBlob(string blobName)
+        {
+            var containerClient = GetBlobContainerClient();
+            var pageBlobClient = containerClient.GetPageBlobClient(blobName);
+            return new AzurePageBlob(pageBlobClient, logger);
         }
 
         private async Task ExecuteBlockBlobInternal(string blobName, Func<BlockBlobClient, Task> func, CancellationToken cancellationToken)
