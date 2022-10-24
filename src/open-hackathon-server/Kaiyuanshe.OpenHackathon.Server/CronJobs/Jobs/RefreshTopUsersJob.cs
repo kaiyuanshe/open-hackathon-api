@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 {
-    public class RefreshTopUsersJob : CronJobBase
+    public class RefreshTopUsersJob : NonConcurrentCronJob
     {
         protected override TimeSpan Interval => TimeSpan.FromDays(1);
 
         public IActivityLogManagement ActivityLogManagement { get; set; }
 
-        protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
+        protected override async Task ExecuteExclusivelyAsync(CancellationToken token)
         {
             Logger.LogInformation($"RefreshTopUsersJob triggered at {DateTime.UtcNow}");
 

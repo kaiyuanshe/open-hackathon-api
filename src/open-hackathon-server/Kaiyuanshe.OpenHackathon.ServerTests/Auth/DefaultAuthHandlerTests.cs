@@ -14,6 +14,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -63,8 +64,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
 
             // verify
             Mock.VerifyAll(userManagement, httpContext, httpRequest, httpHeaders, cache);
+            Debug.Assert(result != null);
             Assert.IsFalse(result.Succeeded);
-            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure.Message);
+            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure?.Message);
         }
 
 
@@ -92,8 +94,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
 
             // verify
             Mock.VerifyAll(userManagement, httpContext, httpRequest, httpHeaders, cache);
+            Debug.Assert(result != null);
             Assert.IsFalse(result.Succeeded);
-            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure.Message);
+            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure?.Message);
         }
 
         [Test]
@@ -124,7 +127,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             Mock.VerifyAll(userManagement, httpContext, httpRequest, httpHeaders, cache);
             userManagement.VerifyNoOtherCalls();
             Assert.IsFalse(result.Succeeded);
-            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure.Message);
+            Assert.AreEqual(Resources.Auth_Unauthorized, result.Failure?.Message);
         }
 
         [Test]
@@ -136,7 +139,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             {
                new Claim("type", "value", "valueType", "issuer"),
             };
-            ValidationResult validationResult = ValidationResult.Success;
+            ValidationResult? validationResult = ValidationResult.Success;
 
             // mock
             var userManagement = new Mock<IUserManagement>();
@@ -162,6 +165,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Auth
             userManagement.VerifyNoOtherCalls();
             Assert.IsTrue(result.Succeeded);
             Assert.IsNotNull(result.Principal);
+            Debug.Assert(result.Principal != null);
             Assert.AreEqual(1, result.Principal.Claims.Count());
             var claim = result.Principal.Claims.First();
             Assert.AreEqual("type", claim.Type);

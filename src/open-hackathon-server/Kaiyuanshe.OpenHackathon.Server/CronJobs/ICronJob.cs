@@ -160,10 +160,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
             }
 
             var mutexName = $"CronJob/{jobName}.lock";
-            var jobMutexProvider = MutexProvider.GetInstance(mutexName);
+            var jobMutex = MutexProvider.GetInstance(mutexName);
             try
             {
-                var mutexCtx = await jobMutexProvider.TryLockAsync(token);
+                var mutexCtx = await jobMutex.TryLockAsync(token);
                 if (mutexCtx == null)
                 {
                     Logger.TraceInformation($"Skip Cron Job `{jobName}` as it is currently ran by other runner");
@@ -242,7 +242,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs
             }
             finally
             {
-                await jobMutexProvider.TryReleaseAsync(token);
+                await jobMutex.TryReleaseAsync(token);
             }
         }
     }

@@ -50,7 +50,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 u.UserId == "id"
                 && u.Token == "token"
                 && u.UserDisplayName == "nickname"), cancellationToken));
-            var cache = new DefaultCacheProvider(null);
+            var cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
 
             // test
             var userMgmt = new UserManagement
@@ -200,6 +200,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var result = await userMgmt.ValidateTokenAsync(token);
 
             Assert.AreNotEqual(ValidationResult.Success, result);
+            Debug.Assert(result != null);
             Assert.AreEqual(Resources.Auth_Unauthorized, result.ErrorMessage);
         }
 
@@ -394,7 +395,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // input
             CancellationToken cancellationToken = CancellationToken.None;
             string userId = "userid";
-            HackathonAdminEntity entity = null;
+            HackathonAdminEntity? entity = null;
 
             // moq
             var storage = new Mock<IStorageContext>();
@@ -441,6 +442,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             // verify
             Mock.VerifyAll(storage, hackAdminTable);
             Assert.IsNotNull(claim);
+            Debug.Assert(claim != null);
             Assert.AreEqual(AuthConstant.ClaimType.PlatformAdministrator, claim.Type);
             Assert.AreEqual(userId, claim.Value);
             Assert.AreEqual(ClaimValueTypes.String, claim.ValueType);
@@ -466,7 +468,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var userManagement = new UserManagement
             {
                 StorageContext = storageContext.Object,
-                Cache = new DefaultCacheProvider(null),
+                Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object),
             };
             var result = await userManagement.GetUserByIdAsync(userId, cancellationToken);
 

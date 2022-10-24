@@ -3,6 +3,7 @@ using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Mutex;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IActivityLogTable> ActivityLogTable { get; } = new();
         public Mock<IAnnouncementTable> AnnouncementTable { get; } = new();
         public Mock<IAwardAssignmentTable> AwardAssignmentTable { get; } = new();
+        public Mock<ICronJobTable> CronJobTable { get; } = new();
         public Mock<IEnrollmentTable> EnrollmentTable { get; } = new();
         public Mock<IExperimentTable> ExperimentTable { get; } = new();
         public Mock<IHackathonTable> HackathonTable { get; } = new();
@@ -60,6 +62,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
         public Mock<ICacheProvider> CacheProvider { get; } = new();
 
+        #region Mutex
+        public Mock<IMutexProvider> MutexProvider { get; } = new();
+        public Mock<IMutex> Mutex { get; } = new();
+        #endregion
+
         public Moqs()
         {
             LoggerFactory.Setup(l => l.CreateLogger(It.IsAny<string>())).Returns(Logger.Object);
@@ -67,6 +74,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
             StorageContext.Setup(p => p.AnnouncementTable).Returns(AnnouncementTable.Object);
             StorageContext.Setup(p => p.AwardAssignmentTable).Returns(AwardAssignmentTable.Object);
+            StorageContext.Setup(p => p.CronJobTable).Returns(CronJobTable.Object);
             StorageContext.Setup(p => p.EnrollmentTable).Returns(EnrollmentTable.Object);
             StorageContext.Setup(p => p.ExperimentTable).Returns(ExperimentTable.Object);
             StorageContext.Setup(p => p.HackathonTable).Returns(HackathonTable.Object);
@@ -88,7 +96,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         {
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
-                EnrollmentTable, ExperimentTable, HackathonTable,
+                CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable,
                 TeamTable, TeamMemberTable, TeamWorkTable, TopUserTable,
                 UserTable, UserTokenTable, ReportsContainer);
@@ -96,6 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
+            CronJobTable.VerifyNoOtherCalls();
             EnrollmentTable.VerifyNoOtherCalls();
             ExperimentTable.VerifyNoOtherCalls();
             HackathonTable.VerifyNoOtherCalls();
@@ -141,6 +150,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
             Mock.VerifyAll(CacheProvider);
             CacheProvider?.VerifyNoOtherCalls();
+
+            #region Mutex
+            Mock.VerifyAll(MutexProvider, Mutex);
+            MutexProvider.VerifyNoOtherCalls();
+            Mutex.VerifyNoOtherCalls();
+            #endregion
         }
     }
 }
