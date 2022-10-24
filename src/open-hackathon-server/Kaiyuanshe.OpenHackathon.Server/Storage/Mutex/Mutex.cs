@@ -8,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Mutex
 {
     public interface IMutex
     {
-        Task<IMutexContext> TryLockAsync(CancellationToken cancellationToken);
+        Task<IMutexContext?> TryLockAsync(CancellationToken cancellationToken);
         Task TryReleaseAsync(CancellationToken cancellationToken = default);
     }
 
@@ -34,7 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Mutex
             {
                 lock (_lockObj)
                 {
-                    if (!string.IsNullOrEmpty(_leaseId))
+                    if (!string.IsNullOrEmpty(_leaseId) && _lockReleasedSource != null)
                     {
                         return new MutexContext
                         {

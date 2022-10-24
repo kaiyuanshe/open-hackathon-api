@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                 Timestamp = DateTimeOffset.UtcNow,
                 OperatorId = "uid",
                 MessageResourceKey = "User_NotFound",
-                Messages = new Dictionary<string, string>
+                Messages = new Dictionary<string, string?>
                 {
                     ["en-US"] = "en"
                 }
@@ -208,6 +208,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("uid", experiment.userId);
             Assert.AreEqual("eid", experiment.id);
             Assert.AreEqual("tn", experiment.templateId);
+            Debug.Assert(experiment.status != null);
             Assert.AreEqual(204, experiment.status.code);
             Assert.AreEqual("msg", experiment.status.message);
             Assert.AreEqual(entity.CreatedAt, experiment.createdAt);
@@ -282,12 +283,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
 
             Assert.IsNull(hack.tags);
             Assert.AreEqual("pk", hack.name);
-            Assert.IsTrue(hack.autoApprove.Value);
+            Assert.IsTrue(hack.autoApprove.HasValue && hack.autoApprove.Value);
             Assert.AreEqual("loc", hack.location);
             Assert.AreEqual("abc", hack.creatorId);
             Assert.IsTrue(hack.judgeStartedAt.HasValue);
             Assert.IsFalse(hack.judgeEndedAt.HasValue);
             Assert.AreEqual(100, hack.enrollment);
+            Debug.Assert(hack.roles != null);
             Assert.IsTrue(hack.roles.isAdmin);
             Assert.IsTrue(hack.roles.isEnrolled);
             Assert.IsTrue(hack.roles.isJudge);
@@ -476,7 +478,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
 
             Assert.AreEqual("pk", team.hackathonName);
             Assert.AreEqual("rk", team.id);
-            Assert.AreEqual(false, team.autoApprove.Value);
+            Assert.AreEqual(false, team.autoApprove.GetValueOrDefault());
             Assert.AreEqual("uid", team.creatorId);
             Assert.AreEqual("desc", team.description);
             Assert.AreEqual("dp", team.displayName);
@@ -604,6 +606,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("pw", template.vnc.password);
             Assert.AreEqual(entity.CreatedAt, template.createdAt);
             Assert.AreEqual(entity.Timestamp.DateTime, template.updatedAt);
+            Debug.Assert(template.status != null);
             Assert.AreEqual(200, template.status.code);
             Assert.AreEqual("kind", template.status.kind);
         }

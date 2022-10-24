@@ -9,7 +9,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
         [Test]
         public void IsFailed()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Assert.IsFalse(V1StatusExtensions.IsFailed(null));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             Assert.IsFalse(V1StatusExtensions.IsFailed(new V1Status { }));
             Assert.IsTrue(V1StatusExtensions.IsFailed(new V1Status { Code = 400 }));
             Assert.IsTrue(V1StatusExtensions.IsFailed(new V1Status { Code = 409 }));
