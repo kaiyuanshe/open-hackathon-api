@@ -19,7 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             moqs.TopUserTable.Setup(t => t.BatchUpdateTopUsers(dic, It.IsAny<CancellationToken>()));
 
             var job = new RefreshTopUsersJob();
-            moqs.SetupCronJob(job);
+            moqs.SetupNonCurrentCronJob(job);
             job.ActivityLogManagement = moqs.ActivityLogManagement.Object;
 
             await job.ExecuteNow(null);

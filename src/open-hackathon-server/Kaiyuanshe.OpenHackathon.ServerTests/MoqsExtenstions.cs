@@ -3,8 +3,11 @@ using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Controllers;
 using Kaiyuanshe.OpenHackathon.Server.CronJobs;
 using Kaiyuanshe.OpenHackathon.Server.ResponseBuilder;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
+using Kaiyuanshe.OpenHackathon.Server.Storage.Mutex;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Threading;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
@@ -44,6 +47,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             cronJob.StorageContext = moqs.StorageContext.Object;
             cronJob.CacheProvider = moqs.CacheProvider.Object;
             cronJob.LoggerFactory = moqs.LoggerFactory.Object;
+        }
+
+        public static void SetupNonCurrentCronJob(this Moqs moqs, NonConcurrentCronJob cronJob)
+        {
+            cronJob.StorageContext = moqs.StorageContext.Object;
+            cronJob.CacheProvider = moqs.CacheProvider.Object;
+            cronJob.LoggerFactory = moqs.LoggerFactory.Object;
+            cronJob.MutexProvider = moqs.MutexProvider.Object;
+
+            var jobName = cronJob.GetType().Name;
+            moqs.CronJobTable.Setup(c => c.RetrieveAsync(jobName, jobName, It.IsAny<CancellationToken>())).ReturnsAsync(default(CronJobEntity));
+            moqs.MutexProvider.Setup(p => p.GetInstance($"CronJob/{jobName}.lock")).Returns(moqs.Mutex.Object);
+            moqs.Mutex.Setup(m => m.TryLockAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new Mock<IMutexContext>().Object);
+            moqs.CronJobTable.Setup(c => c.InsertOrReplaceAsync(
+                It.Is<CronJobEntity>(c => c.PartitionKey == jobName && c.RowKey == jobName),
+                It.IsAny<CancellationToken>())
+            );
+            moqs.Mutex.Setup(m => m.TryReleaseAsync(It.IsAny<CancellationToken>()));
         }
     }
 }

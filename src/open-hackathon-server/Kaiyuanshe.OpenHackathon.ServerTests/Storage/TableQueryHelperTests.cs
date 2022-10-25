@@ -81,7 +81,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         [TestCase("a eq a1", ExpectedResult = "a eq a1")]
         [TestCase("a eq a1", "b ne 'e1'", ExpectedResult = "(a eq a1) and (b ne 'e1')")]
         [TestCase("a eq a1", "b ne 'e1'", "c lt 5L", ExpectedResult = "(a eq a1) and (b ne 'e1') and (c lt 5L)")]
-        public string And(params string[] filters)
+        public string? And(params string[] filters)
         {
             return TableQueryHelper.And(filters);
         }
@@ -90,7 +90,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage
         [TestCase("a eq a1", ExpectedResult = "a eq a1")]
         [TestCase("a eq a1", "b ne 'e1'", ExpectedResult = "(a eq a1) or (b ne 'e1')")]
         [TestCase("a eq a1", "b ne 'e1'", "c lt 5L", ExpectedResult = "(a eq a1) or (b ne 'e1') or (c lt 5L)")]
-        public string Or(params string[] filters)
+        public string? Or(params string[] filters)
         {
             return TableQueryHelper.Or(filters);
         }
