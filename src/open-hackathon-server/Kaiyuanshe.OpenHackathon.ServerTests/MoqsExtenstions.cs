@@ -25,6 +25,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.HackathonAdminManagement = moqs.HackathonAdminManagement.Object;
             controller.JudgeManagement = moqs.JudgeManagement.Object;
             controller.OrganizerManagement = moqs.OrganizerManagement.Object;
+            controller.QuestionnaireManagement = moqs.QuestionnaireManagement.Object;
             controller.RatingManagement = moqs.RatingManagement.Object;
             controller.TeamManagement = moqs.TeamManagement.Object;
             controller.UserManagement = moqs.UserManagement.Object;

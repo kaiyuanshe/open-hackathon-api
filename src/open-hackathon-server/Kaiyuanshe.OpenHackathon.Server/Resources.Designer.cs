@@ -916,6 +916,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}] Questionnaire added..
+        /// </summary>
+        internal static string ActivityLog_User_createQuestionnaire {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_createQuestionnaire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{hackathonName}]Rated team &quot;{teamName}&quot; on kind &quot;{kindName}&quot;..
         /// </summary>
         internal static string ActivityLog_User_createRating {
@@ -1065,6 +1074,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_deletePlatformAdmin2 {
             get {
                 return ResourceManager.GetString("ActivityLog_User_deletePlatformAdmin2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}] Questionnaire deleted..
+        /// </summary>
+        internal static string ActivityLog_User_deleteQuestionnaire {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_deleteQuestionnaire", resourceCulture);
             }
         }
         
@@ -1299,6 +1317,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string ActivityLog_User_updateOrganizer {
             get {
                 return ResourceManager.GetString("ActivityLog_User_updateOrganizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{hackathonName}] Questionnaire updated..
+        /// </summary>
+        internal static string ActivityLog_User_updateQuestionnaire {
+            get {
+                return ResourceManager.GetString("ActivityLog_User_updateQuestionnaire", resourceCulture);
             }
         }
         
@@ -1731,6 +1758,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         internal static string Parameter_Required {
             get {
                 return ResourceManager.GetString("Parameter_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No associate questionnaire cannot be found..
+        /// </summary>
+        internal static string Questionnaire_NotFound {
+            get {
+                return ResourceManager.GetString("Questionnaire_NotFound", resourceCulture);
             }
         }
         

@@ -131,9 +131,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         private async Task<object> UpdateInternalAsync(HackathonEntity hackathon, EnrollmentEntity existing, Enrollment request, CancellationToken cancellationToken)
         {
             var extensions = existing.Extensions.Merge(request.extensions);
-            if (extensions.Length > Enrollment.MaxExtensions)
+            if (extensions.Length > Questionnaire.MaxExtensions)
             {
-                return BadRequest(string.Format(Resources.Enrollment_TooManyExtensions, Enrollment.MaxExtensions));
+                return BadRequest(string.Format(Resources.Enrollment_TooManyExtensions, Questionnaire.MaxExtensions));
             }
 
             var enrollment = await EnrollmentManagement.UpdateEnrollmentAsync(existing, request, cancellationToken);
