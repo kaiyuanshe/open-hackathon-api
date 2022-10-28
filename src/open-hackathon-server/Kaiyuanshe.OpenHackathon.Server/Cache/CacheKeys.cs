@@ -20,6 +20,7 @@
         HackathonAdmin,
         Judge,
         Organizer,
+        Questionnaire,
         RatingKind,
         Team,
         TeamMember,

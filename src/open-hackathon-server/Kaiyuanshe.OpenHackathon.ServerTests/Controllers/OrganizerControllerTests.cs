@@ -104,6 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(h => h.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.OrganizerManagement.Setup(o => o.GetOrganizerById("pk", "oid", default)).ReturnsAsync((OrganizerEntity?)null);
 
             var controller = new OrganizerController();
             moqs.SetupController(controller);

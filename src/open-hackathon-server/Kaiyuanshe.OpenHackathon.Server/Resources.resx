@@ -402,6 +402,9 @@
   <data name="ActivityLog_User_createPlatformAdmin2" xml:space="preserve">
     <value>Added user {userName} as platform admin.</value>
   </data>
+  <data name="ActivityLog_User_createQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] Questionnaire added.</value>
+  </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>[{hackathonName}]Rated team "{teamName}" on kind "{kindName}".</value>
   </data>
@@ -452,6 +455,9 @@
   </data>
   <data name="ActivityLog_User_deletePlatformAdmin2" xml:space="preserve">
     <value>No longer be a platform admin.</value>
+  </data>
+  <data name="ActivityLog_User_deleteQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] Questionnaire deleted.</value>
   </data>
   <data name="ActivityLog_User_deleteRating" xml:space="preserve">
     <value>[{hackathonName}]Removed a rating in hackathon.</value>
@@ -530,6 +536,9 @@
   </data>
   <data name="ActivityLog_User_updateOrganizer" xml:space="preserve">
     <value>[{hackathonName}]Updated organizer "{organizerName}".</value>
+  </data>
+  <data name="ActivityLog_User_updateQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] Questionnaire updated.</value>
   </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
     <value>[{hackathonName}]Updated a rating on kind "{ratingKindName}".</value>
@@ -674,6 +683,9 @@
   </data>
   <data name="Parameter_Required" xml:space="preserve">
     <value>Required parameter {0} is null or empty.</value>
+  </data>
+  <data name="Questionnaire_NotFound" xml:space="preserve">
+    <value>No associate questionnaire cannot be found.</value>
   </data>
   <data name="Rating_HasRating" xml:space="preserve">
     <value>Cannot delete the {0}. Must delete related Rating first.</value>

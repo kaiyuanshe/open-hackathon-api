@@ -28,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IHackathonAdminTable> HackathonAdminTable { get; } = new();
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
         public Mock<IOrganizerTable> OrganizerTable { get; set; } = new();
+        public Mock<IQuestionnaireTable> QuestionnaireTable { get; set; } = new();
         public Mock<ITeamTable> TeamTable { get; set; } = new();
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
@@ -53,6 +54,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IWorkManagement> WorkManagement { get; } = new();
         public Mock<IFileManagement> FileManagement { get; } = new();
         public Mock<IOrganizerManagement> OrganizerManagement { get; } = new();
+        public Mock<IQuestionnaireManagement> QuestionnaireManagement { get; } = new();
         #endregion
 
         #region K8s
@@ -81,6 +83,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.HackathonAdminTable).Returns(HackathonAdminTable.Object);
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
             StorageContext.Setup(p => p.OrganizerTable).Returns(OrganizerTable.Object);
+            StorageContext.Setup(p => p.QuestionnaireTable).Returns(QuestionnaireTable.Object);
             StorageContext.Setup(p => p.TeamTable).Returns(TeamTable.Object);
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
@@ -97,7 +100,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             #region Storage
             Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
                 CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
-                HackathonAdminTable, JudgeTable, OrganizerTable,
+                HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
                 TeamTable, TeamMemberTable, TeamWorkTable, TopUserTable,
                 UserTable, UserTokenTable, ReportsContainer);
 
@@ -111,6 +114,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonAdminTable?.VerifyNoOtherCalls();
             JudgeTable.VerifyNoOtherCalls();
             OrganizerTable.VerifyNoOtherCalls();
+            QuestionnaireTable.VerifyNoOtherCalls();
             TeamTable.VerifyNoOtherCalls();
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
@@ -124,8 +128,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Mock.VerifyAll(ActivityLogManagement, AnnouncementManagement, AuthorizationService,
                 AwardManagement, EnrollmentManagement, ExperimentManagement,
                 FileManagement, HackathonAdminManagement, HackathonManagement,
-                JudgeManagement, RatingManagement, TeamManagement,
-                UserManagement, WorkManagement);
+                JudgeManagement, OrganizerManagement, QuestionnaireManagement, RatingManagement,
+                TeamManagement, UserManagement, WorkManagement);
 
             ActivityLogManagement.VerifyNoOtherCalls();
             AnnouncementManagement.VerifyNoOtherCalls();
@@ -137,6 +141,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             HackathonAdminManagement.VerifyNoOtherCalls();
             HackathonManagement.VerifyNoOtherCalls();
             JudgeManagement.VerifyNoOtherCalls();
+            OrganizerManagement.VerifyNoOtherCalls();
+            QuestionnaireManagement.VerifyNoOtherCalls();
             RatingManagement.VerifyNoOtherCalls();
             TeamManagement.VerifyNoOtherCalls();
             UserManagement.VerifyNoOtherCalls();

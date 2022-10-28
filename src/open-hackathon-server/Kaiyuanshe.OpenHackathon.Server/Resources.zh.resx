@@ -402,6 +402,9 @@
   <data name="ActivityLog_User_createPlatformAdmin2" xml:space="preserve">
     <value>添加新的平台管理员：{userName} 。</value>
   </data>
+  <data name="ActivityLog_User_createQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] 创建了问卷。</value>
+  </data>
   <data name="ActivityLog_User_createRating" xml:space="preserve">
     <value>给团队"{teamName}"的"{kindName}"打分。活动名称："{hackathonName}"。</value>
   </data>
@@ -452,6 +455,9 @@
   </data>
   <data name="ActivityLog_User_deletePlatformAdmin2" xml:space="preserve">
     <value>不再担任平台管理员。</value>
+  </data>
+  <data name="ActivityLog_User_deleteQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] 删除了问卷。</value>
   </data>
   <data name="ActivityLog_User_deleteRating" xml:space="preserve">
     <value>[{hackathonName}]撤销了一项评分。</value>
@@ -530,6 +536,9 @@
   </data>
   <data name="ActivityLog_User_updateOrganizer" xml:space="preserve">
     <value>[{hackathonName}]更新了活动组织者"{organizerName}"。</value>
+  </data>
+  <data name="ActivityLog_User_updateQuestionnaire" xml:space="preserve">
+    <value>[{hackathonName}] 修改了问卷。</value>
   </data>
   <data name="ActivityLog_User_updateRating" xml:space="preserve">
     <value>[{hackathonName}]修改了奖项"{ratingKindName}"的一项评分。</value>
@@ -674,6 +683,9 @@
   </data>
   <data name="Parameter_Required" xml:space="preserve">
     <value>参数 {0}不能为空。</value>
+  </data>
+  <data name="Questionnaire_NotFound" xml:space="preserve">
+    <value>问卷不存在。</value>
   </data>
   <data name="Rating_HasRating" xml:space="preserve">
     <value>无法删除 {0}。请先删除已经评分。</value>

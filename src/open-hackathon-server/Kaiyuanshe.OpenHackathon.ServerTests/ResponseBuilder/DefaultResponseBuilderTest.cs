@@ -387,6 +387,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
+        #region BuildQuestionnaire
+        [Test]
+        public void BuildQuestionnaire()
+        {
+            var entity = new QuestionnaireEntity
+            {
+                PartitionKey = "pk",
+                RowKey = string.Empty,
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            var respBuilder = new DefaultResponseBuilder();
+            var result = respBuilder.BuildQuestionnaire(entity);
+
+            Assert.AreEqual("pk", result.hackathonName);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
         #region BuildRating
         [Test]
         public void BuildRating()

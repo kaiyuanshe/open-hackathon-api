@@ -16,6 +16,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         IHackathonAdminTable HackathonAdminTable { get; set; }
         IJudgeTable JudgeTable { get; set; }
         IOrganizerTable OrganizerTable { get; set; }
+        IQuestionnaireTable QuestionnaireTable { get; set; }
         IRatingTable RatingTable { get; set; }
         IRatingKindTable RatingKindTable { get; set; }
         ITeamTable TeamTable { get; set; }
@@ -45,6 +46,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public IHackathonTable HackathonTable { get; set; }
         public IJudgeTable JudgeTable { get; set; }
         public IOrganizerTable OrganizerTable { get; set; }
+        public IQuestionnaireTable QuestionnaireTable { get; set; }
         public IRatingTable RatingTable { get; set; }
         public IRatingKindTable RatingKindTable { get; set; }
         public ITeamTable TeamTable { get; set; }

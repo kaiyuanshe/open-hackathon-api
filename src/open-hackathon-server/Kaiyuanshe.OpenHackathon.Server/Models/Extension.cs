@@ -25,6 +25,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         [Required]
         [MaxLength(1024)]
         public string value { get; set; }
+
+        public override bool Equals(object? obj) {
+            return obj is Extension extension &&
+                   name == extension.name &&
+                   value == extension.value;
+        }
     }
 
     public static class ExtensionHelper

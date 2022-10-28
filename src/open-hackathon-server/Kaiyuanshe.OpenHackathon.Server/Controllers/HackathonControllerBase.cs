@@ -36,6 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IHackathonManagement HackathonManagement { get; set; }
         public IJudgeManagement JudgeManagement { get; set; }
         public IOrganizerManagement OrganizerManagement { get; set; }
+        public IQuestionnaireManagement QuestionnaireManagement { get; set; }
         public IRatingManagement RatingManagement { get; set; }
         public ITeamManagement TeamManagement { get; set; }
         public IUserManagement UserManagement { get; set; }
