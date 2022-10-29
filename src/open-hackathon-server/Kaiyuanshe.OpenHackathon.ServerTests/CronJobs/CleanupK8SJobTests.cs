@@ -1,5 +1,4 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Biz;
-using Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs;
+﻿using Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Moq;
 using NUnit.Framework;
@@ -22,10 +21,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
             };
 
             // mock
-            var experimentManagement = new Mock<IExperimentManagement>();
-            experimentManagement.Setup(e => e.CleanupKubernetesExperimentsAsync("hack", It.IsAny<CancellationToken>()));
-            experimentManagement.Setup(e => e.CleanupKubernetesTemplatesAsync("hack", It.IsAny<CancellationToken>()));
             var moqs = new Moqs();
+            moqs.ExperimentManagement.Setup(e => e.CleanupKubernetesExperimentsAsync("hack", It.IsAny<CancellationToken>()));
+            moqs.ExperimentManagement.Setup(e => e.CleanupKubernetesTemplatesAsync("hack", It.IsAny<CancellationToken>()));
             moqs.HackathonTable.Setup(h => h.ExecuteQueryAsync(
                 "(ExperimentCleaned eq false) and (ReadOnly eq true)",
                 It.IsAny<Func<HackathonEntity, Task>>(), null, null, It.IsAny<CancellationToken>()))
@@ -43,14 +41,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs
 
             var job = new CleanupK8SJob
             {
-                ExperimentManagement = experimentManagement.Object,
-                StorageContext = moqs.StorageContext.Object,
+                ExperimentManagement = moqs.ExperimentManagement.Object,
             };
+            moqs.SetupNonCurrentCronJob(job);
             await job.ExecuteNow(null);
-
-            Mock.VerifyAll(experimentManagement);
-            experimentManagement.Verify(e => e.CleanupKubernetesExperimentsAsync("hack", It.IsAny<CancellationToken>()), Times.Once);
-            experimentManagement.Verify(e => e.CleanupKubernetesTemplatesAsync("hack", It.IsAny<CancellationToken>()), Times.Once);
 
             moqs.VerifyAll();
         }

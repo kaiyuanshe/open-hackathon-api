@@ -8,7 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 {
     public class RefreshTopUsersJob : NonConcurrentCronJob
     {
-        protected override TimeSpan Interval => TimeSpan.FromDays(1);
+        protected override TimeSpan Interval => TimeSpan.FromHours(12);
 
         public IActivityLogManagement ActivityLogManagement { get; set; }
 

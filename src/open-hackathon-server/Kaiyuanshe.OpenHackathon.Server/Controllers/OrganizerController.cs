@@ -24,7 +24,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// </summary>
         /// <remarks>
         /// Add a company/organization who organizes the event. 
-        /// Could a host, organizer, co-organizer, sponsor or title sponsor.
+        /// Could be a host, organizer, co-organizer, sponsor or title sponsor.
         /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
