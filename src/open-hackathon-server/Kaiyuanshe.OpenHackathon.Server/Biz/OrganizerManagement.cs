@@ -55,6 +55,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 Logo = parameter.logo,
                 Name = parameter.name,
                 Type = parameter.type.GetValueOrDefault(OrganizerType.host),
+                Url = parameter.url,
             };
             await StorageContext.OrganizerTable.InsertAsync(entity, cancellationToken);
             InvalidateCachedOrganizers(hackathonName);
@@ -69,6 +70,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             entity.Name = parameter.name ?? entity.Name;
             entity.Description = parameter.description ?? entity.Description;
             entity.Type = parameter.type.GetValueOrDefault(entity.Type);
+            entity.Url = parameter.url ?? entity.Url;
             if (parameter.logo != null)
             {
                 if (entity.Logo == null)

@@ -47,6 +47,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         [RequiredIfPut]
         public PictureInfo logo { get; set; }
+
+        /// <summary>
+        /// Url that organizer shows.
+        /// </summary>
+        [Url]
+        // [RequiredIfPut]
+        public string url { get; set; }
     }
 
     /// <summary>
