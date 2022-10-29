@@ -6,13 +6,13 @@
     public class TopUser : ModelBase
     {
         /// <summary>
-        /// the rank. Starting from index 0. O means the highest rank.
+        /// the rank. Starting from 0. 0 means the highest rank.
         /// </summary>
         /// <example>1</example>
         public int rank { get; internal set; }
 
         /// <summary>
-        /// the score that is used for ranking. The high in score, the high in rank.
+        /// the score that is used for ranking. The more in score, the high in rank.
         /// </summary>
         /// <example>100</example>
         public int score { get; internal set; }

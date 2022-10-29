@@ -1,9 +1,7 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
-using Kaiyuanshe.OpenHackathon.Server.Biz.Options;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
-using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using Kaiyuanshe.OpenHackathon.Server.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +21,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// Add a new Questionnaire.
         /// </summary>
         /// <remarks>
-        /// One hackathon provides one questionnaire.
+        /// One hackathon provides only one questionnaire.
         /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
@@ -122,7 +120,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
 
         #region GetQuestionnaire
         /// <summary>
-        /// Get an Questionnaire by id.
+        /// Get an Questionnaire.
         /// </summary>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>

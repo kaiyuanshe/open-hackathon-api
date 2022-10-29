@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs
 {
-    public class CleanupK8SJob : CronJobBase
+    public class CleanupK8SJob : NonConcurrentCronJob
     {
         protected override TimeSpan Interval => TimeSpan.FromDays(1);
 
         public IExperimentManagement ExperimentManagement { get; set; }
 
-        protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
+        protected override async Task ExecuteExclusivelyAsync(CancellationToken token)
         {
             string? filter = TableQueryHelper.And(
                 TableQueryHelper.FilterForBool(nameof(HackathonEntity.ExperimentCleaned), ComparisonOperator.Equal, false),

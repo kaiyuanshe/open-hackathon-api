@@ -95,7 +95,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var hackathon = new HackathonEntity();
             var authResult = AuthorizationResult.Success();
             var parameter = new RatingKind();
-            RatingKindEntity entity = null;
+            RatingKindEntity? entity = null;
 
             var moqs = new Moqs();
             moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
@@ -145,7 +145,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             // input
             HackathonEntity hackathon = new HackathonEntity { };
-            RatingKindEntity ratingKindEntity = null;
+            RatingKindEntity? ratingKindEntity = null;
 
             // moq
             var hackathonManagement = new Mock<IHackathonManagement>();
@@ -324,7 +324,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             var hackathon = new HackathonEntity { PartitionKey = "foo" };
             var authResult = AuthorizationResult.Success();
-            RatingKindEntity entity = firstTime ? new RatingKindEntity { RowKey = "kid" } : null;
+            RatingKindEntity? entity = firstTime ? new RatingKindEntity { RowKey = "kid" } : null;
 
             // mock
             var moqs = new Moqs();
@@ -384,7 +384,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Rating parameter = new Rating { teamId = "tid" };
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             var authResult = AuthorizationResult.Success();
-            TeamEntity team = null;
+            TeamEntity? team = null;
 
             // moq
             var moqs = new Moqs();
@@ -410,7 +410,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             var authResult = AuthorizationResult.Success();
             TeamEntity team = new TeamEntity { };
-            RatingKindEntity ratingKind = null;
+            RatingKindEntity? ratingKind = null;
 
             // moq
             var moqs = new Moqs();
@@ -508,7 +508,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             Rating parameter = new Rating { description = "d2" };
             HackathonEntity hackathon = new HackathonEntity { Status = HackathonStatus.online };
             var authResult = AuthorizationResult.Success();
-            RatingEntity ratingEntity = null;
+            RatingEntity? ratingEntity = null;
 
             // moq
             var moqs = new Moqs();
@@ -757,7 +757,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var segment = MockHelper.CreatePage(ratings, continuationToken);
 
             // moq
-            RatingQueryOptions optionsCaptured = null;
+            RatingQueryOptions? optionsCaptured = null;
             var hackathonManagement = new Mock<IHackathonManagement>();
             hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathonEntity);
             var ratingManagement = new Mock<IRatingManagement>();
@@ -874,7 +874,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
         {
             HackathonEntity hackathon = new HackathonEntity { };
             var authResult = AuthorizationResult.Success();
-            RatingEntity ratingEntity = null;
+            RatingEntity? ratingEntity = null;
 
             // moq
             var moqs = new Moqs();
