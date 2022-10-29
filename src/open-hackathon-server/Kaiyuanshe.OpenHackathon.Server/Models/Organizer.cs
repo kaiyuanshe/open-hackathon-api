@@ -36,7 +36,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string description { get; set; }
 
         /// <summary>
-        /// target whom the award is given. team or individual. team by default.
+        /// Type of organizer. host:主办, organizer:承办，coorganzer:协办, sponsor:赞助, titleSponsor:冠名
         /// </summary>
         /// <example>sponsor</example>
         [RequiredIfPut]
@@ -51,7 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// Url that organizer shows.
         /// </summary>
-        [Url]
+        [AbsoluteUri]
         // [RequiredIfPut]
         public string url { get; set; }
     }
