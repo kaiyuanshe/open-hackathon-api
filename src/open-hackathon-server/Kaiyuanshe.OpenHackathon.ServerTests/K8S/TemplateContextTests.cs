@@ -3,6 +3,7 @@ using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
 {
@@ -48,6 +49,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             Assert.AreEqual("a", cr.data.podTemplate.command[0]);
             Assert.AreEqual("value", cr.data.podTemplate.env["key"]);
             Assert.AreEqual("un", cr.data.podTemplate.env["USER"]);
+            Debug.Assert(cr.data.vnc != null);
             Assert.AreEqual("un", cr.data.vnc.username);
             Assert.AreEqual("pwd", cr.data.vnc.password);
         }

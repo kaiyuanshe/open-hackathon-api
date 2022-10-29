@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
@@ -43,6 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models.Validations
                 var context = new ValidationContext(value);
                 var result = attr.GetValidationResult(value, context);
 
+                Debug.Assert(result != null);
                 Assert.AreEqual(missingMembers.Count(), result.MemberNames.Count());
                 Assert.AreEqual(missingMembers.Count(), missingMembers.Intersect(result.MemberNames).Count());
             }

@@ -132,7 +132,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
         }
 
         [Test, TestCaseSource(nameof(GetMessageTestData))]
-        public string GetMessage(Dictionary<string, string?> messages)
+        public string? GetMessage(Dictionary<string, string?> messages)
         {
             CultureInfo.CurrentUICulture = CultureInfos.zh_CN;
             var entity = new ActivityLogEntity { Messages = messages };
@@ -199,7 +199,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Models
             var resourceKey = entity.GetResourceKey();
             foreach (var culture in CultureInfos.SupportedCultures)
             {
-                var messageFormat = Resources.ResourceManager.GetString(resourceKey, culture);
+                var messageFormat = Resources.ResourceManager.GetString(resourceKey ?? "", culture);
                 Assert.IsNotNull(messageFormat);
             }
         }
