@@ -10,27 +10,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
     public class TestEntity : BaseTableEntity
     {
         string field = "";
-        string privateProperty { get; set; }
+        string? privateProperty { get; set; }
 
         [IgnoreEntityProperty]
-        public string IgnoredProperty { get; set; }
+        public string? IgnoredProperty { get; set; }
 
         [ConvertableEntityProperty]
-        public string[] ComplexObject { get; set; }
+        public string[]? ComplexObject { get; set; }
 
         public DateTime Date { get; set; }
         public DateTime DateEmpty { get; set; }
         public DateTime DateWithKind { get; set; }
-        public byte[] Binary { get; set; }
+        public byte[]? Binary { get; set; }
         public bool Bool { get; set; }
         public Guid Guid { get; set; }
         public long Long { get; set; }
-        public string String { get; set; }
+        public string? String { get; set; }
         public double Double { get; set; }
 
-        public string StringAnother { get; set; }
+        public string? StringAnother { get; set; }
         [BackwardCompatible("StringAnother")]
-        public string StringWIthBackwardCompatible { get; set; }
+        public string? StringWIthBackwardCompatible { get; set; }
     }
 
     class BaseTableEntityTests
@@ -66,7 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.IsFalse(tableEntity.ContainsKey("IgnoredProperty"));
             Assert.AreEqual("[\"a\",\"b\",\"c\"]", tableEntity.GetString("ComplexObject"));
             Assert.AreEqual(entity.Date, tableEntity.GetDateTime("Date"));
-            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").Value.Kind);
+            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").GetValueOrDefault().Kind);
             Assert.IsFalse(tableEntity.ContainsKey("DateEmpty"));
             Assert.AreEqual(entity.Binary, tableEntity.GetBinary("Binary"));
             Assert.AreEqual(true, tableEntity.GetBoolean("Bool"));
@@ -87,7 +87,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
 
             var tableEntity = entity.ToTableEntity();
 
-            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").Value.Kind);
+            Assert.AreEqual(DateTimeKind.Utc, tableEntity.GetDateTime("DateWithKind").GetValueOrDefault().Kind);
         }
         #endregion
 
@@ -119,7 +119,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             Assert.AreEqual("rk", entity.RowKey);
             Assert.AreEqual("etag", entity.ETag.ToString());
             Assert.IsNull(entity.IgnoredProperty);
-            Assert.AreEqual(3, entity.ComplexObject.Length);
+            Assert.AreEqual(3, entity.ComplexObject?.Length);
             Assert.AreEqual(date.UtcDateTime, entity.Date);
             Assert.AreEqual(Encoding.UTF8.GetBytes("a"), entity.Binary);
             Assert.AreEqual(true, entity.Bool);
@@ -222,7 +222,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             });
             var entity = tableEntitty.ToBaseTableEntity<EntityWithEnumProperty>();
             Assert.AreEqual(Choice.No, entity.Normal);
-            Assert.AreEqual(Choice.No, entity.NullableNormal.Value);
+            Assert.AreEqual(Choice.No, entity.NullableNormal.GetValueOrDefault());
             Assert.AreEqual(Choice.Yes, entity.Ignored);
         }
 
@@ -231,7 +231,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
         #region Bytes[] Property
         class BytesProperty : BaseTableEntity
         {
-            public byte[] Bytes { get; set; }
+            public byte[]? Bytes { get; set; }
         }
 
         [Test]
@@ -274,8 +274,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
                 Date2 = date,
             };
             var tableEntity = entity.ToTableEntity();
-            Assert.AreEqual(date, tableEntity.GetDateTime("Date1").Value);
-            Assert.AreEqual(date, tableEntity.GetDateTime("Date2").Value);
+            Assert.AreEqual(date, tableEntity.GetDateTime("Date1").GetValueOrDefault());
+            Assert.AreEqual(date, tableEntity.GetDateTime("Date2").GetValueOrDefault());
         }
 
         [Test]
@@ -289,7 +289,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Storage.Entities
             });
             var entity = tableEntity.ToBaseTableEntity<DateTimeProperty>();
             Assert.AreEqual(date.DateTime, entity.Date1);
-            Assert.AreEqual(date.DateTime, entity.Date2.Value);
+            Assert.AreEqual(date.DateTime, entity.Date2.GetValueOrDefault());
         }
         #endregion
     }

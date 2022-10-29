@@ -13,8 +13,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Extensions
             int count = 0;
             try
             {
-                while (await enumerator.MoveNextAsync() && !cancellationToken.IsCancellationRequested)
+                while (await enumerator.MoveNextAsync())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     action(enumerator.Current);
                     if (limit.HasValue)
                     {
@@ -37,8 +39,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Extensions
             int count = 0;
             try
             {
-                while (await enumerator.MoveNextAsync() && !cancellationToken.IsCancellationRequested)
+                while (await enumerator.MoveNextAsync())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     await func(enumerator.Current);
                     if (limit.HasValue)
                     {
@@ -67,8 +71,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Extensions
             int count = 0;
             try
             {
-                while (await enumerator.MoveNextAsync() && !cancellationToken.IsCancellationRequested)
+                while (await enumerator.MoveNextAsync())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     await QueueAsync(func, enumerator.Current, taskSlots);
                     if (limit.HasValue)
                     {

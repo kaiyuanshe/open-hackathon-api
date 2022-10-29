@@ -65,7 +65,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             var authHeader = Request.Headers[HeaderNames.Authorization].LastOrDefault();
             if (authHeader == null || !authHeader.StartsWith(TokenPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                logger?.TraceInformation("Invalid 'Authorizatio' header format");
+                logger?.TraceInformation("Invalid 'Authorization' header format");
                 return AuthenticateResult.Fail(Resources.Auth_Unauthorized);
             }
 

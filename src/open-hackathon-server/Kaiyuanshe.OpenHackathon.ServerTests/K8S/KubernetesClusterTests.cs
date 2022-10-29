@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -175,6 +176,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var result = await kubernetesCluster.GetTemplateAsync(context, default);
 
             moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("template", result.Kind);
             Assert.AreEqual(200, context.Status.Code);
             Assert.AreEqual("success", context.Status.Status);
@@ -234,7 +236,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
-                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+                   It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
             moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(204, context.Status.Code);
         }
@@ -266,7 +268,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
-                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+                   It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
             moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(400, context.Status.Code);
         }
@@ -524,6 +526,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
             var result = await kubernetesCluster.GetExperimentAsync(context, default);
 
             moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("experiment", result.Kind);
             Assert.AreEqual(204, context.Status.Code);
         }
@@ -605,7 +608,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
-                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+                   It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
             moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(204, context.Status.Code);
         }
@@ -637,7 +640,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.K8S
                    It.IsAny<EventId>(),
                    It.IsAny<It.IsAnyType>(),
                    It.IsAny<Exception>(),
-                   It.IsAny<Func<It.IsAnyType, Exception, string>>()));
+                   It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
             moqs.Logger.VerifyNoOtherCalls();
             Assert.AreEqual(400, context.Status.Code);
         }

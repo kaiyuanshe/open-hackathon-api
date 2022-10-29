@@ -9,7 +9,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
         [AttributeUsage(AttributeTargets.Field)]
         public class EnumFieldTestAttribute : Attribute
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
         public enum CustomFieldAttr
@@ -23,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Helpers
         [Test]
         public void GetCustomAttribute()
         {
-            Assert.AreEqual("zero", EnumHelper.GetCustomAttribute<EnumFieldTestAttribute>(CustomFieldAttr.Zero).Name);
+            Assert.AreEqual("zero", EnumHelper.GetCustomAttribute<EnumFieldTestAttribute>(CustomFieldAttr.Zero)?.Name);
             Assert.IsNull(EnumHelper.GetCustomAttribute<EnumFieldTestAttribute>(CustomFieldAttr.One));
         }
     }

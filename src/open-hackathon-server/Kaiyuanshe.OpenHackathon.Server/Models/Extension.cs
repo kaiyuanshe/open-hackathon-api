@@ -26,10 +26,16 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         [MaxLength(1024)]
         public string value { get; set; }
 
-        public override bool Equals(object? obj) {
+        public override bool Equals(object? obj)
+        {
             return obj is Extension extension &&
                    name == extension.name &&
                    value == extension.value;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name, value);
         }
     }
 
