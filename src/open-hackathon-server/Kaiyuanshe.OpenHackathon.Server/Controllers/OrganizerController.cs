@@ -158,7 +158,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
-            // query and update organizer.
+            // query
             var organizerEntity = await OrganizerManagement.GetOrganizerById(hackathon.Name, organizerId, cancellationToken);
             if (organizerEntity == null)
             {
@@ -251,7 +251,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
-            // query and delete judge
+            // query and delete
             var entity = await OrganizerManagement.GetOrganizerById(hackathon.Name, organizerId, cancellationToken);
             if (entity == null)
             {

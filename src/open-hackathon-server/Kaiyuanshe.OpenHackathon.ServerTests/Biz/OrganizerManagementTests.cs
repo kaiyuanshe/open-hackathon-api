@@ -24,7 +24,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 type = OrganizerType.sponsor,
                 description = "desc",
                 logo = new PictureInfo { description = "d2", name = "n2", uri = "u2" },
-                name = "name"
+                name = "name",
+                url = "http://www.example.com/",
             };
 
             var moqs = new Moqs();
@@ -33,6 +34,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 && e.RowKey.Length == 36
                 && e.Type == OrganizerType.sponsor
                 && e.Name == "name"
+                && e.Url == "http://www.example.com/"
                 && e.Description == "desc"
                 && e.Logo.description == "d2"
                 && e.Logo.name == "n2"
@@ -58,6 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Description = "desc1",
                 Type = OrganizerType.coorganizer,
                 Logo = new PictureInfo { description = "ld1", name = "ln1", uri = "lu1" },
+                Url = "http://www.example.com/",
             };
             var organizer = new Organizer();
 
@@ -66,6 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 e.Type == OrganizerType.coorganizer
                 && e.Name == "name1"
                 && e.Description == "desc1"
+                && e.Url == "http://www.example.com/"
                 && e.Logo.description == "ld1"
                 && e.Logo.name == "ln1"
                 && e.Logo.uri == "lu1"), default));
@@ -88,6 +92,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 Description = "desc1",
                 Type = OrganizerType.coorganizer,
                 Logo = new PictureInfo { description = "ld1", name = "ln1", uri = "lu1" },
+                Url = "http://www.example.com/",
             };
             var organizer = new Organizer
             {
@@ -95,6 +100,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 description = "desc2",
                 type = OrganizerType.sponsor,
                 logo = new PictureInfo { description = "ld2", name = "ln2", uri = "lu2" },
+                url = "http://www.example.com/updated",
             };
 
             var moqs = new Moqs();
@@ -102,6 +108,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 e.Type == OrganizerType.sponsor
                 && e.Name == "name2"
                 && e.Description == "desc2"
+                && e.Url == "http://www.example.com/updated"
                 && e.Logo.description == "ld2"
                 && e.Logo.name == "ln2"
                 && e.Logo.uri == "lu2"), default));

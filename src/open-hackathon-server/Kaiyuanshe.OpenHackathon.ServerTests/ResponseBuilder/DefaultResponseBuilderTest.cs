@@ -367,6 +367,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
                     name = "logoname",
                     uri = "logouri"
                 },
+                Url = "http://www.example.com/",
                 CreatedAt = DateTime.UtcNow,
                 Timestamp = DateTimeOffset.UtcNow
             };
@@ -382,6 +383,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Assert.AreEqual("logoname", result.logo.name);
             Assert.AreEqual("logodesc", result.logo.description);
             Assert.AreEqual("logouri", result.logo.uri);
+            Assert.AreEqual("http://www.example.com/", result.url);
             Assert.AreEqual(entity.CreatedAt, result.createdAt);
             Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
         }
