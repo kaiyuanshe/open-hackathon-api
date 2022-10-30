@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
 {
-    public abstract class ReportsBaseJob<T> : CronJobBase
+    public abstract class ReportsBaseJob<T> : NonConcurrentCronJob
     {
         protected override TimeSpan Interval => TimeSpan.FromHours(18);
 
@@ -42,7 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
         }
 
 
-        protected override async Task ExecuteAsync(CronJobContext context, CancellationToken token)
+        protected override async Task ExecuteExclusivelyAsync(CancellationToken token)
         {
             var hackathons = await StorageContext.HackathonTable.ListAllHackathonsAsync(token);
 

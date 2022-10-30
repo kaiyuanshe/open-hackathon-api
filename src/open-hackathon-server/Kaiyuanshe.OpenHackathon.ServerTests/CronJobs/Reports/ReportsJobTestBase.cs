@@ -11,7 +11,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
     {
         protected void SetupReportJob<T>(Moqs moqs, ReportsBaseJob<T> job, List<HackathonEntity> hackathons)
         {
-            moqs.SetupCronJob(job);
+            moqs.SetupNonCurrentCronJob(job);
 
             job.UserManagement = moqs.UserManagement.Object;
             moqs.HackathonTable.Setup(h => h.ListAllHackathonsAsync(It.IsAny<CancellationToken>()))
