@@ -33,7 +33,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.CronJobs.Jobs.Reports
             // no report: 1 month after hackathon ends 
             if (hackathon.EventEndedAt.HasValue)
             {
-                return hackathon.EventEndedAt.Value.AddMonths(1) > DateTime.UtcNow;
+                return hackathon.EventEndedAt.Value.AddDays(30) > DateTime.UtcNow;
             }
 
             // if no end date: only reports online hackathons that were created within 1 year. 

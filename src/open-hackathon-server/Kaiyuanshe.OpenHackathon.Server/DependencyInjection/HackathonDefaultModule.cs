@@ -33,7 +33,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             builder.RegisterType<DefaultResponseBuilder>().As<IResponseBuilder>().PropertiesAutowired().SingleInstance();
 
             // Cache
-            builder.RegisterType<DefaultCacheProvider>().As<ICacheProvider>().PropertiesAutowired().SingleInstance();
+            builder.RegisterType<CacheProviderFactory>().As<ICacheProviderFactory>().PropertiesAutowired().SingleInstance();
+            builder.Register<ICacheProvider>(container => container.Resolve<ICacheProviderFactory>().CreateCacheProvider()).SingleInstance();
 
             // CronJob
             builder.RegisterTypes(typeof(ICronJob).SubTypes()).SingleInstance().PropertiesAutowired();

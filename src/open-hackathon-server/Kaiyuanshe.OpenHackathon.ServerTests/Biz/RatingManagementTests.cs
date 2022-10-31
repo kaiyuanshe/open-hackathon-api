@@ -10,6 +10,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,7 +45,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(CanCreateRatingKindAsyncTestData))]
         public async Task CanCreateRatingKindAsync(List<RatingKindEntity> judges, bool expectedResult)
         {
-            
+
             var cache = new Mock<ICacheProvider>();
             cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<RatingKindEntity>>>(c => c.CacheKey == "RatingKind-hack"), default))
                 .ReturnsAsync(judges);
@@ -75,7 +76,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 maximumScore = maxRating,
             };
 
-            
+
             var ratingKindTable = new Mock<IRatingKindTable>();
             ratingKindTable.Setup(t => t.InsertAsync(It.Is<RatingKindEntity>(en =>
                 en.Name == "name" &&
@@ -122,7 +123,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
             RatingKind parameter = new RatingKind { name = "n2", description = "d2", maximumScore = newMaxRating };
 
-            
+
             var ratingKindTable = new Mock<IRatingKindTable>();
             ratingKindTable.Setup(t => t.MergeAsync(It.Is<RatingKindEntity>(en =>
                 en.Name == "n2" &&
@@ -169,22 +170,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
         }
         [Test, TestCaseSource(nameof(GetCachedRatingKindAsyncTestData))]
-        public async Task<RatingKindEntity> GetCachedRatingKindAsync(List<RatingKindEntity> ratingKinds)
+        public async Task<RatingKindEntity?> GetCachedRatingKindAsync(List<RatingKindEntity> ratingKinds)
         {
-            
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<RatingKindEntity>>>(c => c.CacheKey == "RatingKind-hack"), default))
+            var moqs = new Moqs();
+            moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<RatingKindEntity>>>(c => c.CacheKey == "RatingKind-hack"), default))
                 .ReturnsAsync(ratingKinds);
 
-            var ratingManagement = new RatingManagement()
-            {
-                Cache = cache.Object,
-            };
+            var ratingManagement = new RatingManagement();
+            moqs.SetupManagement(ratingManagement);
             var result = await ratingManagement.GetCachedRatingKindAsync("hack", "kid", default);
 
-            Mock.VerifyAll(cache);
-            cache.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             return result;
         }
         #endregion
@@ -195,22 +191,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             RatingKindEntity kind = new RatingKindEntity { PartitionKey = "pk" };
 
-            
-            var ratingKindTable = new Mock<IRatingKindTable>();
-            ratingKindTable.Setup(t => t.RetrieveAsync("hack", "kid", default)).ReturnsAsync(kind);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.RatingKindTable).Returns(ratingKindTable.Object);
+            var moqs = new Moqs();
+            moqs.RatingKindTable.Setup(t => t.RetrieveAsync("hack", "kid", default)).ReturnsAsync(kind);
 
-            var ratingManagement = new RatingManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var ratingManagement = new RatingManagement();
+            moqs.SetupManagement(ratingManagement);
             var result = await ratingManagement.GetRatingKindAsync("hack", "kid", default);
 
-            Mock.VerifyAll(storageContext, ratingKindTable);
-            ratingKindTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("pk", result.HackathonName);
         }
         #endregion
@@ -287,20 +276,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "foo";
 
-            
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<RatingKindEntity>>>(c => c.CacheKey == "RatingKind-foo"), default))
+            var moqs = new Moqs();
+            moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<RatingKindEntity>>>(c => c.CacheKey == "RatingKind-foo"), default))
                 .ReturnsAsync(allAwards);
 
-            var ratingManagement = new RatingManagement()
-            {
-                Cache = cache.Object,
-            };
+            var ratingManagement = new RatingManagement();
+            moqs.SetupManagement(ratingManagement);
             var result = await ratingManagement.ListPaginatedRatingKindsAsync(hackName, options, default);
 
-            Mock.VerifyAll(cache);
-            cache.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(expectedResult.Count(), result.Count());
             for (int i = 0; i < expectedResult.Count(); i++)
             {
@@ -313,6 +297,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             else
             {
                 Assert.IsNotNull(options.NextPage);
+                Debug.Assert(options.NextPage != null);
                 Assert.AreEqual(expectedNext.np, options.NextPage.np);
                 Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
             }
@@ -323,7 +308,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteJudgeAsync()
         {
-            
+
             var ratingKindTable = new Mock<IRatingKindTable>();
             ratingKindTable.Setup(j => j.DeleteAsync("hack", "kid", default));
             var storageContext = new Mock<IStorageContext>();
@@ -372,7 +357,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ), default));
             var storageContext = new Mock<IStorageContext>();
             storageContext.Setup(s => s.RatingTable).Returns(ratingTable.Object);
-            
+
 
             var ratingManagement = new RatingManagement()
             {
@@ -410,7 +395,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 ), default));
             var storageContext = new Mock<IStorageContext>();
             storageContext.Setup(s => s.RatingTable).Returns(ratingTable.Object);
-            
+
 
             var ratingManagement = new RatingManagement()
             {
@@ -432,22 +417,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var entity = new RatingEntity { Description = "desc" };
 
-            var ratingTable = new Mock<IRatingTable> { };
-            ratingTable.Setup(t => t.RetrieveAsync("hack", "2f4291c6-d890-8fa1-316b-8c2b08256b25", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.Setup(s => s.RatingTable).Returns(ratingTable.Object);
-            
+            var moqs = new Moqs();
+            moqs.RatingTable.Setup(t => t.RetrieveAsync("hack", "2f4291c6-d890-8fa1-316b-8c2b08256b25", default)).ReturnsAsync(entity);
 
-            var ratingManagement = new RatingManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var ratingManagement = new RatingManagement();
+            moqs.SetupManagement(ratingManagement);
             var result = await ratingManagement.GetRatingAsync("hack", "jid", "tid", "kid", default);
 
-            Mock.VerifyAll(ratingTable, storageContext);
-            ratingTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
 
@@ -456,22 +434,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var entity = new RatingEntity { Description = "desc" };
 
-            var ratingTable = new Mock<IRatingTable> { };
-            ratingTable.Setup(t => t.RetrieveAsync("hack", "rid", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.Setup(s => s.RatingTable).Returns(ratingTable.Object);
-            
+            var moqs = new Moqs();
+            moqs.RatingTable.Setup(t => t.RetrieveAsync("hack", "rid", default)).ReturnsAsync(entity);
 
-            var ratingManagement = new RatingManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var ratingManagement = new RatingManagement();
+            moqs.SetupManagement(ratingManagement);
             var result = await ratingManagement.GetRatingAsync("hack", "rid", default);
 
-            Mock.VerifyAll(ratingTable, storageContext);
-            ratingTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
         #endregion
@@ -510,7 +481,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new RatingEntity{  RowKey="rk" }
             };
 
-            
+
             var ratingTable = new Mock<IRatingTable>();
             ratingTable.Setup(p => p.QueryEntitiesAsync(expectedFilter, It.IsAny<IEnumerable<string>>(), default)).ReturnsAsync(entities);
             var storageContext = new Mock<IStorageContext>();
@@ -596,7 +567,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                  "np nr"
             );
 
-            
+
             var ratingTable = new Mock<IRatingTable>();
             ratingTable.Setup(p => p.ExecuteQuerySegmentedAsync(
                 expectedFilter, null, expectedTop, null, default)).ReturnsAsync(entities);
@@ -629,7 +600,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             ratingTable.Setup(t => t.DeleteAsync("hack", "rid", default));
             var storageContext = new Mock<IStorageContext>();
             storageContext.Setup(s => s.RatingTable).Returns(ratingTable.Object);
-            
+
 
             var ratingManagement = new RatingManagement()
             {

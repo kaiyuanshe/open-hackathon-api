@@ -29,6 +29,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IJudgeTable> JudgeTable { get; set; } = new();
         public Mock<IOrganizerTable> OrganizerTable { get; set; } = new();
         public Mock<IQuestionnaireTable> QuestionnaireTable { get; set; } = new();
+        public Mock<IRatingKindTable> RatingKindTable { get; set; } = new();
+        public Mock<IRatingTable> RatingTable { get; set; } = new();
         public Mock<ITeamTable> TeamTable { get; set; } = new();
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
@@ -84,6 +86,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.JudgeTable).Returns(JudgeTable.Object);
             StorageContext.Setup(p => p.OrganizerTable).Returns(OrganizerTable.Object);
             StorageContext.Setup(p => p.QuestionnaireTable).Returns(QuestionnaireTable.Object);
+            StorageContext.Setup(p => p.RatingKindTable).Returns(RatingKindTable.Object);
+            StorageContext.Setup(p => p.RatingTable).Returns(RatingTable.Object);
             StorageContext.Setup(p => p.TeamTable).Returns(TeamTable.Object);
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
@@ -101,6 +105,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
                 CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
+                RatingKindTable, RatingTable,
                 TeamTable, TeamMemberTable, TeamWorkTable, TopUserTable,
                 UserTable, UserTokenTable, ReportsContainer);
 
@@ -115,6 +120,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             JudgeTable.VerifyNoOtherCalls();
             OrganizerTable.VerifyNoOtherCalls();
             QuestionnaireTable.VerifyNoOtherCalls();
+            RatingKindTable.VerifyNoOtherCalls();
+            RatingTable.VerifyNoOtherCalls();
             TeamTable.VerifyNoOtherCalls();
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
