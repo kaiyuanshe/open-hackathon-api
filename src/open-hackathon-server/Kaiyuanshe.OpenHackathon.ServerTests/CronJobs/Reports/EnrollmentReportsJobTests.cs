@@ -26,12 +26,12 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.CronJobs.Reports
 
             // has invalid EventEndedAt
             yield return new TestCaseData(
-                new HackathonEntity { EventEndedAt = DateTime.UtcNow.AddMonths(-1).AddMinutes(-1) },
+                new HackathonEntity { EventEndedAt = DateTime.UtcNow.AddDays(-30).AddMinutes(-1) },
                 false);
 
             // has valid EventEndedAt
             yield return new TestCaseData(
-                new HackathonEntity { EventEndedAt = DateTime.UtcNow.AddMonths(-1).AddMinutes(1) },
+                new HackathonEntity { EventEndedAt = DateTime.UtcNow.AddDays(-30).AddMinutes(1) },
                 true);
 
             // no EventEndedAt, not online
