@@ -39,24 +39,17 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "Hack";
             string awardId = "aid";
-            var cancellationToken = CancellationToken.None;
             AwardEntity teamEntity = new AwardEntity { Description = "desc" };
 
-            var awardTable = new Mock<IAwardTable>();
-            awardTable.Setup(t => t.RetrieveAsync("hack", "aid", cancellationToken))
+            var moqs = new Moqs();
+            moqs.AwardTable.Setup(t => t.RetrieveAsync("hack", "aid", default))
                 .ReturnsAsync(teamEntity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.AwardTable).Returns(awardTable.Object);
 
-            AwardManagement awardManagement = new AwardManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
-            var result = await awardManagement.GetAwardByIdAsync(hackName, awardId, cancellationToken);
+            AwardManagement awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
+            var result = await awardManagement.GetAwardByIdAsync(hackName, awardId, default);
 
-            Mock.VerifyAll(storageContext, awardTable);
-            storageContext.VerifyNoOtherCalls();
-            awardTable.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
@@ -275,37 +268,28 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test, TestCaseSource(nameof(UpdateAwardAsyncTestData))]
         public async Task UpdateAwardAsync(Award request, AwardEntity existing, AwardEntity expectedEntity)
         {
-            var cancellationToken = CancellationToken.None;
+            var moqs = new Moqs();
+            moqs.AwardTable.Setup(t => t.MergeAsync(It.IsAny<AwardEntity>(), default));
+            moqs.CacheProvider.Setup(c => c.Remove("Award-"));
 
-            var awardTable = new Mock<IAwardTable>();
-            awardTable.Setup(t => t.MergeAsync(It.IsAny<AwardEntity>(), cancellationToken));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.AwardTable).Returns(awardTable.Object);
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.Remove($"Award-{existing.HackathonName}"));
+            AwardManagement awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
+            var result = await awardManagement.UpdateAwardAsync(existing, request, default);
 
-            AwardManagement awardManagement = new AwardManagement()
-            {
-                StorageContext = storageContext.Object,
-                Cache = cache.Object,
-            };
-            var result = await awardManagement.UpdateAwardAsync(existing, request, cancellationToken);
-
-            Mock.VerifyAll(storageContext, awardTable, cache);
-            storageContext.VerifyNoOtherCalls();
-            awardTable.VerifyNoOtherCalls();
-            cache.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(expectedEntity.Description, result.Description);
             Assert.AreEqual(expectedEntity.Name, result.Name);
             Assert.AreEqual(expectedEntity.Quantity, result.Quantity);
             Assert.AreEqual(expectedEntity.Target, result.Target);
             Assert.AreEqual(expectedEntity.Pictures?.Length, result.Pictures?.Length);
-            for (int i = 0; i < result.Pictures?.Length; i++)
+            if (expectedEntity.Pictures != null && result.Pictures != null)
             {
-                Assert.AreEqual(expectedEntity.Pictures[0].uri, result.Pictures[0].uri);
-                Assert.AreEqual(expectedEntity.Pictures[0].name, result.Pictures[0].name);
-                Assert.AreEqual(expectedEntity.Pictures[0].description, result.Pictures[0].description);
+                for (int i = 0; i < result.Pictures.Length; i++)
+                {
+                    Assert.AreEqual(expectedEntity.Pictures[0].uri, result.Pictures[0].uri);
+                    Assert.AreEqual(expectedEntity.Pictures[0].name, result.Pictures[0].name);
+                    Assert.AreEqual(expectedEntity.Pictures[0].description, result.Pictures[0].description);
+                }
             }
         }
 
@@ -315,15 +299,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task ListAwardsAsync()
         {
-            var cache = new Mock<ICacheProvider>();
+            var moqs = new Moqs();
+            moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(e => e.AutoRefresh == false && e.CacheKey == "Award-hack"), default));
 
-            var awardManagement = new AwardManagement()
-            {
-                Cache = cache.Object,
-            };
+            var awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
             await awardManagement.ListAwardsAsync("hack", default);
 
-            cache.Verify(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(e => e.AutoRefresh == false && e.CacheKey == "Award-hack"), default), Times.Once);
+            moqs.VerifyAll();
         }
 
         [Test]
@@ -334,22 +317,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 new AwardEntity { RowKey = "rk" }
             };
 
-            var awardTable = new Mock<IAwardTable>();
-            awardTable.Setup(t => t.ListAllAwardsAsync("hack", default)).ReturnsAsync(list);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.AwardTable).Returns(awardTable.Object);
+            var moqs = new Moqs();
+            moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.IsAny<CacheEntry<IEnumerable<AwardEntity>>>(), default)).ReturnsAsync(list);
 
-            var awardManagement = new AwardManagement()
-            {
-                Cache = new DefaultCacheProvider(null),
-                StorageContext = storageContext.Object,
-            };
+            var awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
             var result = await awardManagement.ListAwardsAsync("hack", default);
 
-            Mock.VerifyAll(awardTable, storageContext);
-            awardTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("rk", result.Single().Id);
         }
@@ -427,19 +402,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "foo";
 
-            var cache = new Mock<ICacheProvider>();
-            cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(c => c.CacheKey == "Award-foo"), default))
+            var moqs = new Moqs();
+            moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardEntity>>>(c => c.CacheKey == "Award-foo"), default))
                 .ReturnsAsync(allAwards);
 
-            var awardManagement = new AwardManagement()
-            {
-                Cache = cache.Object,
-            };
+            var awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
             var result = await awardManagement.ListPaginatedAwardsAsync(hackName, options, default);
 
-            Mock.VerifyAll(cache);
-            cache.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(expectedResult.Count(), result.Count());
             for (int i = 0; i < expectedResult.Count(); i++)
             {
@@ -452,6 +423,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             else
             {
                 Assert.IsNotNull(options.NextPage);
+                Debug.Assert(options.NextPage != null);
                 Assert.AreEqual(expectedNext.np, options.NextPage.np);
                 Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
             }
@@ -621,20 +593,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             AwardAssignmentEntity entity = new AwardAssignmentEntity { AwardId = "award" };
 
-            var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
-            awardAssignmentTable.Setup(t => t.RetrieveAsync("hack", "assign", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
+            var moqs = new Moqs();
+            moqs.AwardAssignmentTable.Setup(t => t.RetrieveAsync("hack", "assign", default)).ReturnsAsync(entity);
 
-            AwardManagement awardManagement = new AwardManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            AwardManagement awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
             var result = await awardManagement.GetAssignmentAsync("hack", "assign", default);
 
-            Mock.VerifyAll(awardAssignmentTable, storageContext);
-            awardAssignmentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("award", result.AwardId);
         }
         #endregion
@@ -729,37 +696,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             string hackName = "hack";
 
-            var cache = new Mock<ICacheProvider>();
+            var moqs = new Moqs();
             if (options.QueryType == AwardAssignmentQueryType.Award)
             {
-                cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardAssignmentEntity>>>(c => c.CacheKey == "AwardAssignment-hack-awardId"), default))
+                moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardAssignmentEntity>>>(c => c.CacheKey == "AwardAssignment-hack-awardId"), default))
                   .ReturnsAsync(allAwards);
             }
             if (options.QueryType == AwardAssignmentQueryType.Hackathon)
             {
-                cache.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardAssignmentEntity>>>(c => c.CacheKey == "AwardAssignment-hack"), default))
+                moqs.CacheProvider.Setup(c => c.GetOrAddAsync(It.Is<CacheEntry<IEnumerable<AwardAssignmentEntity>>>(c => c.CacheKey == "AwardAssignment-hack"), default))
                   .ReturnsAsync(allAwards);
             }
-            var awardAssignmentTable = new Mock<IAwardAssignmentTable>();
-            var storageContext = new Mock<IStorageContext>();
             if (options.QueryType == AwardAssignmentQueryType.Team)
             {
-                awardAssignmentTable.Setup(t => t.ListByAssigneeAsync("hack", options.TeamId, default)).ReturnsAsync(allAwards);
-                storageContext.SetupGet(p => p.AwardAssignmentTable).Returns(awardAssignmentTable.Object);
+                moqs.AwardAssignmentTable.Setup(t => t.ListByAssigneeAsync("hack", options.TeamId, default)).ReturnsAsync(allAwards);
             }
 
-            var awardManagement = new AwardManagement()
-            {
-                Cache = cache.Object,
-                StorageContext = storageContext.Object,
-            };
+            var awardManagement = new AwardManagement();
+            moqs.SetupManagement(awardManagement);
             var result = await awardManagement.ListPaginatedAssignmentsAsync(hackName, options, default);
 
-            Mock.VerifyAll(cache, storageContext, awardAssignmentTable);
-            cache.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            awardAssignmentTable.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual(expectedResult.Count(), result.Count());
             for (int i = 0; i < expectedResult.Count(); i++)
             {
@@ -772,6 +729,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             else
             {
                 Assert.IsNotNull(options.NextPage);
+                Debug.Assert(options.NextPage != null);
                 Assert.AreEqual(expectedNext.np, options.NextPage.np);
                 Assert.AreEqual(expectedNext.nr, options.NextPage.nr);
             }
