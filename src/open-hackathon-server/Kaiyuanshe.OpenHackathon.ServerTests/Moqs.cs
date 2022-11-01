@@ -20,6 +20,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IStorageContext> StorageContext { get; } = new();
         public Mock<IActivityLogTable> ActivityLogTable { get; } = new();
         public Mock<IAnnouncementTable> AnnouncementTable { get; } = new();
+        public Mock<IAwardTable> AwardTable { get; } = new();
         public Mock<IAwardAssignmentTable> AwardAssignmentTable { get; } = new();
         public Mock<ICronJobTable> CronJobTable { get; } = new();
         public Mock<IEnrollmentTable> EnrollmentTable { get; } = new();
@@ -77,6 +78,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
             StorageContext.Setup(p => p.ActivityLogTable).Returns(ActivityLogTable.Object);
             StorageContext.Setup(p => p.AnnouncementTable).Returns(AnnouncementTable.Object);
+            StorageContext.Setup(p => p.AwardTable).Returns(AwardTable.Object);
             StorageContext.Setup(p => p.AwardAssignmentTable).Returns(AwardAssignmentTable.Object);
             StorageContext.Setup(p => p.CronJobTable).Returns(CronJobTable.Object);
             StorageContext.Setup(p => p.EnrollmentTable).Returns(EnrollmentTable.Object);
@@ -102,7 +104,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public void VerifyAll()
         {
             #region Storage
-            Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardAssignmentTable,
+            Mock.VerifyAll(ActivityLogTable, AnnouncementTable, AwardTable, AwardAssignmentTable,
                 CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
                 RatingKindTable, RatingTable,
@@ -111,6 +113,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
+            AwardTable.VerifyNoOtherCalls();
             AwardAssignmentTable.VerifyNoOtherCalls();
             CronJobTable.VerifyNoOtherCalls();
             EnrollmentTable.VerifyNoOtherCalls();
