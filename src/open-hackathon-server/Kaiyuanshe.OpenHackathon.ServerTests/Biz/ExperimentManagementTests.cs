@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -222,24 +223,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task GetTemplateAsync_EntityNotFound()
         {
-            TemplateEntity entity = null;
+            TemplateEntity? entity = null;
 
-            var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.TemplateTable).Returns(templateTable.Object);
-            
-            var management = new ExperimentManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var moqs = new Moqs();
+            moqs.TemplateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
 
+            var management = new ExperimentManagement();
+            moqs.SetupManagement(management);
             var result = await management.GetTemplateAsync("hack", "tn", default);
 
-            Mock.VerifyAll(templateTable, storageContext);
-            templateTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.IsNull(result);
         }
 
@@ -248,34 +241,23 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TemplateEntity entity = new TemplateEntity { };
 
-            var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.TemplateTable).Returns(templateTable.Object);
-
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.GetTemplateAsync(It.IsAny<TemplateContext>(), default))
+            var moqs = new Moqs();
+            moqs.TemplateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
+            moqs.KubernetesCluster.Setup(k => k.GetTemplateAsync(It.IsAny<TemplateContext>(), default))
                 .Throws(new HttpOperationException("message"));
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
-            
+
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
-
+            moqs.SetupManagement(management);
             var result = await management.GetTemplateAsync("hack", "tn", default);
 
-            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
-            templateTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.TemplateEntity);
-            Assert.AreEqual(500, result.Status.Code.Value);
+            Assert.AreEqual(500, result.Status.Code);
             Assert.AreEqual("message", result.Status.Message);
             Assert.AreEqual("Internal Server Error", result.Status.Reason);
         }
@@ -285,37 +267,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TemplateEntity entity = new TemplateEntity { };
 
-            var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.TemplateTable).Returns(templateTable.Object);
+            var moqs = new Moqs();
+            moqs.TemplateTable.Setup(e => e.RetrieveAsync("hack", "tn", default)).ReturnsAsync(entity);
 
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.GetTemplateAsync(It.IsAny<TemplateContext>(), default))
+            moqs.KubernetesCluster.Setup(k => k.GetTemplateAsync(It.IsAny<TemplateContext>(), default))
                 .Callback<TemplateContext, CancellationToken>((c, token) =>
                 {
-                    c.Status = new k8s.Models.V1Status { Code = 200 };
+                    c.Status = new V1Status { Code = 200 };
                 });
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
-
+            moqs.SetupManagement(management);
             var result = await management.GetTemplateAsync("hack", "tn", default);
 
-            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
-            templateTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.TemplateEntity);
-            Assert.AreEqual(200, result.Status.Code.Value);
+            Assert.AreEqual(200, result.Status.Code);
         }
         #endregion
 
@@ -429,31 +401,21 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteTemplateAsync_EntityNotFound()
         {
-            TemplateEntity entity = null;
+            TemplateEntity? entity = null;
 
             // mock
-            var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
-            var k8s = new Mock<IKubernetesCluster>();
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
+            var moqs = new Moqs();
+            moqs.TemplateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
 
             // test
-            var management = new ExperimentManagement()
-            {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
-            };
+            var management = new ExperimentManagement();
+            moqs.SetupManagement(management);
             var result = await management.DeleteTemplateAsync("hack", "tpl", default);
 
             // verify
-            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
-            templateTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            moqs.KubernetesCluster.VerifyNoOtherCalls();
+            moqs.KubernetesClusterFactory.VerifyNoOtherCalls();
             Assert.IsNull(result);
         }
 
@@ -464,35 +426,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             TemplateEntity entity = new TemplateEntity();
 
             // mock
-            var templateTable = new Mock<ITemplateTable>();
-            templateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
-            templateTable.Setup(p => p.DeleteAsync("hack", "tpl", default));
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TemplateTable).Returns(templateTable.Object);
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.DeleteTemplateAsync(It.IsAny<TemplateContext>(), default))
+            var moqs = new Moqs();
+            moqs.TemplateTable.Setup(p => p.RetrieveAsync("hack", "tpl", default)).ReturnsAsync(entity);
+            moqs.TemplateTable.Setup(p => p.DeleteAsync("hack", "tpl", default));
+            moqs.KubernetesCluster.Setup(k => k.DeleteTemplateAsync(It.IsAny<TemplateContext>(), default))
                 .Callback<TemplateContext, CancellationToken>((c, ct) =>
                 {
                     c.Status = new k8s.Models.V1Status { Code = statusCode };
                 });
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
             // test
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
+            moqs.SetupManagement(management);
             var result = await management.DeleteTemplateAsync("hack", "tpl", default);
 
             // verify
-            Mock.VerifyAll(templateTable, storageContext, k8s, k8sfactory);
-            templateTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
+            moqs.VerifyAll();
 
+            Debug.Assert(result != null);
             Assert.IsNotNull(result.TemplateEntity);
             Assert.AreEqual(statusCode, result.Status.Code);
         }
@@ -553,7 +507,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
-            
+
             var management = new ExperimentManagement()
             {
                 StorageContext = storageContext.Object,
@@ -583,39 +537,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
                 templateId = "tn",
                 userId = "uid",
             };
-            ExperimentEntity entity = null;
+            ExperimentEntity? entity = null;
 
-            var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(t => t.InsertAsync(It.Is<ExperimentEntity>(e =>
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(t => t.InsertAsync(It.Is<ExperimentEntity>(e =>
                 e.HackathonName == "hack" &&
                 e.RowKey == "aaaec1e9-68c8-5eb1-51e4-1131794444ae" &&
                 e.Paused == false &&
                 e.UserId == "uid" &&
                 e.TemplateId == "tn"), default));
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
+            moqs.ExperimentTable.Setup(e => e.RetrieveAsync("hack", "aaaec1e9-68c8-5eb1-51e4-1131794444ae", default)).ReturnsAsync(entity);
 
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default));
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
+            moqs.KubernetesCluster.Setup(k => k.CreateOrUpdateExperimentAsync(It.IsAny<ExperimentContext>(), default));
 
-            
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
-
+            moqs.SetupManagement(management);
             var result = await management.CreateOrUpdateExperimentAsync(experiment, default);
 
-            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
-            experimentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.AreEqual("hack", result.ExperimentEntity.PartitionKey);
         }
 
@@ -640,7 +582,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var k8sfactory = new Mock<IKubernetesClusterFactory>();
             k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
-            
+
             var management = new ExperimentManagement()
             {
                 StorageContext = storageContext.Object,
@@ -663,24 +605,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task GetExperimentAsync_EntityNotFound()
         {
-            ExperimentEntity entity = null;
+            ExperimentEntity? entity = null;
 
-            var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
-            
-            var management = new ExperimentManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
 
+            var management = new ExperimentManagement();
+            moqs.SetupManagement(management);
             var result = await management.GetExperimentAsync("hack", "expId", default);
 
-            Mock.VerifyAll(experimentTable, storageContext);
-            experimentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             Assert.IsNull(result);
         }
 
@@ -689,34 +623,24 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             ExperimentEntity entity = new ExperimentEntity { };
 
-            var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
 
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.GetExperimentAsync(It.IsAny<ExperimentContext>(), default))
+            moqs.KubernetesCluster.Setup(k => k.GetExperimentAsync(It.IsAny<ExperimentContext>(), default))
                 .Throws(new HttpOperationException("message"));
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
-            
+
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                StorageContext = moqs.StorageContext.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
-
             var result = await management.GetExperimentAsync("hack", "expId", default);
 
-            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
-            experimentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.ExperimentEntity);
-            Assert.AreEqual(500, result.Status.Code.Value);
+            Assert.AreEqual(500, result.Status.Code);
             Assert.AreEqual("message", result.Status.Message);
             Assert.AreEqual("Internal Server Error", result.Status.Reason);
         }
@@ -726,38 +650,27 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             ExperimentEntity entity = new ExperimentEntity { };
 
-            var experimentTable = new Mock<IExperimentTable>();
-            experimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.ExperimentTable).Returns(experimentTable.Object);
-
-            var k8s = new Mock<IKubernetesCluster>();
-            k8s.Setup(k => k.GetExperimentAsync(It.IsAny<ExperimentContext>(), default))
+            var moqs = new Moqs();
+            moqs.ExperimentTable.Setup(e => e.RetrieveAsync("hack", "expId", default)).ReturnsAsync(entity);
+            moqs.KubernetesCluster.Setup(k => k.GetExperimentAsync(It.IsAny<ExperimentContext>(), default))
                 .Callback<ExperimentContext, CancellationToken>((c, token) =>
                 {
                     c.Status = new ExperimentStatus { Code = 200 };
                 });
-            var k8sfactory = new Mock<IKubernetesClusterFactory>();
-            k8sfactory.Setup(f => f.GetDefaultKubernetes(default)).ReturnsAsync(k8s.Object);
 
-            
             var management = new ExperimentManagement()
             {
-                StorageContext = storageContext.Object,
-                KubernetesClusterFactory = k8sfactory.Object,
+                StorageContext = moqs.StorageContext.Object,
+                KubernetesClusterFactory = moqs.KubernetesClusterFactory.Object,
             };
 
             var result = await management.GetExperimentAsync("hack", "expId", default);
 
-            Mock.VerifyAll(experimentTable, storageContext, k8s, k8sfactory);
-            experimentTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
-            k8s.VerifyNoOtherCalls();
-            k8sfactory.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.ExperimentEntity);
-            Assert.AreEqual(200, result.Status.Code.Value);
+            Assert.AreEqual(200, result.Status.Code);
         }
         #endregion
 
@@ -765,7 +678,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task ResetExperimentAsync_EntityNotFound()
         {
-            ExperimentEntity entity = null;
+            ExperimentEntity? entity = null;
 
             // mock
             var moqs = new Moqs();
@@ -818,7 +731,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
-
+            Debug.Assert(result != null);
             Assert.IsNotNull(result.ExperimentEntity);
             Assert.AreEqual(500, result.Status.Code);
             Assert.AreEqual("error", result.Status.Message);
@@ -856,7 +769,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
-
+            Debug.Assert(result != null);
             Assert.IsNotNull(result.ExperimentEntity);
             Assert.AreEqual(statusCode, result.Status.Code);
         }
@@ -981,7 +894,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         [Test]
         public async Task DeleteExperimentAsync_EntityNotFound()
         {
-            ExperimentEntity entity = null;
+            ExperimentEntity? entity = null;
 
             // mock
             var moqs = new Moqs();
@@ -1038,7 +951,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             Mock.VerifyAll(k8s, k8sfactory);
             k8s.VerifyNoOtherCalls();
             k8sfactory.VerifyNoOtherCalls();
-
+            Debug.Assert(result != null);
             Assert.IsNotNull(result.ExperimentEntity);
             Assert.AreEqual(statusCode, result.Status.Code);
         }

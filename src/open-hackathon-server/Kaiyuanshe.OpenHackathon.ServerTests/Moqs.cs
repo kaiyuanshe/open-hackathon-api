@@ -1,6 +1,7 @@
 ﻿using k8s;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
+using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Mutex;
@@ -8,6 +9,7 @@ using Kaiyuanshe.OpenHackathon.Server.Storage.Tables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Threading;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
@@ -35,6 +37,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<ITeamTable> TeamTable { get; set; } = new();
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
+        public Mock<ITemplateTable> TemplateTable { get; set; } = new();
         public Mock<ITopUserTable> TopUserTable { get; set; } = new();
         public Mock<IUserTable> UserTable { get; set; } = new();
         public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
@@ -61,8 +64,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         #endregion
 
         #region K8s
-        public Mock<IKubernetes> Kubernetes = new();
         public Mock<ICustomObjectsOperations> CustomObjects = new();
+        public Mock<IKubernetes> Kubernetes = new();
+        public Mock<IKubernetesCluster> KubernetesCluster = new();
+        public Mock<IKubernetesClusterFactory> KubernetesClusterFactory = new();
         #endregion
 
         public Mock<ICacheProvider> CacheProvider { get; } = new();
@@ -93,12 +98,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.TeamTable).Returns(TeamTable.Object);
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
+            StorageContext.Setup(p => p.TemplateTable).Returns(TemplateTable.Object);
             StorageContext.Setup(p => p.TopUserTable).Returns(TopUserTable.Object);
             StorageContext.Setup(p => p.UserTable).Returns(UserTable.Object);
             StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
             StorageContext.Setup(p => p.ReportsContainer).Returns(ReportsContainer.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
+            KubernetesClusterFactory.Setup(k => k.GetDefaultKubernetes(It.IsAny<CancellationToken>())).ReturnsAsync(KubernetesCluster.Object);
         }
 
         public void VerifyAll()
@@ -108,7 +115,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
                 CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
                 RatingKindTable, RatingTable,
-                TeamTable, TeamMemberTable, TeamWorkTable, TopUserTable,
+                TeamTable, TeamMemberTable, TeamWorkTable, TemplateTable, TopUserTable,
                 UserTable, UserTokenTable, ReportsContainer);
 
             ActivityLogTable.VerifyNoOtherCalls();
@@ -128,6 +135,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             TeamTable.VerifyNoOtherCalls();
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
+            TemplateTable.VerifyNoOtherCalls();
             TopUserTable.VerifyNoOtherCalls();
             UserTable.VerifyNoOtherCalls();
             UserTokenTable.VerifyNoOtherCalls();
@@ -160,8 +168,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             #endregion
 
             #region k8s
-            Mock.VerifyAll(CustomObjects);
+            Mock.VerifyAll(CustomObjects, KubernetesCluster);
             CustomObjects.VerifyNoOtherCalls();
+            KubernetesCluster.VerifyNoOtherCalls();
             #endregion
 
             Mock.VerifyAll(CacheProvider);
