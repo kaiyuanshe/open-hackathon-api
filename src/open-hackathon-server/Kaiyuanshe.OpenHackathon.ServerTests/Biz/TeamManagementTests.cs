@@ -383,25 +383,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             TeamMember request = new TeamMember { description = "b" };
             TeamMemberEntity member = new TeamMemberEntity { Description = "a", Role = TeamMemberRole.Member, Status = TeamMemberStatus.pendingApproval };
-            TeamMemberEntity? captured = null;
 
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
-                .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.MergeAsync(It.Is<TeamMemberEntity>(m => m.Description == "b"), default));
 
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.UpdateTeamMemberAsync(member, request, default);
 
-            Mock.VerifyAll(teamMemberTable, storageContext);
-            teamMemberTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Assert.AreEqual("b", result.Description);
-            Assert.AreEqual("b", captured.Description);
             Assert.AreEqual(TeamMemberRole.Member, result.Role);
             Assert.AreEqual(TeamMemberStatus.pendingApproval, result.Status);
         }
@@ -429,22 +420,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string userId = "uid";
             TeamMemberEntity teamMember = new TeamMemberEntity { Description = "desc" };
 
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.RetrieveAsync("hack", "uid", default))
-                .ReturnsAsync(teamMember);
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.RetrieveAsync("hack", "uid", default)).ReturnsAsync(teamMember);
 
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.GetTeamMemberAsync("hack", userId, default);
 
-            Mock.VerifyAll(teamMemberTable, storageContext);
-            teamMemberTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Assert.IsNotNull(result);
+            Debug.Assert(result != null);
             Assert.AreEqual("desc", result.Description);
         }
         #endregion
@@ -475,27 +460,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task UpdateTeamMemberStatusAsync_Succeeded(TeamMemberStatus oldStatus, TeamMemberStatus newStatus)
         {
             TeamMemberEntity teamMember = new TeamMemberEntity { Status = oldStatus };
-            TeamMemberEntity captured = null;
 
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
-                .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.MergeAsync(It.Is<TeamMemberEntity>(
+                m => m.Description == null && m.Status == newStatus), default));
 
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.UpdateTeamMemberStatusAsync(teamMember, newStatus, default);
 
-            Mock.VerifyAll(teamMemberTable, storageContext);
-            teamMemberTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Assert.IsNull(result.Description);
-            Assert.IsNull(captured.Description);
             Assert.AreEqual(newStatus, result.Status);
-            Assert.AreEqual(newStatus, captured.Status);
         }
         #endregion
 
@@ -525,28 +501,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         public async Task UpdateTeamMemberRoleAsync_Succeeded(TeamMemberRole oldRole, TeamMemberRole newRole)
         {
             TeamMemberEntity teamMember = new TeamMemberEntity { Role = oldRole };
-            TeamMemberEntity captured = null;
 
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(t => t.MergeAsync(It.IsAny<TeamMemberEntity>(), default))
-                .Callback<TeamMemberEntity, CancellationToken>((tm, c) => { captured = tm; });
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(t => t.MergeAsync(It.Is<TeamMemberEntity>(
+                m => m.Description == null && m.Role == newRole), default));
 
-
-            TeamManagement teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            TeamManagement teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
             var result = await teamManagement.UpdateTeamMemberRoleAsync(teamMember, newRole, default);
 
-            Mock.VerifyAll(teamMemberTable, storageContext);
-            teamMemberTable.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
             Assert.IsNull(result.Description);
-            Assert.IsNull(captured.Description);
             Assert.AreEqual(newRole, result.Role);
-            Assert.AreEqual(newRole, captured.Role);
         }
         #endregion
 
@@ -595,22 +561,16 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             };
 
 
-            var teamMemberTable = new Mock<ITeamMemberTable>();
-            teamMemberTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')", null, default))
+            var moqs = new Moqs();
+            moqs.TeamMemberTable.Setup(p => p.QueryEntitiesAsync("(PartitionKey eq 'hack') and (TeamId eq 'tid')", null, default))
                 .ReturnsAsync(teamMembers);
 
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.TeamMemberTable).Returns(teamMemberTable.Object);
-            var cache = new DefaultCacheProvider(null);
-
-            var teamManagement = new TeamManagement()
-            {
-                StorageContext = storageContext.Object,
-                Cache = cache,
-            };
+            var teamManagement = new TeamManagement();
+            moqs.SetupManagement(teamManagement);
+            teamManagement.Cache = new DefaultCacheProvider(new Mock<ILogger<DefaultCacheProvider>>().Object);
             var results = await teamManagement.ListTeamMembersAsync("hack", "tid", default);
 
-            Mock.VerifyAll(teamMemberTable, storageContext);
+            moqs.VerifyAll();
             Assert.AreEqual(2, results.Count());
             Assert.AreEqual("rk1", results.First().UserId);
             Assert.AreEqual(TeamMemberRole.Admin, results.First().Role);

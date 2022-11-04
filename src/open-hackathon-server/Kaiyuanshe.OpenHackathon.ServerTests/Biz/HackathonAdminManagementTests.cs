@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -204,6 +205,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             else
             {
                 Assert.IsNotNull(options.NextPage);
+                Debug.Assert(options.NextPage != null);
                 Assert.AreEqual(expectedNext.np, options.NextPage.np);
                 Assert.AreEqual(expectedNext.np, options.NextPage.nr);
             }
@@ -216,22 +218,15 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         {
             var adminEntity = new HackathonAdminEntity { PartitionKey = "pk" };
 
-            var hackathonAdminTable = new Mock<IHackathonAdminTable>();
-            hackathonAdminTable.Setup(a => a.RetrieveAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
+            var moqs = new Moqs();
+            moqs.HackathonAdminTable.Setup(a => a.RetrieveAsync("hack", "uid", default)).ReturnsAsync(adminEntity);
 
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(p => p.HackathonAdminTable).Returns(hackathonAdminTable.Object);
-
-            var management = new HackathonAdminManagement()
-            {
-                StorageContext = storageContext.Object,
-            };
+            var management = new HackathonAdminManagement();
+            moqs.SetupManagement(management);
             var result = await management.GetAdminAsync("hack", "uid", default);
 
-            Mock.VerifyAll(storageContext, hackathonAdminTable);
-            storageContext.VerifyNoOtherCalls();
-            hackathonAdminTable.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
+            Debug.Assert(result != null);
             Assert.AreEqual("pk", result.HackathonName);
         }
         #endregion
