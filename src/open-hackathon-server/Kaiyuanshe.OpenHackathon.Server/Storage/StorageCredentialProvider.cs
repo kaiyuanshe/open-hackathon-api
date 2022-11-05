@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
 
         public StorageCredentialProvider(IConfiguration configuration)
         {
-            connectionString = configuration["Storage:Hackathon:ConnectionString"];
+            connectionString = configuration[ConfigurationKeys.StorageConnectionString];
         }
 
         public string HackathonServerStorageConnectionString => connectionString;

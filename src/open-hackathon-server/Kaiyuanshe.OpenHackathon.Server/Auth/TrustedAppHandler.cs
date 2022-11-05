@@ -19,8 +19,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
         string[] _trustedApps = new string[0];
 
         static readonly string HeaderNameAppId = "x-openhackathon-app-id";
-        // Add to env variable "Guacamole__TrustedApps" to set the value.
-        static readonly string configNameTrustedApps = "Guacamole:TrustedApps";
         private readonly ILogger logger;
 
         public TrustedAppHandler(
@@ -29,7 +27,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Auth
             ILogger<TrustedAppHandler> logger)
         {
             _httpContextAccessor = httpContextAccessor;
-            var trusted = configuration[configNameTrustedApps];
+            var trusted = configuration[ConfigurationKeys.GuacamoleTrustedApps];
             if (trusted != null)
             {
                 _trustedApps = trusted.Split(new char[] { ',', ';' },
