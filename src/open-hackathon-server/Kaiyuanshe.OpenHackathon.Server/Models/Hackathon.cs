@@ -237,9 +237,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// hackathons with admin access
         /// </summary>
         admin,
-        ///// <summary>
-        ///// enrolled hackathons
-        ///// </summary>
+        /// <summary>
+        /// enrolled hackathons
+        /// </summary>
         enrolled,
         /// <summary>
         /// hackathons about to start

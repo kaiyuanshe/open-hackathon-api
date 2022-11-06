@@ -1,4 +1,4 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Swagger;
+﻿using Kaiyuanshe.OpenHackathon.Server.Swagger.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;

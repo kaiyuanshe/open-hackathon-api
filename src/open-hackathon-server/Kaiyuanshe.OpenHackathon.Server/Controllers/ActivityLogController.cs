@@ -2,7 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Models.Validations;
 using Kaiyuanshe.OpenHackathon.Server.Storage.Entities;
-using Kaiyuanshe.OpenHackathon.Server.Swagger;
+using Kaiyuanshe.OpenHackathon.Server.Swagger.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
