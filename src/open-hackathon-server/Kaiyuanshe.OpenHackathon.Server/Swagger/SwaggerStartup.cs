@@ -1,4 +1,5 @@
 ﻿using Kaiyuanshe.OpenHackathon.Server.Swagger.OperationFilters;
+using Kaiyuanshe.OpenHackathon.Server.Swagger.SchemaFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
                 c.UseAllOfToExtendReferenceSchemas();
                 // Add (Auth) to action summary
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+
+                // Schema Filters
+                c.SchemaFilter<EnumTypesSchemaFilter>(xmlPath);
             });
 
             services.AddSwaggerExamplesFromAssemblyOf<SwaggerStartup>();
