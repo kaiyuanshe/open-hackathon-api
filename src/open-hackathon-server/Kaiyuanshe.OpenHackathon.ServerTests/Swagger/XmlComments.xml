@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<doc>
+	<assembly>
+		<name>Kaiyuanshe.OpenHackathon.ServerTests</name>
+	</assembly>
+	<members>
+		<member name="M:Kaiyuanshe.OpenHackathon.ServerTests.Models.ActivityLogExtenstionsTests.EnsureResources(Kaiyuanshe.OpenHackathon.Server.Storage.Entities.ActivityLogCategory,Kaiyuanshe.OpenHackathon.Server.Models.ActivityLogType)">
+			<summary>
+				Keep updating this Test for more cases whenever we add a new combination of category+type
+			</summary>
+		</member>
+		<member name="F:Kaiyuanshe.OpenHackathon.ServerTests.Swagger.FakeEnum.One">
+			<summary>
+				Summary One
+			</summary>
+		</member>
+		<member name="F:Kaiyuanshe.OpenHackathon.ServerTests.Swagger.FakeEnum.Two">
+			<summary>
+				Summary Two
+			</summary>
+		</member>
+		<member name="F:Kaiyuanshe.OpenHackathon.ServerTests.Swagger.FakeEnum.Three">
+			<summary>
+				Summary Three
+			</summary>
+		</member>
+	</members>
+</doc>
