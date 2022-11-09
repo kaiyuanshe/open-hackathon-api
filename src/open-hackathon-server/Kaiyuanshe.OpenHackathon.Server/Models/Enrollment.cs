@@ -44,22 +44,22 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public enum EnrollmentStatus
     {
         /// <summary>
-        /// Not enrolled
+        /// Not enrolled.
         /// </summary>
         none,
 
         /// <summary>
-        /// Pending approval
+        /// Pending approval from hackathon admin.
         /// </summary>
         pendingApproval,
 
         /// <summary>
-        /// Approved by admin
+        /// Approved by hackathon admin.
         /// </summary>
         approved,
 
         /// <summary>
-        /// Rejected by admin
+        /// Rejected by hackathon admin
         /// </summary>
         rejected,
     }

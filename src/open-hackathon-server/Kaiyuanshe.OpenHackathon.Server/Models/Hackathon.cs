@@ -219,7 +219,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         updatedAt,
         /// <summary>
-        /// order by hot
+        /// order by popularity
         /// </summary>
         hot,
     }
@@ -230,23 +230,23 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public enum HackathonListType
     {
         /// <summary>
-        /// online hackathons.
+        /// hackathons that are online.
         /// </summary>
         online,
         /// <summary>
-        /// hackathons with admin access
+        /// hackathons that a user has admin access.
         /// </summary>
         admin,
         /// <summary>
-        /// enrolled hackathons
+        /// hackathons that a user has enrolled.
         /// </summary>
         enrolled,
         /// <summary>
-        /// hackathons about to start
+        /// hackathons that are about to start.
         /// </summary>
         fresh,
         /// <summary>
-        /// hackathons created by a user
+        /// hackathons that are created by a user.
         /// </summary>
         created,
     }

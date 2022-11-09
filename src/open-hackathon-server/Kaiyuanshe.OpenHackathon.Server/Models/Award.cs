@@ -60,7 +60,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     /// </summary>
     public enum AwardTarget
     {
+        /// <summary>
+        /// The award will be assigned to teams.
+        /// </summary>
         team,
+        /// <summary>
+        /// The award will be assigned to individuals.
+        /// </summary>
         individual,
     }
 
