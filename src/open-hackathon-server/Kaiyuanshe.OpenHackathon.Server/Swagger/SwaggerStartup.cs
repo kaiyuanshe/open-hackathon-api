@@ -1,4 +1,5 @@
-﻿using Kaiyuanshe.OpenHackathon.Server.Swagger.OperationFilters;
+﻿using Kaiyuanshe.OpenHackathon.Server.Swagger.DocumentFilters;
+using Kaiyuanshe.OpenHackathon.Server.Swagger.OperationFilters;
 using Kaiyuanshe.OpenHackathon.Server.Swagger.SchemaFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +49,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
 
+                // Schema Filters
+                c.SchemaFilter<EnumTypesSchemaFilter>(xmlPath);
+
                 // Operation Filters
                 c.OperationFilter<ErrorResponseOperationFilter>();
                 c.OperationFilter<UnauthorizedResponseOperationFilter>();
@@ -56,9 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
                 c.UseAllOfToExtendReferenceSchemas();
                 // Add (Auth) to action summary
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
-
-                // Schema Filters
-                c.SchemaFilter<EnumTypesSchemaFilter>(xmlPath);
+                c.OperationFilter<EnumParameterCommentsOperationFilter>();
             });
 
             services.AddSwaggerExamplesFromAssemblyOf<SwaggerStartup>();
