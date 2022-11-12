@@ -44,7 +44,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger.SchemaFilters
                     var summary = enumMemberComments.Descendants("summary").FirstOrDefault();
                     if (summary == null) continue;
 
-                    schema.Description += $"<li><i>{enumMemberName}</i> - {summary.Value.Trim()}</li> ";
+                    schema.Description += $"<li><i><b>{enumMemberName}</b></i> - {summary.Value.Trim()}</li> ";
                 }
 
                 schema.Description += "</ul>";
