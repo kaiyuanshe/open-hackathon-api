@@ -26,15 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="search">keyword to search in hackathon name, displayName or details. Do case-insensitive substring match only.</param>
         /// <param name="userId">optional id of user. If <b>userId</b> in query is not empty, will override the current user from <code>Authorization</code> header.</param>
         /// <param name="orderby">order by. Default to <b>createdAt</b>.</param>
-        /// <param name="listType">type of list. Default to <b>online</b>. <br />
-        /// <ul>
-        /// <li><b>online</b>: list hackathons in online status only regardless of the userId;</li>
-        /// <li><b>admin</b>: list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned;</li>
-        /// <li><b>enrolled</b>: list enrolled hackathons of a user, either userId or <code>Authorization</code> header is required, otherwise empty list returned;</li>
-        /// <li><b>fresh</b>: hackathons that are about to start;</li>
-        /// <li><b>created</b>: hackathons that are created by specified user(either userId in query or user from access token.</li>
-        /// </ul>
-        /// </param>
+        /// <param name="listType">type of list. Default to <b>online</b>.</param>
         /// <returns>A list of hackathon.</returns>
         /// <response code="200">Success. The response describes a list of hackathon and a nullable link to query more results.</response>
         [HttpGet]
