@@ -14,15 +14,18 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
 {
     public class SwaggerTest
     {
-        protected SwaggerGenerator Generate(IEnumerable<ApiDescription> apiDescriptions, Action<SwaggerGeneratorOptions>? configure = null)
+        protected SwaggerGenerator Generate(
+            IEnumerable<ApiDescription> apiDescriptions,
+            Action<SwaggerGeneratorOptions>? configure = null,
+            SchemaGenerator? schemaGenerator = null)
         {
             var options = DefaultOptions;
             configure?.Invoke(options);
+            schemaGenerator ??= new SchemaGenerator(new SchemaGeneratorOptions(), new JsonSerializerDataContractResolver(new JsonSerializerOptions()));
             return new SwaggerGenerator(
                 options,
                 new FakeApiDescriptionGroupCollectionProvider(apiDescriptions),
-                new SchemaGenerator(new SchemaGeneratorOptions(), new JsonSerializerDataContractResolver(new JsonSerializerOptions()))
-            );
+                schemaGenerator);
         }
 
         protected SchemaGenerator GetSchemaGenerator(Action<SchemaGeneratorOptions>? configureGenerator = null, Action<JsonSerializerOptions>? configureSerializer = null)

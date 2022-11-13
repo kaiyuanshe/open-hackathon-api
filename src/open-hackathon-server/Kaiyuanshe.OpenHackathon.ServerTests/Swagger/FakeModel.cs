@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
+﻿namespace Kaiyuanshe.OpenHackathon.ServerTests.Swagger
 {
-    internal class FakeModel
+    public class FakeModel
     {
     }
 
-    internal enum FakeEnum
+    public enum FakeEnum
     {
         /// <summary>
         /// Summary One
