@@ -33,14 +33,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// </remarks>
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
-        /// <param name="reportType">type of report. required. See below for supported type <br />
-        /// <ul>
-        /// <li><b>enrollments</b>: export all enrolled users</li>
-        /// <li><b>teams</b>: export all teams and their members</li>
-        /// <li><b>teamWorks</b>: export all team works.</li>
-        /// </ul>
-        /// </param>
-        /// <param name="token">access token from login. It's optional but either Authorization or token is required. 
+        /// <param name="reportType">type of report. required. See below for supported type. </param>
+        /// <param name="token">access token from login. It's optional but either <b>Authorization</b> or <b>token</b> is required. 
         /// If both are set, the token in query takes precedence.</param>
         /// <returns></returns>
         /// <response code="200">Success. The response is a file.</response>
@@ -49,7 +43,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         [Route("hackathon/{hackathonName}/report")]
         public async Task<object> GetReport(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
-            [FromQuery] ReportType reportType,
+            [FromQuery, Required] ReportType reportType,
             [FromQuery] string? token,
             CancellationToken cancellationToken)
         {

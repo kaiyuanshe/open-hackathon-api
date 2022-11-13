@@ -3,15 +3,15 @@
     public enum ReportType
     {
         /// <summary>
-        /// report for enrollments.
+        /// export all enrollments including those are pending approval.
         /// </summary>
         enrollments,
         /// <summary>
-        /// report for teams and members.
+        /// export all teams and their members.
         /// </summary>
         teams,
         /// <summary>
-        /// report for team works
+        /// export all team works.
         /// </summary>
         teamWorks,
     }

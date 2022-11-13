@@ -1109,8 +1109,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <param name="hackathonName" example="foo">Name of hackathon. Case-insensitive.
         /// Must contain only letters and/or numbers, length between 1 and 100</param>
         /// <param name="teamId" example="d1e40c38-cc2a-445f-9eab-60c253256c57">unique Guid of the team. Auto-generated on server side.</param>
-        /// <param name="status" example="approved">optional filter by member status.</param>
-        /// <param name="role" example="member">optional filter by role of team member. </param>
+        /// <param name="role" example="member">optionally filter memebers by role. </param>
+        /// <param name="status" example="approved">optionally filter members by status.</param>
         /// <returns>the response contains a list of team members and a nextLink if there are more results.</returns>
         /// <response code="200">Success.</response>
         [HttpGet]

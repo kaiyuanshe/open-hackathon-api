@@ -29,7 +29,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger.DocumentFilters
                     continue;
                 }
 
-                parameter.Description += "<p>Allowed Values:</p>";
+                parameter.Description += "<p>Variants:</p>";
                 int cutStart = schema.Description.IndexOf("<ul>");
                 int cutEnd = schema.Description.IndexOf("</ul>") + 5;
 

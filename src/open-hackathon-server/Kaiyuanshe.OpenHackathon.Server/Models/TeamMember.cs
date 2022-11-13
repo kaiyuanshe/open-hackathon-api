@@ -69,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         Admin,
 
         /// <summary>
-        /// member of the team.
+        /// member of the team without admin access.
         /// </summary>
         Member,
     }
@@ -80,12 +80,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public enum TeamMemberStatus
     {
         /// <summary>
-        /// Pending approval
+        /// requested to be a member but request is not approved yet.
         /// </summary>
         pendingApproval,
 
         /// <summary>
-        /// Approved by team admin
+        /// approved member of a team.
         /// </summary>
         approved,
     }

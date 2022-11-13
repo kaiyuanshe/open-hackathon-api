@@ -230,15 +230,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     public enum HackathonListType
     {
         /// <summary>
-        /// hackathons that are online.
+        /// list hackathons in online status only regardless of the userId.
         /// </summary>
         online,
         /// <summary>
-        /// hackathons that a user has admin access.
+        /// list hackathons in any status where user has admin access, either userId or Auth header is required, otherwise empty list returned.
         /// </summary>
         admin,
         /// <summary>
-        /// hackathons that a user has enrolled.
+        /// list enrolled hackathons of a user, either userId or <code>Authorization</code> header is required, otherwise empty list returned.
         /// </summary>
         enrolled,
         /// <summary>
@@ -246,7 +246,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         fresh,
         /// <summary>
-        /// hackathons that are created by a user.
+        /// hackathons that are created by specified user(either userId in query or user from access token).
         /// </summary>
         created,
     }
