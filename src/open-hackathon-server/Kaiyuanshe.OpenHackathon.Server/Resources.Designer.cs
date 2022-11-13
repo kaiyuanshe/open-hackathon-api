@@ -1987,6 +1987,15 @@ namespace Kaiyuanshe.OpenHackathon.Server {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TemplateRepo `{0}` cannot be found in hackathon `{1}`..
+        /// </summary>
+        internal static string TemplateRepo_NotFound {
+            get {
+                return ResourceManager.GetString("TemplateRepo_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified user is not found..
         /// </summary>
         internal static string User_NotFound {

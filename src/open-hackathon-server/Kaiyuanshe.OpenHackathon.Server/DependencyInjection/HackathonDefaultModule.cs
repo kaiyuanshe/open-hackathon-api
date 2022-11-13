@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Net.Http;
+using Autofac;
 using Kaiyuanshe.OpenHackathon.Server.Cache;
 using Kaiyuanshe.OpenHackathon.Server.CronJobs;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
@@ -22,7 +23,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             builder.RegisterType<TraceIdHttpPipelinePolicyFactory>().As<ITraceIdHttpPipelinePolicyFactory>().PropertiesAutowired().SingleInstance();
             builder.RegisterType<MutexProvider>().As<IMutexProvider>().PropertiesAutowired().SingleInstance();
 
-            //Biz
+            // Biz
             builder.RegisterManagementClients();
 
             // Kubernetes
@@ -35,6 +36,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.DependencyInjection
             // Cache
             builder.RegisterType<CacheProviderFactory>().As<ICacheProviderFactory>().PropertiesAutowired().SingleInstance();
             builder.Register<ICacheProvider>(container => container.Resolve<ICacheProviderFactory>().CreateCacheProvider()).SingleInstance();
+
+            // HttpClient
+            // builder.RegisterType<HttpClientHelper>().As<IHttpClientHelper>().SingleInstance().PropertiesAutowired();
+            // builder.Register<HttpClient>(container => container.Resolve<IHttpClientFactory>().CreateClient()).SingleInstance();
 
             // CronJob
             builder.RegisterTypes(typeof(ICronJob).SubTypes()).SingleInstance().PropertiesAutowired();

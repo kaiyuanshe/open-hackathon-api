@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Threading;
+using System.Net.Http;
+using Microsoft.Extensions.Options;
 
 namespace Kaiyuanshe.OpenHackathon.ServerTests
 {
@@ -37,6 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<ITeamTable> TeamTable { get; set; } = new();
         public Mock<ITeamMemberTable> TeamMemberTable { get; set; } = new();
         public Mock<ITeamWorkTable> TeamWorkTable { get; set; } = new();
+        public Mock<ITemplateRepoTable> TemplateRepoTable { get; set; } = new();
         public Mock<ITemplateTable> TemplateTable { get; set; } = new();
         public Mock<ITopUserTable> TopUserTable { get; set; } = new();
         public Mock<IUserTable> UserTable { get; set; } = new();
@@ -63,6 +66,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<IFileManagement> FileManagement { get; } = new();
         public Mock<IOrganizerManagement> OrganizerManagement { get; } = new();
         public Mock<IQuestionnaireManagement> QuestionnaireManagement { get; } = new();
+        public Mock<ITemplateRepoManagement> TemplateRepoManagement { get; } = new();
         #endregion
 
         #region K8s
@@ -73,6 +77,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         #endregion
 
         public Mock<ICacheProvider> CacheProvider { get; } = new();
+
+        public Mock<HttpMessageHandler> HttpMessageHandler { get; } = new();
+        public Mock<IHttpClientFactory> HttpClientFactory { get; } = new();
 
         #region Mutex
         public Mock<IMutexProvider> MutexProvider { get; } = new();
@@ -100,6 +107,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.TeamTable).Returns(TeamTable.Object);
             StorageContext.Setup(p => p.TeamMemberTable).Returns(TeamMemberTable.Object);
             StorageContext.Setup(p => p.TeamWorkTable).Returns(TeamWorkTable.Object);
+            StorageContext.Setup(p => p.TemplateRepoTable).Returns(TemplateRepoTable.Object);
             StorageContext.Setup(p => p.TemplateTable).Returns(TemplateTable.Object);
             StorageContext.Setup(p => p.TopUserTable).Returns(TopUserTable.Object);
             StorageContext.Setup(p => p.UserTable).Returns(UserTable.Object);
@@ -110,6 +118,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
             KubernetesClusterFactory.Setup(k => k.GetDefaultKubernetes(It.IsAny<CancellationToken>())).ReturnsAsync(KubernetesCluster.Object);
+
+            HttpClientFactory.Setup(_ => _.CreateClient(Options.DefaultName)).Returns(() => new HttpClient(HttpMessageHandler.Object));
         }
 
         public void VerifyAll()
@@ -119,8 +129,8 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
                 CronJobTable, EnrollmentTable, ExperimentTable, HackathonTable,
                 HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
                 RatingKindTable, RatingTable,
-                TeamTable, TeamMemberTable, TeamWorkTable, TemplateTable, TopUserTable,
-                UserTable, UserTokenTable, ReportsContainer, UserBlobContainer);
+                TeamTable, TeamMemberTable, TeamWorkTable, TemplateRepoTable, TemplateTable,
+                TopUserTable, UserTable, UserTokenTable, ReportsContainer, UserBlobContainer);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
@@ -139,6 +149,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             TeamTable.VerifyNoOtherCalls();
             TeamMemberTable.VerifyNoOtherCalls();
             TeamWorkTable.VerifyNoOtherCalls();
+            TemplateRepoTable.VerifyNoOtherCalls();
             TemplateTable.VerifyNoOtherCalls();
             TopUserTable.VerifyNoOtherCalls();
             UserTable.VerifyNoOtherCalls();
@@ -153,7 +164,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
                 AwardManagement, EnrollmentManagement, ExperimentManagement,
                 FileManagement, HackathonAdminManagement, HackathonManagement,
                 JudgeManagement, OrganizerManagement, QuestionnaireManagement, RatingManagement,
-                TeamManagement, UserManagement, WorkManagement);
+                TeamManagement, TemplateRepoManagement, UserManagement, WorkManagement);
 
             ActivityLogManagement.VerifyNoOtherCalls();
             AnnouncementManagement.VerifyNoOtherCalls();
@@ -169,6 +180,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             QuestionnaireManagement.VerifyNoOtherCalls();
             RatingManagement.VerifyNoOtherCalls();
             TeamManagement.VerifyNoOtherCalls();
+            TemplateRepoManagement.VerifyNoOtherCalls();
             UserManagement.VerifyNoOtherCalls();
             WorkManagement.VerifyNoOtherCalls();
             #endregion
@@ -181,6 +193,13 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
 
             Mock.VerifyAll(CacheProvider);
             CacheProvider?.VerifyNoOtherCalls();
+
+            Mock.VerifyAll(HttpMessageHandler);
+            // There're followed calls to HttpMessageHandler.Dispose(True)
+            // HttpMessageHandler?.VerifyNoOtherCalls();
+            // No need to verify HttpClientFactory since we've verified HttpMessageHandler
+            // Mock.VerifyAll(HttpClientFactory);
+            // HttpClientFactory?.VerifyNoOtherCalls();
 
             #region Mutex
             Mock.VerifyAll(MutexProvider, Mutex);

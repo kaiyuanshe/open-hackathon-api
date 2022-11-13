@@ -637,6 +637,28 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
         }
         #endregion
 
+        #region BuildTemplateRepo
+        [Test]
+        public void BuildTemplateRepo()
+        {
+            var entity = new TemplateRepoEntity
+            {
+                PartitionKey = "pk",
+                RowKey = "rk",
+                CreatedAt = DateTime.UtcNow,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            var respBuilder = new DefaultResponseBuilder();
+            var result = respBuilder.BuildTemplateRepo(entity);
+
+            Assert.AreEqual(entity.PartitionKey, result.hackathonName);
+            Assert.AreEqual(entity.RowKey, result.id);
+            Assert.AreEqual(entity.CreatedAt, result.createdAt);
+            Assert.AreEqual(entity.Timestamp.DateTime, result.updatedAt);
+        }
+        #endregion
+
         #region BuildTopUser
         [Test]
         public void BuildTopUser()

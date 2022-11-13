@@ -1,8 +1,11 @@
-﻿namespace Kaiyuanshe.OpenHackathon.Server.Models
+﻿using System;
+
+namespace Kaiyuanshe.OpenHackathon.Server.Models
 {
     /// <summary>
     /// Describes a running system on cloud.
     /// </summary>
+    [Obsolete]
     public class Experiment : KubernetesModelBase
     {
         /// <summary>

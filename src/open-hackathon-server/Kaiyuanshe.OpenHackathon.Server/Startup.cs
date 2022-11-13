@@ -88,6 +88,9 @@ namespace Kaiyuanshe.OpenHackathon.Server
             // Cron Jobs
             services.AddHostedService<CronJobHostedService>();
 
+            // External HTTP services
+            services.AddHttpClient(Options.DefaultName, options => {});
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             SwaggerStartup.ConfigureService(services);
 

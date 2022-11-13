@@ -750,6 +750,9 @@
   <data name="Team_NotJoined" xml:space="preserve">
     <value>用户未加入任何团队。</value>
   </data>
+  <data name="TemplateRepo_NotFound" xml:space="preserve">
+    <value>模板项目仓库 `{0}` 不存在。对应活动：`{1}`。</value>
+  </data>
   <data name="Template_ExceedMax" xml:space="preserve">
     <value>每个活动最多只能创建 {0}个虚拟环境模板。</value>
   </data>
@@ -757,7 +760,7 @@
     <value>无法删除使用中的虚拟环境模板。请先删除对应的虚拟环境。</value>
   </data>
   <data name="Template_NotFound" xml:space="preserve">
-    <value>虚拟环境模板 `{0}`不存在。对应活动：`{1}`.</value>
+    <value>虚拟环境模板 `{0}` 不存在。对应活动：`{1}`。</value>
   </data>
   <data name="User_NotFound" xml:space="preserve">
     <value>用户不存在。</value>
