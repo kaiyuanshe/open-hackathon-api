@@ -1,0 +1,14 @@
+// https://docs.renovatebot.com/configuration-options/
+{
+  "extends": [
+    "config:base",
+  ],
+  "baseBranches": [
+    "main",
+  ],
+  "nuget": {
+    "registryUrls": [
+      "https://api.nuget.org/v3/index.json",
+    ]
+  }
+}
