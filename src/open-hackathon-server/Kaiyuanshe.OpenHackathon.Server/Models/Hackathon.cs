@@ -102,7 +102,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// tags. An array of any string. At most 20 tags.
         /// </summary>
-        /// <example>tag1</example>
+        /// <example>["tag1", "tag2"]</example>
         [MaxLength(20)]
         public string[] tags { get; set; }
 
