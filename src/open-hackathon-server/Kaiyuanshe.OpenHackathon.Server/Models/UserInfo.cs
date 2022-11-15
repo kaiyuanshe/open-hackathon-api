@@ -308,7 +308,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// Detailed response from social login.
         /// </summary>
-        /// <example>{"login":"zhangsan","id":1,"avatar_url":"https://avatars.githubusercontent.com/u/1?v=4","type":"User","site_admin":false,"name":"Zhang San","location":"Shanghai China","email":"zhangsan@contoso.com"}</example>
+        /// <example>｛\"login\":\"zhangsan\",\"id\":1,\"avatar_url\":\"https://avatars.githubusercontent.com/u/1?v=4\",\"type\":\"User\",\"site_admin\":false,\"name\":\"Zhang San\",\"location\":\"Shanghai China\",\"email\":\"zhangsan@contoso.com\"｝</example>
         [MaxLength(10240)]
         [JsonProperty("oauth")]
         public string OAuth { get; set; }

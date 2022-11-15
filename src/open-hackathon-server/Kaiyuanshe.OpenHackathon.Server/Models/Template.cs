@@ -48,7 +48,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <summary>
         /// environment variables passed to the container.
         /// </summary>
-        /// <example>{ "FOO": "bar", "KEY": "value" }</example>
+        /// <example>{ "KEY1": "value1", "KEY2": "value2" }</example>
         [EnvironmentVariables]
         public Dictionary<string, string> environmentVariables { get; set; }
         

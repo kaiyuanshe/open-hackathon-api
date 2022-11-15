@@ -12,7 +12,7 @@
         public int rank { get; internal set; }
 
         /// <summary>
-        /// the score that is used for ranking. The more in score, the high in rank.
+        /// the score that is used for ranking. The more in score, the higher in rank.
         /// </summary>
         /// <example>100</example>
         public int score { get; internal set; }
