@@ -51,6 +51,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Swagger
 
                 // Schema Filters
                 c.SchemaFilter<EnumTypesSchemaFilter>(xmlPath);
+                c.SchemaFilter<ExternalTypeSchemaFilter>();
 
                 // Operation Filters
                 c.OperationFilter<ErrorResponseOperationFilter>();
