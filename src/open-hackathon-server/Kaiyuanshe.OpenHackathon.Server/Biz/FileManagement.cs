@@ -60,7 +60,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var blobEndpoint = StorageContext.UserBlobContainer.BlobContainerUri;
 
             // read Url base
-            // TODO make it configurable to support different static site.
+            // TODO make it configurable to support different static sites.
             string readUrlBase = HackathonApiStaticSite;
             if (EnvironmentHelper.IsDevelopment() && !EnvironmentHelper.IsRunningInTests())
             {
