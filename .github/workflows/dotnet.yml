@@ -99,6 +99,14 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
   
+    # test site
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'hackathon-api'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TEST }}
+        images: 'kysprodacr.azurecr.cn/oph-server-v2:sha-${{ github.sha }}'
+
+    # prod
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'hackathon-api'
