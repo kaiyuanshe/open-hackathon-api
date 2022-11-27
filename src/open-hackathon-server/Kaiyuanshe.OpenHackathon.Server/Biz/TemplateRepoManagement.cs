@@ -73,6 +73,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             // Normalize the url.
             var match = regexGitHubRepoUrl.Match(templateRepo.url);
             if (!match.Success) {
+                Logger?.TraceInformation($"Url not matched: ${templateRepo.url}");
                 return;
             }
             templateRepo.url = match.Groups[1].Value; // without trailing "/"
