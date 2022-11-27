@@ -19,10 +19,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Cache
                 {"Redis:Password", ""},
             };
 
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(inMemorySettings)
-                .Build();
-
+            var configuration = MockHelper.CreateConfiguration(inMemorySettings);
             var loggerFactory = new Mock<ILoggerFactory>();
 
             var factory = new CacheProviderFactory(loggerFactory.Object, configuration);
