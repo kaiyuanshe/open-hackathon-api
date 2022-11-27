@@ -2,6 +2,7 @@
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Models;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Security.Claims;
 using System.Threading;
@@ -22,8 +23,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
     public class FileManagement : ManagementClient<FileManagement>, IFileManagement
     {
-        public static readonly string HackathonApiStaticSite = "https://hackathon-api.static.kaiyuanshe.cn";
-
         /// <summary>
         /// The minimum SAS expiration time in minutes
         /// </summary>
@@ -38,6 +37,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         /// The default SAS expiration time in minutes
         /// </summary>
         static readonly int BlobContainerDefaultSasExpiration = 5; // minutes
+
+        public IConfiguration Configuration { get; set; }
 
         #region GetUploadUrlAsync
         internal int GetSASExpirationMinitues(FileUpload fileUpload)
@@ -60,15 +61,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             var blobEndpoint = StorageContext.UserBlobContainer.BlobContainerUri;
 
             // read Url base
-            // TODO make it configurable to support different static sites.
-            string readUrlBase = HackathonApiStaticSite;
-            if (EnvironmentHelper.IsDevelopment() && !EnvironmentHelper.IsRunningInTests())
+            var readUrlBase = Configuration.GetValue<string>(ConfigurationKeys.StorageStaticWebSiteHost);
+            if (string.IsNullOrWhiteSpace(readUrlBase))
             {
                 // return Static WebSite url. Make sure it's enabled.
                 // blob endpoint: https://accountName.blob.core.chinacloudapi.cn/
                 // static website: https://accountName.z4.web.core.chinacloudapi.cn/
                 readUrlBase = blobEndpoint.Replace(".blob.", ".z4.web.");
             }
+            readUrlBase = readUrlBase.TrimEnd('/');
 
             // write url base
             string writeUrlBase = blobEndpoint;

@@ -2,8 +2,6 @@
 using Kaiyuanshe.OpenHackathon.Server.Auth;
 using Kaiyuanshe.OpenHackathon.Server.Biz;
 using Kaiyuanshe.OpenHackathon.Server.Models;
-using Kaiyuanshe.OpenHackathon.Server.Storage;
-using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -29,8 +27,11 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
         #endregion
 
         #region GetUploadUrlAsync
-        [Test]
-        public void GetUploadUrlAsync()
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("https://www.foo.com")]
+        [TestCase("https://www.foo.com/")]
+        public void GetUploadUrlAsync(string host)
         {
             var user = new ClaimsPrincipal(
                new ClaimsIdentity(new List<Claim>
@@ -42,32 +43,36 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             string blobName = $"userId/{DateTime.UtcNow.ToString("yyyy/MM/dd")}/dir/abc.png";
 
             // mock
-            var userBlobContainer = new Mock<IUserBlobContainer>();
-            userBlobContainer.Setup(c => c.CreateBlobSasToken(
+            var moqs = new Moqs();
+            moqs.UserBlobContainer.Setup(c => c.CreateBlobSasToken(
                 blobName,
                 BlobSasPermissions.Read | BlobSasPermissions.Write
                 , It.IsAny<DateTimeOffset>()))
                 .Returns(sas);
-            userBlobContainer.SetupGet(u => u.BlobContainerUri).Returns("https://contoso.com");
-            var storageContext = new Mock<IStorageContext>();
-            storageContext.SetupGet(s => s.UserBlobContainer).Returns(userBlobContainer.Object);
+            moqs.UserBlobContainer.SetupGet(u => u.BlobContainerUri).Returns("https://my.blob.core.chinacloudapi.cn");
+            var configuration = MockHelper.CreateConfiguration(new Dictionary<string, string>
+            {
+                {"Storage:StaticWebSiteHost", host},
+            });
 
             // test
-            var fileManagement = new FileManagement()
+            var fileManagement = new FileManagement
             {
-                StorageContext = storageContext.Object,
+                Configuration = configuration,
             };
+            moqs.SetupManagement(fileManagement);
             var result = fileManagement.GetUploadUrl(user, request);
 
             // verify
-            Mock.VerifyAll(userBlobContainer, storageContext);
-            userBlobContainer.VerifyNoOtherCalls();
-            storageContext.VerifyNoOtherCalls();
+            moqs.VerifyAll();
 
             Assert.AreEqual(5, result.expiration);
             Assert.AreEqual("dir/abc.png", result.filename);
-            Assert.AreEqual($"{FileManagement.HackathonApiStaticSite}/{blobName}", result.url);
-            Assert.AreEqual($"https://contoso.com/$web/{blobName}?sas", result.uploadUrl);
+            var expected = string.IsNullOrEmpty(host) ?
+                $"https://my.z4.web.core.chinacloudapi.cn/{blobName}" :
+                $"https://www.foo.com/{blobName}";
+            Assert.AreEqual(expected, result.url);
+            Assert.AreEqual($"https://my.blob.core.chinacloudapi.cn/$web/{blobName}?sas", result.uploadUrl);
         }
         #endregion
     }

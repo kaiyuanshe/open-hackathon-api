@@ -41,7 +41,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
         public Mock<ITopUserTable> TopUserTable { get; set; } = new();
         public Mock<IUserTable> UserTable { get; set; } = new();
         public Mock<IUserTokenTable> UserTokenTable { get; set; } = new();
+        // contains
         public Mock<IReportsContainer> ReportsContainer { get; set; } = new();
+        public Mock<IUserBlobContainer> UserBlobContainer { get; set; } = new();
         #endregion
 
         #region Biz
@@ -102,7 +104,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             StorageContext.Setup(p => p.TopUserTable).Returns(TopUserTable.Object);
             StorageContext.Setup(p => p.UserTable).Returns(UserTable.Object);
             StorageContext.Setup(p => p.UserTokenTable).Returns(UserTokenTable.Object);
+
             StorageContext.Setup(p => p.ReportsContainer).Returns(ReportsContainer.Object);
+            StorageContext.Setup(p => p.UserBlobContainer).Returns(UserBlobContainer.Object);
 
             Kubernetes.Setup(k => k.CustomObjects).Returns(CustomObjects.Object);
             KubernetesClusterFactory.Setup(k => k.GetDefaultKubernetes(It.IsAny<CancellationToken>())).ReturnsAsync(KubernetesCluster.Object);
@@ -116,7 +120,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
                 HackathonAdminTable, JudgeTable, OrganizerTable, QuestionnaireTable,
                 RatingKindTable, RatingTable,
                 TeamTable, TeamMemberTable, TeamWorkTable, TemplateTable, TopUserTable,
-                UserTable, UserTokenTable, ReportsContainer);
+                UserTable, UserTokenTable, ReportsContainer, UserBlobContainer);
 
             ActivityLogTable.VerifyNoOtherCalls();
             AnnouncementTable.VerifyNoOtherCalls();
@@ -139,7 +143,9 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             TopUserTable.VerifyNoOtherCalls();
             UserTable.VerifyNoOtherCalls();
             UserTokenTable.VerifyNoOtherCalls();
+
             ReportsContainer.VerifyNoOtherCalls();
+            UserBlobContainer.VerifyNoOtherCalls();
             #endregion
 
             #region Biz
