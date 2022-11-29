@@ -117,9 +117,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         #region DeleteAdminAsync
         public async Task DeleteAdminAsync(string hackathonName, string userId, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(hackathonName) || string.IsNullOrWhiteSpace(userId))
-                return;
-
             await StorageContext.HackathonAdminTable.DeleteAsync(hackathonName, userId, cancellationToken);
             InvalidateAdminCache(hackathonName);
         }
