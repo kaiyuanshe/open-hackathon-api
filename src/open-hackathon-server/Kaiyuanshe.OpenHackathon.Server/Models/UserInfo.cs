@@ -61,7 +61,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Url of the user's or company's homepage
         /// </summary>
         /// <example>https://contoso.com</example>
-        [MaxLength(1024)]
+        [MaxLength(2048)]
         [JsonProperty("website")]
         public string Website { get; set; }
 
@@ -69,7 +69,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Gender
         /// </summary>
         /// <example>female</example>
-        [MaxLength(64)]
+        [MaxLength(128)]
         [JsonProperty("gender")]
         public string Gender { get; set; }
 
@@ -94,7 +94,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Company name
         /// </summary>
         /// <example>Contoso Inc.</example>
-        [MaxLength(128)]
+        [MaxLength(1024)]
         [JsonProperty("company")]
         public string Company { get; set; }
 
@@ -103,7 +103,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>zh-CN</example>
         [JsonProperty("locale")]
-        [MaxLength(128)]
+        [MaxLength(1024)]
         public string Locale { get; set; }
 
         [JsonProperty("formatted")]
@@ -127,7 +127,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Region of the address
         /// </summary>
         /// <example>Tianfu new district</example>
-        [MaxLength(64)]
+        [MaxLength(1024)]
         [JsonProperty("region")]
         public string Region { get; set; }
 
@@ -135,7 +135,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// postal code
         /// </summary>
         /// <example>637700</example>
-        [MaxLength(32)]
+        [MaxLength(128)]
         [JsonProperty("postalCode")]
         public string PostalCode { get; set; }
 
@@ -143,7 +143,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// City of the address
         /// </summary>
         /// <example>Chengdu</example>
-        [MaxLength(64)]
+        [MaxLength(1024)]
         [JsonProperty("city")]
         public string City { get; set; }
 
@@ -151,7 +151,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Province of the address
         /// </summary>
         /// <example>Sichuan</example>
-        [MaxLength(64)]
+        [MaxLength(1024)]
         [JsonProperty("province")]
         public string Province { get; set; }
 
@@ -159,7 +159,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Country of the address
         /// </summary>
         /// <example>China</example>
-        [MaxLength(64)]
+        [MaxLength(1024)]
         [JsonProperty("country")]
         public string Country { get; set; }
 
@@ -167,7 +167,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// address where user lives
         /// </summary>
         /// <example>Room 111, No 1, Road ABC, District DEF, Chengdu, Sichuan, China</example>
-        [MaxLength(512)]
+        [MaxLength(2048)]
         [JsonProperty("address")]
         public string Address { get; set; }
 
@@ -176,7 +176,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Browser infomation of last login
         /// </summary>
         /// <example>Chrome</example>
-        [MaxLength(256)]
         [JsonProperty("browser")]
         public string Browser { get; set; }
 
@@ -184,7 +183,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Device of login
         /// </summary>
         [JsonProperty("device")]
-        [MaxLength(256)]
         public string Device { get; set; }
 
         /// <summary>
@@ -199,7 +197,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>1</example>
         [Required]
-        [MaxLength(128)]
+        [MaxLength(1024)]
         [JsonProperty("id")]
         public string Id { get; set; }
 
@@ -213,7 +211,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Pool Id of Authing. Empty if not login with Authing
         /// </summary>
         /// <example>1eab1111d1a111d11c111c11</example>
-        [MaxLength(64)]
+        [MaxLength(1024)]
         [JsonProperty("userPoolId")]
         [Required]
         public string UserPoolId { get; set; }
@@ -229,7 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Email address.
         /// </summary>
         /// <example>zhangsan@contoso.com</example>
-        [MaxLength(256)]
+        [MaxLength(1024)]
         [JsonProperty("email")]
         public string Email { get; set; }
 
@@ -245,7 +243,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>021-12345678</example>
         [JsonProperty("phone")]
-        [MaxLength(128)]
+        [MaxLength(1024)]
         public string Phone { get; set; }
 
         /// <summary>
@@ -296,7 +294,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// </summary>
         /// <example>https://contoso.com/images/avatar/zhangsan.jpg</example>
         [JsonProperty("photo")]
-        [MaxLength(1024)]
+        [MaxLength(2048)]
         public string Photo { get; set; }
 
         /// <summary>
@@ -309,7 +307,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Detailed response from social login.
         /// </summary>
         /// <example>｛\"login\":\"zhangsan\",\"id\":1,\"avatar_url\":\"https://avatars.githubusercontent.com/u/1?v=4\",\"type\":\"User\",\"site_admin\":false,\"name\":\"Zhang San\",\"location\":\"Shanghai China\",\"email\":\"zhangsan@contoso.com\"｝</example>
-        [MaxLength(10240)]
         [JsonProperty("oauth")]
         public string OAuth { get; set; }
 
@@ -319,7 +316,6 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <example>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWM3OGEyMGY4MjE2ZDRiNGEwYjQ3MjEi...</example>
         [Required]
         [MinLength(1)]
-        [MaxLength(10240)]
         [JsonProperty("token")]
         public string? Token { get; set; }
 
@@ -350,7 +346,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// Ip address of last login.
         /// </summary>
         /// <example>10.0.0.1</example>
-        [MaxLength(128)]
+        [MaxLength(1024)]
         [JsonProperty("lastIp")]
         public string LastIp { get; set; }
 
