@@ -14,7 +14,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
         ActivityLog BuildActivityLog(ActivityLogEntity activityLogEntity);
         Announcement BuildAnnouncement(AnnouncementEntity announcementEntity);
         Award BuildAward(AwardEntity awardEntity);
-        AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user);
+        AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Award award, Team? team, UserInfo? user);
         Enrollment BuildEnrollment(EnrollmentEntity enrollmentEntity, UserInfo userInfo);
         Experiment BuildExperiment(ExperimentContext context, UserInfo userInfo);
         GuacamoleConnection BuildGuacamoleConnection(ExperimentContext context, TemplateContext? template);
@@ -93,11 +93,12 @@ namespace Kaiyuanshe.OpenHackathon.Server.ResponseBuilder
             });
         }
 
-        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Team? team, UserInfo? user)
+        public AwardAssignment BuildAwardAssignment(AwardAssignmentEntity awardAssignmentEntity, Award award, Team? team, UserInfo? user)
         {
             return awardAssignmentEntity.As<AwardAssignment>((p) =>
             {
                 p.updatedAt = awardAssignmentEntity.Timestamp.UtcDateTime;
+                p.award = award;
                 p.user = user;
                 p.team = team;
             });
