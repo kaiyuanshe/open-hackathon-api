@@ -47,6 +47,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         public string awardId { get; internal set; }
 
         /// <summary>
+        /// Detail of the award.
+        /// </summary>
+        public Award award { get; internal set; }
+
+        /// <summary>
         /// description of the assignment
         /// </summary>
         /// <example>amazing team</example>

@@ -127,9 +127,10 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             };
             var user = new UserInfo { Device = "device" };
             var team = new Team { id = "teamid" };
+            var award = new Award { name = "award" };
 
             var responseBuilder = new DefaultResponseBuilder();
-            var result = responseBuilder.BuildAwardAssignment(awardAssignment, team, user);
+            var result = responseBuilder.BuildAwardAssignment(awardAssignment, award, team, user);
 
             Assert.AreEqual("pk", result.hackathonName);
             Assert.AreEqual("rk", result.assignmentId);
@@ -142,6 +143,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.ResponseBuilder
             Debug.Assert(result.team != null);
             Assert.AreEqual("device", result.user.Device);
             Assert.AreEqual("teamid", result.team.id);
+            Assert.AreEqual("award", result.award.name);
         }
         #endregion
 

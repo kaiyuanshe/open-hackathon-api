@@ -1900,52 +1900,39 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
                 {
                     PartitionKey = "pk",
                     RowKey = "rk",
+                    AwardId = "aid",
                 }
             };
             TeamEntity team = new TeamEntity { CreatorId = "creator" };
+            AwardEntity award = new AwardEntity { Name = "award" };
             var creator = new UserInfo { LastLogin = "2020" };
 
             // mock and capture
-            var hackathonManagement = new Mock<IHackathonManagement>();
-            hackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
-
-            var teamManagement = new Mock<ITeamManagement>();
-            teamManagement.Setup(t => t.GetTeamByIdAsync(It.IsAny<string>(), It.IsAny<string>(), default)).ReturnsAsync(team);
-
-            var awardManagement = new Mock<IAwardManagement>();
-            awardManagement.Setup(p => p.ListPaginatedAssignmentsAsync("hack", It.Is<AwardAssignmentQueryOptions>(o => o.QueryType == AwardAssignmentQueryType.Team), default))
+            var moqs = new Moqs();
+            moqs.HackathonManagement.Setup(p => p.GetHackathonEntityByNameAsync("hack", default)).ReturnsAsync(hackathon);
+            moqs.TeamManagement.Setup(t => t.GetTeamByIdAsync(It.IsAny<string>(), It.IsAny<string>(), default)).ReturnsAsync(team);
+            moqs.AwardManagement.Setup(p => p.ListPaginatedAssignmentsAsync("hack", It.Is<AwardAssignmentQueryOptions>(o => o.QueryType == AwardAssignmentQueryType.Team), default))
                 .Callback<string, AwardAssignmentQueryOptions, CancellationToken>((n, o, t) =>
                 {
                     o.NextPage = next;
                 })
                 .ReturnsAsync(assignments);
-
-            var userManagement = new Mock<IUserManagement>();
-            userManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(creator);
+            moqs.AwardManagement.Setup(p => p.GetAwardByIdAsync("pk", "aid", default)).ReturnsAsync(award);
+            moqs.UserManagement.Setup(u => u.GetUserByIdAsync("creator", default)).ReturnsAsync(creator);
 
             // run
-            var controller = new TeamController
-            {
-                ResponseBuilder = new DefaultResponseBuilder(),
-                HackathonManagement = hackathonManagement.Object,
-                AwardManagement = awardManagement.Object,
-                TeamManagement = teamManagement.Object,
-                UserManagement = userManagement.Object,
-            };
+            var controller = new TeamController();
+            moqs.SetupController(controller);
             var result = await controller.ListAssignmentsByTeam("Hack", "awardId", pagination, default);
 
             // verify
-            Mock.VerifyAll(hackathonManagement, awardManagement, teamManagement, userManagement);
-            hackathonManagement.VerifyNoOtherCalls();
-            awardManagement.VerifyNoOtherCalls();
-            teamManagement.VerifyNoOtherCalls();
-            userManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var list = AssertHelper.AssertOKResult<AwardAssignmentList>(result);
             Assert.AreEqual(expectedLink, list.nextLink);
             Assert.AreEqual(1, list.value.Length);
             Assert.AreEqual("pk", list.value[0].hackathonName);
             Assert.AreEqual("rk", list.value[0].assignmentId);
+            Assert.AreEqual("award", list.value[0].award.name);
             var team0 = list.value[0].team;
             Debug.Assert(team0 != null);
             Assert.AreEqual("2020", team0.creator.LastLogin);

@@ -298,6 +298,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             AwardEntity awardEntity,
             CancellationToken cancellationToken)
         {
+            var award = ResponseBuilder.BuildAward(awardEntity);
             switch (awardEntity.Target)
             {
                 case AwardTarget.team:
@@ -306,10 +307,10 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
                     var teamCreator = await UserManagement.GetUserByIdAsync(teamEntity.CreatorId, cancellationToken);
                     Debug.Assert(teamCreator != null);
                     var team = ResponseBuilder.BuildTeam(teamEntity, teamCreator);
-                    return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, team, null);
+                    return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, award, team, null);
                 case AwardTarget.individual:
                     var user = await UserManagement.GetUserByIdAsync(awardAssignmentEntity.AssigneeId, cancellationToken);
-                    return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, null, user);
+                    return ResponseBuilder.BuildAwardAssignment(awardAssignmentEntity, award, null, user);
                 default:
                     throw new ArgumentOutOfRangeException("Unknown Award target.");
             }
