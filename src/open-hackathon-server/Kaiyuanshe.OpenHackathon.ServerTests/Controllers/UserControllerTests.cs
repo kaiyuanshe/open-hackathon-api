@@ -158,9 +158,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Controllers
             var result = await controller.SearchUser("s", 3, default);
 
             // verify
-            Mock.VerifyAll(moqs.UserManagement);
-            moqs.UserManagement.VerifyNoOtherCalls();
-
+            moqs.VerifyAll();
             var users = AssertHelper.AssertOKResult<UserInfoList>(result);
             Assert.AreEqual(1, users.value.Length);
             Assert.AreEqual("name", users.value[0].Name);

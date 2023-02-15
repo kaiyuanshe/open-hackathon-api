@@ -249,9 +249,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
             Func<UserEntity, bool> filter = (u) =>
             {
-                return (u.Email != null && u.Email.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
-                || (u.Name != null && u.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
-                || (u.Nickname != null && u.Nickname.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
+                return (u.UserId != null && u.UserId.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.Email != null && u.Email.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.Phone != null && u.Phone.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.Username != null && u.Username.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.Name != null && u.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.GivenName != null && u.GivenName.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.FamilyName != null && u.FamilyName.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.MiddleName != null && u.MiddleName.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                    || (u.Nickname != null && u.Nickname.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             };
 
             string? continuationToken = "";

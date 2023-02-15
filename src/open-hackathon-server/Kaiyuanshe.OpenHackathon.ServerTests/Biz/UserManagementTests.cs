@@ -487,6 +487,14 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             var u2 = new UserEntity { Email = "bcd@x.com", };
             var u3 = new UserEntity { Email = "cde@x.com", Name = "name3", };
             var u4 = new UserEntity { Email = "def@x.com", Nickname = "Nickname4" };
+            var u5 = new UserEntity { Username = "username" };
+            var u6 = new UserEntity { MiddleName = "middlename" };
+            var u7 = new UserEntity { FamilyName = "familyname" };
+            var u8 = new UserEntity { GivenName = "givenname" };
+            var u9 = new UserEntity { Phone = "13012345678" };
+            var u10 = new UserEntity { PartitionKey = "pk" };
+
+            var allUsers = new List<UserEntity> { u1, u2, u3, u4, u5, u6, u7, u8, u9, u10 };
 
             // arg0: users
             // arg1: UserQueryOptions
@@ -506,7 +514,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
+                        [""] = Page<UserEntity>.FromValues(allUsers, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "bc" },
                     new List<UserEntity> { u1, u2 }
@@ -516,7 +524,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
+                        [""] = Page<UserEntity>.FromValues(allUsers, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "c@" },
                     new List<UserEntity> { u1 }
@@ -526,10 +534,30 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests.Biz
             yield return new TestCaseData(
                     new Dictionary<string, Page<UserEntity>>
                     {
-                        [""] = Page<UserEntity>.FromValues(new List<UserEntity> { u1, u2, u3, u4 }, "", new Mock<Response>().Object)
+                        [""] = Page<UserEntity>.FromValues(allUsers, "", new Mock<Response>().Object)
                     },
                     new UserQueryOptions { Top = 100, Search = "Name" },
-                    new List<UserEntity> { u3, u4 }
+                    new List<UserEntity> { u3, u4, u5, u6, u7, u8 }
+                );
+
+            // search by phone
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(allUsers, "", new Mock<Response>().Object)
+                    },
+                    new UserQueryOptions { Top = 100, Search = "1234" },
+                    new List<UserEntity> { u9 }
+                );
+
+            // search by id
+            yield return new TestCaseData(
+                    new Dictionary<string, Page<UserEntity>>
+                    {
+                        [""] = Page<UserEntity>.FromValues(allUsers, "", new Mock<Response>().Object)
+                    },
+                    new UserQueryOptions { Top = 100, Search = "pk" },
+                    new List<UserEntity> { u10 }
                 );
 
             // multiple pages
