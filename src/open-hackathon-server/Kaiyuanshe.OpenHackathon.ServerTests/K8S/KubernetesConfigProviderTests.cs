@@ -1,5 +1,5 @@
 ﻿using k8s;
-using k8s.Autorest;
+using k8s.Authentication;
 using Kaiyuanshe.OpenHackathon.Server.K8S;
 using Kaiyuanshe.OpenHackathon.Server.Storage;
 using Kaiyuanshe.OpenHackathon.Server.Storage.BlobContainers;
