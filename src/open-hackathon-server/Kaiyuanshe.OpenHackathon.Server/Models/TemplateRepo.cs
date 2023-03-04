@@ -26,7 +26,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         /// <example>https://github.com/idea2app/Next-Bootstrap-ts</example>
         [AbsoluteUri]
         [RequiredIfPut]
-        public string url { get; internal set; }
+        public string url { get; set; }
 
         /// <summary>
         /// is GitHub repo info fetched.

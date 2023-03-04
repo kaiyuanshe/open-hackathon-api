@@ -45,11 +45,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage.Entities
         /// <summary>
         /// GitHub repo languages.
         /// </summary>
+        [ConvertableEntityProperty]
         public IDictionary<string, string>? RepoLanguages { get; set; }
 
         /// <summary>
         /// GitHub repo topics.
         /// </summary>
+        [ConvertableEntityProperty]
         public IList<string>? RepoTopics { get; set; }
     }
 }

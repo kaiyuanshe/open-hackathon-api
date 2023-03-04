@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface ITemplateRepoManagement
     {
-        Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, CancellationToken cancellationToken);
-        Task<TemplateRepoEntity> UpdateTemplateRepoAsync(TemplateRepoEntity existing, TemplateRepo request, CancellationToken cancellationToken);
+        Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken);
+        Task<TemplateRepoEntity> UpdateTemplateRepoAsync(TemplateRepoEntity existing, TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken);
         Task<TemplateRepoEntity?> GetTemplateRepoAsync([DisallowNull] string hackathonName, [DisallowNull] string templateRepoId, CancellationToken cancellationToken);
         Task<IEnumerable<TemplateRepoEntity>> ListPaginatedTemplateReposAsync([DisallowNull] string hackathonName, TemplateRepoQueryOptions options, CancellationToken cancellationToken = default);
         Task DeleteTemplateRepoAsync([DisallowNull] string hackathonName, [DisallowNull] string templateRepoId, CancellationToken cancellationToken);
@@ -51,24 +52,27 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
         #endregion
 
-        private async Task<JObject> FetchGitHubRestApi(string url, CancellationToken cancellationToken = default)
+        private static string? GetGitHubPAT(UserInfo userInfo) {
+            return userInfo.Identities
+                .Where(e => e.Provider == "github")
+                .Select(e => e.AccessToken)
+                .First();
+        }
+
+        private async Task<JObject> FetchGitHubRestApi(HttpClient httpClient, string url, CancellationToken cancellationToken = default)
         {
-            using (var httpClient = HttpClientFactory.CreateClient())
             using (var request = new HttpRequestMessage(HttpMethod.Get, url))
             {
-                request.Headers.Add("Accept", "application/vnd.github+json");
-                // request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
                 var response = await httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 using (var textReader = new StreamReader(await response.Content.ReadAsStreamAsync()))
                 using (var jsonReader = new JsonTextReader(textReader))
-                return (await JObject.LoadAsync(jsonReader, cancellationToken));
+                return await JObject.LoadAsync(jsonReader, cancellationToken);
             }
         }
 
-        private async Task FetchGitHubInfo(TemplateRepo templateRepo, CancellationToken cancellationToken)
+        private async Task FetchGitHubInfo(TemplateRepo templateRepo, string? pat, CancellationToken cancellationToken)
         {
             // Normalize the url.
             var match = regexGitHubRepoUrl.Match(templateRepo.url);
@@ -84,37 +88,50 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
                 return;
             }
 
-            try {
-                // https://docs.github.com/en/rest/repos/repos#list-repository-languages
-                string url = string.Format("https://api.github.com/repos/{0}/{1}/languages", owner, repo);
-                var response = await FetchGitHubRestApi(url, cancellationToken);
-                var map = (response as IEnumerable<KeyValuePair<string, JToken?>>).ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Convert.ToString((ulong)kvp.Value));
-                templateRepo.repoLanguages = map;
-            }
-            catch (Exception e) {
-                Logger?.TraceError($"Internal error: {e.Message}", e);
+            if (pat == null) {
+                //return;
             }
 
-            try {
-                // https://docs.github.com/en/rest/repos/repos#get-all-repository-topics
-                string url = string.Format("https://api.github.com/repos/{0}/{1}/topics", owner, repo);
-                var response = await FetchGitHubRestApi(url, cancellationToken);
-                var names = response["names"].Select(t => (string)t).ToList();
-                templateRepo.repoTopics = names;
-            }
-            catch (Exception e) {
-                Logger?.TraceError($"Internal error: {e.Message}", e);
+            using (var httpClient = HttpClientFactory.CreateClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", pat);
+                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("dotnet")));
+                httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+
+                try {
+                    // https://docs.github.com/en/rest/repos/repos#list-repository-languages
+                    string url = string.Format("https://api.github.com/repos/{0}/{1}/languages", owner, repo);
+                    var response = await FetchGitHubRestApi(httpClient, url, cancellationToken);
+                    var map = (response as IEnumerable<KeyValuePair<string, JToken?>>).ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => Convert.ToString((ulong)kvp.Value));
+                    templateRepo.repoLanguages = map;
+                }
+                catch (Exception e) {
+                    Logger?.TraceError($"Internal error: {e.Message}", e);
+                }
+
+                try {
+                    // https://docs.github.com/en/rest/repos/repos#get-all-repository-topics
+                    string url = string.Format("https://api.github.com/repos/{0}/{1}/topics", owner, repo);
+                    var response = await FetchGitHubRestApi(httpClient, url, cancellationToken);
+                    var names = response["names"].Select(t => (string)t).ToList();
+                    templateRepo.repoTopics = names;
+                }
+                catch (Exception e) {
+                    Logger?.TraceError($"Internal error: {e.Message}", e);
+                }
             }
 
             templateRepo.isFetched = true;
         }
 
         #region CreateTemplateRepoAsync
-        public async Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, CancellationToken cancellationToken)
+        public async Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken)
         {
-            await FetchGitHubInfo(request, cancellationToken);
+            var pat = GetGitHubPAT(userInfo);
+            await FetchGitHubInfo(request, pat, cancellationToken);
 
             var entity = new TemplateRepoEntity
             {
@@ -139,7 +156,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         #region UpdateTemplateRepoAsync
         public async Task<TemplateRepoEntity> UpdateTemplateRepoAsync(
-            TemplateRepoEntity existing, TemplateRepo request,
+            TemplateRepoEntity existing, TemplateRepo request, UserInfo userInfo,
             CancellationToken cancellationToken)
         {
             if (request.url == null || string.Equals(existing.Url, request.url)) {
@@ -149,7 +166,8 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             else {
                 request.isFetched = false;
             }
-            await FetchGitHubInfo(request, cancellationToken);
+            var pat = GetGitHubPAT(userInfo);
+            await FetchGitHubInfo(request, pat, cancellationToken);
 
             if (request.isFetched == true) {
                 existing.IsFetched = true;

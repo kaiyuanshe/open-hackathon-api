@@ -52,9 +52,11 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
+            var currentUserInfo = await GetCurrentUserInfo(cancellationToken);
+
             // create
             parameter.hackathonName = hackathonName.ToLower();
-            var entity = await TemplateRepoManagement.CreateTemplateRepoAsync(parameter, cancellationToken);
+            var entity = await TemplateRepoManagement.CreateTemplateRepoAsync(parameter, currentUserInfo, cancellationToken);
 
             var args = new
             {
@@ -100,13 +102,15 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
+            var currentUserInfo = await GetCurrentUserInfo(cancellationToken);
+
             // query and update.
             var entity = await TemplateRepoManagement.GetTemplateRepoAsync(hackathon.Name, templateRepoId, cancellationToken);
             if (entity == null)
             {
                 return NotFound(Resources.TemplateRepo_NotFound);
             }
-            entity = await TemplateRepoManagement.UpdateTemplateRepoAsync(entity, parameter, cancellationToken);
+            entity = await TemplateRepoManagement.UpdateTemplateRepoAsync(entity, parameter, currentUserInfo, cancellationToken);
 
             // logs
             var args = new
@@ -223,7 +227,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <response code="204">Deleted</response>
         [HttpDelete]
         [SwaggerErrorResponse(400, 404)]
-        [Route("hackathon/{hackathonName}/project template/")]
+        [Route("hackathon/{hackathonName}/templateRepo/")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
         public async Task<object> DeleteTemplateRepo(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
