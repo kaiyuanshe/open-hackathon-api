@@ -20,9 +20,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 {
     public interface ITemplateRepoManagement
     {
-        Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken);
-        Task<TemplateRepoEntity> UpdateTemplateRepoAsync(TemplateRepoEntity existing, TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken);
-        Task<TemplateRepoEntity?> GetTemplateRepoAsync([DisallowNull] string hackathonName, [DisallowNull] string templateRepoId, CancellationToken cancellationToken);
+        Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, CancellationToken cancellationToken);
+        Task<TemplateRepoEntity> UpdateTemplateRepoAsync(TemplateRepoEntity existing, TemplateRepo request, CancellationToken cancellationToken);
+        Task<TemplateRepoEntity?> GetTemplateRepoAsync([DisallowNull] string hackathonName, [DisallowNull] string templateRepoId, CancellationToken cancellationToken = default);
         Task<IEnumerable<TemplateRepoEntity>> ListPaginatedTemplateReposAsync([DisallowNull] string hackathonName, TemplateRepoQueryOptions options, CancellationToken cancellationToken = default);
         Task DeleteTemplateRepoAsync([DisallowNull] string hackathonName, [DisallowNull] string templateRepoId, CancellationToken cancellationToken);
     }
@@ -128,10 +128,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
         }
 
         #region CreateTemplateRepoAsync
-        public async Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, UserInfo userInfo, CancellationToken cancellationToken)
+        public async Task<TemplateRepoEntity> CreateTemplateRepoAsync(TemplateRepo request, CancellationToken cancellationToken)
         {
-            var pat = GetGitHubPAT(userInfo);
-            await FetchGitHubInfo(request, pat, cancellationToken);
+            await FetchGitHubInfo(request, pat: null, cancellationToken);
 
             var entity = new TemplateRepoEntity
             {
@@ -156,7 +155,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
 
         #region UpdateTemplateRepoAsync
         public async Task<TemplateRepoEntity> UpdateTemplateRepoAsync(
-            TemplateRepoEntity existing, TemplateRepo request, UserInfo userInfo,
+            TemplateRepoEntity existing, TemplateRepo request,
             CancellationToken cancellationToken)
         {
             if (request.url == null || string.Equals(existing.Url, request.url)) {
@@ -166,8 +165,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Biz
             else {
                 request.isFetched = false;
             }
-            var pat = GetGitHubPAT(userInfo);
-            await FetchGitHubInfo(request, pat, cancellationToken);
+            await FetchGitHubInfo(request, pat: null, cancellationToken);
 
             if (request.isFetched == true) {
                 existing.IsFetched = true;

@@ -52,11 +52,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
-            var currentUserInfo = await GetCurrentUserInfo(cancellationToken);
-
             // create
             parameter.hackathonName = hackathonName.ToLower();
-            var entity = await TemplateRepoManagement.CreateTemplateRepoAsync(parameter, currentUserInfo, cancellationToken);
+            var entity = await TemplateRepoManagement.CreateTemplateRepoAsync(parameter, cancellationToken);
 
             var args = new
             {
@@ -102,15 +100,13 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
             }
             Debug.Assert(hackathon != null);
 
-            var currentUserInfo = await GetCurrentUserInfo(cancellationToken);
-
             // query and update.
             var entity = await TemplateRepoManagement.GetTemplateRepoAsync(hackathon.Name, templateRepoId, cancellationToken);
             if (entity == null)
             {
                 return NotFound(Resources.TemplateRepo_NotFound);
             }
-            entity = await TemplateRepoManagement.UpdateTemplateRepoAsync(entity, parameter, currentUserInfo, cancellationToken);
+            entity = await TemplateRepoManagement.UpdateTemplateRepoAsync(entity, parameter, cancellationToken);
 
             // logs
             var args = new
