@@ -25,6 +25,7 @@
         Team,
         TeamMember,
         TeamWork,
+        TemplateRepo,
         Token,
         User,
     }

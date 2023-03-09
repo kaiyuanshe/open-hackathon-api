@@ -101,6 +101,9 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
         createTemplate,
         updateTemplate,
         deleteTemplate,
+        createTemplateRepo,
+        updateTemplateRepo,
+        deleteTemplateRepo,
 
         // experiment
         createExperiment,

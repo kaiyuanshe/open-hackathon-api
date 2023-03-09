@@ -39,6 +39,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         public IQuestionnaireManagement QuestionnaireManagement { get; set; }
         public IRatingManagement RatingManagement { get; set; }
         public ITeamManagement TeamManagement { get; set; }
+        public ITemplateRepoManagement TemplateRepoManagement { get; set; }
         public IUserManagement UserManagement { get; set; }
         public IWorkManagement WorkManagement { get; set; }
 

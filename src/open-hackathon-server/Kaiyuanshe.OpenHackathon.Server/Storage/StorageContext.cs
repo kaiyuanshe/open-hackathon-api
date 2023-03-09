@@ -22,6 +22,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         ITeamTable TeamTable { get; set; }
         ITeamMemberTable TeamMemberTable { get; set; }
         ITeamWorkTable TeamWorkTable { get; set; }
+        ITemplateRepoTable TemplateRepoTable { get; set; }
         ITemplateTable TemplateTable { get; set; }
         ITopUserTable TopUserTable { get; set; }
         IUserTable UserTable { get; set; }
@@ -52,6 +53,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Storage
         public ITeamTable TeamTable { get; set; }
         public ITeamMemberTable TeamMemberTable { get; set; }
         public ITeamWorkTable TeamWorkTable { get; set; }
+        public ITemplateRepoTable TemplateRepoTable { get; set; }
         public ITemplateTable TemplateTable { get; set; }
         public ITopUserTable TopUserTable { get; set; }
         public IUserTable UserTable { get; set; }

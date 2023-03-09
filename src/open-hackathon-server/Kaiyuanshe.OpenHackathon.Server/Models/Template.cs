@@ -8,6 +8,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Models
     /// <summary>
     /// Template to setup virtual experiment on Kubernetes. Not required.
     /// </summary>
+    [Obsolete]
     [RemoteConfigPolicy]
     public class Template : KubernetesModelBase
     {

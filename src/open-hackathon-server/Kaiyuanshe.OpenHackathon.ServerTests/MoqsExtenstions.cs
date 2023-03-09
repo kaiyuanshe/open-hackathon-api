@@ -28,6 +28,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             controller.QuestionnaireManagement = moqs.QuestionnaireManagement.Object;
             controller.RatingManagement = moqs.RatingManagement.Object;
             controller.TeamManagement = moqs.TeamManagement.Object;
+            controller.TemplateRepoManagement = moqs.TemplateRepoManagement.Object;
             controller.UserManagement = moqs.UserManagement.Object;
             controller.WorkManagement = moqs.WorkManagement.Object;
 
@@ -41,6 +42,7 @@ namespace Kaiyuanshe.OpenHackathon.ServerTests
             management.Logger = new Mock<ILogger<T>>().Object;
             management.StorageContext = moqs.StorageContext.Object;
             management.Cache = moqs.CacheProvider.Object;
+            management.HttpClientFactory = moqs.HttpClientFactory.Object;
         }
 
         public static void SetupCronJob(this Moqs moqs, CronJobBase cronJob)
