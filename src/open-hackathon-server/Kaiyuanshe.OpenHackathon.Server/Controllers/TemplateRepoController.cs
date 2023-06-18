@@ -223,7 +223,7 @@ namespace Kaiyuanshe.OpenHackathon.Server.Controllers
         /// <response code="204">Deleted</response>
         [HttpDelete]
         [SwaggerErrorResponse(400, 404)]
-        [Route("hackathon/{hackathonName}/templateRepo/")]
+        [Route("hackathon/{hackathonName}/templateRepo/{templateRepoId}/")]
         [Authorize(Policy = AuthConstant.PolicyForSwagger.HackathonAdministrator)]
         public async Task<object> DeleteTemplateRepo(
             [FromRoute, Required, RegularExpression(ModelConstants.HackathonNamePattern)] string hackathonName,
